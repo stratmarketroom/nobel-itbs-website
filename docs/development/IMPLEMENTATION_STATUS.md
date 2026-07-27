@@ -8,7 +8,7 @@ This document records the current implementation state. It is not a replacement 
 
 Active branch:
 
-- `codex/auth-005-admin-user-management`
+- `codex/auth-007-mfa-login-ui`
 
 Implemented and pushed branches:
 
@@ -23,6 +23,7 @@ Implemented and pushed branches:
 - `codex/auth-006-mfa-enforcement`
 - `codex/fef-001-nextjs-scaffold`
 - `codex/auth-005-admin-user-management`
+- `codex/auth-007-mfa-login-ui`
 
 ## Supabase Dev Project
 
@@ -82,6 +83,8 @@ Implemented database objects:
 Implemented application foundation:
 
 - Server-only Supabase clients and admin session context loading
+- Browser-safe Supabase client using public anon configuration only
+- Admin login route with password sign-in, TOTP enrollment, and TOTP challenge flow
 - Admin API routes under `/api/v1/admin`
 - Foundational admin users page at `/admin/users`
 - Next.js App Router scaffold with English, Ukrainian, and Czech public locale routes
@@ -96,6 +99,7 @@ Verified behavior:
 - `/api/v1/admin/me` returns the active Owner profile and `owner` role.
 - `/api/v1/admin/users` returns `403` until the Owner session satisfies MFA/AAL2.
 - Remote DB blocks deactivating the last active Owner and deleting the last Owner role assignment.
+- `/admin/login` renders the admin sign-in and MFA flow.
 
 This is expected because Owner requires MFA.
 
@@ -113,6 +117,7 @@ The following checks passed during the latest implementation pass:
 - `npm run verify:auth-004`
 - `npm run verify:auth-005`
 - `npm run verify:auth-006`
+- `npm run verify:auth-007`
 - `npm run verify:fef-001`
 - `npm run lint`
 - `npm run build`
@@ -131,10 +136,11 @@ The following checks passed during the latest implementation pass:
 
 Recommended next step:
 
-- Add MFA enrollment/login UI flow, then repeat `/api/v1/admin/users` smoke test with an AAL2 session.
+- Complete manual MFA enrollment for the dev Owner through `/admin/login`, then repeat `/api/v1/admin/users` smoke test with an AAL2 session.
 
 Other near-term candidates:
 
-- QA review for `AUTH-005`.
+- Create formal `PRODUCT.md` and `DESIGN.md` context before deeper public-site/admin design work.
+- QA review for `AUTH-007`.
 - Continue admin UI integration with real session state.
 - Start the next database/security module from the ticket pack.

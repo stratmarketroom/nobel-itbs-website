@@ -39,6 +39,11 @@ button:focus-visible {
   outline-offset: 4px;
 }
 
+input:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .site-shell {
   min-height: 100dvh;
   background:
@@ -315,6 +320,21 @@ h1 {
   line-height: 1.65;
 }
 
+.admin-login-link {
+  display: inline-flex;
+  min-height: 2.65rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.72rem 0.95rem;
+  background: var(--surface);
+  color: var(--navy);
+  font-weight: 850;
+  text-decoration: none;
+}
+
 .admin-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -403,6 +423,203 @@ h1 {
   font-size: 0.92rem;
 }
 
+.auth-shell {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  overflow-x: hidden;
+  padding: clamp(1rem, 4vw, 3rem);
+  background:
+    linear-gradient(110deg, oklch(96% 0.012 250), oklch(92% 0.018 225) 48%, oklch(97% 0.006 260)),
+    var(--page);
+  color: var(--ink);
+}
+
+.auth-panel {
+  min-width: 0;
+  width: calc(100vw - 2rem);
+  max-width: 56rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 24px 80px oklch(28% 0.04 252 / 12%);
+}
+
+.auth-heading {
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.auth-heading h1 {
+  max-width: none;
+  margin-top: 0.55rem;
+  color: var(--ink);
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 0.98;
+}
+
+.auth-heading p:not(.admin-kicker) {
+  max-width: 58ch;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.auth-form {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  max-width: 34rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.auth-form-wide {
+  max-width: none;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.auth-form input {
+  min-width: 0;
+  min-height: 3rem;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.82rem;
+  background: oklch(98% 0.006 260);
+  color: var(--ink);
+  font: inherit;
+}
+
+.auth-submit {
+  min-width: 0;
+  min-height: 3rem;
+  border: 1px solid oklch(35% 0.08 255);
+  border-radius: var(--radius);
+  background: var(--navy);
+  color: oklch(98% 0.006 260);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.auth-submit:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.auth-state {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: oklch(96% 0.014 250);
+}
+
+.auth-state span {
+  color: var(--violet);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.auth-state strong {
+  font-size: 1.08rem;
+}
+
+.auth-state p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.mfa-enrollment {
+  display: grid;
+  grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.mfa-enrollment img {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: oklch(99% 0.006 260);
+  padding: 0.75rem;
+}
+
+.mfa-enrollment div {
+  display: grid;
+  align-content: center;
+  gap: 0.6rem;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1rem;
+  background: oklch(97% 0.01 250);
+}
+
+.mfa-enrollment span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mfa-enrollment code {
+  overflow-wrap: anywhere;
+  color: var(--navy);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.auth-error {
+  margin: 0 clamp(1.25rem, 4vw, 2rem) clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid oklch(72% 0.12 28);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  background: oklch(96% 0.035 28);
+  color: oklch(39% 0.13 28);
+  font-weight: 800;
+}
+
+.auth-session {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0 clamp(1.25rem, 4vw, 2rem) clamp(1.25rem, 4vw, 2rem);
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.auth-session span,
+.auth-session button {
+  min-height: 2.15rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.45rem 0.65rem;
+  background: oklch(97% 0.008 260);
+}
+
+.auth-session button {
+  color: var(--navy);
+  font: inherit;
+  font-weight: 850;
+  cursor: pointer;
+}
+
 @media (max-width: 860px) {
   .site-header {
     align-items: flex-start;
@@ -435,6 +652,10 @@ h1 {
   .admin-grid {
     grid-template-columns: 1fr;
   }
+
+  .mfa-enrollment {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 560px) {
@@ -454,5 +675,33 @@ h1 {
 
   .button {
     width: 100%;
+  }
+
+  .auth-shell {
+    padding: 1rem;
+  }
+
+  .auth-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .auth-heading,
+  .auth-form {
+    max-width: 100%;
+    padding: 1.1rem;
+  }
+
+  .auth-form input,
+  .auth-submit {
+    max-width: 100%;
+  }
+
+  .auth-heading h1 {
+    font-size: 1.85rem;
+  }
+
+  .auth-heading p:not(.admin-kicker) {
+    max-width: 26ch;
   }
 }

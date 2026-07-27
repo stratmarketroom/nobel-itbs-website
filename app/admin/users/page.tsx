@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 const roleLabels = ['Owner', 'Super Admin', 'Content Manager', 'Credential Manager'];
 
 export const metadata = {
@@ -13,6 +15,9 @@ export default function AdminUsersPage() {
         <p>
           Manage active status and role assignments through protected server routes backed by Supabase Auth.
         </p>
+        <Link className="admin-login-link" href="/admin/login">
+          Admin sign in
+        </Link>
       </section>
 
       <section className="admin-grid" aria-label="User management controls">

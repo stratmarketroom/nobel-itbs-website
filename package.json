@@ -18,6 +18,7 @@
     "verify:auth-004": "node scripts/verify-auth-004.mjs",
     "verify:auth-006": "node scripts/verify-auth-006.mjs",
     "verify:auth-005": "node scripts/verify-auth-005.mjs",
+    "verify:auth-007": "node scripts/verify-auth-007.mjs",
     "verify:fef-001": "node scripts/verify-fef-001.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
