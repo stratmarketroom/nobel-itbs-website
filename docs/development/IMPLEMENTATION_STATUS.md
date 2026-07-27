@@ -49,12 +49,19 @@ The following migrations have been pushed to the remote dev database:
 - `20260727145222_auth_004_role_helpers.sql`
 - `20260727145835_auth_006_mfa_enforcement.sql`
 - `20260727154750_auth_005_admin_user_management_functions.sql`
+- `20260727171000_auth_003_owner_minimum_guard.sql`
 
 Remote smoke check after migration push:
 
 - `user_profiles`: reachable
 - `user_roles`: reachable
 - `audit_log`: reachable
+
+Owner minimum guard smoke check after QA hardening:
+
+- active Owner count remains `1`;
+- deactivating the last active Owner is blocked;
+- deleting the last Owner role assignment is blocked.
 
 ## Auth Foundation State
 
@@ -65,6 +72,7 @@ Implemented database objects:
 - `public.audit_log`
 - `public.app_role`
 - Internal role, Owner governance, audit, and MFA helper functions
+- Owner uniqueness and minimum-owner guardrails
 - Admin user management RPC functions:
   - `public.create_admin_profile`
   - `public.update_admin_profile`
@@ -87,6 +95,7 @@ Verified behavior:
 - Supabase Auth sign-in succeeds for the dev Owner.
 - `/api/v1/admin/me` returns the active Owner profile and `owner` role.
 - `/api/v1/admin/users` returns `403` until the Owner session satisfies MFA/AAL2.
+- Remote DB blocks deactivating the last active Owner and deleting the last Owner role assignment.
 
 This is expected because Owner requires MFA.
 
@@ -108,6 +117,8 @@ The following checks passed during the latest implementation pass:
 - `npm run lint`
 - `npm run build`
 - `npm audit --omit=dev`
+- Supabase remote `db push --dry-run`
+- Supabase remote `db push`
 
 ## Known Operational Notes
 

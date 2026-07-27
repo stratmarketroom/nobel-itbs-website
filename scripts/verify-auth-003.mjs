@@ -1,10 +1,11 @@
 import { existsSync, readFileSync } from 'node:fs';
 
 const migrationPath = 'supabase/migrations/20260727114756_auth_003_owner_rules.sql';
+const hardeningMigrationPath = 'supabase/migrations/20260727171000_auth_003_owner_minimum_guard.sql';
 const testPath = 'supabase/tests/database/auth_003_owner_rules.test.sql';
 const errors = [];
 
-for (const path of [migrationPath, testPath]) {
+for (const path of [migrationPath, hardeningMigrationPath, testPath]) {
   if (!existsSync(path)) {
     errors.push(`Missing required path: ${path}`);
   }
@@ -46,6 +47,27 @@ if (existsSync(migrationPath)) {
   for (const [pattern, message] of forbiddenPatterns) {
     if (pattern.test(sql)) {
       errors.push(message);
+    }
+  }
+}
+
+if (existsSync(hardeningMigrationPath)) {
+  const sql = readFileSync(hardeningMigrationPath, 'utf8');
+  const requiredSnippets = [
+    'At least one active Owner is required.',
+    'At least one Owner role assignment is required.',
+    'before insert or update or delete on public.user_profiles',
+    'before insert or update or delete on public.user_roles',
+    'drop trigger if exists user_profiles_enforce_owner_rules',
+    'drop trigger if exists user_roles_enforce_owner_rules',
+    'old.role = \'owner\'::public.app_role',
+    'new.role is distinct from old.role',
+    'new.user_id is distinct from old.user_id',
+  ];
+
+  for (const snippet of requiredSnippets) {
+    if (!sql.includes(snippet)) {
+      errors.push(`Owner minimum guard migration missing required SQL snippet: ${snippet}`);
     }
   }
 }
