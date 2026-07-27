@@ -142,6 +142,6 @@ Recommended next step:
 
 Other near-term candidates:
 
-- Create formal `PRODUCT.md` and `DESIGN.md` context before deeper public-site/admin design work.
+- Refine `.agents/context/PRODUCT.md` and `.agents/context/DESIGN.md` before deeper public-site/admin design work.
 - Continue admin UI integration with real session state.
 - Start the next database/security module from the ticket pack.
