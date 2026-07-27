@@ -19,3 +19,4 @@ Current foundation migrations:
 - `20260727105232_dbf_004_audit_foundation.sql`
 - `20260727111852_auth_001_user_profiles.sql`
 - `20260727112603_auth_002_multi_role_model.sql`
+- `20260727114756_auth_003_owner_rules.sql`
