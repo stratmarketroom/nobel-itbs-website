@@ -9,6 +9,7 @@
     "verify:dbf-003": "node scripts/verify-dbf-003.mjs",
     "verify:dbf-004": "node scripts/verify-dbf-004.mjs",
     "verify:auth-001": "node scripts/verify-auth-001.mjs",
+    "verify:auth-002": "node scripts/verify-auth-002.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",

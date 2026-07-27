@@ -19,3 +19,4 @@ Current database tests:
 - `database/dbf_003_foundation.test.sql`
 - `database/dbf_004_audit_foundation.test.sql`
 - `database/auth_001_user_profiles.test.sql`
+- `database/auth_002_multi_role_model.test.sql`
