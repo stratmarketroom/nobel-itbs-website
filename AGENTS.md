@@ -32,6 +32,7 @@ Read these before implementation work:
 
 - `docs/planning/AGENT_OPERATING_MANUAL.md`
 - `docs/planning/AGENT_PROMPT_TEMPLATE.md`
+- `docs/planning/AGENT_EXECUTION_SEQUENCE.md`
 - `docs/design/DESIGN_GUIDELINES.md`
 - `docs/security/SECURITY_IMPLEMENTATION_RULES.md`
 
@@ -89,4 +90,3 @@ Never expose service role to browser code.
 - `pending` and `voided` behave as not found publicly.
 - Credential numbers are never reused.
 - Activation succeeds even if email sending fails.
-
