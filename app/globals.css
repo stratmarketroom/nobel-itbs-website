@@ -1,0 +1,340 @@
+:root {
+  --page: oklch(97% 0.008 260);
+  --surface: oklch(99% 0.006 260);
+  --ink: oklch(21% 0.025 264);
+  --muted: oklch(45% 0.026 260);
+  --line: oklch(86% 0.018 260);
+  --navy: oklch(25% 0.07 262);
+  --violet: oklch(49% 0.16 285);
+  --cyan: oklch(69% 0.12 218);
+  --gold: oklch(75% 0.13 78);
+  --focus: oklch(58% 0.18 272);
+  --radius: 8px;
+  --shadow: 0 24px 80px oklch(22% 0.06 262 / 18%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--page);
+  color: var(--ink);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+.site-shell {
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at 18% 8%, oklch(62% 0.14 285 / 18%), transparent 32rem),
+    linear-gradient(135deg, oklch(19% 0.05 263), oklch(31% 0.08 255) 52%, oklch(97% 0.008 260) 52.2%);
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem clamp(1rem, 3vw, 3rem);
+  color: oklch(98% 0.006 260);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid oklch(96% 0.01 260 / 42%);
+  border-radius: 50%;
+  background: oklch(99% 0.006 260 / 10%);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  color: oklch(93% 0.012 260);
+  font-size: 0.94rem;
+}
+
+.nav a,
+.locale-switcher a {
+  text-decoration: none;
+}
+
+.locale-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: oklch(93% 0.012 260);
+  font-size: 0.82rem;
+}
+
+.locale-switcher a {
+  display: inline-grid;
+  min-width: 2rem;
+  min-height: 2rem;
+  place-items: center;
+  border: 1px solid oklch(96% 0.01 260 / 24%);
+  border-radius: 999px;
+}
+
+.locale-switcher a[aria-current="page"] {
+  background: oklch(99% 0.006 260 / 16%);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(18rem, 0.72fr);
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: center;
+  padding: clamp(3rem, 8vw, 7rem) clamp(1rem, 3vw, 3rem) 5rem;
+}
+
+.hero-copy {
+  max-width: 68ch;
+  color: oklch(98% 0.006 260);
+}
+
+.eyebrow {
+  margin: 0 0 1rem;
+  color: var(--cyan);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  max-width: 12ch;
+  margin: 0;
+  font-size: clamp(3rem, 8vw, 6.8rem);
+  line-height: 0.92;
+  letter-spacing: 0;
+}
+
+.lead {
+  max-width: 58ch;
+  margin: 1.4rem 0 0;
+  color: oklch(90% 0.018 260);
+  font-size: clamp(1.06rem, 2vw, 1.28rem);
+  line-height: 1.65;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 2rem;
+}
+
+.button {
+  display: inline-flex;
+  min-height: 2.8rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 0.78rem 1rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.button.primary {
+  background: var(--gold);
+  color: oklch(20% 0.04 265);
+}
+
+.button.secondary {
+  border-color: oklch(96% 0.01 260 / 36%);
+  color: oklch(97% 0.006 260);
+}
+
+.trust-panel {
+  border: 1px solid oklch(83% 0.02 260);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+}
+
+.panel-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.panel-body {
+  padding: 1.2rem;
+}
+
+.signal {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  align-items: start;
+  padding: 1rem 0;
+}
+
+.signal + .signal {
+  border-top: 1px solid var(--line);
+}
+
+.signal-icon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: oklch(92% 0.04 250);
+  color: var(--violet);
+  font-weight: 900;
+}
+
+.signal strong {
+  display: block;
+  margin-bottom: 0.24rem;
+}
+
+.signal span {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.foundation-band {
+  background: var(--page);
+  padding: 2rem clamp(1rem, 3vw, 3rem) 4rem;
+}
+
+.foundation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--line);
+}
+
+.foundation-item {
+  min-height: 9rem;
+  padding: 1.2rem;
+  background: var(--surface);
+}
+
+.foundation-item span {
+  color: var(--violet);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.foundation-item h2 {
+  margin: 0.7rem 0 0.45rem;
+  font-size: 1.12rem;
+}
+
+.foundation-item p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.not-found {
+  display: grid;
+  min-height: 100dvh;
+  place-content: center;
+  padding: 2rem;
+  background: var(--page);
+  text-align: center;
+}
+
+.not-found h1 {
+  max-width: none;
+  color: var(--ink);
+  font-size: clamp(2.4rem, 8vw, 5rem);
+}
+
+.not-found a {
+  margin-top: 1.2rem;
+  color: var(--violet);
+  font-weight: 800;
+}
+
+@media (max-width: 860px) {
+  .site-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .nav {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 2.4rem;
+  }
+
+  .hero-copy {
+    max-width: none;
+  }
+
+  .trust-panel {
+    max-width: 34rem;
+  }
+
+  .foundation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .site-shell {
+    background:
+      radial-gradient(circle at 15% 8%, oklch(62% 0.14 285 / 18%), transparent 24rem),
+      linear-gradient(170deg, oklch(19% 0.05 263), oklch(31% 0.08 255) 62%, oklch(97% 0.008 260) 62.2%);
+  }
+
+  .nav {
+    font-size: 0.88rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
+}
