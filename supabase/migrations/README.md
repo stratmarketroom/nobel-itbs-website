@@ -21,3 +21,4 @@ Current foundation migrations:
 - `20260727112603_auth_002_multi_role_model.sql`
 - `20260727114756_auth_003_owner_rules.sql`
 - `20260727145222_auth_004_role_helpers.sql`
+- `20260727145835_auth_006_mfa_enforcement.sql`
