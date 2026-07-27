@@ -21,3 +21,4 @@ Current database tests:
 - `database/auth_001_user_profiles.test.sql`
 - `database/auth_002_multi_role_model.test.sql`
 - `database/auth_003_owner_rules.test.sql`
+- `database/auth_004_role_helpers.test.sql`
