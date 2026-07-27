@@ -101,6 +101,7 @@ Verified behavior:
 - Remote DB blocks deactivating the last active Owner and deleting the last Owner role assignment.
 - `/admin/login` renders the admin sign-in and MFA flow.
 - Manual browser smoke completed: dev Owner enrolled TOTP MFA through `/admin/login` and was redirected to `/admin/users`.
+- `AUTH-007` QA edge-case review completed with no open blocking findings.
 
 This is expected because Owner requires MFA.
 

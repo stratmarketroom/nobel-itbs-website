@@ -32,6 +32,7 @@ Current implementation notes:
 - `docs/development/IMPLEMENTATION_STATUS.md`
 - `docs/development/SUPABASE_LOCAL_SETUP.md`
 - `docs/development/MIGRATION_STANDARDS.md`
+- `docs/qa/AUTH-007_QA_REVIEW_2026-07-27.md`
 
 The v2 documents reflect product-owner decisions made after reviewing the original v1 specification pack.
 
