@@ -16,3 +16,4 @@ See `docs/development/MIGRATION_STANDARDS.md` before adding any `.sql` file.
 Current foundation migrations:
 
 - `20260727104215_dbf_003_internal_schema_and_extensions.sql`
+- `20260727105232_dbf_004_audit_foundation.sql`
