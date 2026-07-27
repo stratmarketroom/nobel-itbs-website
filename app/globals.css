@@ -289,6 +289,120 @@ h1 {
   font-weight: 800;
 }
 
+.admin-shell {
+  min-height: 100dvh;
+  background: var(--page);
+  color: var(--ink);
+  padding: clamp(1rem, 3vw, 3rem);
+}
+
+.admin-hero {
+  max-width: 72ch;
+  padding: clamp(2rem, 5vw, 4rem) 0;
+}
+
+.admin-hero h1 {
+  max-width: none;
+  color: var(--ink);
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  line-height: 1;
+}
+
+.admin-hero p:not(.eyebrow) {
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 1.08rem;
+  line-height: 1.65;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--line);
+}
+
+.admin-panel {
+  min-height: 14rem;
+  padding: 1.25rem;
+  background: var(--surface);
+}
+
+.admin-panel-wide {
+  grid-column: 1 / -1;
+}
+
+.admin-kicker {
+  margin: 0;
+  color: var(--violet);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.admin-panel h2 {
+  margin: 0.55rem 0 0;
+  font-size: 1.3rem;
+}
+
+.admin-panel p:not(.admin-kicker) {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.role-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1.25rem;
+}
+
+.role-list span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.5rem 0.7rem;
+  background: oklch(96% 0.015 260);
+  color: var(--navy);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.endpoint-list {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  margin: 1.25rem 0 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--line);
+}
+
+.endpoint-list div {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.28fr) 1fr;
+  gap: 1rem;
+  padding: 0.85rem;
+  background: var(--surface);
+}
+
+.endpoint-list dt {
+  color: var(--violet);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.endpoint-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.92rem;
+}
+
 @media (max-width: 860px) {
   .site-header {
     align-items: flex-start;
@@ -315,6 +429,10 @@ h1 {
   }
 
   .foundation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-grid {
     grid-template-columns: 1fr;
   }
 }
