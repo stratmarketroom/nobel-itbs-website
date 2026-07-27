@@ -26,6 +26,7 @@ if (existsSync('supabase/config.toml')) {
     '[db]',
     '[auth]',
     '[storage]',
+    '[local_smtp]',
   ];
 
   for (const snippet of requiredSnippets) {

@@ -4,8 +4,8 @@ This project uses the Supabase CLI for local PostgreSQL, Auth, Storage, Studio, 
 
 ## Prerequisites
 
-- Node.js 20 or newer if using an npm-installed Supabase CLI.
-- Supabase CLI available as `supabase`.
+- Node.js 20 or newer.
+- Project dependencies installed with `npm install`.
 - Docker Desktop or another Docker-compatible runtime.
 
 Official Supabase CLI docs:
@@ -15,20 +15,33 @@ Official Supabase CLI docs:
 
 ## First Run
 
-1. Copy `.env.example` to `.env`.
-2. Start the local stack:
+1. Install dependencies:
+
+   ```sh
+   npm install
+   ```
+
+2. Confirm the project-local Supabase CLI works:
+
+   ```sh
+   npx supabase --version
+   ```
+
+3. Copy `.env.example` to `.env`.
+4. Start Docker Desktop or another Docker-compatible runtime.
+5. Start the local stack:
 
    ```sh
    npm run supabase:start
    ```
 
-3. Print local service URLs and keys:
+6. Print local service URLs and keys:
 
    ```sh
    npm run supabase:status
    ```
 
-4. Put the local anon key into `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env`.
+7. Put the local anon key into `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env`.
 
 Do not put production secrets into local files. Keep `SUPABASE_SERVICE_ROLE_KEY` server-only and never expose it through browser code.
 

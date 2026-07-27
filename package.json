@@ -16,5 +16,7 @@
     "supabase:reset": "supabase db reset",
     "supabase:test": "supabase test db"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "supabase": "^2.109.1"
+  }
 }
