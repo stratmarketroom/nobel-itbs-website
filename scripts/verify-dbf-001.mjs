@@ -55,9 +55,11 @@ for (const dir of ['supabase/migrations', 'supabase/tests']) {
 }
 
 if (existsSync('supabase/migrations')) {
-  const sqlFiles = readdirSync('supabase/migrations').filter((name) => name.endsWith('.sql'));
-  if (sqlFiles.length > 0) {
-    errors.push(`DBF-001 must not add SQL migrations yet. Found: ${sqlFiles.join(', ')}`);
+  const dbf001SqlFiles = readdirSync('supabase/migrations').filter(
+    (name) => name.endsWith('.sql') && name.includes('dbf_001'),
+  );
+  if (dbf001SqlFiles.length > 0) {
+    errors.push(`DBF-001 must not include DBF-001 SQL migrations. Found: ${dbf001SqlFiles.join(', ')}`);
   }
 }
 

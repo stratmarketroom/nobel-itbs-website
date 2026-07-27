@@ -36,9 +36,11 @@ if (existsSync('docs/development/MIGRATION_STANDARDS.md')) {
 }
 
 if (existsSync('supabase/migrations')) {
-  const sqlFiles = readdirSync('supabase/migrations').filter((name) => name.endsWith('.sql'));
-  if (sqlFiles.length > 0) {
-    errors.push(`DBF-002 must not add SQL migrations yet. Found: ${sqlFiles.join(', ')}`);
+  const dbf002SqlFiles = readdirSync('supabase/migrations').filter(
+    (name) => name.endsWith('.sql') && name.includes('dbf_002'),
+  );
+  if (dbf002SqlFiles.length > 0) {
+    errors.push(`DBF-002 must not include DBF-002 SQL migrations. Found: ${dbf002SqlFiles.join(', ')}`);
   }
 }
 

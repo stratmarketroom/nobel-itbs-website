@@ -12,3 +12,7 @@ DBF-001 intentionally does not create database objects. Future migrations must f
 - no programme, learner, credential, or integration tables before their assigned tickets.
 
 See `docs/development/MIGRATION_STANDARDS.md` before adding any `.sql` file.
+
+Current foundation migrations:
+
+- `20260727104215_dbf_003_internal_schema_and_extensions.sql`
