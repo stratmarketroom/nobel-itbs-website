@@ -36,6 +36,8 @@ type Enrollment = {
 
 type Phase = 'credentials' | 'factor' | 'enroll' | 'ready';
 
+const adminTotpFactorName = 'Nobel ITBS admin';
+
 function qrCodeSrc(svg: string) {
   if (svg.startsWith('data:')) {
     return svg;
@@ -100,7 +102,7 @@ export function AdminMfaLogin() {
   async function beginEnrollment() {
     const { data, error: enrollError } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
-      friendlyName: 'Nobel ITBS admin',
+      friendlyName: adminTotpFactorName,
     });
 
     if (enrollError) {
@@ -147,6 +149,20 @@ export function AdminMfaLogin() {
       setFactor(verifiedFactor);
       setPhase('factor');
       return;
+    }
+
+    const unfinishedFactors = factors.data.totp.filter(
+      (candidate) => candidate.friendly_name === adminTotpFactorName && candidate.status !== 'verified',
+    );
+
+    for (const unfinishedFactor of unfinishedFactors) {
+      const unenroll = await supabase.auth.mfa.unenroll({
+        factorId: unfinishedFactor.id,
+      });
+
+      if (unenroll.error) {
+        throw unenroll.error;
+      }
     }
 
     await beginEnrollment();

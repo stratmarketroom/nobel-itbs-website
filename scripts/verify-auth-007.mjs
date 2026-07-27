@@ -22,6 +22,7 @@ if (existsSync('components/admin-mfa-login.tsx')) {
     'signInWithPassword',
     'getAuthenticatorAssuranceLevel',
     'listFactors',
+    'unenroll',
     'enroll',
     'challengeAndVerify',
     '/api/v1/admin/me',
