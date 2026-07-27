@@ -1,7 +1,6 @@
 'use client';
 
 import { FormEvent, useMemo, useState } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 
@@ -294,12 +293,10 @@ export function AdminMfaLogin() {
               <p>Use 1Password, Google Authenticator, Authy, Apple Passwords, or another TOTP app.</p>
             </div>
             <div className="mfa-enrollment">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 alt="TOTP QR code for Nobel ITBS admin MFA enrollment"
-                height={256}
                 src={qrCodeSrc(enrollment.qrCode)}
-                unoptimized
-                width={256}
               />
               <div>
                 <span>Manual setup key</span>
