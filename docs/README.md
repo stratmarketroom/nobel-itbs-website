@@ -34,6 +34,7 @@ Current implementation notes:
 - `docs/development/MIGRATION_STANDARDS.md`
 - `docs/qa/AUTH-007_QA_REVIEW_2026-07-27.md`
 - `docs/development/DESIGN_SKILLS_SETUP.md`
+- `docs/development/DOCUMENTATION_MAINTENANCE.md`
 
 The v2 documents reflect product-owner decisions made after reviewing the original v1 specification pack.
 

@@ -8,7 +8,7 @@ This document records the current implementation state. It is not a replacement 
 
 Active branch:
 
-- `codex/auth-007-mfa-login-ui`
+- `codex/design-context-prep`
 
 Implemented and pushed branches:
 
@@ -24,6 +24,7 @@ Implemented and pushed branches:
 - `codex/fef-001-nextjs-scaffold`
 - `codex/auth-005-admin-user-management`
 - `codex/auth-007-mfa-login-ui`
+- `codex/design-context-prep`
 
 ## Supabase Dev Project
 
@@ -89,6 +90,23 @@ Implemented application foundation:
 - Foundational admin users page at `/admin/users`
 - Next.js App Router scaffold with English, Ukrainian, and Czech public locale routes
 
+## Design Context State
+
+Project-level design-skill context has been prepared:
+
+- `.agents/context/PRODUCT.md`
+- `.agents/context/DESIGN.md`
+- `docs/development/DESIGN_SKILLS_SETUP.md`
+
+The `impeccable` context loader confirms both product and design context are available.
+
+Installed design-oriented skills observed locally:
+
+- `impeccable`
+- `huashu-design`
+
+No project-specific design skill files were found in the known neighbouring project checked during setup.
+
 ## Dev Owner Bootstrap
 
 A first dev Owner has been created in the Supabase dev project.
@@ -126,6 +144,7 @@ The following checks passed during the latest implementation pass:
 - `npm audit --omit=dev`
 - Supabase remote `db push --dry-run`
 - Supabase remote `db push`
+- `impeccable` context loader: `hasProduct=true`, `hasDesign=true`
 
 ## Known Operational Notes
 
@@ -138,10 +157,9 @@ The following checks passed during the latest implementation pass:
 
 Recommended next step:
 
-- QA review `AUTH-007` edge cases, then formalize product/design context before deeper public-site and admin UI work.
+- Refine product/design direction from `.agents/context/PRODUCT.md` and `.agents/context/DESIGN.md`, then begin deeper public-site and admin UI design work.
 
 Other near-term candidates:
 
-- Refine `.agents/context/PRODUCT.md` and `.agents/context/DESIGN.md` before deeper public-site/admin design work.
 - Continue admin UI integration with real session state.
 - Start the next database/security module from the ticket pack.
