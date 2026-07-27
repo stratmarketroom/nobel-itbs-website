@@ -1,0 +1,15 @@
+{
+  "name": "nobel-itbs-website",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "verify:dbf-001": "node scripts/verify-dbf-001.mjs",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:reset": "supabase db reset",
+    "supabase:test": "supabase test db"
+  },
+  "devDependencies": {}
+}
