@@ -100,6 +100,7 @@ Verified behavior:
 - `/api/v1/admin/users` returns `403` until the Owner session satisfies MFA/AAL2.
 - Remote DB blocks deactivating the last active Owner and deleting the last Owner role assignment.
 - `/admin/login` renders the admin sign-in and MFA flow.
+- Manual browser smoke completed: dev Owner enrolled TOTP MFA through `/admin/login` and was redirected to `/admin/users`.
 
 This is expected because Owner requires MFA.
 
@@ -136,11 +137,10 @@ The following checks passed during the latest implementation pass:
 
 Recommended next step:
 
-- Complete manual MFA enrollment for the dev Owner through `/admin/login`, then repeat `/api/v1/admin/users` smoke test with an AAL2 session.
+- QA review `AUTH-007` edge cases, then formalize product/design context before deeper public-site and admin UI work.
 
 Other near-term candidates:
 
 - Create formal `PRODUCT.md` and `DESIGN.md` context before deeper public-site/admin design work.
-- QA review for `AUTH-007`.
 - Continue admin UI integration with real session state.
 - Start the next database/security module from the ticket pack.
