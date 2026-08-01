@@ -1,6 +1,6 @@
 # Implementation Status
 
-Last updated: 2026-07-27
+Last updated: 2026-08-01
 
 This document records the current implementation state. It is not a replacement for the v2 product and technical specifications.
 
@@ -8,7 +8,7 @@ This document records the current implementation state. It is not a replacement 
 
 Active branch:
 
-- `codex/design-context-prep`
+- `codex/ux-prototypes-public-pages`
 
 Implemented and pushed branches:
 
@@ -25,6 +25,7 @@ Implemented and pushed branches:
 - `codex/auth-005-admin-user-management`
 - `codex/auth-007-mfa-login-ui`
 - `codex/design-context-prep`
+- `codex/ux-prototypes-public-pages`
 
 ## Supabase Dev Project
 
@@ -107,6 +108,51 @@ Installed design-oriented skills observed locally:
 
 No project-specific design skill files were found in the known neighbouring project checked during setup.
 
+## Public UX Prototype State
+
+Release 1 public UX prototypes have been built and pushed on
+`codex/ux-prototypes-public-pages`.
+
+Implemented public prototype surfaces:
+
+- Home;
+- Programmes catalogue;
+- Programme Area landing pages;
+- Programme Type landing pages;
+- programme detail pages for the approved Release 1 programmes;
+- About Us;
+- Partnerships;
+- For Organisations;
+- Verify document;
+- Terms of Use, Privacy Policy, and Refund Policy pages;
+- minimal cookie-consent block;
+- system pages for 404, rate limit, temporary error, and access denied states.
+
+Approved prototype decision:
+
+- The programme question form is an inline block on programme pages, not a
+  modal.
+- The programme question topic uses a compact dropdown/select instead of
+  option chips.
+- The form remains a UX prototype. It does not yet submit to the
+  `contact_submissions` backend.
+
+Content and implementation source notes:
+
+- Public page content is aligned to v2 documentation and `docs/preparation/`.
+- Programme master copy is read from `docs/preparation/programmes/` for the
+  remaining approved programme pages.
+- `lib/i18n.ts` is still used by prototype components, but the approved content
+  source remains `docs/preparation/`.
+- Alina Yudina's photo remains pending and does not block the public prototype.
+
+Current design-stage status:
+
+- UX prototype layer for Release 1 public pages is complete enough for UI review.
+- UI polish and final UI system extraction are intentionally deferred until the
+  next design pass.
+- The UI system should be documented after reviewing the real pages, not before.
+
 ## Dev Owner Bootstrap
 
 A first dev Owner has been created in the Supabase dev project.
@@ -146,6 +192,15 @@ The following checks passed during the latest implementation pass:
 - Supabase remote `db push`
 - `impeccable` context loader: `hasProduct=true`, `hasDesign=true`
 
+Latest public prototype checks:
+
+- `npm run lint` passed.
+- `git diff --check` passed before commit.
+- `npm run build` compiled and passed TypeScript, then failed during prerender of
+  `/admin/login` because Supabase browser configuration was missing in the local
+  environment. This is an environment/configuration blocker, not a public
+  prototype TypeScript error.
+
 ## Known Operational Notes
 
 - Local Supabase via Docker has not been run because a Docker-compatible runtime was not available.
@@ -157,7 +212,11 @@ The following checks passed during the latest implementation pass:
 
 Recommended next step:
 
-- Refine product/design direction from `.agents/context/PRODUCT.md` and `.agents/context/DESIGN.md`, then begin deeper public-site and admin UI design work.
+- Run the UI review/polish pass across the approved public UX prototype pages.
+- After the page-by-page UI pass is approved, extract the concrete UI system
+  rules into the design documentation.
+- Implement real public contact submission handling for the programme question
+  block through the approved `/api/v1/public/contact-submissions` path.
 
 Other near-term candidates:
 
