@@ -114,9 +114,9 @@ Release 1 Programme Areas:
 
 - Business & Management;
 - Technology & Innovation;
-- Human & Behavioral Sciences.
+- Psychology & Human.
 
-Human & Behavioral Sciences description should clearly mention psychology.
+`Psychology & Human` is the approved public label for the third area.
 
 Each Programme Area page has:
 
@@ -164,6 +164,21 @@ Purpose:
 - explain value and outcomes;
 - lead to Leeloo application/payment;
 - provide secondary question path.
+
+Launch content rule:
+
+- AI Production, General Psychology, Child Psychology, Neuroplastic Reconstruction, and Space Business launch together;
+- AI Production, General Psychology, Child Psychology, and Neuroplastic Reconstruction are taught in Ukrainian;
+- Space Business is taught in Ukrainian and English;
+- every programme detail page is fully presented in EN, UA, and CZ;
+- each localized page states its actual instruction language or languages explicitly;
+- AI Production is presented under the `Mini-MBA` Programme Type;
+- General Psychology, Child Psychology, and Neuroplastic Reconstruction are presented under the `Professional development course` Programme Type. The Ukrainian public category label is `Програма професійного підвищення кваліфікації`; certificate information is presented separately as the learning credential;
+- Neuroplastic Reconstruction is the approved short public name;
+- General Psychology, Child Psychology, and Space Business are continuously available distance programmes hosted in Moodle;
+- Child Psychology has no practical classes, placement, internship, clinic practice, or client work; the University of Alfred Nobel Mental Health Clinic is identified only as the programme-development base;
+- formal dates from source programme documents are omitted from public copy;
+- until programme Leeloo URLs are supplied, programme pages use the defined question/contact fallback.
 
 Page model:
 
@@ -214,7 +229,12 @@ URLs:
 
 Purpose:
 
-- offer cooperation for courses, experts, online schools.
+- sell Nobel ITBS B2B infrastructure services to online schools, experts,
+  programme authors, and educational projects;
+- present partner-programme onboarding and structuring;
+- explain support for document models, supplements, registration, and
+  verification;
+- do not present courses or team training as the For Organisations offer.
 
 Primary CTA:
 
@@ -272,10 +292,21 @@ No public search by surname/name in Release 1.
 
 Legal pages are content-managed:
 
-- Privacy Policy;
-- Terms and Conditions;
-- Refund Policy;
-- Cookie Policy, if required.
+- Privacy Policy / `Політика конфіденційності`;
+- Terms of Use (Public Contract) / `Умови (Публічний договір)`;
+- Refund Policy / `Політика повернення`.
+
+All three are mandatory full website documents in EN, UA, and CZ. The supplied
+CZ and EN texts may be translated into Ukrainian. Shortened versions displayed
+in Leeloo link to the full pages and do not replace them.
+
+All three legal pages use `noindex, follow`, are excluded from the XML sitemap,
+and use only minimal technical titles/descriptions where needed.
+
+Release 1 has no separate Cookie Policy page. A minimal localized cookie-consent
+block appears before non-essential cookies load and offers two actions:
+`Accept` and `Decline`. The decision is stored. A full Cookie Policy page and
+granular settings follow after the lawyer provides the approved text.
 
 Use the language prefix model.
 

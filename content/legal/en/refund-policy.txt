@@ -1,0 +1,40 @@
+REFUND POLICY
+for the provision of online educational courses by NOBEL ITBS s.r.o.
+This document sets out the rules for withdrawal from the contract and refunds in connection with the purchase of online courses and digital content provided by NOBEL ITBS s.r.o., Company ID No.: 23465492, with its registered office at Vrážská 143, Radotín, 153 00 Prague 5, Czech Republic, registered in the Commercial Register maintained by the Municipal Court in Prague, File No. C 427524 (the “Provider”). This document is supplementary to the Terms of Use; in the event of any conflict, the Terms of Use shall prevail.
+1. When a refund may be requested
+1.1 If the customer is a consumer, they generally have the right to withdraw from a distance contract within 14 days from the date of conclusion of the contract, provided that the provision of the course/digital content has not yet begun.
+1.2 A refund may be requested in the following situations:
+a) the customer has paid the price, but the course has not been made available to them (for example, access credentials have not been provided, the account has not been activated, or the materials have not been made available), and at the same time the customer requests cancellation of the order within the period specified in Article 1.1;
+b) a duplicate payment has been made or there has been an obvious error in the amount charged;
+c) the Provider is unable to provide the performance (for example due to long-term unavailability or cancellation of the course); in such a case, the matter shall be handled according to the specific circumstances and the customer’s rights arising from defective performance.
+2. When a refund is not available (commencement of course provision)
+2.1 The customer acknowledges that the course constitutes digital content / digital performance, which is generally made available immediately after payment of the price.
+2.2 Once the provision of the course has begun, the consumer loses the right to withdraw from the contract and request a refund based on withdrawal. The commencement of course provision means in particular:
+a) activation of the user account for the course; or
+b) sending access credentials to the platform (LMS); or
+c) making digital materials available for download; or
+d) any other way of making the course content available to the customer.
+2.3 This does not affect the customer’s right to make a complaint or exercise rights arising from defective performance if the course does not function properly, is not available, or does not correspond to the agreed characteristics (see Article 4).
+3. How to request a refund
+3.1 Refund requests should be sent by e-mail to: info@nobel-itbs.eu.
+3.2 The request should include at least:
+	•	the customer’s name and the contact e-mail address used for the order,
+	•	identification of the payment (date, amount, currency, and, if applicable, transaction number),
+	•	the name of the course,
+	•	the reason for the request (for example withdrawal before access was granted / duplicate payment / failure to provide access).
+3.3 The Provider may request additional information necessary to verify the payment and the order.
+4. Technical issues, complaints and defective performance
+4.1 If the customer is unable to use the course due to technical problems, or if the course does not correspond to the Course Description, the customer is advised to first contact support at info@nobel-itbs.eu and describe the issue (device, browser, screenshot of the error, time of occurrence).
+4.2 The Provider will attempt to remedy the defect, provide substitute access, or propose another solution. If the defect cannot be remedied within a reasonable period of time, the customer may be entitled to an appropriate discount or to withdraw from the contract in accordance with applicable law and the Terms of Use.
+4.3 The provisions of this Article shall also apply after the provision of the course has begun; this is a different regime from a “refund due to withdrawal”.
+5. Deadline and method of refund
+5.1 If the refund request is justified, the Provider shall refund the money without undue delay, no later than within the period required by applicable law.
+5.2 The refund will be made using the same payment method that was used to make the original payment, unless agreed otherwise.
+5.3 The Provider shall not be responsible for the time required to process the refund on the part of the bank or payment service provider.
+6. Business customers
+6.1 In the case of customers who are not consumers (business customers), withdrawal and refunds shall be governed by the contract, these documents, and the applicable legal regulations; consumer protection rules (including the 14-day withdrawal period) shall not apply.
+7. Final provisions
+7.1 This document is effective as of 1 March 2026.
+7.2 This document is available on the Provider’s website.
+7.3 In the event of any conflict between this document and the Terms of Use, the Terms of Use shall prevail.
+

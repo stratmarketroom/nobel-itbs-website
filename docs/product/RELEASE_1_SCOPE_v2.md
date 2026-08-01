@@ -26,7 +26,9 @@ Release 1 must launch a professional, content-managed education platform that:
 - About Us;
 - Partnerships;
 - For Organisations;
-- Legal pages;
+- three mandatory full legal pages: Privacy Policy, Terms of Use (Public
+  Contract), and Refund Policy;
+- minimal localized cookie-consent block with accept/decline actions;
 - Verify document pages;
 - Contact / programme question forms.
 

@@ -1,0 +1,64 @@
+PRIVACY POLICY
+of the company NOBEL ITBS s.r.o.
+This Privacy Policy explains how NOBEL ITBS s.r.o. (“we”, “us” or the “Controller”) processes the personal data of customers and users of online courses (the “User” or “you”) in connection with the sale and provision of digital courses.
+1. Who is the Controller?
+The controller of personal data is: NOBEL ITBS s.r.o. Company ID No.: 23465492 Registered office: Vrážská 143, Radotín, 153 00 Prague 5, Czech Republic Registered in the Commercial Register maintained by the Municipal Court in Prague, File No. C 427524 Contact e-mail: info@nobel-itbs.eu
+2. What Personal Data Do We Process?
+We may process the following categories of personal data:
+a) Identification and contact data Your first name, surname, e-mail address, and any other information you provide to us when communicating with us.
+b) Order and contract-related data Information about the course you purchase, the date of purchase, price, currency, order status, and other data necessary for record-keeping and issuing related documents.
+c) Course usage data (study and operational data) For example, information about your progress in the course and its completion, such as completed modules, test results and completion status, as well as technical data related to log-in and the operation of the platform (logs), to the extent necessary.
+d) Communication data The content of communications and related metadata if you contact us, for example by e-mail, through support requests or in connection with complaints.
+e) Payment data We do not process or store payment data such as payment card details. Such data is processed directly by the payment service provider. We typically receive only a payment confirmation and transaction identifiers necessary for record-keeping and handling related requests.
+3. Why Do We Process Personal Data?
+We process personal data for the following purposes:
+a) Entering into and performing the contract This includes creating access to the course, managing the user account, making course materials available, and ensuring that the service functions properly.
+b) Customer support and communication This includes handling inquiries, complaints, technical requests, and communication related to the course.
+c) Issuing a certificate If a certificate is included in the course, we process the data necessary for issuing and recording that certificate.
+d) Compliance with legal obligations In particular, this includes accounting and tax obligations, such as recording transactions and issuing and archiving accounting documents, as well as compliance with obligations towards public authorities.
+e) Protection of our legal claims, dispute resolution and security This includes protection against misuse, fraud prevention, the enforcement of legal claims, dispute resolution, and maintaining security records related to the operation of the service.
+f) Marketing communications We may send you information about our courses and similar services. If you are our customer, we may do so based on our legitimate interests, and you can unsubscribe at any time in an easy way, for example by using the unsubscribe link in an e-mail or by contacting us at info@nobel-itbs.eu. Where required by law, especially in relation to persons who are not our customers, we will send marketing communications only based on consent, which may be withdrawn at any time.
+4. What Are the Legal Bases for Processing?
+We process personal data based on the following legal grounds under Article 6 GDPR:
+	•	Performance of a contract under Article 6(1)(b) GDPR, in particular for creating access to the course, maintaining the user account, providing the service, communicating where necessary, and, where applicable, issuing a certificate.
+	•	Compliance with a legal obligation under Article 6(1)(c) GDPR, in particular for meeting accounting and tax obligations.
+	•	Legitimate interests under Article 6(1)(f) GDPR, in particular for the protection of legal claims, dispute resolution, security, prevention of misuse, and sending marketing communications to existing customers to the extent permitted by law.
+	•	Consent under Article 6(1)(a) GDPR, where required, for example for marketing communications sent to persons who are not our customers or for other optional processing activities. Consent may be withdrawn at any time.
+5. Who Do We Share Personal Data With?
+We may share personal data with the following categories of recipients, always only to the extent necessary:
+	•	payment service providers for payment processing,
+	•	providers of communication services, such as e-mail distribution and customer communication tools,
+	•	providers of technical services, such as platform or LMS operators, hosting providers and IT administrators,
+	•	content providers or partner organisations, such as a university, where necessary to make the course available and/or issue a certificate,
+	•	legal and professional advisers, such as lawyers or auditors, to the extent necessary to protect our rights,
+	•	public authorities, where required by law or where necessary for the establishment, exercise or defence of legal claims.
+6. Do We Transfer Personal Data Outside the EU/EEA?
+Some of our suppliers may process personal data outside the EU/EEA. Where such transfers take place, we ensure that appropriate safeguards in accordance with the GDPR are in place, for example standard contractual clauses or other applicable transfer mechanisms, to ensure an adequate level of protection for personal data.
+7. How Long Do We Retain Personal Data?
+We retain personal data only for as long as necessary for the relevant purposes of processing, in particular:
+	•	Order data and accounting documents are retained for the period required by applicable accounting and tax laws.
+	•	User account and course usage data, including study data, are retained for the duration of access to the course and thereafter for the period necessary to protect legal claims and resolve disputes; typically for 3 years after access to the course ends, unless it is necessary in a specific case to retain the data for longer, for example due to an ongoing dispute, complaint or other proceedings.
+	•	Customer communications are retained for the period necessary to handle the relevant request and thereafter for a reasonable period in order to document the communication and protect legal claims.
+	•	Marketing communications are retained for as long as there is a lawful basis for sending them, but no longer than until you unsubscribe, object to such processing, or withdraw your consent where consent was required.
+8. What Rights Do You Have?
+Under the GDPR, you have the following rights in particular:
+	•	the right of access to your personal data,
+	•	the right to rectification of inaccurate personal data,
+	•	the right to erasure, if the relevant legal conditions are met,
+	•	the right to restriction of processing,
+	•	the right to data portability, where applicable,
+	•	the right to object to processing based on legitimate interests, including objection to direct marketing,
+	•	the right to withdraw consent where processing is based on consent,
+	•	the right to lodge a complaint with the supervisory authority.
+	•	In the Czech Republic, the supervisory authority is the Office for Personal Data Protection.
+You may exercise your rights by contacting us at info@nobel-itbs.eu. We will handle your request within the time limits set out in the GDPR.
+9. Is the Provision of Personal Data Mandatory?
+The provision of certain personal data is necessary for entering into and performing the contract, in particular your e-mail address and order identification details. If you do not provide such data, we may not be able to grant access to the course or provide related services.
+10. How Do We Protect Personal Data?
+We implement appropriate technical and organisational measures to protect personal data, in particular access restrictions, system security measures, and access rights management. In relation to payment data, we rely on the security measures implemented by the payment service provider.
+11. Changes to This Privacy Policy
+We may update this Privacy Policy from time to time, if the scope of our services or the suppliers we use changes. The current version is always available on the Provider’s website.
+12. Contact Details
+If you have any questions or wish to exercise your rights, please contact us at: info@nobel-itbs.eu
+Effective date: 1 March 2026
+

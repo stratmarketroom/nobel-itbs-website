@@ -146,7 +146,7 @@ Seed:
 
 - `business-management`;
 - `technology-innovation`;
-- `human-behavioral-sciences`.
+- `psychology-human`.
 
 ### `programme_area_translations`
 
@@ -608,4 +608,3 @@ Remove or replace:
 - partner fields in credential verification;
 - single `user_profiles.role`;
 - `/uk` and `/cs` language assumptions.
-

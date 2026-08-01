@@ -1,0 +1,83 @@
+TERMS OF USE (TERMS AND CONDITIONS)
+for the provision of online educational courses by NOBEL ITBS s.r.o.
+These Terms of Use (the “Terms”) govern the rights and obligations between NOBEL ITBS s.r.o., as the seller/provider of digital content, and customers when ordering and using online educational courses (the “Course”). The Terms form part of the distance contract concluded through the Provider’s web interface.
+1. Provider identification and contact details
+1.1 The provider and seller is NOBEL ITBS s.r.o., Company ID No.: 23465492, with its registered office at Vrážská 143, Radotín, 153 00 Prague 5, Czech Republic, registered in the Commercial Register maintained by the Municipal Court in Prague, File No. C 427524 (the “Provider”).
+1.2 Contact e-mail: info@nobel-itbs.eu.
+1.3 These Terms are available on the Provider’s website, and the Buyer has the opportunity to save and print them before submitting the order.
+2. Definitions
+2.1 “Buyer” means a natural person or legal entity entering into a contract with the Provider for the provision of the Course.
+2.2 “Consumer” means a natural person who, when concluding and performing the contract, is not acting within the scope of their business activity or profession.
+2.3 “Business Customer” means a person acting within the scope of their business activity or profession; in the case of a legal entity, it is presumed to act as a business customer.
+2.4 “Course” means an online educational programme provided as digital content and/or a digital service, in particular in the form of access to educational materials (such as videos, texts, tests, assignments) through a third-party platform (such as Moodle/LMS) and/or by making digital materials available for download, in accordance with the Course Description.
+2.5 “Platform” means the online environment (such as an LMS) through which the Course is made available to the Buyer.
+2.6 “User Account” means the Buyer’s account on the Platform or in the Provider’s system through which the Buyer uses the Course.
+2.7 “Access Credentials” means the data enabling login to the User Account.
+2.8 “Partner / Content Provider” means a third party (such as a partner university) that owns the intellectual property rights to the Course content (the “Content Provider”).
+2.9 “Course Description” means the description of the Course published on the Provider’s website (in particular its content, scope, access period, price and any other conditions).
+2.10 “Contract” means the contract concluded between the Provider and the Buyer on the basis of the Order under these Terms.
+3. Course information and technical requirements
+3.1 The Course, its content, scope, price, access period and other parameters are specified in the Course Description.
+3.2 The Buyer acknowledges that the Course is provided online and that its use generally requires an internet connection, a compatible device (PC/tablet/mobile phone), an up-to-date web browser and a functioning e-mail address.
+3.3 The Provider shall use reasonable efforts to ensure that the Course is available. However, the Buyer acknowledges that temporary limitations in availability may occur due to maintenance, updates, force majeure or circumstances on the part of third parties (such as the provider of the Platform/hosting).
+4. Order and conclusion of the contract
+4.1 The Buyer places an order for the Course through the Provider’s web interface.
+4.2 Before submitting the order, the Buyer has the opportunity to review and correct the entered data.
+4.3 By submitting the order, the Buyer confirms that they have read and agree to these Terms.
+4.4 The Contract is concluded at the moment when the Provider either (i) confirms receipt of the order to the Buyer by e-mail, or (ii) makes the Course available to the Buyer (for example by sending access credentials or activating the User Account), whichever occurs first.
+4.5 The Provider is not obliged to conclude the Contract, in particular in the event of an obvious pricing error, misuse of the system, suspicion of fraudulent conduct, or if the Buyer has previously materially breached these Terms.
+5. Price, payment terms and currency
+5.1 The price of the Course is stated in the Course Description.
+5.2 As of the effective date of these Terms, the Provider is not a VAT payer. If the Provider becomes a VAT payer in the future, Course prices shall be stated and charged in accordance with applicable law, i.e. either (i) as prices including VAT, or (ii) as prices excluding VAT, together with the applicable VAT amount and rate, always according to how the price of the particular Course is presented in the Course Description.
+5.3 Payment shall be made cashlessly through a payment gateway (such as Stripe) or by another method specified in the ordering process.
+5.4 Payment is deemed made at the moment of confirmation of a successful transaction by the payment gateway or upon crediting the amount to the Provider’s account (depending on the selected payment method).
+5.5 If the price is displayed indicatively in another currency (such as UAH), the Buyer acknowledges that the final conversion and any related fees are determined by the issuing bank of the payment card or the payment service provider. The Provider shall not be liable for exchange rate differences or fees associated with currency conversion.
+5.6 The Provider does not store the Buyer’s payment details; such data is processed directly by the payment service provider.
+6. Making the Course available, user account and cooperation
+6.1 After payment of the price, the Provider shall make the Course available to the Buyer without undue delay after receipt of payment, and no later than within 24 hours, unless the Course Description states otherwise.
+6.2 The Buyer is obliged to provide truthful and complete information necessary for the creation of the User Account and for the delivery of information (in particular an e-mail address).
+6.3 The Buyer is obliged to protect the Access Credentials and prevent them from being disclosed to third parties. The Buyer is responsible for all use of the Course through their account.
+6.4 The Provider shall not be liable for failure to deliver the Access Credentials due to an incorrectly entered e-mail address, the Buyer’s mailbox settings, spam filtering, or circumstances on the Buyer’s side.
+7. Course access period and changes to the Course/Platform
+7.1 The access period for the Course is stated in the Course Description. Unless stated otherwise, access is provided for 12 months from the date the Course is made available.
+7.2 The Provider is entitled to make reasonable changes to the Course and the Platform (for example updates, changes in the order of modules, or changes in the technical solution), provided that this does not result in a substantial deterioration in the availability or functionality of the Course for the Buyer.
+7.3 If such a change substantially worsens the Buyer’s ability to use the Course, the Buyer shall have rights arising from defective performance under Article 10 of these Terms.
+8. Licence and conditions of use of content (intellectual property)
+8.1 The content of the Course (in particular videos, texts, presentations, methodologies, tests, graphics, question databases and other materials) is protected by intellectual property laws and belongs to the Content Provider and/or the Provider, unless stated otherwise.
+8.2 The Provider grants the Buyer a non-exclusive, non-transferable, territorially unlimited and time-limited licence to use the Course content solely for the Buyer’s personal educational purposes, for the duration of access to the Course.
+8.3 In particular, the Buyer may not:
+a) make copies, screen recordings, reproductions, or otherwise reproduce the Course content beyond ordinary personal use;
+b) share Access Credentials, allow third parties to use the Course, or “share an account”;
+c) publish, distribute, sell, rent, sublicense, or otherwise commercially exploit the Course content;
+d) circumvent technical protection measures, interfere with the Platform, or compromise its security;
+e) extract the database of test questions or Course content by automated means.
+8.4 A breach of this Article constitutes a material breach of the Contract. In such a case, the Provider is entitled to restrict or block the Buyer’s access to the Course, even without prior notice if the nature of the breach so requires. This shall not affect the Provider’s claims for damages.
+9. Certificate (if included in the Course)
+9.1 If the Course Description states that a certificate is included in the Course, the certificate shall be issued under the conditions specified in the Course Description.
+9.2 The Buyer acknowledges that the certificate is a confirmation of completion of the Course within the Provider’s/Content Provider’s system and may not constitute a public-law qualification or recognition under applicable law, unless expressly stated otherwise.
+9.3 The Provider is entitled not to issue the certificate or to invalidate it if fraudulent conduct is detected (for example account misuse or manipulation of tests).
+10. Liability for defects in digital content and complaints
+10.1 The Course is provided as digital content. The Provider is liable, in particular to the Consumer, for ensuring that at the time the Course is made available and throughout the access period it corresponds to the agreed characteristics and is free from defects.
+10.2 A defect shall mean in particular a situation where the Course is not available, does not function in the usual manner, does not correspond to the Course Description, or cannot be used on ordinary devices when the technical requirements are met.
+10.3 The Buyer shall submit a complaint without undue delay by e-mail to info@nobel-itbs.eu and shall include a description of the defect, identification of the order, and, where applicable, materials allowing the defect to be reproduced.
+10.4 The Provider shall handle the complaint within a reasonable time; in the case of a Consumer, no later than within the time limits set by applicable law. The Provider may remedy the defect, provide substitute access, grant a reasonable discount on the price, or allow withdrawal from the Contract, if required by the nature of the defect and applicable law.
+10.5 The Buyer is obliged to provide the Provider with reasonable cooperation necessary for the verification and remedy of the defect.
+11. Withdrawal from the contract, cancellations and refunds
+11.1 If the Buyer is a Consumer, they generally have the right to withdraw from the Contract concluded at a distance within 14 days from the date of conclusion of the Contract, provided that provision of the Course has not yet begun.
+11.2 The Buyer – Consumer acknowledges and is hereby expressly informed that the Course constitutes digital content which is generally made available immediately after payment of the price. By submitting the order and paying the price, the Consumer expressly requests that the Provider begin providing the Course before the expiry of the withdrawal period and acknowledges that at the moment the provision of the Course begins (i.e. when the Course is made available, in particular by activation of the User Account, sending of the Access Credentials or making digital materials available), the Consumer loses the right to withdraw from the Contract.
+11.3 If the Consumer withdraws from the Contract at a time when provision of the Course within the meaning of Article 11.2 has not yet begun, the Provider shall refund the received funds without undue delay, no later than within the period set by applicable law, using the same payment method that was used to make the original payment, unless the parties agree otherwise.
+11.4 Details regarding refunds and the practical procedure are set out in the document “Refund Policy / Podmínky vrácení peněz” available on the Provider’s website. In the event of any conflict between the Refund Policy and these Terms, these Terms shall prevail.
+11.5 In the case of Business Customers, the right of withdrawal shall be governed by law and these Terms; the provisions on consumer withdrawal shall not apply.
+12. Personal data protection
+12.1 The Provider processes the personal data of Buyers in accordance with applicable law, in particular the GDPR. Information on the processing of personal data is set out in the document “Privacy Policy / Zásady ochrany osobních údajů” available on the Provider’s website.
+12.2 The Buyer acknowledges that, for the purpose of making the Course available on the Platform and, where applicable, for issuing a certificate, it may be necessary to transfer certain data to the Content Provider or the operator of the Platform, to the extent necessary for performance of the Contract.
+13. Language versions
+13.1 These Terms may be made available in Czech and in other language versions. In the event of any conflict between language versions, the Czech version shall prevail.
+14. Final provisions, governing law and dispute resolution
+14.1 The Contract and these Terms shall be governed by the laws of the Czech Republic.
+14.2 The Provider and the Buyer undertake to resolve any mutual disputes primarily amicably.
+14.3 If the Buyer is a Consumer, they have the right to out-of-court resolution of a consumer dispute. The competent body for out-of-court dispute resolution is the Czech Trade Inspection Authority (ČOI). Details are available on the ČOI website.
+14.4 If any provision of these Terms is or becomes invalid or ineffective, this shall not affect the validity of the remaining provisions.
+14.5 The Provider is entitled to amend these Terms to a reasonable extent; the change shall be announced in an appropriate manner. The version effective at the time of conclusion of the Contract shall be binding on the Buyer, unless applicable law requires otherwise.
+14.6 These Terms shall become effective on 1 March 2026.
+

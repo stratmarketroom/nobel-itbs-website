@@ -1,0 +1,22 @@
+PODMÍNKY VRÁCENÍ PENĚZ
+pro poskytování online vzdělávacích kurzů NOBEL ITBS s.r.o.
+Tento dokument stanoví pravidla pro odstoupení od smlouvy a vrácení peněz v souvislosti s nákupem online kurzů a digitálního obsahu poskytovaného společností NOBEL ITBS s.r.o., IČO: 23465492, se sídlem Vrážská 143, Radotín, 153 00 Praha 5, zapsanou v obchodním rejstříku vedeném Městským soudem v Praze, sp. zn. C 427524 („Poskytovatel“). Tento dokument je doplňkový k Podmínkám používání; v případě rozporu mají přednost Podmínky používání.
+1. Kdy lze žádat o vrácení peněz
+1.1 Pokud je zákazník spotřebitelem, má obecně právo odstoupit od smlouvy uzavřené na dálku do 14 dnů od uzavření smlouvy, pokud ještě nebylo zahájeno poskytování kurzu/digitálního plnění. 1.2 Vrácení peněz je možné zejména v těchto situacích: a) zákazník uhradil cenu, ale kurz mu nebyl zpřístupněn (např. nebyly poskytnuty přístupové údaje, nebyl aktivován účet, nebyly zpřístupněny materiály), a zároveň požádá o zrušení objednávky ve lhůtě dle čl. 1.1; b) došlo k duplicitní platbě nebo zjevné chybě při stržení částky; c) Poskytovatel nemůže plnění poskytnout (např. dlouhodobá nedostupnost, zrušení kurzu) – v takovém případě se postupuje podle konkrétních okolností a práva zákazníka z vadného plnění.
+2. Kdy vrácení peněz možné není (zahájení poskytování kurzu)
+2.1 Zákazník bere na vědomí, že kurz je digitálním plněním, které je zpravidla zpřístupňováno bezprostředně po úhradě ceny. 2.2 Okamžikem zahájení poskytování kurzu zaniká spotřebiteli právo odstoupit od smlouvy a žádat vrácení peněz z důvodu odstoupení. Zahájením poskytování kurzu se rozumí zejména: a) aktivace uživatelského účtu pro kurz, nebo b) zaslání přístupových údajů k platformě (LMS), nebo c) zpřístupnění digitálních materiálů ke stažení, nebo d) jiné zpřístupnění obsahu kurzu zákazníkovi. 2.3 Tím není dotčeno právo zákazníka uplatnit reklamaci nebo práva z vadného plnění, pokud kurz nefunguje, není dostupný nebo neodpovídá sjednaným vlastnostem (viz čl. 4).
+3. Jak požádat o vrácení peněz
+3.1 Žádost o vrácení peněz zašlete na e-mail info@nobel-itbs.eu. 3.2 V žádosti uveďte alespoň:
+	•	jméno a kontaktní e-mail použitý při objednávce,
+	•	identifikaci platby (datum, částka, měna, případně číslo transakce),
+	•	název kurzu,
+	•	důvod žádosti (např. odstoupení před zpřístupněním / duplicitní platba / nedodání přístupu). 3.3 Poskytovatel může požádat o doplnění údajů nezbytných k ověření platby a objednávky.
+4. Technické problémy, reklamace a vadné plnění
+4.1 Pokud zákazník kurz nemůže užívat z důvodu technických problémů nebo kurz neodpovídá Popisu kurzu, doporučuje se nejprve kontaktovat podporu na info@nobel-itbs.eu a popsat problém (zařízení, prohlížeč, screenshot chyby, čas výskytu). 4.2 Poskytovatel se pokusí vadu odstranit, poskytnout náhradní přístup nebo navrhnout jiné řešení. Pokud vadu nelze odstranit v přiměřené době, může mít zákazník nárok na přiměřenou slevu nebo odstoupení od smlouvy podle právních předpisů a Podmínek používání. 4.3 Ustanovení tohoto článku platí i po zahájení poskytování kurzu; jde o jiný režim než „vrácení z důvodu odstoupení“.
+5. Lhůta a způsob vrácení peněz
+5.1 Pokud je žádost o vrácení peněz oprávněná, Poskytovatel vrátí peníze bez zbytečného odkladu, nejpozději ve lhůtě stanovené právními předpisy. 5.2 Peníze budou vráceny stejným způsobem, jakým byla platba přijata, není-li dohodnuto jinak. 5.3 Poskytovatel nenese odpovědnost za dobu zpracování vrácení platby na straně banky nebo poskytovatele platebních služeb.
+6. Podnikatelé
+6.1 U zákazníků, kteří nejsou spotřebiteli (podnikatelé), se odstoupení a vrácení peněz řídí smlouvou, těmito dokumenty a příslušnými právními předpisy; spotřebitelská pravidla (včetně 14denní lhůty) se neuplatní.
+7. Závěrečná ustanovení
+7.1 Tento dokument je účinný od 1. 3. 2026. 7.2 Tento dokument je dostupný na webových stránkách Poskytovatele. 7.3 V případě rozporu mezi tímto dokumentem a Podmínkami používání mají přednost Podmínky používání.
+

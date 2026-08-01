@@ -89,7 +89,9 @@ Scope:
 - About Us;
 - Partnerships;
 - For Organisations;
-- Legal pages;
+- three mandatory full legal pages: Privacy Policy, Terms of Use (Public
+  Contract), and Refund Policy;
+- minimal localized cookie-consent block with accept/decline actions;
 - Site Settings;
 - public navigation without News.
 
@@ -121,7 +123,7 @@ Scope:
 
 Acceptance:
 
-- Programme Areas: Business & Management, Technology & Innovation, Human & Behavioral Sciences;
+- Programme Areas: Business & Management, Technology & Innovation, Psychology & Human;
 - Programme Types: Certificate programme, Mini-MBA, Professional development course;
 - programme pages are sales-oriented;
 - pricing block hides when no prices exist;
@@ -269,4 +271,3 @@ Candidates for after Release 1:
 - public programme filters;
 - public name-based verification if legally and privacy-approved;
 - old PDF version retention if audit requirements grow.
-
