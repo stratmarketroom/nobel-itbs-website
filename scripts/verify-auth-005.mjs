@@ -6,6 +6,8 @@ const requiredPaths = [
   'app/api/v1/admin/users/[id]/route.ts',
   'app/api/v1/admin/users/[id]/roles/route.ts',
   'app/admin/users/page.tsx',
+  'components/admin-user-management.tsx',
+  'lib/admin/types.ts',
   'lib/supabase/server.ts',
   'lib/admin/user-management.ts',
   'lib/api/responses.ts',
@@ -19,6 +21,22 @@ const errors = [];
 for (const path of requiredPaths) {
   if (!existsSync(path)) {
     errors.push(`Missing required path: ${path}`);
+  }
+}
+
+if (existsSync('components/admin-user-management.tsx')) {
+  const component = readFileSync('components/admin-user-management.tsx', 'utf8');
+  for (const snippet of [
+    "fetch('/api/v1/admin/users'",
+    "method: 'POST'",
+    "method: 'PATCH'",
+    "method: 'PUT'",
+    "method: 'DELETE'",
+    'Only Owner can change Owner or Super Admin accounts.',
+    'At least one role is required.',
+    'MFA verified',
+  ]) {
+    if (!component.includes(snippet)) errors.push(`User management UI missing required behavior: ${snippet}`);
   }
 }
 
@@ -73,6 +91,7 @@ if (existsSync('lib/admin/user-management.ts')) {
     "rpc('update_admin_profile'",
     "rpc('assign_admin_roles'",
     "rpc('remove_admin_roles'",
+    'email_confirm: true',
   ];
 
   for (const snippet of requiredSnippets) {

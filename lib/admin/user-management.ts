@@ -5,6 +5,9 @@ import {
   getSupabaseAdminClient,
   getSupabaseRequestClient,
 } from '@/lib/supabase/server';
+import type { AdminUserSummary } from './types';
+
+export type { AdminUserSummary } from './types';
 
 type UserRoleRow = {
   user_id: string;
@@ -21,18 +24,6 @@ type UserProfileRow = {
   created_at: string;
   updated_at: string;
   user_roles: UserRoleRow[] | null;
-};
-
-export type AdminUserSummary = {
-  id: string;
-  email: string | null;
-  fullName: string | null;
-  isActive: boolean;
-  isOwner: boolean;
-  mfaRequired: boolean;
-  roles: AppRole[];
-  createdAt: string;
-  updatedAt: string;
 };
 
 export type CreateAdminUserInput = {
@@ -100,7 +91,7 @@ export async function createAdminUser(context: AdminContext, input: CreateAdminU
   const { data: createdUser, error: createError } = await adminClient.auth.admin.createUser({
     email: input.email,
     password: input.temporaryPassword,
-    email_confirm: false,
+    email_confirm: true,
     user_metadata: input.fullName ? { full_name: input.fullName } : undefined,
   });
 

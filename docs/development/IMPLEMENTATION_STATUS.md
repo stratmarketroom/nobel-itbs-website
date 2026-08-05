@@ -28,7 +28,7 @@ All 26 local SQL migrations through `20260805140000_cnt_005_legal_pages.sql` are
 - Programme areas, types, five programme records, runs, flexible pricing, public catalogue, programme/area/type pages, redirects, and programme-question flow.
 - Partner and expert records and their public Partnerships rendering.
 - Private contact-submission storage, protected manager list/status workflow, audit logging, rate-limit/CAPTCHA hooks, and Google Workspace notification code.
-- Manager interfaces for content pages, site settings, and contact submissions.
+- Manager interfaces for users and roles, content pages, site settings, and contact submissions.
 
 ## Verified in Dev
 
@@ -53,7 +53,6 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 
 ## Important Remaining Product Work
 
-- The existing `/admin/users` page is still a foundation/route reference, not a complete user-management interface.
 - Programmes, partners, and experts have secure data/public layers but no manager CRUD interface yet.
 - The structured page editor exposes controlled JSON; it is functional but not yet a manager-friendly field/form experience.
 - Learners, credentials, issuance/email, and public credential verification have not started.

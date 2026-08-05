@@ -47,12 +47,12 @@ Stage status: **implemented; full automated DB test run pending environment supp
 - [x] AUTH-002 multi-role model.
 - [x] AUTH-003 Owner uniqueness/minimum-owner rules.
 - [x] AUTH-004 role and active-admin helpers.
-- [-] AUTH-005 protected user-management API is implemented; full manager UI is not.
+- [x] AUTH-005 protected user-management API and operational UI: list/search/filter, create, activate/deactivate, MFA policy, and multi-role assignment.
 - [x] AUTH-006 MFA/AAL2 enforcement for sensitive roles/actions.
 - [x] AUTH-007 sign-in, TOTP enrolment/challenge, and Owner browser smoke.
 - [-] Unified admin shell/navigation and route-level UX completion.
 
-Stage status: **security foundation complete; manager UI completion remains**.
+Stage status: **core auth, MFA, and user-management workflow complete; unified admin navigation remains**.
 
 ## Stage 3 — Content Model and Public Website Foundation
 
@@ -167,7 +167,7 @@ Stage status: **foundation checks active; launch QA not started**.
 
 The next step should close existing operational gaps before opening the learner and credential modules:
 
-1. **Complete manager operations for the modules already public**: real user-management UI; programme/run/pricing/area/type management; partner and expert management; manager-friendly structured page forms; unified protected admin navigation.
+1. **Complete manager operations for the modules already public**: programme/run/pricing/area/type management; partner and expert management; manager-friendly structured page forms; unified protected admin navigation.
 2. **Finish contact operations**: confirm required public form entry points, then configure/test CAPTCHA, rate limiting, and Google Workspace delivery.
 3. **Run the complete role/RLS/admin end-to-end pass** for Stages 2–4 when Docker or another pgTAP-capable environment is available.
 4. **Start Stage 5 with LRN-001 Learner Core**, then proceed in ticket order through LRN-004.
