@@ -4,7 +4,7 @@ import type { ContentLocale, TranslationStatus } from './localization';
 import { selectPublishedTranslation } from './localization';
 import { contentDataSource, requireSupabaseContent } from './data-source';
 
-export type ContentPageKey = 'home' | 'about' | 'partnerships' | 'for_organisations';
+export type ContentPageKey = 'home' | 'about' | 'partnerships' | 'for_organisations' | 'privacy_policy' | 'terms_of_use' | 'refund_policy';
 
 export type StructuredContentPage = {
   pageKey: ContentPageKey;

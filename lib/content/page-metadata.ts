@@ -5,6 +5,7 @@ import type { ContentPageKey, StructuredContentPage } from './pages';
 
 const paths: Record<ContentPageKey, string> = {
   home: '', about: '/about', partnerships: '/partnerships', for_organisations: '/for-organisations',
+  privacy_policy: '/privacy-policy', terms_of_use: '/terms-of-use', refund_policy: '/refund-policy',
 };
 
 export function managedPageMetadata(page: StructuredContentPage): Metadata {

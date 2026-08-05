@@ -106,6 +106,9 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
 
       <footer className="managed-footer">
         <strong>Nobel ITBS s.r.o.</strong><span>Praha, Czech Republic</span><a href="mailto:info@nobel-itbs.eu">info@nobel-itbs.eu</a>
+        <Link href={localizePublicPath(locale, '/privacy-policy')}>Privacy Policy</Link>
+        <Link href={localizePublicPath(locale, '/terms-of-use')}>Terms of Use</Link>
+        <Link href={localizePublicPath(locale, '/refund-policy')}>Refund Policy</Link>
       </footer>
     </main>
   );

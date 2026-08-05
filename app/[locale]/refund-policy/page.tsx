@@ -1,0 +1,3 @@
+import { notFound } from 'next/navigation'; import { isContentLocale } from '@/lib/content/localization'; import { renderLegalMetadata, renderLegalPage } from '@/lib/content/legal-route';
+type Props={params:Promise<{locale:string}>}; async function localeOf(props:Props){const {locale}=await props.params;if(!isContentLocale(locale)||locale==='en')notFound();return locale;}
+export async function generateMetadata(props:Props){return renderLegalMetadata('refund_policy',await localeOf(props));} export default async function Page(props:Props){return renderLegalPage('refund_policy',await localeOf(props));}

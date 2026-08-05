@@ -1,0 +1,14 @@
+begin;
+select plan(10);
+select is((select count(*)::integer from public.content_pages where page_key in ('privacy_policy','terms_of_use','refund_policy') and page_type='legal' and status='published'), 3, 'all legal pages are published');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and t.translation_status='published'), 9, 'all legal translations are published');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and t.language_code in ('en','ua','cz')), 9, 'legal pages use EN UA CZ');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and (t.h1 is null or btrim(t.h1)='')), 0, 'every legal translation has h1');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and (t.seo_title is null or t.seo_description is null)), 0, 'every legal translation has SEO fields');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and jsonb_typeof(t.sections) <> 'object'), 0, 'legal content is structured JSON');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and not (t.sections ? 'blocks')), 0, 'every legal translation contains blocks');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and jsonb_array_length(t.sections->'blocks') < 2), 0, 'every legal document contains multiple sections');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and not (t.sections ? 'slug')), 0, 'every legal translation contains its route slug');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and length(t.sections::text) < 1000), 0, 'legal documents contain full-length content');
+select * from finish();
+rollback;
