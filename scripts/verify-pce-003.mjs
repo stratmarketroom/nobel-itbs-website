@@ -7,6 +7,7 @@ const paths = {
   experts: 'components/expert-cards.tsx',
   englishRoute: 'app/partnerships/page.tsx',
   localizedRoute: 'app/[locale]/partnerships/page.tsx',
+  metadata: 'lib/content/page-metadata.ts',
 };
 const errors = [];
 
@@ -46,8 +47,15 @@ if (existsSync(paths.component)) {
 
 if (existsSync(paths.localizedRoute)) {
   const route = readFileSync(paths.localizedRoute, 'utf8');
-  for (const snippet of ['isPrefixedLocale', 'isContentLocale', 'getPublicPartners(locale)', 'getPublicExperts(locale)', 'languages:']) {
+  for (const snippet of ['isContentLocale', "locale === 'en'", 'getPublicPartners(locale)', 'getPublicExperts(locale)', 'managedPageMetadata(page)']) {
     if (!route.includes(snippet)) errors.push(`Localized route missing required behavior: ${snippet}`);
+  }
+}
+
+if (existsSync(paths.metadata)) {
+  const metadata = readFileSync(paths.metadata, 'utf8');
+  for (const snippet of ['languages:', "en: 'en'", "ua: 'uk'", "cz: 'cs'"]) {
+    if (!metadata.includes(snippet)) errors.push(`Shared page metadata missing required behavior: ${snippet}`);
   }
 }
 

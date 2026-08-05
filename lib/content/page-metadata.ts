@@ -10,7 +10,8 @@ const paths: Record<ContentPageKey, string> = {
 
 export function managedPageMetadata(page: StructuredContentPage): Metadata {
   const path = paths[page.pageKey];
-  const languageUrls = Object.fromEntries((['en', 'ua', 'cz'] as ContentLocale[]).map((locale) => [locale, `${contentLocalePrefixes[locale]}${path}` || '/']));
+  const hreflang: Record<ContentLocale, string> = { en: 'en', ua: 'uk', cz: 'cs' };
+  const languageUrls = Object.fromEntries((['en', 'ua', 'cz'] as ContentLocale[]).map((locale) => [hreflang[locale], `${contentLocalePrefixes[locale]}${path}` || '/']));
   return {
     title: page.seoTitle,
     description: page.seoDescription,
