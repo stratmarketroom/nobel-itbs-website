@@ -23,3 +23,16 @@ Current database tests:
 - `database/auth_003_owner_rules.test.sql`
 - `database/auth_004_role_helpers.test.sql`
 - `database/auth_006_mfa_enforcement.test.sql`
+- `database/cnt_001_languages.test.sql`
+- `database/prg_001_programme_areas.test.sql`
+- `database/prg_002_programme_types.test.sql`
+- `database/prg_003_programme_core.test.sql`
+- `database/prg_004_programme_runs.test.sql`
+- `database/prg_005_pricing_options.test.sql`
+- `database/prg_006_programme_catalogue.test.sql`
+- `database/prg_007_seo_landing_pages.test.sql`
+- `database/prg_008_slug_redirects.test.sql`
+- `database/prg_009_programme_question_form.test.sql`
+- `database/pce_001_partners.test.sql`
+- `database/pce_002_experts.test.sql`
+- `database/pce_004_contact_submissions.test.sql`
