@@ -24,6 +24,9 @@ export default function AdminUsersPage() {
         <Link className="admin-login-link" href="/admin/content-pages">
           Content pages
         </Link>
+        <Link className="admin-login-link" href="/admin/site-settings">
+          Site settings
+        </Link>
       </section>
 
       <section className="admin-grid" aria-label="User management controls">

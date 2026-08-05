@@ -219,3 +219,12 @@ export function assertCanManageContent(context: AdminContext): void {
     throw new ApiError('forbidden', 403, 'Content management access is not permitted.');
   }
 }
+
+export function assertCanManageSiteSettings(context: AdminContext): void {
+  if (!context.roles.includes('owner') && !context.roles.includes('super_admin')) {
+    throw new ApiError('forbidden', 403, 'Owner or Super Admin role is required for site settings.');
+  }
+  if (!context.mfaSatisfied) {
+    throw new ApiError('forbidden', 403, 'MFA/AAL2 is required for site settings.');
+  }
+}

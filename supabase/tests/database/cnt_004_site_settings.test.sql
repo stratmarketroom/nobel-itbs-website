@@ -1,0 +1,13 @@
+begin;
+select plan(9);
+select has_table('public','site_settings','site settings exists');
+select col_is_pk('public','site_settings','setting_key','setting key is primary key');
+select is((select count(*)::integer from public.site_settings where setting_key='for_organisations_application_url'),1,'B2B URL setting seeded');
+select is((select relrowsecurity from pg_class where oid='public.site_settings'::regclass),true,'RLS enabled');
+select is((select relforcerowsecurity from pg_class where oid='public.site_settings'::regclass),true,'RLS forced');
+select is((select count(*)::integer from pg_policies where tablename='site_settings' and policyname='site_settings_admin_update'),1,'protected update policy exists');
+select is((select count(*)::integer from pg_policies where tablename='site_settings' and qual like '%super_admin%'),2,'Owner and Super Admin policies exist');
+select has_function('internal','audit_site_setting_change',array[]::text[],'setting updates audited');
+select is((select count(*)::integer from information_schema.role_table_grants where table_schema='public' and table_name='site_settings' and grantee='anon' and privilege_type <> 'SELECT'),0,'anon cannot mutate settings');
+select * from finish();
+rollback;

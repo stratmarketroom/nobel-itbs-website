@@ -28,17 +28,19 @@ function localizedTarget(target: string | undefined, locale: ContentLocale, fall
   return localizePublicPath(locale, target);
 }
 
-export function ManagedContentPage({ page, locale, partners = [], experts = [] }: {
+export function ManagedContentPage({ page, locale, partners = [], experts = [], primaryHrefOverride }: {
   page: StructuredContentPage;
   locale: ContentLocale;
   partners?: PartnerCard[];
   experts?: ExpertCard[];
+  primaryHrefOverride?: string | null;
 }) {
   const blocks = Array.isArray(page.sections.blocks) ? page.sections.blocks as ContentBlock[] : [];
   const hero = blocks[0];
   const heroFields = hero?.fields ?? {};
   const primaryLabel = heroFields.primary_cta || (locale === 'ua' ? 'Переглянути програми' : locale === 'cz' ? 'Prohlédnout programy' : 'Explore programmes');
-  const primaryTarget = localizedTarget(heroFields.primary_cta_target, locale, page.pageKey === 'for_organisations' ? '/contact' : '/programmes');
+  const primaryTarget = primaryHrefOverride
+    || (page.pageKey === 'for_organisations' ? 'mailto:info@nobel-itbs.eu' : localizedTarget(heroFields.primary_cta_target, locale, '/programmes'));
 
   return (
     <main className="managed-page">
