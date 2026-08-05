@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { PublicShell } from '@/components/public-shell';
 import { homeCopy, isPrefixedLocale, type PrefixedLocale } from '@/lib/i18n';
+import { getPublicPartners } from '@/lib/partners/public';
 
 type LocalePageProps = {
   params: Promise<{
@@ -19,5 +20,7 @@ export default async function LocalePage({ params }: LocalePageProps) {
     notFound();
   }
 
-  return <PublicShell copy={homeCopy[locale]} locale={locale as PrefixedLocale} />;
+  const resolvedLocale = locale as PrefixedLocale;
+  const partners = await getPublicPartners(resolvedLocale);
+  return <PublicShell copy={homeCopy[resolvedLocale]} locale={resolvedLocale} partners={partners.items} />;
 }
