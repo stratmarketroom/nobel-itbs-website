@@ -1,165 +1,60 @@
 # Implementation Status
 
-Last updated: 2026-07-27
+Last updated: 2026-08-05
 
-This document records the current implementation state. It is not a replacement for the v2 product and technical specifications.
+This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
-## Current Branch Stack
+## Current Branch
 
-Active branch:
-
-- `codex/design-context-prep`
-
-Implemented and pushed branches:
-
-- `codex/dbf-001-supabase-foundation`
-- `codex/dbf-002-migration-standards`
-- `codex/dbf-003-internal-schema-extensions`
-- `codex/dbf-004-audit-foundation`
-- `codex/auth-001-user-profiles`
-- `codex/auth-002-multi-role-model`
-- `codex/auth-003-owner-rules`
-- `codex/auth-004-role-helpers`
-- `codex/auth-006-mfa-enforcement`
-- `codex/fef-001-nextjs-scaffold`
-- `codex/auth-005-admin-user-management`
-- `codex/auth-007-mfa-login-ui`
-- `codex/design-context-prep`
+- Active branch: `codex/stabilize-content-integration`
+- The stabilization work is committed locally as separate documentation, content, programme, partner/expert/contact, Supabase integration, and CNT-002..005 commits.
+- The branch has not been pushed or merged.
 
 ## Supabase Dev Project
 
-Remote dev project:
-
-- Project name: `nobel-itbs-dev`
+- Project: `nobel-itbs-dev`
 - Project ref: `flswzhgjbpagohbwehcz`
-- Project URL: `https://flswzhgjbpagohbwehcz.supabase.co`
 - Region observed in dashboard: West EU (Ireland)
+- Local secrets remain in ignored environment files and must never be committed.
+- A pre-integration backup is available under the ignored `backups/supabase/2026-08-05-pre-content/` directory.
 
-Local secrets are stored in `.env.local`, which is ignored by git. Never commit `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, or development user passwords.
+All 26 local SQL migrations through `20260805140000_cnt_005_legal_pages.sql` are applied to the remote dev database. The local and remote migration histories match.
 
-Supabase CLI is linked locally to the dev project.
+## Implemented Foundation
 
-## Remote Migration State
+- Supabase/PostgreSQL foundation, audit log, RLS helpers, multi-role admin model, Owner safeguards, MFA enforcement, and protected admin APIs.
+- Next.js App Router application with English at unprefixed URLs, Ukrainian under `/ua`, and Czech under `/cz`.
+- Structured core pages, legal pages, site settings, public navigation, locale fallback, and explicit Supabase-versus-seed data-source selection.
+- Programme areas, types, five programme records, runs, flexible pricing, public catalogue, programme/area/type pages, redirects, and programme-question flow.
+- Partner and expert records and their public Partnerships rendering.
+- Private contact-submission storage, protected manager list/status workflow, audit logging, rate-limit/CAPTCHA hooks, and Google Workspace notification code.
+- Manager interfaces for content pages, site settings, and contact submissions.
 
-The following migrations have been pushed to the remote dev database:
+## Verified in Dev
 
-- `20260727104215_dbf_003_internal_schema_and_extensions.sql`
-- `20260727105232_dbf_004_audit_foundation.sql`
-- `20260727111852_auth_001_user_profiles.sql`
-- `20260727112603_auth_002_multi_role_model.sql`
-- `20260727114756_auth_003_owner_rules.sql`
-- `20260727145222_auth_004_role_helpers.sql`
-- `20260727145835_auth_006_mfa_enforcement.sql`
-- `20260727154750_auth_005_admin_user_management_functions.sql`
-- `20260727171000_auth_003_owner_minimum_guard.sql`
+- Remote database contains 3 languages, 3 programme areas, 3 programme types, 5 programmes, 5 runs, 5 partners, 3 experts, 7 structured page records, and 21 published page translations.
+- Public application reads real Supabase content by default and does not silently replace database failures with seed content.
+- Anonymous write attempts and unauthorized contact reads are denied; protected admin APIs reject unauthenticated requests.
+- Production build, TypeScript, lint, ticket verification scripts, public API smoke checks, and browser checks pass.
+- All nine legal routes render full localized documents; their metadata is `noindex, follow`.
 
-Remote smoke check after migration push:
+## Verification Limitation
 
-- `user_profiles`: reachable
-- `user_roles`: reachable
-- `audit_log`: reachable
+The SQL migrations are applied and smoke-tested against dev, but the complete local pgTAP suite was not executed because the Supabase CLI database test command requires Docker and no Docker-compatible runtime is available. This remains an explicit QA item, not a hidden pass.
 
-Owner minimum guard smoke check after QA hardening:
+## Operational Dependencies
 
-- active Owner count remains `1`;
-- deactivating the last active Owner is blocked;
-- deleting the last Owner role assignment is blocked.
+- Leeloo URLs are still required for General Psychology, Child Psychology, and Space Business.
+- The AI Production partner URL is intentionally pending; its CTA currently uses the question fallback.
+- The For Organisations application URL remains an Owner/Super Admin setting and needs its final destination.
+- Production contact notifications require Google Workspace server credentials and destination inbox configuration.
+- Production forms require a strong rate-limit secret and the chosen CAPTCHA provider configuration.
+- Czech native-language review remains an external editorial check where noted in the approved source files.
 
-## Auth Foundation State
+## Important Remaining Product Work
 
-Implemented database objects:
-
-- `public.user_profiles`
-- `public.user_roles`
-- `public.audit_log`
-- `public.app_role`
-- Internal role, Owner governance, audit, and MFA helper functions
-- Owner uniqueness and minimum-owner guardrails
-- Admin user management RPC functions:
-  - `public.create_admin_profile`
-  - `public.update_admin_profile`
-  - `public.assign_admin_roles`
-  - `public.remove_admin_roles`
-
-Implemented application foundation:
-
-- Server-only Supabase clients and admin session context loading
-- Browser-safe Supabase client using public anon configuration only
-- Admin login route with password sign-in, TOTP enrollment, and TOTP challenge flow
-- Admin API routes under `/api/v1/admin`
-- Foundational admin users page at `/admin/users`
-- Next.js App Router scaffold with English, Ukrainian, and Czech public locale routes
-
-## Design Context State
-
-Project-level design-skill context has been prepared:
-
-- `.agents/context/PRODUCT.md`
-- `.agents/context/DESIGN.md`
-- `docs/development/DESIGN_SKILLS_SETUP.md`
-
-The `impeccable` context loader confirms both product and design context are available.
-
-Installed design-oriented skills observed locally:
-
-- `impeccable`
-- `huashu-design`
-
-No project-specific design skill files were found in the known neighbouring project checked during setup.
-
-## Dev Owner Bootstrap
-
-A first dev Owner has been created in the Supabase dev project.
-
-Verified behavior:
-
-- Supabase Auth sign-in succeeds for the dev Owner.
-- `/api/v1/admin/me` returns the active Owner profile and `owner` role.
-- `/api/v1/admin/users` returns `403` until the Owner session satisfies MFA/AAL2.
-- Remote DB blocks deactivating the last active Owner and deleting the last Owner role assignment.
-- `/admin/login` renders the admin sign-in and MFA flow.
-- Manual browser smoke completed: dev Owner enrolled TOTP MFA through `/admin/login` and was redirected to `/admin/users`.
-- `AUTH-007` QA edge-case review completed with no open blocking findings.
-
-This is expected because Owner requires MFA.
-
-## Verification Run
-
-The following checks passed during the latest implementation pass:
-
-- `npm run verify:dbf-001`
-- `npm run verify:dbf-002`
-- `npm run verify:dbf-003`
-- `npm run verify:dbf-004`
-- `npm run verify:auth-001`
-- `npm run verify:auth-002`
-- `npm run verify:auth-003`
-- `npm run verify:auth-004`
-- `npm run verify:auth-005`
-- `npm run verify:auth-006`
-- `npm run verify:auth-007`
-- `npm run verify:fef-001`
-- `npm run lint`
-- `npm run build`
-- `npm audit --omit=dev`
-- Supabase remote `db push --dry-run`
-- Supabase remote `db push`
-- `impeccable` context loader: `hasProduct=true`, `hasDesign=true`
-
-## Known Operational Notes
-
-- Local Supabase via Docker has not been run because a Docker-compatible runtime was not available.
-- Remote dev Supabase is currently used for real integration smoke checks.
-- The local Supabase access token is time-limited and must be replaced when it expires.
-- GitHub integration in the Supabase dashboard should be verified separately if branch previews are required.
-
-## Next Recommended Work
-
-Recommended next step:
-
-- Refine product/design direction from `.agents/context/PRODUCT.md` and `.agents/context/DESIGN.md`, then begin deeper public-site and admin UI design work.
-
-Other near-term candidates:
-
-- Continue admin UI integration with real session state.
-- Start the next database/security module from the ticket pack.
+- The existing `/admin/users` page is still a foundation/route reference, not a complete user-management interface.
+- Programmes, partners, and experts have secure data/public layers but no manager CRUD interface yet.
+- The structured page editor exposes controlled JSON; it is functional but not yet a manager-friendly field/form experience.
+- Learners, credentials, issuance/email, and public credential verification have not started.
+- Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email/CAPTCHA end-to-end tests remain ahead.
