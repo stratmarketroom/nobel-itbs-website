@@ -93,7 +93,7 @@ Owns:
 - public verification routes;
 - credential workflows;
 - Gmail/Google Workspace integration;
-- Leeloo CTA support.
+- Leeloo and partner-site CTA support.
 
 Starts after relevant database schema exists.
 
@@ -263,7 +263,7 @@ Orchestrator checks:
 - no public catalogue filters in Release 1;
 - SEO pages under `/programmes/[slug]`;
 - slug collision prevention;
-- primary CTA to Leeloo;
+- primary CTA to the configured Leeloo or partner site;
 - secondary Ask a question form.
 
 ### Phase 5 - Learners
@@ -379,13 +379,13 @@ Tickets:
 
 - PCE-004 Contact Submissions;
 - Gmail integration hardening;
-- Leeloo CTA checks;
+- Leeloo and partner-site CTA checks;
 - CAPTCHA/rate limiting.
 
 Owner checkpoint:
 
 - provide production/general email details when needed;
-- provide Leeloo URLs/test funnels when needed.
+- provide Leeloo URLs/test funnels and approved partner-site URLs when needed.
 
 Orchestrator checks:
 
@@ -484,4 +484,3 @@ Owner action needed:
 
 - approve start of DBF-001;
 - approve dependency installation/network access if required by setup.
-

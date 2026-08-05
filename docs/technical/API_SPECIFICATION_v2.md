@@ -50,13 +50,21 @@ Fields:
 
 - slug;
 - title;
-- summary;
+- catalogue description;
+- compact duration, learning volume, delivery, and instruction-language facts;
+- completion-document summary;
 - area;
 - type;
 - format;
-- language summary;
+- instruction-language codes, kept separate from the website locale;
 - enrolment badge;
+- current run start date where applicable;
 - featured image/media if available.
+
+The public endpoint accepts `locale=en|ua|cz`, falls back to published English
+when a requested translation is missing or draft, and returns programmes in
+manager-controlled `catalogue_sort_order`. Release 1 does not return pricing in
+the catalogue projection.
 
 ### Public Programme Detail
 
@@ -83,7 +91,17 @@ The backend resolves slug against shared programme namespace:
 - programme type landing page;
 - redirect.
 
+A historical published slug returns HTTP `301` directly to the same public API
+path with the entity's current slug. The `locale` query parameter is preserved,
+and redirect chains are not returned.
+
 Slug collisions are forbidden in admin.
+
+The response identifies the resolved entity kind. Programme responses include
+structured sales sections, calculated run presentation, optional active pricing
+options, and the external/contact CTA destination. Area and type responses
+include structured introduction content and an automatic list of matching
+published programmes.
 
 ## 4. Contact API
 
@@ -107,6 +125,13 @@ For programme question:
 - request includes programme slug/id context from page;
 - server stores linked programme.
 
+The public form sends the programme slug, website locale, name, email, optional
+phone, message, and required privacy acknowledgement. The server resolves the
+published programme ID; the visitor never selects or submits an internal UUID.
+Successful creation returns `201` without returning the submission ID. Invalid
+fields return `400`, an unknown programme returns `404`, and a rate-limited
+request returns `429` with `Retry-After`.
+
 Processing:
 
 - validate;
@@ -114,6 +139,22 @@ Processing:
 - CAPTCHA where required;
 - save submission;
 - send notification to general Nobel ITBS email.
+
+Notification sending is attempted only after the submission is stored. A
+temporary Google Workspace delivery failure must not discard an accepted
+submission or expose provider errors in the public response.
+
+Admin operations:
+
+- `GET /api/v1/admin/contact-submissions` lists submissions and supports
+  optional `status` and `type` filters;
+- `GET /api/v1/admin/contact-submissions/{id}` returns the private detail for an
+  authorized manager;
+- `PATCH /api/v1/admin/contact-submissions/{id}` changes only the Release 1
+  status.
+
+These routes require an active Owner, Super Admin, or Credential Manager
+session with satisfied MFA. Content Manager has no access.
 
 ## 5. Public Verification API
 
@@ -257,7 +298,7 @@ Capabilities:
 - publish/draft translation status per language;
 - manage sales sections;
 - manage pricing options;
-- manage Leeloo URLs.
+- manage Leeloo and partner-site application URLs.
 
 ## 9. Admin Learner API
 
@@ -420,6 +461,5 @@ API v2 is implemented when:
 - Owner-only user actions are enforced;
 - Content Manager cannot access restricted modules;
 - Credential Manager cannot edit programmes;
-- programme sales/pricing/Leeloo APIs support Release 1 flows;
+- programme sales/pricing/application APIs support Leeloo and partner-site Release 1 flows;
 - public routes do not expose internal IDs or raw errors.
-

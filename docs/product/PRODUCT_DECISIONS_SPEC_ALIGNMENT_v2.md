@@ -17,9 +17,31 @@ Release 1 is a corporate education platform with:
 
 - public content website;
 - programme catalogue and sales-oriented programme pages;
-- Leeloo transitions for applications/payments;
+- external application/payment transitions to Leeloo or an approved partner programme website;
 - credential registry and public verification;
 - admin panel for content, programmes, learners, credentials, email, and users.
+
+Nobel ITBS operates through two complementary business goals:
+
+1. create, co-create, present, and sell professional education programmes;
+2. act as a B2B provider and infrastructure layer for online schools, experts,
+   and partner educational programmes, supporting programme structuring,
+   properly issued documents, supplements, registration, and public
+   verification.
+
+Approved institutional positioning:
+
+- the primary public definition is `European professional education platform`;
+- the platform operates through Czech company Nobel ITBS s.r.o.;
+- the University of Alfred Nobel is the exclusive academic partner of Nobel
+  ITBS;
+- the University's more than 30 years of history, participation as the first
+  Ukrainian university in the EIT Deep Tech Talent Initiative, and acceptance of
+  its Space Business programme within the initiative may be used as trust proof
+  only when clearly attributed to the University;
+- these University facts must not be presented as direct Nobel ITBS
+  accreditations or achievements;
+- founder and team profiles are not included in the Release 1 public website.
 
 Release 1 does not include:
 
@@ -30,6 +52,18 @@ Release 1 does not include:
 - public document PDF download;
 - news/blog;
 - automatic Moodle-based document issuing.
+
+Commercial and payment decisions:
+
+- payments are processed through Stripe;
+- Nobel ITBS s.r.o. is not a VAT payer;
+- Leeloo presents shortened versions of the Terms of Use, Refund Policy, and
+  Privacy Policy, each linking to the corresponding full policy on the Nobel
+  ITBS company website;
+- the Leeloo consent checkbox is initially unchecked;
+- the final Leeloo/checkout placement and consent-recording flow must preserve
+  acceptance evidence for the applicable Terms and digital-content withdrawal
+  acknowledgement.
 
 ## 3. Public Website
 
@@ -70,8 +104,26 @@ Release 1 public pages include:
 - Partnerships;
 - For Organisations;
 - Verify document;
-- Legal pages;
+- three mandatory full legal pages: Privacy Policy, Terms of Use (Public
+  Contract), and Refund Policy;
 - system pages such as 404.
+
+The three legal documents are supplied in CZ and EN, may be translated into
+Ukrainian, and must be published as full website pages in EN, UA, and CZ. The
+approved Ukrainian public titles are `Політика конфіденційності`, `Умови
+(Публічний договір)`, and `Політика повернення`. Shortened Leeloo versions
+supplement the full pages and do not replace them.
+
+All legal policy pages use `noindex, follow`, are excluded from the XML sitemap,
+and receive only minimal technical titles/descriptions where needed. They are
+not SEO landing pages.
+
+Release 1 uses a minimal localized cookie-consent block without a separate
+Cookie Policy page. It contains concise cookie text and two explicit actions:
+`Accept` and `Decline` (`Приймаю` / `Не приймаю` in Ukrainian). Non-essential
+cookies must not load unless the user accepts. The decision must be stored.
+A full lawyer-approved Cookie Policy page and granular category settings are
+deferred to a later version.
 
 News/Blog is not included in Release 1 and must be removed from public navigation.
 
@@ -95,9 +147,9 @@ Release 1 Programme Areas:
 
 - Business & Management;
 - Technology & Innovation;
-- Human & Behavioral Sciences.
+- Psychology & Human.
 
-The third area should mention psychology clearly in its description, without narrowing the area name.
+`Psychology & Human` is the approved public label for the third area.
 
 The public label for areas is `Programme Areas`, not `Tracks`.
 
@@ -129,6 +181,8 @@ Programme cards may show an enrolment badge with three public states:
 - Enrolment inactive.
 
 Badge state is calculated automatically from programme runs, but admins may correct programme presentation when needed.
+The active state has two approved presentation labels: `Enrolment open` for a
+specific cohort and `Ongoing enrolment` for a continuously available programme.
 
 ### 4.4 SEO Landing Pages
 
@@ -152,7 +206,37 @@ If an already published slug changes, the system should preserve an automatic 30
 
 ### 4.5 Programme Sales Pages
 
-Programme pages are sales-oriented landing pages. Their main goal is applications and payments through Leeloo.
+Programme pages are sales-oriented landing pages. Their main goal is to move the
+visitor to the approved external application destination: Leeloo for Nobel ITBS
+funnels or the programme partner's website for partner-led sales.
+
+Release 1 launch programme decision:
+
+- AI Production;
+- General Psychology;
+- Child Psychology;
+- Neuroplastic Reconstruction;
+- Space Business.
+
+All five programmes launch together. AI Production, General Psychology, Child Psychology, and Neuroplastic Reconstruction are taught in Ukrainian. Space Business is taught in Ukrainian and English. Each programme must have complete public presentation content in English, Ukrainian, and Czech. The language of the page does not change the language of instruction.
+
+Approved launch presentation decisions:
+
+- AI Production uses `Mini-MBA` as its primary Programme Type;
+- General Psychology, Child Psychology, and Neuroplastic Reconstruction use `Professional development course` as their Programme Type. The approved Ukrainian public category label is `Програма професійного підвищення кваліфікації`. Their certificates are completion credentials and do not define the Programme Type;
+- AI Production runs for 6 months with a total volume of 360 hours / 12 ECTS; after 3 months the learner receives a University of Alfred Nobel professional development certificate for 180 hours / 6 ECTS, and after 6 months a Nobel ITBS international Mini-MBA diploma with Diploma Supplement; programme hours and learning results may be credited toward a full MBA subject to its admission and recognition rules;
+- AI Production public copy may state that the Mini-MBA diploma has an international format and that the stated competence level corresponds to EQF Level 7; this describes competence alignment and must not be rewritten as award of a regulated EQF qualification;
+- Neuroplastic Reconstruction remains the short public name; its longer formal name may be used only where official programme/document wording is needed;
+- Neuroplastic Reconstruction is a partner programme presented as a 3-month, 180-hour / 6 ECTS programme with 12 owner-confirmed public modules grouped into three stages; the current cohort starts on 5 October 2026; the For Yourself, Master, and VIP distinctions remain relevant to learning scope and documents, but current prices and sales terms are managed only on the partner website and are not duplicated on Nobel ITBS; Master and VIP include a University of Alfred Nobel professional development certificate with supplement, CPD UK, MNR consultant status, and registry entry, while For Yourself has no certification documents or consultant status; Nobel ITBS acts as provider and credential infrastructure;
+- Space Business uses `Certificate programme` as its Programme Type and issues a certificate from the University of Alfred Nobel; the programme volume is 90 hours, but hours are not stated on the certificate;
+- General Psychology, Child Psychology, and Space Business are continuously available distance programmes hosted in Moodle;
+- General Psychology and Child Psychology issue a professional development certificate from the University of Alfred Nobel for 90 hours / 3 ECTS; General Psychology provides one-year asynchronous Moodle access and Child Psychology provides six-month asynchronous Moodle access, both without mandatory Zoom sessions or a fixed schedule;
+- Child Psychology is a fully distance theoretical programme with no practical classes, placement, internship, clinic practice, or client work; the University of Alfred Nobel Mental Health Clinic is the programme-development base, not a practice site for learners;
+- formal approval/effective dates from programme source documents are not part of public website copy;
+- General Psychology, Child Psychology, and Space Business use Leeloo as their application provider;
+- Neuroplastic Reconstruction links to the Nataliia Kholodenko school website at `https://school.kholodenko.net/`;
+- AI Production links to the Dmytro Shevchuk website when its URL is supplied;
+- use the existing question/contact fallback wherever the approved application URL is unavailable.
 
 Suggested structured sections:
 
@@ -168,7 +252,7 @@ Suggested structured sections:
 - FAQ, if configured;
 - repeated CTA.
 
-Primary CTA goes to Leeloo.
+Primary CTA goes to the programme's configured Leeloo or partner-site destination.
 
 Secondary CTA is `Ask a question`, opening an on-site form. This form stores the source programme in contact submissions.
 
@@ -185,9 +269,15 @@ Release 1 supports flexible pricing options:
 - currency;
 - short description;
 - CTA label;
-- optional Leeloo URL.
+- optional external application URL.
 
-If a pricing option has its own Leeloo URL, use it. Otherwise fall back to the programme-level Leeloo URL.
+A programme may show one, two, or three tariff cards. Partner-managed programmes
+may omit the pricing block entirely and send visitors to the partner website,
+which remains the source of current commercial terms.
+
+If a pricing option has its own application URL, use it. Otherwise fall back to
+the active run URL and then the programme-level application URL. If none exists,
+use the question/contact CTA.
 
 Prices are shown only on programme pages, not in the catalogue.
 
@@ -214,7 +304,19 @@ Experts do not need individual public profile pages in Release 1. Cards/sections
 
 Partner organisations do not need individual public pages in Release 1. Cards/logos are enough.
 
-Partners are public trust/content entities only. Partners must not enter credential verification, credential snapshots, or public verification results.
+Partner organisations may participate in programme delivery and commercial cooperation. In Release 1, the relationship is presented through programme, Partnership, and For Organisations content. Partner data must not enter credential verification, credential snapshots, or public verification results.
+
+Product-owner-approved public partnership list:
+
+- exclusive academic partner: University of Alfred Nobel, Dnipro, Ukraine;
+- partner organisation: Riga Nordic University, Riga, Latvia;
+- partner organisation: Nataliia Kholodenko School of Psychology;
+- partner organisation: Mental Health Clinic;
+- experts: Nataliia Kholodenko, Dmytro Shevchuk, and Alina Yudina.
+
+Logos, photos, exact partnership-role descriptions, and publication assets will
+be supplied separately. The other organisations must not be presented as
+academic partners merely because they appear on the Partnerships page.
 
 ## 6. For Organisations
 
@@ -222,9 +324,14 @@ Release 1 includes a For Organisations page.
 
 It is a content-managed page with an offer for:
 
-- courses;
-- experts;
-- online schools.
+- online schools and educational projects;
+- experts and programme authors;
+- partner-programme onboarding and structuring;
+- document and credential infrastructure, including document models,
+  supplements, registration, and verification.
+
+The page sells Nobel ITBS B2B infrastructure services. It does not sell courses
+or training solutions for organisation teams.
 
 The primary CTA leads to a dedicated Leeloo funnel.
 

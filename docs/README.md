@@ -35,6 +35,22 @@ Current implementation notes:
 - `docs/qa/AUTH-007_QA_REVIEW_2026-07-27.md`
 - `docs/development/DESIGN_SKILLS_SETUP.md`
 - `docs/development/DOCUMENTATION_MAINTENANCE.md`
+- `docs/development/CONTACT_NOTIFICATIONS.md`
+
+Current preparation-stage working documents:
+
+- `docs/preparation/PREPARATION_STAGE_PLAN.md`
+- `docs/preparation/SEO_PREPARATION_BRIEF.md`
+- `docs/preparation/UI_DESIGN_SYSTEM_BRIEF.md`
+- `docs/preparation/CONTENT_AND_MATERIALS_INVENTORY.md`
+- `docs/preparation/RELEASE_1_SEO_URL_MAP.md`
+- `docs/preparation/SEO_OG_METADATA_REGISTER.md`
+- `docs/preparation/SEO_TECHNICAL_PUBLICATION_SPEC.md`
+- `docs/preparation/SYSTEM_AND_FORM_COPY.md`
+- `docs/preparation/LOCALIZATION_PARITY_QA_2026-07-31.md`
+- `docs/preparation/programmes/PROGRAMME_SOURCE_AUDIT.md`
+- `docs/preparation/programmes/UA_PROGRAMME_MASTER_COPY.md`
+- `docs/preparation/programmes/PROGRAMME_APPROVAL_MATRIX.md`
 
 The v2 documents reflect product-owner decisions made after reviewing the original v1 specification pack.
 

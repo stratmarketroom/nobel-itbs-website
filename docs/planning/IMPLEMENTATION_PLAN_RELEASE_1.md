@@ -89,7 +89,9 @@ Scope:
 - About Us;
 - Partnerships;
 - For Organisations;
-- Legal pages;
+- three mandatory full legal pages: Privacy Policy, Terms of Use (Public
+  Contract), and Refund Policy;
+- minimal localized cookie-consent block with accept/decline actions;
 - Site Settings;
 - public navigation without News.
 
@@ -111,7 +113,7 @@ Scope:
 - Programmes;
 - Programme Runs;
 - pricing options;
-- Leeloo URL hierarchy;
+- external application URL hierarchy for Leeloo and partner sites;
 - enrolment badge;
 - catalogue without visible filters;
 - data fields for future filters;
@@ -121,11 +123,11 @@ Scope:
 
 Acceptance:
 
-- Programme Areas: Business & Management, Technology & Innovation, Human & Behavioral Sciences;
+- Programme Areas: Business & Management, Technology & Innovation, Psychology & Human;
 - Programme Types: Certificate programme, Mini-MBA, Professional development course;
 - programme pages are sales-oriented;
 - pricing block hides when no prices exist;
-- primary CTA goes to Leeloo;
+- primary CTA goes to the configured Leeloo or partner-site destination;
 - secondary CTA opens programme-linked form.
 
 ## Stage 5 - Learner Foundation
@@ -238,7 +240,7 @@ Scope:
 - role permission tests;
 - MFA tests;
 - public verification tests;
-- Leeloo CTA checks;
+- Leeloo and partner-site CTA checks;
 - contact form rate limit/CAPTCHA checks;
 - email send test;
 - responsive frontend QA;
@@ -269,4 +271,3 @@ Candidates for after Release 1:
 - public programme filters;
 - public name-based verification if legally and privacy-approved;
 - old PDF version retention if audit requirements grow.
-

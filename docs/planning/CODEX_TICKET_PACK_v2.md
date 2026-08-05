@@ -143,19 +143,24 @@ PRG-005 Pricing Options
 
 - flexible pricing options;
 - language/currency support;
-- Leeloo fallback.
+- Leeloo/partner-site application fallback.
 
 PRG-006 Programme Catalogue
 
 - simple grid/list;
 - no visible filters;
-- fields ready for future filters.
+- fields ready for future filters;
+- manager-controlled catalogue order;
+- localized comparison facts and document summary;
+- no pricing in the catalogue projection.
 
 PRG-007 SEO Landing Pages
 
 - area/type landing pages;
 - shared `/programmes/[slug]` namespace;
-- slug collision prevention.
+- programme detail rendering through the same namespace resolver;
+- slug collision prevention;
+- localized canonical, hreflang, and Open Graph metadata.
 
 PRG-008 Slug Redirects
 
@@ -366,4 +371,3 @@ During Group A, do not implement:
 - email sending;
 - Leeloo;
 - public verification.
-
