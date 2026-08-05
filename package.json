@@ -22,6 +22,7 @@
     "verify:fef-001": "node scripts/verify-fef-001.mjs",
     "verify:cnt-001": "node scripts/verify-cnt-001.mjs",
     "verify:cnt-002": "node scripts/verify-cnt-002.mjs",
+    "verify:cnt-003": "node scripts/verify-cnt-003.mjs",
     "verify:prg-001": "node scripts/verify-prg-001.mjs",
     "verify:prg-002": "node scripts/verify-prg-002.mjs",
     "verify:prg-003": "node scripts/verify-prg-003.mjs",

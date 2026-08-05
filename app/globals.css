@@ -18,6 +18,38 @@
   --shadow: 0 24px 80px oklch(16% 0.05 260 / 20%);
 }
 
+/* CNT-003 content-managed public page shell */
+.managed-page { min-height: 100vh; background: #f6f5f2; color: #19172b; }
+.managed-header { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 2rem; padding: 1.25rem clamp(1.25rem, 4vw, 4.5rem); background: #171327; color: #fff; }
+.managed-header nav { display: flex; align-items: center; justify-content: center; gap: 1.25rem; flex-wrap: wrap; }
+.managed-header a { color: inherit; text-decoration: none; }
+.managed-brand { font-size: 1.25rem; font-weight: 800; letter-spacing: .08em; }
+.managed-brand span { color: #9f8cff; }
+.managed-hero { padding: clamp(4rem, 9vw, 8rem) clamp(1.25rem, 8vw, 9rem); color: #fff; background: radial-gradient(circle at 85% 10%, #5946b8 0, transparent 35%), #171327; }
+.managed-hero h1 { max-width: 14ch; margin: .5rem 0 1.25rem; font-size: clamp(2.75rem, 6vw, 6.5rem); line-height: .98; letter-spacing: -.055em; }
+.managed-hero > p { max-width: 52rem; font-size: 1.08rem; line-height: 1.7; color: #d8d4e8; }
+.managed-hero .managed-lead { font-size: clamp(1.2rem, 2vw, 1.65rem); color: #fff; }
+.managed-hero .button { margin-top: 1.5rem; }
+.managed-section { padding: clamp(3.5rem, 7vw, 7rem) clamp(1.25rem, 8vw, 9rem); border-bottom: 1px solid #dedbe8; }
+.managed-section:nth-of-type(even) { background: #fff; }
+.managed-section > h2 { max-width: 18ch; margin: .5rem 0 1.5rem; font-size: clamp(2rem, 4vw, 4.25rem); line-height: 1.05; letter-spacing: -.04em; }
+.managed-section > p { max-width: 70rem; font-size: 1.05rem; line-height: 1.75; white-space: pre-line; }
+.managed-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr)); gap: 1rem; margin-top: 2rem; }
+.managed-card-grid article, .managed-partner-card { padding: 1.5rem; border: 1px solid #ddd9e8; border-radius: 1rem; background: #fff; color: inherit; text-decoration: none; }
+.managed-card-grid h3 { margin: 0 0 .75rem; font-size: 1.25rem; }
+.managed-card-grid p { line-height: 1.6; }
+.managed-partner-card img { width: 100%; height: 6rem; object-fit: contain; object-position: left center; margin-bottom: 1rem; }
+.managed-footer { display: flex; gap: 1.25rem; flex-wrap: wrap; padding: 2rem clamp(1.25rem, 8vw, 9rem); background: #171327; color: #fff; }
+.managed-footer a { color: #b9abff; }
+@media (max-width: 900px) {
+  .managed-header { grid-template-columns: 1fr auto; }
+  .managed-header > nav:first-of-type { grid-column: 1 / -1; justify-content: flex-start; order: 3; }
+}
+@media (max-width: 640px) {
+  .managed-header > nav:first-of-type { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .managed-hero h1 { font-size: clamp(2.5rem, 13vw, 4rem); }
+}
+
 * {
   box-sizing: border-box;
   min-width: 0;

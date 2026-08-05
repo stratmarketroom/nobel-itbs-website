@@ -1,8 +1,7 @@
-import { PublicShell } from '@/components/public-shell';
-import { homeCopy } from '@/lib/i18n';
-import { getPublicPartners } from '@/lib/partners/public';
+import { notFound } from 'next/navigation';
+import { ManagedContentPage } from '@/components/managed-content-page';
+import { getStructuredContentPage } from '@/lib/content/pages';
+import { managedPageMetadata } from '@/lib/content/page-metadata';
 
-export default async function HomePage() {
-  const partners = await getPublicPartners('en');
-  return <PublicShell copy={homeCopy.en} locale="en" partners={partners.items} />;
-}
+export async function generateMetadata() { const page = await getStructuredContentPage('home', 'en'); return page ? managedPageMetadata(page) : {}; }
+export default async function HomePage() { const page = await getStructuredContentPage('home', 'en'); if (!page) notFound(); return <ManagedContentPage page={page} locale="en" />; }
