@@ -3,7 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 import { cache } from 'react';
 import type { ContentLocale, TranslationStatus } from '@/lib/content/localization';
 import { selectPublishedTranslation } from '@/lib/content/localization';
+import { contentDataSource, requireSupabaseContent } from '@/lib/content/data-source';
 import { getProgrammeCatalogue } from './catalogue';
+import { getSeedProgrammeCatalogue } from './catalogue-seed';
 import { getSeedProgrammeNamespaceEntity } from './landing-seed';
 import type { ProgrammeCatalogueItem } from './catalogue-types';
 import type { ProgrammeLandingEntity, ProgrammeNamespaceEntity, ProgrammePricingOption, ProgrammeSection, TaxonomyLandingEntity } from './landing-types';
@@ -218,7 +220,7 @@ async function loadNamespaceRows(slug: string): Promise<QueryResult | null> {
 
   const client = createClient(supabaseUrl, anonKey, {
     auth: { autoRefreshToken: false, persistSession: false },
-    global: { fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.timeout(1800) }) },
+    global: { fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.timeout(8000) }) },
   });
 
   const programmeQuery = client.from('programmes').select(`
@@ -238,7 +240,7 @@ async function loadNamespaceRows(slug: string): Promise<QueryResult | null> {
   try {
     const result = await Promise.race([
       Promise.all([programmeQuery, areaQuery, typeQuery]),
-      new Promise<null>((resolve) => { timeoutId = setTimeout(() => resolve(null), 2000); }),
+      new Promise<null>((resolve) => { timeoutId = setTimeout(() => resolve(null), 9000); }),
     ]);
     if (timeoutId) clearTimeout(timeoutId);
     if (!result || result.some((entry) => entry.error)) return null;
@@ -254,13 +256,20 @@ async function loadNamespaceRows(slug: string): Promise<QueryResult | null> {
 }
 
 export const getProgrammeNamespaceEntity = cache(async (slug: string, locale: ContentLocale): Promise<ProgrammeNamespaceEntity | null> => {
+  if (contentDataSource() === 'seed') {
+    const seedCatalogue = getSeedProgrammeCatalogue(locale);
+    return getSeedProgrammeNamespaceEntity(slug, locale, seedCatalogue);
+  }
+
   const [catalogue, rows] = await Promise.all([
     getProgrammeCatalogue(locale),
     loadNamespaceRows(slug),
   ]);
 
-  if (rows?.programme) return projectProgramme(rows.programme, locale, catalogue.items);
-  if (rows?.area) return projectTaxonomy(rows.area, 'area', locale, catalogue.items);
-  if (rows?.type) return projectTaxonomy(rows.type, 'type', locale, catalogue.items);
-  return getSeedProgrammeNamespaceEntity(slug, locale, catalogue.items);
+  const databaseRows = requireSupabaseContent(rows, 'Programme landing page');
+
+  if (databaseRows.programme) return projectProgramme(databaseRows.programme, locale, catalogue.items);
+  if (databaseRows.area) return projectTaxonomy(databaseRows.area, 'area', locale, catalogue.items);
+  if (databaseRows.type) return projectTaxonomy(databaseRows.type, 'type', locale, catalogue.items);
+  return null;
 });

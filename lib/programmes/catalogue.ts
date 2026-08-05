@@ -2,6 +2,7 @@ import 'server-only';
 import { createClient } from '@supabase/supabase-js';
 import type { ContentLocale, TranslationStatus } from '@/lib/content/localization';
 import { selectPublishedTranslation } from '@/lib/content/localization';
+import { contentDataSource, requireSupabaseContent } from '@/lib/content/data-source';
 import { getSeedProgrammeCatalogue } from './catalogue-seed';
 import type { EnrolmentBadge, ProgrammeCatalogueItem, ProgrammeCatalogueResponse } from './catalogue-types';
 
@@ -130,7 +131,7 @@ async function loadFromSupabase(locale: ContentLocale): Promise<ProgrammeCatalog
   const client = createClient(supabaseUrl, anonKey, {
     auth: { autoRefreshToken: false, persistSession: false },
     global: {
-      fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.timeout(1500) }),
+      fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.timeout(8000) }),
     },
   });
   try {
@@ -166,7 +167,7 @@ async function loadFromSupabase(locale: ContentLocale): Promise<ProgrammeCatalog
     const result = await Promise.race([
       query,
       new Promise<null>((resolve) => {
-        timeoutId = setTimeout(() => resolve(null), 2000);
+        timeoutId = setTimeout(() => resolve(null), 9000);
       }),
     ]);
     if (timeoutId) clearTimeout(timeoutId);
@@ -186,10 +187,12 @@ async function loadFromSupabase(locale: ContentLocale): Promise<ProgrammeCatalog
 }
 
 export async function getProgrammeCatalogue(locale: ContentLocale): Promise<ProgrammeCatalogueResponse> {
-  const databaseItems = await loadFromSupabase(locale);
+  if (contentDataSource() === 'seed') {
+    return { locale, items: getSeedProgrammeCatalogue(locale) };
+  }
 
   return {
     locale,
-    items: databaseItems ?? getSeedProgrammeCatalogue(locale),
+    items: requireSupabaseContent(await loadFromSupabase(locale), 'Programme catalogue'),
   };
 }

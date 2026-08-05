@@ -2,6 +2,7 @@ import 'server-only';
 import { createClient } from '@supabase/supabase-js';
 import type { ContentLocale, TranslationStatus } from '@/lib/content/localization';
 import { selectPublishedTranslation } from '@/lib/content/localization';
+import { contentDataSource, requireSupabaseContent } from '@/lib/content/data-source';
 import { getSeedPartners } from './seed';
 import type { PartnerCard, PartnerType, PublicPartnersResponse } from './types';
 
@@ -53,7 +54,7 @@ async function loadFromSupabase(locale: ContentLocale): Promise<PartnerCard[] | 
 
   const client = createClient(supabaseUrl, anonKey, {
     auth: { autoRefreshToken: false, persistSession: false },
-    global: { fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.timeout(1500) }) },
+    global: { fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.timeout(8000) }) },
   });
 
   try {
@@ -72,7 +73,7 @@ async function loadFromSupabase(locale: ContentLocale): Promise<PartnerCard[] | 
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
     const result = await Promise.race([
       query,
-      new Promise<null>((resolve) => { timeoutId = setTimeout(() => resolve(null), 2000); }),
+      new Promise<null>((resolve) => { timeoutId = setTimeout(() => resolve(null), 9000); }),
     ]);
     if (timeoutId) clearTimeout(timeoutId);
     if (!result) return null;
@@ -89,6 +90,6 @@ async function loadFromSupabase(locale: ContentLocale): Promise<PartnerCard[] | 
 }
 
 export async function getPublicPartners(locale: ContentLocale): Promise<PublicPartnersResponse> {
-  const databaseItems = await loadFromSupabase(locale);
-  return { locale, items: databaseItems ?? getSeedPartners(locale) };
+  if (contentDataSource() === 'seed') return { locale, items: getSeedPartners(locale) };
+  return { locale, items: requireSupabaseContent(await loadFromSupabase(locale), 'Partners') };
 }
