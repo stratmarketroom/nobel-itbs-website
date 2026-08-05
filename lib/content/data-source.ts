@@ -11,7 +11,7 @@ export function contentDataSource(): ContentDataSource {
   throw new Error('CONTENT_DATA_SOURCE must be either "supabase" or "seed".');
 }
 
-export function requireSupabaseContent<T>(value: T | null, label: string): T {
-  if (value !== null) return value;
+export function requireSupabaseContent<T>(value: T | null | undefined, label: string): T {
+  if (value != null) return value;
   throw new Error(`${label} could not be loaded from Supabase.`);
 }

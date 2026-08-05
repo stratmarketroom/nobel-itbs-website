@@ -21,6 +21,9 @@ export default function AdminUsersPage() {
         <Link className="admin-login-link" href="/admin/contact-submissions">
           Contact submissions
         </Link>
+        <Link className="admin-login-link" href="/admin/content-pages">
+          Content pages
+        </Link>
       </section>
 
       <section className="admin-grid" aria-label="User management controls">

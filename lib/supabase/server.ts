@@ -209,3 +209,13 @@ export function assertCanAccessContactSubmissions(context: AdminContext): void {
     throw new ApiError('forbidden', 403, 'MFA/AAL2 is required for contact submissions.');
   }
 }
+
+export function assertCanManageContent(context: AdminContext): void {
+  const allowed = context.roles.some((role) => (
+    role === 'owner' || role === 'super_admin' || role === 'content_manager'
+  ));
+
+  if (!allowed) {
+    throw new ApiError('forbidden', 403, 'Content management access is not permitted.');
+  }
+}
