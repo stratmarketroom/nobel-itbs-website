@@ -195,3 +195,17 @@ export function assertCanManageRoles(context: AdminContext, roles: AppRole[]): v
     throw new ApiError('forbidden', 403, 'Only Owner can change Owner or Super Admin roles.');
   }
 }
+
+export function assertCanAccessContactSubmissions(context: AdminContext): void {
+  const hasContactRole = context.roles.some((role) => (
+    role === 'owner' || role === 'super_admin' || role === 'credential_manager'
+  ));
+
+  if (!hasContactRole) {
+    throw new ApiError('forbidden', 403, 'Contact submission access is not permitted.');
+  }
+
+  if (!context.mfaSatisfied) {
+    throw new ApiError('forbidden', 403, 'MFA/AAL2 is required for contact submissions.');
+  }
+}
