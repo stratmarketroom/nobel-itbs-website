@@ -60,7 +60,7 @@ export async function listAdminUsers(): Promise<AdminUserSummary[]> {
       mfa_required,
       created_at,
       updated_at,
-      user_roles (
+      user_roles!user_roles_user_id_fkey (
         user_id,
         role,
         assigned_at
