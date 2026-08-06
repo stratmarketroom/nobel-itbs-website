@@ -22,6 +22,7 @@ if (errors.length === 0) {
     'A start date describes learning commencement', 'Pricing language',
     'translationStatus', '3 option limit', 'programme-url-hierarchy',
     'Pricing option URL', 'Active run URL', 'Question fallback',
+    "selected ? priceLabel(selected) : 'Loading pricing option…'",
   ]) {
     if (!component.includes(snippet)) errors.push(`Programme operations UI missing: ${snippet}`);
   }

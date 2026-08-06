@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const paths = {
   migration: 'supabase/migrations/20260804160000_prg_008_slug_redirects.sql',
+  fixMigration: 'supabase/migrations/20260806130000_stab_010_fix_programme_slug_redirect_trigger.sql',
   test: 'supabase/tests/database/prg_008_slug_redirects.test.sql',
   resolver: 'lib/programmes/slug-redirects.ts',
   proxy: 'proxy.ts',
@@ -11,6 +12,22 @@ const errors = [];
 
 for (const path of Object.values(paths)) {
   if (!existsSync(path)) errors.push(`Missing required path: ${path}`);
+}
+
+if (existsSync(paths.fixMigration)) {
+  const sql = readFileSync(paths.fixMigration, 'utf8');
+  for (const snippet of [
+    'create or replace function internal.capture_published_programme_slug_redirect()',
+    "if tg_table_name = 'programmes' then",
+    "was_published := old.publication_status = 'published'",
+    "elsif tg_table_name = 'programme_areas' then",
+    "elsif tg_table_name = 'programme_types' then",
+    "was_published := old.status = 'published'",
+    'if old.slug is distinct from new.slug and was_published then',
+  ]) if (!sql.includes(snippet)) errors.push(`PRG-008 fix migration missing required SQL snippet: ${snippet}`);
+  if (sql.includes('was_published := case tg_table_name')) {
+    errors.push('PRG-008 fix must not access heterogeneous OLD fields inside one CASE expression.');
+  }
 }
 
 if (existsSync(paths.migration)) {
