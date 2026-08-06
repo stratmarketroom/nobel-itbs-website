@@ -26,6 +26,7 @@
     "verify:admin-programme-operations-ui": "node scripts/verify-admin-programme-operations-ui.mjs",
     "verify:admin-programme-taxonomy-ui": "node scripts/verify-admin-programme-taxonomy-ui.mjs",
     "verify:admin-partnership-entities": "node scripts/verify-admin-partnership-entities.mjs",
+    "verify:admin-content-fields": "node scripts/verify-admin-content-fields.mjs",
     "verify:cnt-001": "node scripts/verify-cnt-001.mjs",
     "verify:cnt-002": "node scripts/verify-cnt-002.mjs",
     "verify:cnt-003": "node scripts/verify-cnt-003.mjs",

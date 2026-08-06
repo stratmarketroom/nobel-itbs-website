@@ -74,10 +74,10 @@ Stage status: **implementation complete; authenticated UI mutation and role-navi
 - [x] CNT-004 protected Site Settings and For Organisations URL override.
 - [x] CNT-005 full Privacy Policy, Terms of Use, Refund Policy in three languages.
 - [x] localized cookie consent with accept/decline; no optional trackers load before consent because none are installed.
-- [-] Replace raw JSON editing with manager-friendly structured fields/forms.
+- [x] Manager-friendly structured fields/forms replace raw JSON editing across fixed page sections and legal documents.
 - `BLOCKED`: final For Organisations application URL.
 
-Stage status: **public and data layers complete; admin usability and one URL remain**.
+Stage status: **implementation complete; authenticated content-edit smoke and the final For Organisations URL remain before acceptance**.
 
 ## Stage 4 — Programme Catalogue and Sales Pages
 
@@ -137,7 +137,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Admin module | Current implementation | Verification still required |
 | --- | --- | --- |
 | Dashboard | Not started | Route, role-aware summary, authenticated smoke |
-| Content Pages | Protected API and technical JSON editor implemented | Manager-friendly controlled fields and authenticated edit/publish smoke |
+| Content Pages | Protected API plus responsive controlled fields for fixed sections, nested cards/lists, legal paragraphs, H1, SEO, and EN/UA/CZ publication | Authenticated edit/publish/fallback smoke |
 | Programmes | Protected CRUD API plus responsive list/create/edit UI for record fields, localized copy, controlled sales sections, and SEO | Authenticated create/edit/publication/order smoke |
 | Programme Areas | Protected CRUD API plus responsive list/create/edit UI with controlled localized landing sections | Authenticated record/translation/publication smoke |
 | Programme Types | Protected CRUD API plus responsive list/create/edit UI with controlled localized landing sections | Authenticated record/translation/publication smoke |
@@ -224,12 +224,10 @@ Stage status: **foundation checks active; launch QA not started**.
 
 The next step should close existing operational gaps before opening the learner and credential modules:
 
-1. **Run the authenticated Stage 4 role/CRUD pass** across programmes, areas, types, runs, and pricing, including Credential Manager read-only reference access.
-2. **Run the authenticated partner/expert CRUD pass** for Content Manager, Super Admin, and Owner, including translation publication and asset paths.
-3. **Replace raw content JSON editing with manager-friendly controlled fields** while preserving the structured schema.
-4. **Finish contact operations**: confirm required public form entry points, then configure/test CAPTCHA, rate limiting, and Google Workspace delivery.
-5. **Run the complete role/RLS/admin end-to-end pass** for Stages 2–4 when Docker or another pgTAP-capable environment is available.
-6. **Start Stage 5 with LRN-001 Learner Core** only after the Stage 4 manager layer is accepted.
-7. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
+1. **Run one authenticated manager QA pass** across Content Pages, programmes, areas, types, runs, pricing, partners, experts, users, settings, and contact submissions for every permitted and denied role.
+2. **Finish contact operations**: confirm required public form entry points, then configure/test CAPTCHA, rate limiting, and Google Workspace delivery.
+3. **Run the complete role/RLS/admin end-to-end pass** for Stages 2–4 when Docker or another pgTAP-capable environment is available.
+4. **Start Stage 5 with LRN-001 Learner Core** only after the current manager layer is accepted.
+5. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.

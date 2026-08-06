@@ -34,6 +34,7 @@ All 26 local SQL migrations through `20260805140000_cnt_005_legal_pages.sql` are
 - Responsive Programme Area and Programme Type managers with controlled EN/UA/CZ landing sections, SEO, ordering, and publication guards.
 - Inline programme-run and 1–3 pricing-option management with localized tariff copy, activation guards, and explicit application-URL priority.
 - Actor-scoped partner/expert APIs and responsive managers for records, EN/UA/CZ public copy, publication, ordering, destinations, and approved WebP paths.
+- Manager-friendly Content Pages editor for fixed sections, nested cards/lists, legal paragraphs, H1, SEO, and EN/UA/CZ publication without raw JSON editing.
 - Manager interfaces for users and roles, content pages, site settings, and contact submissions.
 
 ## Verified in Dev
@@ -61,6 +62,6 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 ## Important Remaining Product Work
 
 - Programme, partner, and expert management is implemented and awaits authenticated role/CRUD testing.
-- The structured page editor exposes controlled JSON; it is functional but not yet a manager-friendly field/form experience.
+- The completed content/programme/partner/expert manager layer now needs one authenticated role and mutation QA pass.
 - Learners, credentials, issuance/email, and public credential verification have not started.
 - Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email/CAPTCHA end-to-end tests remain ahead.

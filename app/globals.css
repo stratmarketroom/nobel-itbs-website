@@ -2308,6 +2308,78 @@ h1 span {
   text-align: center;
 }
 
+.content-controlled-sections,
+.content-repeat-group,
+.content-controlled-grid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.content-structure-group {
+  min-width: 0;
+  margin: 0;
+  border: 1px solid oklch(86% 0.016 250);
+  border-radius: 7px;
+  padding: 0.95rem;
+  background: oklch(98.5% 0.006 250);
+}
+
+.content-structure-group legend,
+.content-repeat-group legend {
+  max-width: min(100%, 38rem);
+  padding-inline: 0.35rem;
+  color: oklch(35% 0.04 250);
+  font-size: 0.78rem;
+  font-weight: 740;
+}
+
+.content-controlled-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.content-controlled-grid > :is(.content-structure-group, .content-repeat-group, .content-string-list, .content-structure-identifier) {
+  grid-column: 1 / -1;
+}
+
+.content-repeat-group {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.content-repeat-group > legend {
+  margin-bottom: 0.15rem;
+  padding-inline: 0;
+}
+
+.content-repeat-group .content-structure-group {
+  background: oklch(97% 0.009 250);
+}
+
+.content-structure-identifier {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid oklch(89% 0.012 250);
+  padding-bottom: 0.65rem;
+  color: oklch(49% 0.02 250);
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+.content-structure-identifier code {
+  color: oklch(35% 0.055 250);
+  font: 650 0.68rem/1.2 var(--font-manrope), system-ui, sans-serif;
+}
+
+.content-string-list small {
+  color: oklch(53% 0.018 250);
+  font-size: 0.64rem;
+  font-weight: 520;
+}
+
 .programme-language-options,
 .programme-section-group,
 .programme-repeat-field {
@@ -2790,6 +2862,7 @@ h1 span {
   .programme-operation-layout > nav { min-height: 0; max-height: 14rem; overflow-y: auto; border-right: 0; border-bottom: 1px solid oklch(87% 0.014 250); }
   .programme-operation-actions { flex-wrap: wrap; }
   .partnership-media-editor { grid-template-columns: 1fr; }
+  .content-controlled-grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
