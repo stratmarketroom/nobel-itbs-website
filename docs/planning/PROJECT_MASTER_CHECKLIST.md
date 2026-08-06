@@ -106,12 +106,13 @@ These checks confirm the database and public-site implementation. They do not cl
 - [x] Manager UI for programme list, create/edit, publication state, catalogue order, provider, and instruction languages.
 - [x] Manager UI for localized page copy, controlled sales sections, SEO fields, and translation states.
 - [x] Manager UI for runs, 1–3 localized pricing options, enrolment correction context, and application URL hierarchy.
+- [x] Manager UI for Programme Areas and Programme Types, including EN/UA/CZ landing copy, controlled sections, SEO, order, and publication state.
 - [ ] Authenticated Content Manager/Super Admin/Owner CRUD smoke.
 - [ ] Credential Manager read-only programme/run reference smoke.
 - `BLOCKED`: Leeloo destinations for General Psychology, Child Psychology, and Space Business.
 - `BLOCKED`: partner-site destination for AI Production, expected later.
 
-Stage status: **data, public delivery, and protected manager API complete; Stage 4 is not accepted until manager UI and authenticated role tests are complete**.
+Stage status: **implementation complete; Stage 4 is not accepted until authenticated role/CRUD tests pass and the blocked application destinations are supplied**.
 
 ## Partners, Experts, and Contacts
 
@@ -138,8 +139,8 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Dashboard | Not started | Route, role-aware summary, authenticated smoke |
 | Content Pages | Protected API and technical JSON editor implemented | Manager-friendly controlled fields and authenticated edit/publish smoke |
 | Programmes | Protected CRUD API plus responsive list/create/edit UI for record fields, localized copy, controlled sales sections, and SEO | Authenticated create/edit/publication/order smoke |
-| Programme Areas | Protected CRUD API and localized translation contract implemented | CRUD UI and authenticated translation smoke |
-| Programme Types | Protected CRUD API and localized translation contract implemented | CRUD UI and authenticated translation smoke |
+| Programme Areas | Protected CRUD API plus responsive list/create/edit UI with controlled localized landing sections | Authenticated record/translation/publication smoke |
+| Programme Types | Protected CRUD API plus responsive list/create/edit UI with controlled localized landing sections | Authenticated record/translation/publication smoke |
 | Programme Runs | Protected CRUD API plus inline create/edit/remove UI for status, dates, and run URL | Authenticated enrolment-correction and CRUD smoke |
 | Pricing Options | Protected CRUD API plus 1–3 option UI, localized copy, activation guard, and visible URL hierarchy | Authenticated option/translation/URL smoke |
 | Partners | Not started | API, CRUD UI, translation/asset smoke |
@@ -223,7 +224,7 @@ Stage status: **foundation checks active; launch QA not started**.
 
 The next step should close existing operational gaps before opening the learner and credential modules:
 
-1. **Complete Stage 4 manager operations**: area/type management next, then authenticated role tests across programmes, runs, and pricing.
+1. **Run the authenticated Stage 4 role/CRUD pass** across programmes, areas, types, runs, and pricing, including Credential Manager read-only reference access.
 2. **Complete partner/expert manager operations**: protected API, CRUD UI, translation and asset fields, and authenticated role tests.
 3. **Replace raw content JSON editing with manager-friendly controlled fields** while preserving the structured schema.
 4. **Finish contact operations**: confirm required public form entry points, then configure/test CAPTCHA, rate limiting, and Google Workspace delivery.

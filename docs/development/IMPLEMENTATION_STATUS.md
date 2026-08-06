@@ -1,6 +1,6 @@
 # Implementation Status
 
-Last updated: 2026-08-05
+Last updated: 2026-08-06
 
 This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
@@ -31,6 +31,7 @@ All 26 local SQL migrations through `20260805140000_cnt_005_legal_pages.sql` are
 - Shared protected admin shell with role-aware desktop/mobile navigation, account context, and explicit signed-out, MFA-required, and access-denied states.
 - Actor-scoped Admin Programme API for areas, types, programmes/translations, runs, pricing options/translations, and read-only slug redirect review.
 - Responsive programme manager for list/create/edit, publication and catalogue settings, localized page copy, controlled sales sections, and SEO.
+- Responsive Programme Area and Programme Type managers with controlled EN/UA/CZ landing sections, SEO, ordering, and publication guards.
 - Inline programme-run and 1–3 pricing-option management with localized tariff copy, activation guards, and explicit application-URL priority.
 - Manager interfaces for users and roles, content pages, site settings, and contact submissions.
 
@@ -58,7 +59,7 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 
 ## Important Remaining Product Work
 
-- Programmes, partners, and experts have secure data/public layers but no manager CRUD interface yet.
+- Partners and experts have secure data/public layers but no manager CRUD interface yet; programme management is implemented and awaits authenticated role testing.
 - The structured page editor exposes controlled JSON; it is functional but not yet a manager-friendly field/form experience.
 - Learners, credentials, issuance/email, and public credential verification have not started.
 - Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email/CAPTCHA end-to-end tests remain ahead.
