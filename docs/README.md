@@ -33,6 +33,7 @@ Current implementation notes:
 - `docs/development/SUPABASE_LOCAL_SETUP.md`
 - `docs/development/MIGRATION_STANDARDS.md`
 - `docs/qa/AUTH-007_QA_REVIEW_2026-07-27.md`
+- `docs/qa/STAGE_2_4_E2E_RLS_QA_2026-08-06.md`
 - `docs/development/DESIGN_SKILLS_SETUP.md`
 - `docs/development/DOCUMENTATION_MAINTENANCE.md`
 - `docs/development/CONTACT_NOTIFICATIONS.md`

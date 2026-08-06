@@ -1,7 +1,7 @@
 # Nobel ITBS Release 1 — Project Master Checklist
 
-Last reviewed: 2026-08-05  
-Baseline: v2 product, technical, security, sitemap, and implementation documents  
+Last reviewed: 2026-08-06
+Baseline: v2 product, technical, security, sitemap, and implementation documents
 Purpose: keep implementation aligned with Release 1 and make the next non-design step unambiguous.
 
 ## Status Legend
@@ -58,13 +58,13 @@ Stage status: **implemented; full automated DB test run pending environment supp
 - [x] AUTH-003 Owner uniqueness/minimum-owner rules.
 - [x] AUTH-004 role and active-admin helpers.
 - [x] AUTH-005 protected user-management API and operational UI: list/search/filter, create, activate/deactivate, MFA policy, and multi-role assignment.
-- [-] AUTH-005 authenticated UI mutation smoke: Owner/AAL2 create, role change, deactivate/reactivate, and audit confirmation have not yet been rerun through the completed interface.
+- [x] AUTH-005 authenticated UI mutation smoke: Owner/AAL2 create, role change, deactivate/reactivate, cleanup, and audit confirmation.
 - [x] AUTH-006 MFA/AAL2 enforcement for sensitive roles/actions.
 - [x] AUTH-007 sign-in, TOTP enrolment/challenge, and Owner browser smoke.
 - [x] Shared protected admin shell, role-aware navigation, signed-out/MFA/access-denied states, and responsive layout.
-- [-] Authenticated role-navigation smoke for Owner, Super Admin, Content Manager, and Credential Manager.
+- [x] Authenticated role/access smoke for Owner, Super Admin, Content Manager, Credential Manager, and a multi-role account, including AAL1/AAL2 boundaries.
 
-Stage status: **implementation complete; authenticated UI mutation and role-navigation smoke remain**.
+Stage status: **complete and accepted at the current dev level**.
 
 ## Stage 3 — Content Model and Public Website Foundation
 
@@ -75,9 +75,10 @@ Stage status: **implementation complete; authenticated UI mutation and role-navi
 - [x] CNT-005 full Privacy Policy, Terms of Use, Refund Policy in three languages.
 - [x] localized cookie consent with accept/decline; no optional trackers load before consent because none are installed.
 - [x] Manager-friendly structured fields/forms replace raw JSON editing across fixed page sections and legal documents.
+- [x] Authenticated Content Manager and Super Admin content-edit smoke, including controlled-field persistence and MFA enforcement.
 - `BLOCKED`: final For Organisations application URL.
 
-Stage status: **implementation complete; authenticated content-edit smoke and the final For Organisations URL remain before acceptance**.
+Stage status: **implementation and manager QA complete; final production CTA value remains externally blocked**.
 
 ## Stage 4 — Programme Catalogue and Sales Pages
 
@@ -107,12 +108,12 @@ These checks confirm the database and public-site implementation. They do not cl
 - [x] Manager UI for localized page copy, controlled sales sections, SEO fields, and translation states.
 - [x] Manager UI for runs, 1–3 localized pricing options, enrolment correction context, and application URL hierarchy.
 - [x] Manager UI for Programme Areas and Programme Types, including EN/UA/CZ landing copy, controlled sections, SEO, order, and publication state.
-- [ ] Authenticated Content Manager/Super Admin/Owner CRUD smoke.
-- [ ] Credential Manager read-only programme/run reference smoke.
+- [x] Authenticated Content Manager/Super Admin/Owner CRUD smoke, including draft taxonomy, programme, translation, run, 1–3 pricing options, validation, and cleanup.
+- [x] Credential Manager read-only published programme/run reference smoke; mutation is denied by API and RLS.
 - `BLOCKED`: Leeloo destinations for General Psychology, Child Psychology, and Space Business.
 - `BLOCKED`: partner-site destination for AI Production, expected later.
 
-Stage status: **implementation complete; Stage 4 is not accepted until authenticated role/CRUD tests pass and the blocked application destinations are supplied**.
+Stage status: **implementation and manager/RLS QA complete; production acceptance still depends on the blocked application destinations**.
 
 ## Partners, Experts, and Contacts
 
@@ -123,12 +124,12 @@ Stage status: **implementation complete; Stage 4 is not accepted until authentic
 - [x] Protected Admin API for partners and partner translations.
 - [x] Protected Admin API for experts and expert translations.
 - [x] Manager CRUD UI for partners, experts, order, publication states, and approved logo/photo paths.
-- [ ] Authenticated Content Manager/Super Admin/Owner partner/expert CRUD smoke.
+- [x] Authenticated Content Manager/Super Admin/Owner partner/expert CRUD smoke, including translations, asset-path validation, and cleanup.
 - [ ] General, organisation, and partnership public forms where the final page flows require them.
 - `BLOCKED`: Google Workspace notification credentials/destination inbox.
 - `BLOCKED`: production CAPTCHA provider and secrets.
 
-Module status: **partner/expert manager implementation complete; authenticated CRUD testing and contact operations/configuration remain**.
+Module status: **partner/expert manager implementation and authenticated CRUD QA complete; contact operations/configuration remain**.
 
 ## Admin Module Coverage
 
@@ -137,22 +138,22 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Admin module | Current implementation | Verification still required |
 | --- | --- | --- |
 | Dashboard | Not started | Route, role-aware summary, authenticated smoke |
-| Content Pages | Protected API plus responsive controlled fields for fixed sections, nested cards/lists, legal paragraphs, H1, SEO, and EN/UA/CZ publication | Authenticated edit/publish/fallback smoke |
-| Programmes | Protected CRUD API plus responsive list/create/edit UI for record fields, localized copy, controlled sales sections, and SEO | Authenticated create/edit/publication/order smoke |
-| Programme Areas | Protected CRUD API plus responsive list/create/edit UI with controlled localized landing sections | Authenticated record/translation/publication smoke |
-| Programme Types | Protected CRUD API plus responsive list/create/edit UI with controlled localized landing sections | Authenticated record/translation/publication smoke |
-| Programme Runs | Protected CRUD API plus inline create/edit/remove UI for status, dates, and run URL | Authenticated enrolment-correction and CRUD smoke |
-| Pricing Options | Protected CRUD API plus 1–3 option UI, localized copy, activation guard, and visible URL hierarchy | Authenticated option/translation/URL smoke |
-| Partners | Protected CRUD API plus responsive record, EN/UA/CZ copy, classification, URL, order, and logo-path UI | Authenticated CRUD/translation/asset-path smoke |
-| Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/asset-path smoke |
-| Contact Submissions | Protected API and processing UI implemented | Authenticated role/status smoke; production notifications |
+| Content Pages | Protected API plus responsive controlled fields for fixed sections, nested cards/lists, legal paragraphs, H1, SEO, and EN/UA/CZ publication | Authenticated edit and role/MFA smoke passed; final editorial publication review remains operational |
+| Programmes | Protected CRUD API plus responsive list/create/edit UI for record fields, localized copy, controlled sales sections, and SEO | Authenticated create/edit/order/translation/cleanup smoke passed |
+| Programme Areas | Protected CRUD API plus responsive list/create/edit UI with controlled localized landing sections | Authenticated draft record/translation/validation/cleanup smoke passed |
+| Programme Types | Protected CRUD API plus responsive list/create/edit UI with controlled localized landing sections | Authenticated draft record/translation/cleanup smoke passed |
+| Programme Runs | Protected CRUD API plus inline create/edit/remove UI for status, dates, and run URL | Authenticated create/update/date-validation/delete smoke passed |
+| Pricing Options | Protected CRUD API plus 1–3 option UI, localized copy, activation guard, and visible URL hierarchy | Authenticated 1–3 options, translation, fourth-option guard, and cleanup smoke passed |
+| Partners | Protected CRUD API plus responsive record, EN/UA/CZ copy, classification, URL, order, and logo-path UI | Authenticated CRUD/translation/asset-path validation/cleanup smoke passed |
+| Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/cleanup smoke passed |
+| Contact Submissions | Protected API and processing UI implemented | Role/RLS visibility smoke passed; status mutation and production notifications remain |
 | Learners | Planned for Stage 5 | LRN-001..004 |
 | Credential Sets / Credentials / Number Log | Planned for Stages 6–7 | CRD/WF sequence |
 | Email Templates | Planned with credential workflow | Protected editing and audit smoke |
-| Site Settings | Protected API/UI implemented | Authenticated save/audit smoke and final For Organisations URL |
-| Users and Roles | Protected API/UI implemented | Authenticated create/roles/activation/audit smoke |
+| Site Settings | Protected API/UI implemented | Authenticated AAL2 save/audit smoke passed; final For Organisations URL remains |
+| Users and Roles | Protected API/UI implemented | Authenticated create/roles/deactivate/reactivate/audit/cleanup smoke passed |
 | Audit/History | Audit storage implemented; admin view not started | Protected list/detail and privacy review |
-| Unified admin shell/navigation | Shared protected layout, role-aware desktop/mobile navigation, account context, and signed-out/MFA/access-denied states implemented | Authenticated role-navigation smoke for all four roles |
+| Unified admin shell/navigation | Shared protected layout, role-aware desktop/mobile navigation, account context, and signed-out/MFA/access-denied states implemented | Authenticated access matrix passed for all four roles and a multi-role account |
 
 ## Stage 5 — Learner Foundation
 
@@ -199,9 +200,9 @@ Stage status: **partially implemented**.
 ## Stage 9 — Security, QA, and Launch Hardening
 
 - [-] Ticket-level migration/static verifiers, lint, TypeScript, builds, browser smoke, and selected RLS/API smoke checks pass.
-- [ ] QA-001 full RLS matrix for every role and protected table.
+- [-] QA-001 live Stage 2–4 RLS matrix passed for current tables; future learner/credential tables and the Docker-dependent full pgTAP suite remain.
 - [ ] QA-002 credential verification privacy tests after credentials exist.
-- [ ] QA-003 complete MFA-sensitive-action matrix.
+- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings actions; future credential actions remain.
 - [ ] QA-004 end-to-end learner → credential → PDF → activation → verify → revoke flow.
 - [ ] QA-005 production environment, Gmail, Leeloo, CAPTCHA, analytics, backup, and launch checklist.
 - [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
@@ -224,10 +225,10 @@ Stage status: **foundation checks active; launch QA not started**.
 
 The next step should close existing operational gaps before opening the learner and credential modules:
 
-1. **Run one authenticated manager QA pass** across Content Pages, programmes, areas, types, runs, pricing, partners, experts, users, settings, and contact submissions for every permitted and denied role.
-2. **Finish contact operations**: confirm required public form entry points, then configure/test CAPTCHA, rate limiting, and Google Workspace delivery.
-3. **Run the complete role/RLS/admin end-to-end pass** for Stages 2–4 when Docker or another pgTAP-capable environment is available.
-4. **Start Stage 5 with LRN-001 Learner Core** only after the current manager layer is accepted.
-5. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
+1. [x] **Authenticated manager and live RLS QA for Stages 2–4** — completed on 2026-08-06; see `docs/qa/STAGE_2_4_E2E_RLS_QA_2026-08-06.md`.
+2. **Finish contact operations**: confirm required public form entry points, then configure/test CAPTCHA, rate limiting, Google Workspace delivery, and the remaining contact-status mutation smoke.
+3. **Start Stage 5 with LRN-001 Learner Core** after the contact-operation scope is confirmed.
+4. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
+5. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted Stage 2–4 manager layer.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.
