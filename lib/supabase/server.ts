@@ -218,6 +218,10 @@ export function assertCanManageContent(context: AdminContext): void {
   if (!allowed) {
     throw new ApiError('forbidden', 403, 'Content management access is not permitted.');
   }
+
+  if (!context.mfaSatisfied) {
+    throw new ApiError('forbidden', 403, 'MFA/AAL2 is required for content management.');
+  }
 }
 
 export function assertCanManageSiteSettings(context: AdminContext): void {

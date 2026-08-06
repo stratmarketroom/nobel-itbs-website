@@ -2,11 +2,23 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const migrationPath = 'supabase/migrations/20260727145835_auth_006_mfa_enforcement.sql';
 const testPath = 'supabase/tests/database/auth_006_mfa_enforcement.test.sql';
+const serverPath = 'lib/supabase/server.ts';
 const errors = [];
 
-for (const path of [migrationPath, testPath]) {
+for (const path of [migrationPath, testPath, serverPath]) {
   if (!existsSync(path)) {
     errors.push(`Missing required path: ${path}`);
+  }
+}
+
+if (existsSync(serverPath)) {
+  const server = readFileSync(serverPath, 'utf8');
+  const contentGuard = server.match(/export function assertCanManageContent\(context: AdminContext\): void \{[\s\S]*?\n\}/)?.[0] ?? '';
+  if (!contentGuard.includes('if (!context.mfaSatisfied)')) {
+    errors.push('Content management must reject sessions that have not satisfied their MFA requirement.');
+  }
+  if (!contentGuard.includes('MFA/AAL2 is required for content management.')) {
+    errors.push('Content management MFA denial must return a clear AAL2 message.');
   }
 }
 
