@@ -319,6 +319,21 @@ of `record` or `translation`, so a failed translation publication cannot silentl
 partially apply a record update. Slug redirects are read-only because published
 slug changes create and collapse redirect rows through database triggers.
 
+### Partner and Expert manager routes
+
+Content Manager, Super Admin, and Owner can manage public partner and expert
+cards and their EN/UA/CZ translation states through:
+
+- `GET|POST /api/v1/admin/partners`;
+- `GET|PATCH|DELETE /api/v1/admin/partners/{id}`;
+- `GET|POST /api/v1/admin/experts`;
+- `GET|PATCH|DELETE /api/v1/admin/experts/{id}`.
+
+Record creation uses direct entity fields. Updates use exactly one of `record`
+or `translation`. Public assets remain approved WebP files under the existing
+`/partners/` and `/experts/` paths; asset upload/storage expansion is not part
+of this manager API.
+
 ## 9. Admin Learner API
 
 Credential Manager/Super Admin/Owner:

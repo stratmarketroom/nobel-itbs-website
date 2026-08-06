@@ -27,6 +27,8 @@ const navItems: AdminNavItem[] = [
   { href: '/admin/programmes', label: 'Programmes', shortLabel: 'Programmes', roles: ['owner', 'super_admin', 'content_manager'] },
   { href: '/admin/programme-areas', label: 'Programme areas', shortLabel: 'Areas', roles: ['owner', 'super_admin', 'content_manager'] },
   { href: '/admin/programme-types', label: 'Programme types', shortLabel: 'Types', roles: ['owner', 'super_admin', 'content_manager'] },
+  { href: '/admin/partners', label: 'Partners', shortLabel: 'Partners', roles: ['owner', 'super_admin', 'content_manager'] },
+  { href: '/admin/experts', label: 'Experts', shortLabel: 'Experts', roles: ['owner', 'super_admin', 'content_manager'] },
   { href: '/admin/contact-submissions', label: 'Contact submissions', shortLabel: 'Contacts', roles: ['owner', 'super_admin', 'credential_manager'] },
   { href: '/admin/site-settings', label: 'Site settings', shortLabel: 'Settings', roles: ['owner', 'super_admin'] },
   { href: '/admin/users', label: 'Users and roles', shortLabel: 'Users', roles: ['owner', 'super_admin'] },

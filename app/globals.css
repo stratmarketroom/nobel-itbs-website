@@ -2263,6 +2263,51 @@ h1 span {
   gap: 0.9rem;
 }
 
+.programme-span-two {
+  grid-column: 1 / -1;
+}
+
+.partnership-media-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 20rem);
+  align-items: start;
+  gap: 1.25rem;
+}
+
+.partnership-media-preview {
+  position: relative;
+  min-height: 12rem;
+  overflow: hidden;
+  border: 1px solid oklch(86% 0.016 250);
+  border-radius: 7px;
+  background: oklch(96% 0.008 250);
+}
+
+.partnership-media-preview img {
+  object-fit: contain;
+  padding: 1rem;
+}
+
+.partnership-media-preview.expert {
+  min-height: 20rem;
+}
+
+.partnership-media-preview.expert img {
+  object-fit: cover;
+  padding: 0;
+}
+
+.partnership-media-preview > span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  color: oklch(52% 0.018 250);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
 .programme-language-options,
 .programme-section-group,
 .programme-repeat-field {
@@ -2744,6 +2789,7 @@ h1 span {
   .programme-operation-layout { display: block; }
   .programme-operation-layout > nav { min-height: 0; max-height: 14rem; overflow-y: auto; border-right: 0; border-bottom: 1px solid oklch(87% 0.014 250); }
   .programme-operation-actions { flex-wrap: wrap; }
+  .partnership-media-editor { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

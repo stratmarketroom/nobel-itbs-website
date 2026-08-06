@@ -120,15 +120,15 @@ Stage status: **implementation complete; Stage 4 is not accepted until authentic
 - [x] PCE-002 expert schema/RLS and multilingual public cards, including Alina Yudina’s supplied photo.
 - [x] PCE-003 Partnerships page combines approved organisations and experts.
 - [-] PCE-004 database, programme-question endpoint, protected manager workflow, audit, rate-limit/CAPTCHA hooks, and notification code.
-- [ ] Protected Admin API for partners and partner translations.
-- [ ] Protected Admin API for experts and expert translations.
-- [ ] Manager CRUD UI for partners, experts, order, publication states, logos, and photos.
+- [x] Protected Admin API for partners and partner translations.
+- [x] Protected Admin API for experts and expert translations.
+- [x] Manager CRUD UI for partners, experts, order, publication states, and approved logo/photo paths.
 - [ ] Authenticated Content Manager/Super Admin/Owner partner/expert CRUD smoke.
 - [ ] General, organisation, and partnership public forms where the final page flows require them.
 - `BLOCKED`: Google Workspace notification credentials/destination inbox.
 - `BLOCKED`: production CAPTCHA provider and secrets.
 
-Module status: **public presentation and programme-question workflow implemented; operations/configuration incomplete**.
+Module status: **partner/expert manager implementation complete; authenticated CRUD testing and contact operations/configuration remain**.
 
 ## Admin Module Coverage
 
@@ -143,8 +143,8 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Programme Types | Protected CRUD API plus responsive list/create/edit UI with controlled localized landing sections | Authenticated record/translation/publication smoke |
 | Programme Runs | Protected CRUD API plus inline create/edit/remove UI for status, dates, and run URL | Authenticated enrolment-correction and CRUD smoke |
 | Pricing Options | Protected CRUD API plus 1–3 option UI, localized copy, activation guard, and visible URL hierarchy | Authenticated option/translation/URL smoke |
-| Partners | Not started | API, CRUD UI, translation/asset smoke |
-| Experts | Not started | API, CRUD UI, translation/asset smoke |
+| Partners | Protected CRUD API plus responsive record, EN/UA/CZ copy, classification, URL, order, and logo-path UI | Authenticated CRUD/translation/asset-path smoke |
+| Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/asset-path smoke |
 | Contact Submissions | Protected API and processing UI implemented | Authenticated role/status smoke; production notifications |
 | Learners | Planned for Stage 5 | LRN-001..004 |
 | Credential Sets / Credentials / Number Log | Planned for Stages 6–7 | CRD/WF sequence |
@@ -225,7 +225,7 @@ Stage status: **foundation checks active; launch QA not started**.
 The next step should close existing operational gaps before opening the learner and credential modules:
 
 1. **Run the authenticated Stage 4 role/CRUD pass** across programmes, areas, types, runs, and pricing, including Credential Manager read-only reference access.
-2. **Complete partner/expert manager operations**: protected API, CRUD UI, translation and asset fields, and authenticated role tests.
+2. **Run the authenticated partner/expert CRUD pass** for Content Manager, Super Admin, and Owner, including translation publication and asset paths.
 3. **Replace raw content JSON editing with manager-friendly controlled fields** while preserving the structured schema.
 4. **Finish contact operations**: confirm required public form entry points, then configure/test CAPTCHA, rate limiting, and Google Workspace delivery.
 5. **Run the complete role/RLS/admin end-to-end pass** for Stages 2–4 when Docker or another pgTAP-capable environment is available.
