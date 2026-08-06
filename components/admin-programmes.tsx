@@ -353,7 +353,7 @@ export function AdminProgrammes() {
       <header className="admin-module-header"><div><p className="admin-kicker">Catalogue operations</p><h1>Programmes</h1><p>Manage programme identity, publication, localized sales copy, and catalogue presentation.</p></div></header>
       <section className="programme-admin-toolbar" aria-label="Programme controls">
         <label><span>Search programmes</span><input type="search" placeholder="Title or slug" value={query} onChange={(event) => setQuery(event.target.value)} /></label>
-        <span>{programmes.length} programmes</span><button type="button" onClick={beginCreate}>New programme</button>
+        <span>{programmes.length} programmes</span><button type="button" disabled={loading} onClick={beginCreate}>{loading ? 'Loading programmes…' : 'New programme'}</button>
       </section>
       {message ? <p className={`programme-admin-message ${messageKind}`} role="status">{message}</p> : null}
       <section className="programme-admin-layout">

@@ -23,11 +23,15 @@ if (errors.length === 0) {
     'translationStatus', '3 option limit', 'programme-url-hierarchy',
     'Pricing option URL', 'Active run URL', 'Question fallback',
     "selected ? priceLabel(selected) : 'Loading pricing option…'",
+    "selected ? runLabel(selected) : 'Loading run…'",
   ]) {
     if (!component.includes(snippet)) errors.push(`Programme operations UI missing: ${snippet}`);
   }
   for (const snippet of ["'runs'", "'pricing'", 'AdminProgrammeOperations']) {
     if (!programme.includes(snippet)) errors.push(`Programme editor integration missing: ${snippet}`);
+  }
+  if (!programme.includes("disabled={loading}") || !programme.includes("loading ? 'Loading programmes…' : 'New programme'")) {
+    errors.push('New programme action must stay disabled until programme data is loaded.');
   }
   for (const snippet of ["count: 'exact'", '(count ?? 0) >= 3', 'up to three pricing options']) {
     if (!data.includes(snippet)) errors.push(`Server-side pricing limit missing: ${snippet}`);
