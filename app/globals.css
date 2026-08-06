@@ -2380,6 +2380,16 @@ h1 span {
   font-weight: 520;
 }
 
+.content-structured-empty {
+  margin: 0;
+  border: 1px dashed oklch(84% 0.018 250);
+  border-radius: 7px;
+  padding: 0.75rem;
+  background: oklch(97.5% 0.008 250);
+  color: oklch(49% 0.02 250);
+  font-size: 0.7rem;
+}
+
 .programme-language-options,
 .programme-section-group,
 .programme-repeat-field {
@@ -2779,6 +2789,24 @@ h1 span {
 .programme-save-row span {
   color: oklch(49% 0.02 250);
   font-size: 0.7rem;
+}
+
+.programme-save-context {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.programme-save-row .programme-save-feedback {
+  min-height: 1.1em;
+  font-weight: 700;
+}
+
+.programme-save-row .programme-save-feedback.success {
+  color: oklch(37% 0.065 155);
+}
+
+.programme-save-row .programme-save-feedback.error {
+  color: oklch(40% 0.075 25);
 }
 
 .programme-save-row button:disabled,

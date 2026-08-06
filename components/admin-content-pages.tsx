@@ -21,6 +21,8 @@ type EditorState = {
 
 const structuralKeys = new Set(['key', 'slug']);
 const longTextKeys = new Set(['body', 'copy', 'content', 'description', 'intro', 'lead', 'supporting_copy', 'supporting_text']);
+const stringListKeys = new Set(['items', 'paragraphs']);
+const structuredListKeys = new Set(['blocks', 'cards']);
 
 function isObject(value: JsonValue | unknown): value is JsonObject {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -113,10 +115,12 @@ function ControlledValue({ fieldKey, value, path, sections, onChange }: {
     return <label><span>{readableKey(fieldKey)}</span>{multiline ? <textarea rows={Math.min(8, Math.max(3, Math.ceil(text.length / 90)))} value={text} onChange={(event) => onChange(setAtPath(sections, path, event.target.value))} /> : <input value={text} onChange={(event) => onChange(setAtPath(sections, path, event.target.value))} />}</label>;
   }
   if (Array.isArray(value)) {
-    if (value.every((item) => typeof item === 'string')) {
+    const isStringList = stringListKeys.has(fieldKey)
+      || (!structuredListKeys.has(fieldKey) && value.length > 0 && value.every((item) => typeof item === 'string'));
+    if (isStringList) {
       return <label className="content-string-list"><span>{readableKey(fieldKey)}</span><small>One item or paragraph per line</small><textarea rows={Math.min(14, Math.max(5, value.length + 1))} value={value.join('\n')} onChange={(event) => onChange(setAtPath(sections, path, event.target.value.split('\n').filter((line) => line.trim() !== '')))} /></label>;
     }
-    return <fieldset className="content-repeat-group"><legend>{readableKey(fieldKey)}</legend>{value.map((item, index) => isObject(item) ? <ControlledObject key={index} object={item} path={[...path, index]} sections={sections} onChange={onChange} label={`${readableKey(fieldKey).replace(/s$/, '')} ${index + 1}`} /> : null)}</fieldset>;
+    return <fieldset className="content-repeat-group"><legend>{readableKey(fieldKey)}</legend>{value.length === 0 ? <p className="content-structured-empty">No {readableKey(fieldKey).toLowerCase()} are configured in this approved section.</p> : value.map((item, index) => isObject(item) ? <ControlledObject key={index} object={item} path={[...path, index]} sections={sections} onChange={onChange} label={`${readableKey(fieldKey).replace(/s$/, '')} ${index + 1}`} /> : null)}</fieldset>;
   }
   return <ControlledObject object={value} path={path} sections={sections} onChange={onChange} label={readableKey(fieldKey)} />;
 }
@@ -184,8 +188,14 @@ export function AdminContentPages() {
   }
 
   function changeLocale(nextLocale: ContentLocale) {
+    setMessage('');
     setLocale(nextLocale);
     if (selected) setEditor(editorFor(selected, nextLocale));
+  }
+
+  function changeEditor(nextEditor: EditorState) {
+    setMessage('');
+    setEditor(nextEditor);
   }
 
   async function save() {
@@ -206,7 +216,7 @@ export function AdminContentPages() {
       const payload = await response.json().catch(() => null) as { page?: AdminContentPage } | null;
       if (!response.ok || !payload?.page) throw new Error(apiMessage(payload) ?? 'Content page could not be saved.');
       const updated = pages.map((page) => page.id === payload.page?.id ? payload.page : page);
-      setPages(updated); setEditor(editorFor(payload.page, locale)); setMessageKind('success'); setMessage('Saved. The change is recorded in the audit log.');
+      setPages(updated); setEditor(editorFor(payload.page, locale)); setMessageKind('success'); setMessage('Saved. Audit log updated.');
     } catch (error) {
       setMessageKind('error'); setMessage(error instanceof Error ? error.message : 'Content page could not be saved.');
     } finally { setSaving(false); }
@@ -214,10 +224,10 @@ export function AdminContentPages() {
 
   return <main className="programme-admin-shell content-page-admin-shell">
     <header className="admin-module-header"><div><p className="admin-kicker">Structured content</p><h1>Content pages</h1><p>Edit approved page sections and translation publication states without changing the page structure.</p></div></header>
-    {message ? <p className={`programme-admin-message ${messageKind}`} role="status">{message}</p> : null}
+    {message && !editor ? <p className={`programme-admin-message ${messageKind}`} role="status">{message}</p> : null}
     <section className="programme-admin-layout"><aside className="programme-admin-list" aria-label="Content pages">{loading ? Array.from({ length: 4 }, (_, index) => <div className="programme-admin-skeleton" key={index} />) : pages.map((page) => <button key={page.id} type="button" aria-pressed={page.id === selectedId} onClick={() => selectPage(page)}><span><strong>{readableKey(page.page_key)}</strong><small>{page.page_type}</small></span><span className={`programme-status ${page.status}`}>{page.status}</span><small>{contentLocales.map((item) => `${item.toUpperCase()} ${translationFor(page, item)?.translation_status ?? 'missing'}`).join(' · ')}</small></button>)}</aside>
       {editor && selected ? <section className="programme-admin-editor"><div className="programme-editor-heading"><div><p>{selected.page_type}</p><h2>{readableKey(selected.page_key)}</h2></div><span className={`programme-status ${editor.pageStatus}`}>{editor.pageStatus}</span></div><nav className="programme-editor-tabs" aria-label="Content editor sections">{(['content', 'seo', 'settings'] as const).map((item) => <button key={item} type="button" aria-current={tab === item ? 'page' : undefined} onClick={() => setTab(item)}>{item === 'content' ? 'Page sections' : item === 'seo' ? 'H1 and SEO' : 'Publication'}</button>)}</nav><div className="programme-locale-bar"><span>Website language</span>{contentLocales.map((item) => <button type="button" key={item} aria-pressed={locale === item} onClick={() => changeLocale(item)}>{item.toUpperCase()}<small>{translationFor(selected, item)?.translation_status ?? 'missing'}</small></button>)}</div>
-        <form className="programme-editor-form" onSubmit={(event) => { event.preventDefault(); void save(); }}>{tab === 'content' ? <ControlledSections sections={editor.sections} onChange={(sections) => setEditor({ ...editor, sections })} /> : null}{tab === 'seo' ? <div className="programme-copy-fields"><label><span>Page H1</span><input value={editor.h1} onChange={(event) => setEditor({ ...editor, h1: event.target.value })} /></label><label><span>SEO title</span><input value={editor.seoTitle} onChange={(event) => setEditor({ ...editor, seoTitle: event.target.value })} /></label><label><span>SEO description</span><textarea rows={4} value={editor.seoDescription} onChange={(event) => setEditor({ ...editor, seoDescription: event.target.value })} /></label></div> : null}{tab === 'settings' ? <div className="programme-form-grid"><label><span>Page status</span><select value={editor.pageStatus} onChange={(event) => setEditor({ ...editor, pageStatus: event.target.value as PageRecordStatus })}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label><label><span>{locale.toUpperCase()} translation status</span><select value={editor.translationStatus} onChange={(event) => setEditor({ ...editor, translationStatus: event.target.value as TranslationStatus })}><option value="missing">Missing</option><option value="draft">Draft</option><option value="published">Published</option></select></label><p className="programme-operation-note programme-span-two">English must be published before the page. Other languages fall back to English publicly until their translation is ready.</p></div> : null}<div className="programme-save-row"><span>Editing {locale.toUpperCase()}. Fixed blocks and identifiers are preserved.</span><button type="submit" disabled={saving}>{saving ? 'Saving…' : `Save ${locale.toUpperCase()} page`}</button></div></form>
+        <form className="programme-editor-form" onSubmit={(event) => { event.preventDefault(); void save(); }}>{tab === 'content' ? <ControlledSections sections={editor.sections} onChange={(sections) => changeEditor({ ...editor, sections })} /> : null}{tab === 'seo' ? <div className="programme-copy-fields"><label><span>Page H1</span><input value={editor.h1} onChange={(event) => changeEditor({ ...editor, h1: event.target.value })} /></label><label><span>SEO title</span><input value={editor.seoTitle} onChange={(event) => changeEditor({ ...editor, seoTitle: event.target.value })} /></label><label><span>SEO description</span><textarea rows={4} value={editor.seoDescription} onChange={(event) => changeEditor({ ...editor, seoDescription: event.target.value })} /></label></div> : null}{tab === 'settings' ? <div className="programme-form-grid"><label><span>Page status</span><select value={editor.pageStatus} onChange={(event) => changeEditor({ ...editor, pageStatus: event.target.value as PageRecordStatus })}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label><label><span>{locale.toUpperCase()} translation status</span><select value={editor.translationStatus} onChange={(event) => changeEditor({ ...editor, translationStatus: event.target.value as TranslationStatus })}><option value="missing">Missing</option><option value="draft">Draft</option><option value="published">Published</option></select></label><p className="programme-operation-note programme-span-two">English must be published before the page. Other languages fall back to English publicly until their translation is ready.</p></div> : null}<div className="programme-save-row"><div className="programme-save-context"><span>Editing {locale.toUpperCase()}. Fixed blocks and identifiers are preserved.</span><span className={`programme-save-feedback ${message ? messageKind : ''}`} role="status" aria-live="polite">{message}</span></div><button type="submit" disabled={saving}>{saving ? 'Saving…' : message && messageKind === 'success' ? `Saved ${locale.toUpperCase()} ✓` : `Save ${locale.toUpperCase()} page`}</button></div></form>
       </section> : <div className="programme-admin-empty editor"><strong>Select a page</strong><span>Choose a controlled page from the list.</span></div>}
     </section>
   </main>;
