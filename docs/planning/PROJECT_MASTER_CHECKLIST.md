@@ -120,16 +120,16 @@ Stage status: **implementation and manager/RLS QA complete; production acceptanc
 - [x] PCE-001 partner schema/RLS, multilingual public cards, and expandable data model.
 - [x] PCE-002 expert schema/RLS and multilingual public cards, including Alina Yudina’s supplied photo.
 - [x] PCE-003 Partnerships page combines approved organisations and experts.
-- [-] PCE-004 database, programme-question endpoint, protected manager workflow, audit, rate-limit/CAPTCHA hooks, and notification code.
+- [x] PCE-004 database, all required public entry points, protected manager workflow, audit, database-backed rate limiting, CAPTCHA hooks, and notification code.
 - [x] Protected Admin API for partners and partner translations.
 - [x] Protected Admin API for experts and expert translations.
 - [x] Manager CRUD UI for partners, experts, order, publication states, and approved logo/photo paths.
 - [x] Authenticated Content Manager/Super Admin/Owner partner/expert CRUD smoke, including translations, asset-path validation, and cleanup.
-- [ ] General, organisation, and partnership public forms where the final page flows require them.
+- [x] General, organisation, and partnership public forms in EN/UA/CZ with validation, privacy acknowledgement, and honeypot handling.
 - `BLOCKED`: Google Workspace notification credentials/destination inbox.
 - `BLOCKED`: production CAPTCHA provider and secrets.
 
-Module status: **partner/expert manager implementation and authenticated CRUD QA complete; contact operations/configuration remain**.
+Module status: **implementation and dev QA complete; real CAPTCHA and Google Workspace production configuration remain externally blocked**.
 
 ## Admin Module Coverage
 
@@ -146,7 +146,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Pricing Options | Protected CRUD API plus 1–3 option UI, localized copy, activation guard, and visible URL hierarchy | Authenticated 1–3 options, translation, fourth-option guard, and cleanup smoke passed |
 | Partners | Protected CRUD API plus responsive record, EN/UA/CZ copy, classification, URL, order, and logo-path UI | Authenticated CRUD/translation/asset-path validation/cleanup smoke passed |
 | Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/cleanup smoke passed |
-| Contact Submissions | Protected API and processing UI implemented | Role/RLS visibility smoke passed; status mutation and production notifications remain |
+| Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, CAPTCHA fail-closed, audit, and cleanup smoke passed; production CAPTCHA and notifications remain |
 | Learners | Planned for Stage 5 | LRN-001..004 |
 | Credential Sets / Credentials / Number Log | Planned for Stages 6–7 | CRD/WF sequence |
 | Email Templates | Planned with credential workflow | Protected editing and audit smoke |
@@ -190,12 +190,14 @@ Stage status: **not started**.
 
 ## Stage 8 — Contact Operations
 
-- [-] Programme-question capture and protected processing are implemented under PCE-004.
-- [ ] Complete remaining public form entry points after confirming which page flows need them.
-- [ ] Configure and test real Google Workspace notification delivery.
-- [ ] Configure and test CAPTCHA and production rate limiting.
+- [x] Programme-question capture and protected processing are implemented under PCE-004.
+- [x] General, partnership, and organisation public entry points are implemented in EN/UA/CZ.
+- [x] Authenticated status processing, MFA/RLS boundaries, privacy-safe audit, validation, honeypot, and cleanup passed live dev QA.
+- [x] Database-backed five-per-15-minute rate limiting and CAPTCHA fail-closed server contract passed live dev QA.
+- `BLOCKED`: configure and test real Google Workspace notification delivery.
+- `BLOCKED`: configure and test the selected production CAPTCHA provider and production secrets.
 
-Stage status: **partially implemented**.
+Stage status: **implementation and dev QA complete; production integrations externally blocked**.
 
 ## Stage 9 — Security, QA, and Launch Hardening
 
@@ -211,7 +213,7 @@ Stage status: **foundation checks active; launch QA not started**.
 
 ## Verified Current Dev Baseline
 
-- [x] One ordered chain of 26 local migrations matches the remote dev history.
+- [x] One ordered chain of 27 local migrations matches the remote dev history.
 - [x] Pre-integration dev backup exists in the ignored backup directory.
 - [x] Public reads use Supabase by default; seed content is explicit offline mode only.
 - [x] Dev data: 3 languages, 3 areas, 3 types, 5 programmes, 5 runs, 5 partners, 3 experts.
@@ -223,12 +225,13 @@ Stage status: **foundation checks active; launch QA not started**.
 
 ## Next Implementation Sequence
 
-The next step should close existing operational gaps before opening the learner and credential modules:
+The next implementation step can open the learner module; external production integrations remain tracked for launch readiness:
 
 1. [x] **Authenticated manager and live RLS QA for Stages 2–4** — completed on 2026-08-06; see `docs/qa/STAGE_2_4_E2E_RLS_QA_2026-08-06.md`.
-2. **Finish contact operations**: confirm required public form entry points, then configure/test CAPTCHA, rate limiting, Google Workspace delivery, and the remaining contact-status mutation smoke.
-3. **Start Stage 5 with LRN-001 Learner Core** after the contact-operation scope is confirmed.
+2. [x] **Finish contact operations in code and dev QA** — required entry points, rate limiting, CAPTCHA fail-closed contract, contact-status mutation, audit, and cleanup passed on 2026-08-06; see `docs/qa/PCE_004_CONTACT_OPERATIONS_QA_2026-08-06.md`.
+3. **Start Stage 5 with LRN-001 Learner Core**.
 4. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
-5. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted Stage 2–4 manager layer.
+5. Configure/test real CAPTCHA and Google Workspace notification delivery during production readiness when the external credentials are available.
+6. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager and contact layers.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.

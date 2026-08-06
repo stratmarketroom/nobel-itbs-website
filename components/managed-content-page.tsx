@@ -5,6 +5,7 @@ import { localizePublicPath } from '@/lib/content/localization';
 import type { PartnerCard } from '@/lib/partners/types';
 import type { ExpertCard } from '@/lib/experts/types';
 import { ExpertCards } from './expert-cards';
+import { PublicEnquiryForm } from './public-enquiry-form';
 
 type ContentBlock = {
   key: string;
@@ -40,7 +41,12 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
   const heroFields = hero?.fields ?? {};
   const primaryLabel = heroFields.primary_cta || (locale === 'ua' ? 'Переглянути програми' : locale === 'cz' ? 'Prohlédnout programy' : 'Explore programmes');
   const primaryTarget = primaryHrefOverride
-    || (page.pageKey === 'for_organisations' ? 'mailto:info@nobel-itbs.eu' : localizedTarget(heroFields.primary_cta_target, locale, '/programmes'));
+    || (page.pageKey === 'for_organisations' || page.pageKey === 'partnerships'
+      ? '#contact'
+      : localizedTarget(heroFields.primary_cta_target, locale, '/programmes'));
+  const enquiryType = page.pageKey === 'about' ? 'general'
+    : page.pageKey === 'partnerships' ? 'partner_enquiry'
+      : page.pageKey === 'for_organisations' ? 'organisation_enquiry' : null;
 
   return (
     <main className="managed-page">
@@ -103,6 +109,7 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
         </section>
       ) : null}
       {page.pageKey === 'partnerships' && experts.length ? <ExpertCards experts={experts} /> : null}
+      {enquiryType ? <PublicEnquiryForm locale={locale} type={enquiryType} /> : null}
 
       <footer className="managed-footer">
         <strong>Nobel ITBS s.r.o.</strong><span>Praha, Czech Republic</span><a href="mailto:info@nobel-itbs.eu">info@nobel-itbs.eu</a>

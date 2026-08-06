@@ -18,7 +18,7 @@ This is the current implementation record. The v2 product and technical specific
 - Local secrets remain in ignored environment files and must never be committed.
 - A pre-integration backup is available under the ignored `backups/supabase/2026-08-05-pre-content/` directory.
 
-All 26 local SQL migrations through `20260805140000_cnt_005_legal_pages.sql` are applied to the remote dev database. The local and remote migration histories match.
+All 27 local SQL migrations through `20260806170000_pce_004_public_contact_entry_points.sql` are applied to the remote dev database. The local and remote migration histories match.
 
 ## Implemented Foundation
 
@@ -27,7 +27,7 @@ All 26 local SQL migrations through `20260805140000_cnt_005_legal_pages.sql` are
 - Structured core pages, legal pages, site settings, public navigation, locale fallback, and explicit Supabase-versus-seed data-source selection.
 - Programme areas, types, five programme records, runs, flexible pricing, public catalogue, programme/area/type pages, redirects, and programme-question flow.
 - Partner and expert records and their public Partnerships rendering.
-- Private contact-submission storage, protected manager list/status workflow, audit logging, rate-limit/CAPTCHA hooks, and Google Workspace notification code.
+- Private contact-submission storage, programme-question plus general/partnership/organisation public forms, protected manager list/status workflow, audit logging, database-backed rate limiting, CAPTCHA hooks, and Google Workspace notification code.
 - Shared protected admin shell with role-aware desktop/mobile navigation, account context, and explicit signed-out, MFA-required, and access-denied states.
 - Actor-scoped Admin Programme API for areas, types, programmes/translations, runs, pricing options/translations, and read-only slug redirect review.
 - Responsive programme manager for list/create/edit, publication and catalogue settings, localized page copy, controlled sales sections, and SEO.
@@ -43,7 +43,8 @@ All 26 local SQL migrations through `20260805140000_cnt_005_legal_pages.sql` are
 - Public application reads real Supabase content by default and does not silently replace database failures with seed content.
 - Anonymous write attempts and unauthorized contact reads are denied; protected admin APIs reject unauthenticated requests.
 - Production build, TypeScript, lint, ticket verification scripts, public API smoke checks, and browser checks pass.
-- Signed-out admin-shell and login-route browser checks pass; authenticated navigation still needs a smoke pass with each of the four admin roles.
+- Signed-out admin-shell and login-route browser checks pass; the authenticated access matrix passed for all four roles and a multi-role account.
+- Public contact entry points, validation, honeypot, five-per-15-minute rate limit, CAPTCHA fail-closed contract, Credential Manager MFA, status transitions, and privacy-safe audit passed live dev QA.
 - All nine legal routes render full localized documents; their metadata is `noindex, follow`.
 
 ## Verification Limitation
@@ -61,7 +62,7 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 
 ## Important Remaining Product Work
 
-- Programme, partner, and expert management is implemented and awaits authenticated role/CRUD testing.
-- The completed content/programme/partner/expert manager layer now needs one authenticated role and mutation QA pass.
+- Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
+- Real CAPTCHA-provider verification and Google Workspace notification delivery remain production-configuration checks.
 - Learners, credentials, issuance/email, and public credential verification have not started.
 - Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email/CAPTCHA end-to-end tests remain ahead.
