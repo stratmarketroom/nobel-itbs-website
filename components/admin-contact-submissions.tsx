@@ -125,23 +125,14 @@ export function AdminContactSubmissions() {
     }
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
-    window.location.assign('/admin/login');
-  }
-
   return (
     <main className="contact-admin-shell">
-      <header className="contact-admin-header">
+      <header className="admin-module-header">
         <div>
-          <p className="admin-kicker">Nobel ITBS admin</p>
+          <p className="admin-kicker">Operations</p>
           <h1>Contact submissions</h1>
           <p>Review incoming requests and keep their processing status current.</p>
         </div>
-        <nav aria-label="Admin navigation">
-          <Link href="/admin/users">Users</Link>
-          <button type="button" onClick={signOut}>Sign out</button>
-        </nav>
       </header>
 
       <section className="contact-admin-toolbar" aria-label="Submission filters">

@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import type { AdminContentPage, PageRecordStatus } from '@/lib/content/admin';
@@ -127,16 +126,12 @@ export function AdminContentPages() {
 
   return (
     <main className="contact-admin-shell">
-      <header className="contact-admin-header">
+      <header className="admin-module-header">
         <div>
-          <p className="admin-kicker">Nobel ITBS admin</p>
+          <p className="admin-kicker">Content</p>
           <h1>Content pages</h1>
           <p>Manage controlled page fields and translation publication states.</p>
         </div>
-        <nav aria-label="Admin navigation">
-          <Link href="/admin/users">Users</Link>
-          <Link href="/admin/contact-submissions">Contacts</Link>
-        </nav>
       </header>
 
       {message ? <p className="contact-admin-error" role="status">{message}</p> : null}

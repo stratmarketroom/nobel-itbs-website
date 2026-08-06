@@ -1685,6 +1685,374 @@ h1 span {
   line-height: 1.65;
 }
 
+/* Shared protected admin application shell */
+.admin-app-shell {
+  display: grid;
+  min-height: 100dvh;
+  grid-template-columns: 15.5rem minmax(0, 1fr);
+  background: oklch(97.5% 0.008 255);
+  color: oklch(22% 0.025 255);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+.admin-app-sidebar {
+  position: sticky;
+  top: 0;
+  display: grid;
+  height: 100dvh;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  border-inline-end: 1px solid oklch(84% 0.018 255);
+  background: oklch(94.8% 0.016 252);
+}
+
+.admin-app-brand {
+  display: grid;
+  grid-template-columns: 2.15rem minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 0.7rem;
+  padding: 1.25rem 1rem 1.1rem;
+  color: oklch(25% 0.05 252);
+  text-decoration: none;
+}
+
+.admin-app-brand > span {
+  display: grid;
+  grid-row: 1 / 3;
+  width: 2.15rem;
+  height: 2.15rem;
+  place-items: center;
+  border-radius: 7px;
+  background: oklch(43% 0.13 250);
+  color: oklch(97% 0.008 255);
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.admin-app-brand strong {
+  align-self: end;
+  font-size: 0.82rem;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.admin-app-brand small {
+  color: oklch(50% 0.03 252);
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+
+.admin-app-sidebar > nav {
+  display: grid;
+  align-content: start;
+  gap: 0.22rem;
+  padding: 0.7rem;
+  overflow-y: auto;
+  border-top: 1px solid oklch(84% 0.018 255);
+}
+
+.admin-app-sidebar > nav a {
+  display: grid;
+  min-height: 2.7rem;
+  grid-template-columns: 1.7rem minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: center;
+  border-radius: 6px;
+  padding: 0.42rem 0.55rem;
+  color: oklch(39% 0.035 252);
+  font-size: 0.76rem;
+  text-decoration: none;
+}
+
+.admin-app-sidebar > nav a > span {
+  display: grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  place-items: center;
+  border: 1px solid oklch(80% 0.025 252);
+  border-radius: 5px;
+  color: oklch(46% 0.06 250);
+  font-size: 0.66rem;
+  font-weight: 820;
+}
+
+.admin-app-sidebar > nav a:hover {
+  background: oklch(91.8% 0.026 250);
+  color: oklch(29% 0.07 250);
+}
+
+.admin-app-sidebar > nav a[aria-current="page"] {
+  background: oklch(88.5% 0.045 250);
+  color: oklch(29% 0.09 250);
+}
+
+.admin-app-sidebar > nav a[aria-current="page"] > span {
+  border-color: oklch(58% 0.11 250);
+  background: oklch(43% 0.13 250);
+  color: oklch(97% 0.008 255);
+}
+
+.admin-app-account {
+  display: grid;
+  gap: 0.22rem;
+  border-top: 1px solid oklch(84% 0.018 255);
+  padding: 0.9rem 1rem 1rem;
+}
+
+.admin-app-account > span {
+  overflow: hidden;
+  color: oklch(29% 0.04 252);
+  font-size: 0.75rem;
+  font-weight: 720;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-app-account small {
+  color: oklch(49% 0.025 252);
+  font-size: 0.63rem;
+  line-height: 1.4;
+}
+
+.admin-app-account button,
+.admin-app-mobile-bar button {
+  width: fit-content;
+  margin-top: 0.45rem;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: oklch(38% 0.1 250);
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 720;
+  cursor: pointer;
+}
+
+.admin-app-main {
+  min-width: 0;
+}
+
+.admin-app-mobile-bar,
+.admin-app-mobile-nav {
+  display: none;
+}
+
+.admin-shell-content {
+  min-width: 0;
+  padding: 1.4rem clamp(1rem, 2.5vw, 2.25rem) 2.5rem;
+}
+
+.admin-shell-content :is(.contact-admin-shell, .user-admin-shell) {
+  min-height: auto;
+  padding: 0;
+  background: transparent;
+}
+
+.admin-shell-content :is(.contact-admin-toolbar, .contact-admin-workspace, .contact-admin-error, .user-admin-toolbar, .user-admin-message, .user-admin-workspace) {
+  width: 100%;
+}
+
+.admin-module-header {
+  display: flex;
+  width: 100%;
+  min-height: 5.7rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid oklch(86% 0.014 255);
+}
+
+.admin-module-header h1 {
+  max-width: none;
+  margin: 0 0 0.25rem;
+  color: oklch(20% 0.03 255);
+  font-size: 1.45rem;
+  font-weight: 760;
+  line-height: 1.2;
+}
+
+.admin-module-header p {
+  max-width: 68ch;
+  margin: 0;
+  color: oklch(48% 0.025 255);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.admin-module-header .admin-kicker {
+  margin-bottom: 0.35rem;
+  color: oklch(46% 0.11 250);
+  font-size: 0.65rem;
+  font-weight: 780;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.admin-shell-loading,
+.admin-access-state {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 1.5rem;
+  background: oklch(97.5% 0.008 255);
+  color: oklch(22% 0.025 255);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+.admin-shell-loading > div {
+  display: grid;
+  width: min(100%, 30rem);
+  gap: 0.7rem;
+}
+
+.admin-shell-loading span {
+  min-height: 2.8rem;
+  border-radius: 6px;
+  background: linear-gradient(90deg, oklch(94% 0.012 255), oklch(90% 0.022 252), oklch(94% 0.012 255));
+  background-size: 220% 100%;
+  animation: contact-admin-skeleton 1.4s ease-in-out infinite;
+}
+
+.admin-access-state section {
+  width: min(100%, 30rem);
+  border: 1px solid oklch(84% 0.018 255);
+  border-radius: 8px;
+  padding: clamp(1.4rem, 4vw, 2.4rem);
+  background: oklch(99% 0.004 255);
+  box-shadow: 0 18px 48px oklch(27% 0.025 255 / 8%);
+}
+
+.admin-access-state section > p {
+  margin: 0 0 0.55rem;
+  color: oklch(46% 0.11 250);
+  font-size: 0.67rem;
+  font-weight: 780;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.admin-access-state h1 {
+  max-width: none;
+  margin: 0 0 0.65rem;
+  color: oklch(20% 0.03 255);
+  font-size: 1.55rem;
+  line-height: 1.2;
+}
+
+.admin-access-state section > span {
+  display: block;
+  max-width: 66ch;
+  color: oklch(45% 0.025 255);
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+
+.admin-access-state section > div {
+  display: flex;
+  gap: 0.55rem;
+  margin-top: 1.3rem;
+}
+
+.admin-access-state :is(a, button) {
+  min-height: 2.45rem;
+  border: 1px solid oklch(75% 0.04 250);
+  border-radius: 7px;
+  padding: 0.58rem 0.85rem;
+  background: oklch(99% 0.004 255);
+  color: oklch(34% 0.09 250);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 720;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.admin-access-state a {
+  border-color: oklch(43% 0.13 250);
+  background: oklch(42% 0.13 250);
+  color: oklch(97% 0.008 255);
+}
+
+.admin-app-shell :is(a, button, input, select, textarea):focus-visible,
+.admin-access-state :is(a, button):focus-visible {
+  outline: 3px solid oklch(67% 0.13 250 / 35%);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell-loading span { animation: none; }
+}
+
+@media (max-width: 860px) {
+  .admin-app-shell {
+    display: block;
+  }
+
+  .admin-app-sidebar {
+    display: none;
+  }
+
+  .admin-app-mobile-bar {
+    display: flex;
+    min-height: 3.4rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid oklch(84% 0.018 255);
+    padding: 0.7rem 1rem;
+    background: oklch(94.8% 0.016 252);
+    color: oklch(27% 0.05 252);
+    font-size: 0.75rem;
+  }
+
+  .admin-app-mobile-bar button {
+    margin: 0;
+  }
+
+  .admin-app-mobile-nav {
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    border-bottom: 1px solid oklch(84% 0.018 255);
+    padding: 0.55rem 0.7rem;
+    background: oklch(97% 0.008 255);
+  }
+
+  .admin-app-mobile-nav a {
+    flex: 0 0 auto;
+    border-radius: 6px;
+    padding: 0.48rem 0.68rem;
+    color: oklch(42% 0.04 252);
+    font-size: 0.7rem;
+    font-weight: 680;
+    text-decoration: none;
+  }
+
+  .admin-app-mobile-nav a[aria-current="page"] {
+    background: oklch(88.5% 0.045 250);
+    color: oklch(29% 0.09 250);
+  }
+
+  .admin-shell-content {
+    padding-top: 0.8rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-module-header {
+    min-height: 5.2rem;
+  }
+
+  .admin-access-state section > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-access-state :is(a, button) {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 /* PCE-004: contact-submission operations */
 .contact-admin-shell {
   min-height: 100dvh;

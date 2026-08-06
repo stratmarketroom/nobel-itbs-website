@@ -28,6 +28,7 @@ All 26 local SQL migrations through `20260805140000_cnt_005_legal_pages.sql` are
 - Programme areas, types, five programme records, runs, flexible pricing, public catalogue, programme/area/type pages, redirects, and programme-question flow.
 - Partner and expert records and their public Partnerships rendering.
 - Private contact-submission storage, protected manager list/status workflow, audit logging, rate-limit/CAPTCHA hooks, and Google Workspace notification code.
+- Shared protected admin shell with role-aware desktop/mobile navigation, account context, and explicit signed-out, MFA-required, and access-denied states.
 - Manager interfaces for users and roles, content pages, site settings, and contact submissions.
 
 ## Verified in Dev
@@ -36,6 +37,7 @@ All 26 local SQL migrations through `20260805140000_cnt_005_legal_pages.sql` are
 - Public application reads real Supabase content by default and does not silently replace database failures with seed content.
 - Anonymous write attempts and unauthorized contact reads are denied; protected admin APIs reject unauthenticated requests.
 - Production build, TypeScript, lint, ticket verification scripts, public API smoke checks, and browser checks pass.
+- Signed-out admin-shell and login-route browser checks pass; authenticated navigation still needs a smoke pass with each of the four admin roles.
 - All nine legal routes render full localized documents; their metadata is `noindex, follow`.
 
 ## Verification Limitation

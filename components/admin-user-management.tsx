@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import { adminRoles, type AdminRole, type AdminUserSummary } from '@/lib/admin/types';
@@ -237,11 +236,6 @@ export function AdminUserManagement() {
     }
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
-    window.location.assign('/admin/login');
-  }
-
   const hasChanges = Boolean(selected && editor && (
     editor.fullName.trim() !== (selected.fullName ?? '')
     || editor.isActive !== selected.isActive
@@ -251,18 +245,12 @@ export function AdminUserManagement() {
 
   return (
     <main className="user-admin-shell">
-      <header className="user-admin-header">
+      <header className="admin-module-header">
         <div>
-          <p className="admin-kicker">Nobel ITBS admin</p>
+          <p className="admin-kicker">Access control</p>
           <h1>Users and roles</h1>
           <p>{admin ? `${admin.user.email ?? 'Admin'} · ${admin.mfa.satisfied ? 'MFA verified' : 'MFA required'}` : 'Owner / Super Admin · MFA required'}</p>
         </div>
-        <nav aria-label="Admin navigation">
-          <Link href="/admin/content-pages">Content</Link>
-          <Link href="/admin/site-settings">Settings</Link>
-          <Link href="/admin/contact-submissions">Contacts</Link>
-          <button type="button" onClick={signOut}>Sign out</button>
-        </nav>
       </header>
 
       <section className="user-admin-toolbar" aria-label="User controls">

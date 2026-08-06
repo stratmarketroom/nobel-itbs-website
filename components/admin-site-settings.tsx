@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import type { SiteSetting } from '@/lib/content/site-settings';
@@ -32,7 +31,7 @@ export function AdminSiteSettings() {
     finally { setSaving(false); }
   }
   return <main className="contact-admin-shell">
-    <header className="contact-admin-header"><div><p className="admin-kicker">Nobel ITBS admin</p><h1>Site settings</h1><p>Owner/Super Admin · MFA required</p></div><nav><Link href="/admin/content-pages">Content pages</Link><Link href="/admin/users">Users</Link></nav></header>
+    <header className="admin-module-header"><div><p className="admin-kicker">Configuration</p><h1>Site settings</h1><p>Owner/Super Admin · MFA required</p></div></header>
     {message ? <p className="contact-admin-error" role="status">{message}</p> : null}
     <form className="contact-admin-detail" onSubmit={(event) => { event.preventDefault(); void save(); }}>
       <label htmlFor="for-organisations-url">For Organisations application URL</label>

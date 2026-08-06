@@ -61,9 +61,10 @@ Stage status: **implemented; full automated DB test run pending environment supp
 - [-] AUTH-005 authenticated UI mutation smoke: Owner/AAL2 create, role change, deactivate/reactivate, and audit confirmation have not yet been rerun through the completed interface.
 - [x] AUTH-006 MFA/AAL2 enforcement for sensitive roles/actions.
 - [x] AUTH-007 sign-in, TOTP enrolment/challenge, and Owner browser smoke.
-- [-] Unified admin shell/navigation and route-level UX completion.
+- [x] Shared protected admin shell, role-aware navigation, signed-out/MFA/access-denied states, and responsive layout.
+- [-] Authenticated role-navigation smoke for Owner, Super Admin, Content Manager, and Credential Manager.
 
-Stage status: **core auth, MFA, and user-management implementation complete; authenticated UI mutation smoke and unified admin navigation remain**.
+Stage status: **implementation complete; authenticated UI mutation and role-navigation smoke remain**.
 
 ## Stage 3 — Content Model and Public Website Foundation
 
@@ -150,7 +151,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Site Settings | Protected API/UI implemented | Authenticated save/audit smoke and final For Organisations URL |
 | Users and Roles | Protected API/UI implemented | Authenticated create/roles/activation/audit smoke |
 | Audit/History | Audit storage implemented; admin view not started | Protected list/detail and privacy review |
-| Unified admin shell/navigation | Partial links exist per screen | Shared role-aware shell, access-denied states, responsive smoke |
+| Unified admin shell/navigation | Shared protected layout, role-aware desktop/mobile navigation, account context, and signed-out/MFA/access-denied states implemented | Authenticated role-navigation smoke for all four roles |
 
 ## Stage 5 — Learner Foundation
 
@@ -222,13 +223,12 @@ Stage status: **foundation checks active; launch QA not started**.
 
 The next step should close existing operational gaps before opening the learner and credential modules:
 
-1. **Close the remaining Stage 2 admin-shell gap**: shared protected layout, role-aware navigation, and access-denied handling.
-2. **Complete Stage 4 manager operations**: Admin Programme API first, then programme/run/pricing/area/type UI and authenticated role tests.
-3. **Complete partner/expert manager operations**: protected API, CRUD UI, translation and asset fields, and authenticated role tests.
-4. **Replace raw content JSON editing with manager-friendly controlled fields** while preserving the structured schema.
-5. **Finish contact operations**: confirm required public form entry points, then configure/test CAPTCHA, rate limiting, and Google Workspace delivery.
-6. **Run the complete role/RLS/admin end-to-end pass** for Stages 2–4 when Docker or another pgTAP-capable environment is available.
-7. **Start Stage 5 with LRN-001 Learner Core** only after the Stage 4 manager layer is accepted.
-8. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
+1. **Complete Stage 4 manager operations**: Admin Programme API first, then programme/run/pricing/area/type UI and authenticated role tests.
+2. **Complete partner/expert manager operations**: protected API, CRUD UI, translation and asset fields, and authenticated role tests.
+3. **Replace raw content JSON editing with manager-friendly controlled fields** while preserving the structured schema.
+4. **Finish contact operations**: confirm required public form entry points, then configure/test CAPTCHA, rate limiting, and Google Workspace delivery.
+5. **Run the complete role/RLS/admin end-to-end pass** for Stages 2–4 when Docker or another pgTAP-capable environment is available.
+6. **Start Stage 5 with LRN-001 Learner Core** only after the Stage 4 manager layer is accepted.
+7. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.

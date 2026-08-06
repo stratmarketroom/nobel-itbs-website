@@ -28,6 +28,7 @@ export function CookieConsent() {
     window.localStorage.setItem('nobel_cookie_consent', value);
     window.dispatchEvent(new CustomEvent('nobel-cookie-consent', { detail: value }));
   }
+  if (path === '/admin' || path.startsWith('/admin/')) return null;
   if (consent !== 'pending') return null;
   const current = copy[locale];
   return <aside className="cookie-consent" aria-label={current.aria}><p>{current.text}</p><div><button type="button" onClick={() => decide('declined')}>{current.decline}</button><button type="button" onClick={() => decide('accepted')}>{current.accept}</button></div></aside>;
