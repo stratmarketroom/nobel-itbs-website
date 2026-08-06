@@ -97,12 +97,12 @@ These checks confirm the database and public-site implementation. They do not cl
 
 ### Manager operations required by v2
 
-- [ ] Protected Admin Programme API for Programme Areas.
-- [ ] Protected Admin Programme API for Programme Types.
-- [ ] Protected Admin Programme API for Programmes and translation publication states.
-- [ ] Protected Admin Programme API for Programme Runs and enrolment corrections.
-- [ ] Protected Admin Programme API for Pricing Options and application URLs.
-- [ ] Admin access to slug redirects where operational review is required.
+- [x] Protected Admin Programme API for Programme Areas.
+- [x] Protected Admin Programme API for Programme Types.
+- [x] Protected Admin Programme API for Programmes and translation publication states.
+- [x] Protected Admin Programme API for Programme Runs and enrolment corrections.
+- [x] Protected Admin Programme API for Pricing Options and application URLs.
+- [x] Read-only admin access to the trigger-managed slug redirect registry.
 - [ ] Manager UI for programme list, create/edit, publication state, and catalogue order.
 - [ ] Manager UI for localized sales sections and translation states.
 - [ ] Manager UI for runs, tariffs, Leeloo URLs, and partner-site URLs.
@@ -111,7 +111,7 @@ These checks confirm the database and public-site implementation. They do not cl
 - `BLOCKED`: Leeloo destinations for General Psychology, Child Psychology, and Space Business.
 - `BLOCKED`: partner-site destination for AI Production, expected later.
 
-Stage status: **data and public delivery complete; Stage 4 is not accepted until protected manager API/UI and role tests are complete**.
+Stage status: **data, public delivery, and protected manager API complete; Stage 4 is not accepted until manager UI and authenticated role tests are complete**.
 
 ## Partners, Experts, and Contacts
 
@@ -137,11 +137,11 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | --- | --- | --- |
 | Dashboard | Not started | Route, role-aware summary, authenticated smoke |
 | Content Pages | Protected API and technical JSON editor implemented | Manager-friendly controlled fields and authenticated edit/publish smoke |
-| Programmes | Not started | API, CRUD UI, publication/order smoke |
-| Programme Areas | Not started | API, CRUD UI, translation smoke |
-| Programme Types | Not started | API, CRUD UI, translation smoke |
-| Programme Runs | Not started | API, CRUD UI, enrolment correction smoke |
-| Pricing Options | Not started | API, CRUD UI, 1–3 option and URL hierarchy smoke |
+| Programmes | Protected CRUD API and translation publication contract implemented | CRUD UI, publication/order and authenticated role smoke |
+| Programme Areas | Protected CRUD API and localized translation contract implemented | CRUD UI and authenticated translation smoke |
+| Programme Types | Protected CRUD API and localized translation contract implemented | CRUD UI and authenticated translation smoke |
+| Programme Runs | Protected CRUD API implemented | CRUD UI and authenticated enrolment-correction smoke |
+| Pricing Options | Protected CRUD API and localized translation contract implemented | CRUD UI, 1–3 option and URL hierarchy smoke |
 | Partners | Not started | API, CRUD UI, translation/asset smoke |
 | Experts | Not started | API, CRUD UI, translation/asset smoke |
 | Contact Submissions | Protected API and processing UI implemented | Authenticated role/status smoke; production notifications |
@@ -223,7 +223,7 @@ Stage status: **foundation checks active; launch QA not started**.
 
 The next step should close existing operational gaps before opening the learner and credential modules:
 
-1. **Complete Stage 4 manager operations**: Admin Programme API first, then programme/run/pricing/area/type UI and authenticated role tests.
+1. **Complete Stage 4 manager operations**: programme list/edit UI first, then run/pricing/area/type management and authenticated role tests.
 2. **Complete partner/expert manager operations**: protected API, CRUD UI, translation and asset fields, and authenticated role tests.
 3. **Replace raw content JSON editing with manager-friendly controlled fields** while preserving the structured schema.
 4. **Finish contact operations**: confirm required public form entry points, then configure/test CAPTCHA, rate limiting, and Google Workspace delivery.

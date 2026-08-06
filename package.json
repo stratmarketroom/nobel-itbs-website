@@ -21,6 +21,7 @@
     "verify:auth-007": "node scripts/verify-auth-007.mjs",
     "verify:fef-001": "node scripts/verify-fef-001.mjs",
     "verify:admin-shell": "node scripts/verify-admin-shell.mjs",
+    "verify:admin-programme-api": "node scripts/verify-admin-programme-api.mjs",
     "verify:cnt-001": "node scripts/verify-cnt-001.mjs",
     "verify:cnt-002": "node scripts/verify-cnt-002.mjs",
     "verify:cnt-003": "node scripts/verify-cnt-003.mjs",

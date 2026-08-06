@@ -300,6 +300,25 @@ Capabilities:
 - manage pricing options;
 - manage Leeloo and partner-site application URLs.
 
+Implemented Release 1 routes:
+
+- `GET|POST /api/v1/admin/programme-areas`;
+- `GET|PATCH|DELETE /api/v1/admin/programme-areas/{id}`;
+- `GET|POST /api/v1/admin/programme-types`;
+- `GET|PATCH|DELETE /api/v1/admin/programme-types/{id}`;
+- `GET|POST /api/v1/admin/programmes`;
+- `GET|PATCH|DELETE /api/v1/admin/programmes/{id}`;
+- `GET|POST /api/v1/admin/programme-runs`;
+- `GET|PATCH|DELETE /api/v1/admin/programme-runs/{id}`;
+- `GET|POST /api/v1/admin/programme-pricing-options`;
+- `GET|PATCH|DELETE /api/v1/admin/programme-pricing-options/{id}`;
+- `GET /api/v1/admin/programme-slug-redirects`.
+
+Record creation uses the entity fields directly. Update requests use exactly one
+of `record` or `translation`, so a failed translation publication cannot silently
+partially apply a record update. Slug redirects are read-only because published
+slug changes create and collapse redirect rows through database triggers.
+
 ## 9. Admin Learner API
 
 Credential Manager/Super Admin/Owner:
