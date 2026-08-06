@@ -23,6 +23,7 @@
     "verify:admin-shell": "node scripts/verify-admin-shell.mjs",
     "verify:admin-programme-api": "node scripts/verify-admin-programme-api.mjs",
     "verify:admin-programmes-ui": "node scripts/verify-admin-programmes-ui.mjs",
+    "verify:admin-programme-operations-ui": "node scripts/verify-admin-programme-operations-ui.mjs",
     "verify:cnt-001": "node scripts/verify-cnt-001.mjs",
     "verify:cnt-002": "node scripts/verify-cnt-002.mjs",
     "verify:cnt-003": "node scripts/verify-cnt-003.mjs",

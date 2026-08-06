@@ -2368,6 +2368,276 @@ h1 span {
   font-weight: 650;
 }
 
+.programme-operation-panel {
+  padding: 1.25rem;
+}
+
+.programme-operation-panel > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.programme-operation-panel > header h3 {
+  margin: 0;
+  color: oklch(25% 0.03 250);
+  font-size: 1rem;
+}
+
+.programme-operation-panel > header p {
+  max-width: 62ch;
+  margin: 0.25rem 0 0;
+  color: oklch(49% 0.02 250);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.programme-operation-panel > header button,
+.programme-operation-actions > button:not(.text),
+.programme-pricing-translation .programme-operation-actions button {
+  min-height: 2.35rem;
+  border: 1px solid oklch(42% 0.12 250);
+  border-radius: 7px;
+  padding: 0.5rem 0.8rem;
+  background: oklch(42% 0.12 250);
+  color: oklch(97% 0.007 250);
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 720;
+  cursor: pointer;
+}
+
+.programme-operation-panel > header button:disabled {
+  border-color: oklch(80% 0.018 250);
+  background: oklch(92% 0.008 250);
+  color: oklch(53% 0.02 250);
+  cursor: not-allowed;
+}
+
+.programme-operation-layout {
+  display: grid;
+  grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr);
+  border: 1px solid oklch(87% 0.014 250);
+  border-radius: 7px;
+  overflow: clip;
+}
+
+.programme-operation-layout > nav {
+  min-height: 27rem;
+  border-right: 1px solid oklch(87% 0.014 250);
+  background: oklch(97% 0.007 250);
+}
+
+.programme-operation-layout > nav button {
+  display: grid;
+  width: 100%;
+  gap: 0.2rem;
+  border: 0;
+  border-bottom: 1px solid oklch(89% 0.012 250);
+  padding: 0.75rem;
+  background: transparent;
+  color: oklch(31% 0.03 250);
+  text-align: left;
+  cursor: pointer;
+}
+
+.programme-operation-layout > nav button:hover,
+.programme-operation-layout > nav button[aria-pressed="true"] {
+  background: oklch(93.5% 0.024 250);
+}
+
+.programme-operation-layout > nav button[aria-pressed="true"] {
+  box-shadow: inset 3px 0 oklch(48% 0.12 250);
+}
+
+.programme-operation-layout > nav strong {
+  font-size: 0.76rem;
+  font-weight: 720;
+}
+
+.programme-operation-layout > nav span,
+.programme-operation-layout > nav > p {
+  margin: 0;
+  color: oklch(51% 0.02 250);
+  font-size: 0.66rem;
+  line-height: 1.4;
+}
+
+.programme-operation-layout > nav > p {
+  padding: 1rem 0.8rem;
+}
+
+.programme-operation-layout > form,
+.programme-pricing-editor > form {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.programme-operation-layout form label {
+  display: grid;
+  gap: 0.35rem;
+  color: oklch(39% 0.025 250);
+  font-size: 0.74rem;
+  font-weight: 650;
+}
+
+.programme-operation-layout form :is(input, select, textarea) {
+  width: 100%;
+  min-height: 2.35rem;
+  border: 1px solid oklch(82% 0.018 250);
+  border-radius: 7px;
+  padding: 0.52rem 0.65rem;
+  background: oklch(99% 0.004 250);
+  color: oklch(24% 0.025 250);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 480;
+}
+
+.programme-operation-layout form textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.programme-operation-layout form input:disabled {
+  background: oklch(94% 0.006 250);
+  color: oklch(54% 0.018 250);
+}
+
+.programme-operation-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid oklch(89% 0.012 250);
+}
+
+.programme-operation-heading strong {
+  color: oklch(28% 0.03 250);
+  font-size: 0.83rem;
+}
+
+.programme-operation-heading span {
+  color: oklch(51% 0.02 250);
+  font-size: 0.66rem;
+}
+
+.programme-run-status {
+  justify-self: start;
+  border: 1px solid oklch(82% 0.02 250);
+  border-radius: 999px;
+  padding: 0.12rem 0.38rem;
+  background: oklch(96% 0.008 250);
+  text-transform: capitalize;
+}
+
+.programme-run-status.open,
+.programme-run-status.ongoing {
+  border-color: oklch(76% 0.05 155);
+  background: oklch(95% 0.022 155);
+  color: oklch(38% 0.07 155);
+}
+
+.programme-run-status.upcoming {
+  border-color: oklch(78% 0.045 80);
+  background: oklch(96% 0.02 80);
+  color: oklch(40% 0.06 80);
+}
+
+.programme-operation-note {
+  margin: 0;
+  color: oklch(50% 0.02 250);
+  font-size: 0.69rem;
+  line-height: 1.45;
+}
+
+.programme-operation-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid oklch(89% 0.012 250);
+}
+
+.programme-operation-actions > span:first-child {
+  margin-right: auto;
+}
+
+.programme-operation-actions button.text {
+  border: 0;
+  padding: 0.45rem;
+  background: transparent;
+  color: oklch(40% 0.07 250);
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 680;
+  cursor: pointer;
+}
+
+.programme-operation-actions button.danger,
+.programme-pricing-translation .programme-operation-actions button.danger {
+  border-color: oklch(52% 0.12 25);
+  background: oklch(48% 0.12 25);
+}
+
+.programme-operation-actions button.danger-text {
+  margin-right: auto;
+  color: oklch(44% 0.09 25);
+}
+
+.programme-operation-message {
+  margin: 0 0 0.85rem;
+  border: 1px solid oklch(78% 0.045 250);
+  border-radius: 7px;
+  padding: 0.65rem 0.8rem;
+  background: oklch(96% 0.014 250);
+  color: oklch(35% 0.055 250);
+  font-size: 0.72rem;
+}
+
+.programme-url-hierarchy {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+}
+
+.programme-url-hierarchy span {
+  border: 1px solid oklch(85% 0.014 250);
+  border-radius: 999px;
+  padding: 0.25rem 0.5rem;
+  background: oklch(97% 0.006 250);
+  color: oklch(46% 0.025 250);
+  font-size: 0.63rem;
+  font-weight: 650;
+}
+
+.programme-url-hierarchy span + span::before {
+  content: "›";
+  margin-right: 0.4rem;
+  color: oklch(60% 0.025 250);
+}
+
+.programme-pricing-editor {
+  min-width: 0;
+}
+
+.programme-pricing-editor > form + form {
+  border-top: 1px solid oklch(87% 0.014 250);
+}
+
+.programme-pricing-translation .programme-locale-bar {
+  margin: -1rem -1rem 0;
+  padding: 0.65rem 1rem;
+}
+
 .programme-array-field small {
   color: oklch(54% 0.018 250);
   font-size: 0.65rem;
@@ -2468,6 +2738,11 @@ h1 span {
   .programme-translation-status { grid-template-columns: 1fr; }
   .programme-save-row { align-items: stretch; flex-direction: column; }
   .programme-save-row button { width: 100%; }
+  .programme-operation-panel { padding-inline: 0.75rem; }
+  .programme-operation-panel > header { align-items: stretch; flex-direction: column; }
+  .programme-operation-layout { display: block; }
+  .programme-operation-layout > nav { min-height: 0; max-height: 14rem; overflow-y: auto; border-right: 0; border-bottom: 1px solid oklch(87% 0.014 250); }
+  .programme-operation-actions { flex-wrap: wrap; }
 }
 
 @media (prefers-reduced-motion: reduce) {

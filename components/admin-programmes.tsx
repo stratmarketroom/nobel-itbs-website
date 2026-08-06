@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { AdminProgrammeOperations } from '@/components/admin-programme-operations';
 
 type Locale = 'en' | 'ua' | 'cz';
 type PublicationStatus = 'draft' | 'published' | 'archived';
@@ -29,7 +30,38 @@ type ProgrammeTranslation = {
   updated_at: string;
 };
 
-type Programme = {
+export type ProgrammeRun = {
+  id: string;
+  status: 'upcoming' | 'open' | 'ongoing' | 'closed';
+  starts_at: string | null;
+  ends_at: string | null;
+  application_url: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PricingTranslation = {
+  language_code: Locale;
+  translation_status: TranslationStatus;
+  title: string | null;
+  description: string | null;
+  cta_label: string | null;
+  updated_at: string;
+};
+
+export type PricingOption = {
+  id: string;
+  price: number | null;
+  currency_code: string | null;
+  application_url: string | null;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  programme_pricing_option_translations: PricingTranslation[];
+};
+
+export type Programme = {
   id: string;
   area_id: string;
   type_id: string;
@@ -44,9 +76,11 @@ type Programme = {
   instruction_language_codes: string[];
   updated_at: string;
   programme_translations: ProgrammeTranslation[];
-  programme_runs: Array<{ id: string }>;
-  programme_pricing_options: Array<{ id: string }>;
+  programme_runs: ProgrammeRun[];
+  programme_pricing_options: PricingOption[];
 };
+
+type EditorTab = 'programme' | 'copy' | 'sections' | 'seo' | 'runs' | 'pricing';
 
 type Taxonomy = {
   id: string;
@@ -197,7 +231,7 @@ export function AdminProgrammes() {
   const [core, setCore] = useState<CoreEditor | null>(null);
   const [translation, setTranslation] = useState<TranslationEditor | null>(null);
   const [locale, setLocale] = useState<Locale>('en');
-  const [tab, setTab] = useState<'programme' | 'copy' | 'sections' | 'seo'>('programme');
+  const [tab, setTab] = useState<EditorTab>('programme');
   const [query, setQuery] = useState('');
   const [creating, setCreating] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -331,22 +365,23 @@ export function AdminProgrammes() {
         {core ? <section className="programme-admin-editor" aria-label={creating ? 'Create programme' : `Edit ${selected ? titleFor(selected) : 'programme'}`}>
           <div className="programme-editor-heading"><div><p>{creating ? 'New record' : core.slug}</p><h2>{creating ? 'Create programme' : titleFor(selected as Programme)}</h2></div>{!creating ? <span className={`programme-status ${core.publicationStatus}`}>{core.publicationStatus}</span> : null}</div>
           <nav className="programme-editor-tabs" aria-label="Programme editor sections">
-            {(['programme', 'copy', 'sections', 'seo'] as const).map((item) => <button type="button" key={item} aria-current={tab === item ? 'page' : undefined} disabled={creating && item !== 'programme'} onClick={() => setTab(item)}>{item === 'programme' ? 'Programme' : item === 'copy' ? 'Page copy' : item === 'sections' ? 'Sales sections' : 'SEO'}</button>)}
+            {(['programme', 'copy', 'sections', 'seo', 'runs', 'pricing'] as const).map((item) => <button type="button" key={item} aria-current={tab === item ? 'page' : undefined} disabled={creating && item !== 'programme'} onClick={() => setTab(item)}>{item === 'programme' ? 'Programme' : item === 'copy' ? 'Page copy' : item === 'sections' ? 'Sales sections' : item === 'seo' ? 'SEO' : item === 'runs' ? 'Runs' : 'Pricing'}</button>)}
           </nav>
-          {tab !== 'programme' && !creating ? <div className="programme-locale-bar"><span>Website language</span>{locales.map((item) => <button type="button" key={item} aria-pressed={locale === item} onClick={() => changeLocale(item)}>{item.toUpperCase()}<small>{selected?.programme_translations.find((translationItem) => translationItem.language_code === item)?.translation_status ?? 'missing'}</small></button>)}</div> : null}
+          {(['copy', 'sections', 'seo'] as EditorTab[]).includes(tab) && !creating ? <div className="programme-locale-bar"><span>Website language</span>{locales.map((item) => <button type="button" key={item} aria-pressed={locale === item} onClick={() => changeLocale(item)}>{item.toUpperCase()}<small>{selected?.programme_translations.find((translationItem) => translationItem.language_code === item)?.translation_status ?? 'missing'}</small></button>)}</div> : null}
           {tab === 'programme' ? <form className="programme-editor-form" onSubmit={(event) => { event.preventDefault(); void submit('core'); }}>
             <div className="programme-form-grid"><label><span>Slug</span><input value={core.slug} onChange={(event) => setCore({ ...core, slug: event.target.value })} /></label><label><span>Publication status</span><select value={core.publicationStatus} onChange={(event) => setCore({ ...core, publicationStatus: event.target.value as PublicationStatus })}><option value="draft">Draft</option><option value="published" disabled={creating}>Published</option><option value="archived">Archived</option></select></label><label><span>Programme area</span><select value={core.areaId} onChange={(event) => setCore({ ...core, areaId: event.target.value })}>{areas.map((item) => <option key={item.id} value={item.id}>{taxonomyTitle(item)}</option>)}</select></label><label><span>Programme type</span><select value={core.typeId} onChange={(event) => setCore({ ...core, typeId: event.target.value })}>{types.map((item) => <option key={item.id} value={item.id}>{taxonomyTitle(item)}</option>)}</select></label><label><span>Learning format</span><select value={core.format} onChange={(event) => setCore({ ...core, format: event.target.value as ProgrammeFormat })}><option value="distance">Distance</option><option value="blended_distance">Blended distance</option></select></label><label><span>Catalogue order</span><input type="number" min="0" step="1" value={core.catalogueSortOrder} onChange={(event) => setCore({ ...core, catalogueSortOrder: event.target.value })} /></label></div>
             <fieldset className="programme-language-options"><legend>Instruction languages</legend>{instructionLanguages.map((item) => <label key={item.code}><input type="checkbox" checked={core.instructionLanguageCodes.includes(item.code)} onChange={() => toggleInstructionLanguage(item.code)} /><span>{item.label}</span></label>)}</fieldset>
             <div className="programme-form-grid"><label><span>Application provider</span><select value={core.applicationProvider} onChange={(event) => setCore({ ...core, applicationProvider: event.target.value as ApplicationProvider })}><option value="leeloo">Leeloo</option><option value="partner_site">Partner website</option></select></label><label><span>Application URL</span><input type="url" placeholder="https://" value={core.applicationUrl} onChange={(event) => setCore({ ...core, applicationUrl: event.target.value })} /></label><label><span>Badge correction</span><select value={core.enrolmentBadgeOverride} onChange={(event) => setCore({ ...core, enrolmentBadgeOverride: event.target.value as BadgeOverride })}><option value="">Automatic from runs</option><option value="open">Open</option><option value="ongoing">Ongoing</option><option value="coming_soon">Coming soon</option><option value="inactive">Inactive</option></select></label><label className="programme-check-field"><input type="checkbox" checked={core.featured} onChange={(event) => setCore({ ...core, featured: event.target.checked })} /><span>Featured in public presentation</span></label></div>
             <div className="programme-save-row"><span>{creating ? 'The programme starts as a controlled catalogue record.' : `${selected?.programme_runs.length ?? 0} runs · ${selected?.programme_pricing_options.length ?? 0} pricing options`}</span><button type="submit" disabled={saving}>{saving ? 'Saving…' : creating ? 'Create programme' : 'Save programme'}</button></div>
           </form> : null}
-          {tab !== 'programme' && translation ? <form className="programme-editor-form" onSubmit={(event) => { event.preventDefault(); void submit('translation'); }}>
+          {(['copy', 'sections', 'seo'] as EditorTab[]).includes(tab) && translation ? <form className="programme-editor-form" onSubmit={(event) => { event.preventDefault(); void submit('translation'); }}>
             <div className="programme-translation-status"><label><span>Translation status</span><select value={translation.translationStatus} onChange={(event) => setTranslation({ ...translation, translationStatus: event.target.value as TranslationStatus })}><option value="missing">Missing</option><option value="draft">Draft</option><option value="published">Published</option></select></label><p>Publishing is accepted only when all required fields for this language are complete.</p></div>
             {tab === 'copy' ? <div className="programme-copy-fields"><label><span>Title</span><input value={translation.title} onChange={(event) => setTranslation({ ...translation, title: event.target.value })} /></label><label><span>Summary</span><textarea rows={3} value={translation.summary} onChange={(event) => setTranslation({ ...translation, summary: event.target.value })} /></label><label><span>Hero copy</span><textarea rows={5} value={translation.heroCopy} onChange={(event) => setTranslation({ ...translation, heroCopy: event.target.value })} /></label><label><span>Catalogue description</span><textarea rows={3} value={translation.catalogueDescription} onChange={(event) => setTranslation({ ...translation, catalogueDescription: event.target.value })} /></label><label><span>Catalogue facts</span><textarea rows={3} value={translation.catalogueFacts} onChange={(event) => setTranslation({ ...translation, catalogueFacts: event.target.value })} /></label><label><span>Catalogue document summary</span><textarea rows={3} value={translation.catalogueDocumentSummary} onChange={(event) => setTranslation({ ...translation, catalogueDocumentSummary: event.target.value })} /></label></div> : null}
             {tab === 'sections' ? <div className="programme-sections-editor">{Object.entries(translation.sections).map(([key, value]) => <SectionValue key={key} label={readableKey(key)} value={value} path={[key]} onChange={(path, value) => setTranslation({ ...translation, sections: updatePath(translation.sections, path, value) })} />)}<div className="programme-optional-sections"><span>Optional sections</span>{!translation.sections.expert ? <button type="button" onClick={() => setTranslation({ ...translation, sections: { ...translation.sections, expert: { heading: '', fields: { name: '', bio: '', asset_status: '' } } } })}>Add expert</button> : null}{!translation.sections.final_project ? <button type="button" onClick={() => setTranslation({ ...translation, sections: { ...translation.sections, final_project: { heading: '', fields: { body: '' } } } })}>Add final project</button> : null}</div></div> : null}
             {tab === 'seo' ? <div className="programme-copy-fields"><label><span>SEO title</span><input value={translation.seoTitle} onChange={(event) => setTranslation({ ...translation, seoTitle: event.target.value })} /></label><label><span>SEO description</span><textarea rows={3} value={translation.seoDescription} onChange={(event) => setTranslation({ ...translation, seoDescription: event.target.value })} /></label><label><span>Open Graph title</span><input value={translation.ogTitle} onChange={(event) => setTranslation({ ...translation, ogTitle: event.target.value })} /></label><label><span>Open Graph description</span><textarea rows={3} value={translation.ogDescription} onChange={(event) => setTranslation({ ...translation, ogDescription: event.target.value })} /></label></div> : null}
             <div className="programme-save-row"><span>Editing {locale.toUpperCase()} independently from other languages.</span><button type="submit" disabled={saving}>{saving ? 'Saving…' : `Save ${locale.toUpperCase()} translation`}</button></div>
           </form> : null}
+          {(tab === 'runs' || tab === 'pricing') && selected ? <AdminProgrammeOperations key={`${selected.id}-${tab}`} mode={tab} programme={selected} accessToken={accessToken} onRefresh={() => load(selected.id)} /> : null}
         </section> : <div className="programme-admin-empty editor"><strong>Select a programme</strong><span>Choose a record from the list or create a new programme.</span></div>}
       </section>
     </main>

@@ -130,7 +130,16 @@ export const deleteProgrammeRun = (context: AdminContext, id: string) => deleteR
 
 export const listPricingOptions = (context: AdminContext) => listRows(context, 'programme_pricing_options', pricingSelect, 'sort_order');
 export const getPricingOption = (context: AdminContext, id: string) => getRow(context, 'programme_pricing_options', pricingSelect, id);
-export const createPricingOption = (context: AdminContext, input: Record<string, unknown>) => createRow(context, 'programme_pricing_options', input, pricingSelect);
+export async function createPricingOption(context: AdminContext, input: Record<string, unknown>) {
+  assertCanMutateProgrammes(context);
+  const programmeId = input.programme_id;
+  if (typeof programmeId !== 'string') throw new ApiError('bad_request', 400, 'Programme ID is required.');
+  const { count, error } = await requestClient(context).from('programme_pricing_options')
+    .select('id', { count: 'exact', head: true }).eq('programme_id', programmeId);
+  if (error) throw databaseError(error, 'Pricing options could not be counted.');
+  if ((count ?? 0) >= 3) throw new ApiError('bad_request', 400, 'A programme can have up to three pricing options in Release 1.');
+  return createRow(context, 'programme_pricing_options', input, pricingSelect);
+}
 export const updatePricingOption = (context: AdminContext, id: string, input: Record<string, unknown>) => updateRow(context, 'programme_pricing_options', id, input, pricingSelect);
 export const savePricingTranslation = (context: AdminContext, id: string, input: Record<string, unknown>) => upsertTranslation(context, 'programme_pricing_option_translations', input, 'pricing_option_id,language_code', 'programme_pricing_options', pricingSelect, id);
 export const deletePricingOption = (context: AdminContext, id: string) => deleteRow(context, 'programme_pricing_options', id);
