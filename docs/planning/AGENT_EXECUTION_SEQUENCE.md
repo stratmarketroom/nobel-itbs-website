@@ -471,7 +471,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- `LRN-002 Learner Emails`
+- `LRN-003 Learner Phones`
 
 Agent:
 
@@ -483,5 +483,5 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of LRN-002;
+- approve start of LRN-003;
 - no external provider access is required.

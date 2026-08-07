@@ -159,11 +159,11 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 ## Stage 5 — Learner Foundation
 
 - [x] LRN-001 learner core: private identity fields, soft archive, controlled grants, forced RLS, MFA, live role test, and cleanup.
-- [ ] LRN-002 multiple globally unique learner emails and primary email.
+- [x] LRN-002 multiple globally unique learner emails and optional primary email: citext uniqueness, one-primary constraint, forced RLS/MFA, conflict tests, and cleanup.
 - [ ] LRN-003 globally unique phones and messenger flags.
 - [ ] LRN-004 protected learner admin UI and credential placeholder.
 
-Stage status: **in progress; LRN-001 complete, LRN-002 is next**.
+Stage status: **in progress; LRN-001 and LRN-002 complete, LRN-003 is next**.
 
 ## Stage 6 — Credential Core
 
@@ -204,9 +204,9 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
 ## Stage 9 — Security, QA, and Launch Hardening
 
 - [-] Ticket-level migration/static verifiers, lint, TypeScript, builds, browser smoke, and selected RLS/API smoke checks pass.
-- [-] QA-001 live Stage 2–4 matrix and LRN-001 Learner Core RLS passed; future learner contact/credential tables and the Docker-dependent full pgTAP suite remain.
+- [-] QA-001 live Stage 2–4 matrix plus LRN-001/002 learner core/email RLS passed; future learner phone/credential tables and the Docker-dependent full pgTAP suite remain.
 - [ ] QA-002 credential verification privacy tests after credentials exist.
-- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings and Learner Core actions; future learner contact and credential actions remain.
+- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings and learner core/email actions; future learner phone and credential actions remain.
 - [ ] QA-004 end-to-end learner → credential → PDF → activation → verify → revoke flow.
 - [ ] QA-005 production environment, credential Gmail delivery, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
 - [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
@@ -215,7 +215,7 @@ Stage status: **foundation checks active; launch QA not started**.
 
 ## Verified Current Dev Baseline
 
-- [x] One ordered chain of 28 local migrations matches the remote dev history.
+- [x] One ordered chain of 29 local migrations matches the remote dev history.
 - [x] Pre-integration dev backup exists in the ignored backup directory.
 - [x] Public reads use Supabase by default; seed content is explicit offline mode only.
 - [x] Dev data: 3 languages, 3 areas, 3 types, 5 programmes, 5 runs, 5 partners, 3 experts.
@@ -232,9 +232,10 @@ The learner module is now open; external production integrations remain tracked 
 1. [x] **Authenticated manager and live RLS QA for Stages 2–4** — completed on 2026-08-06; see `docs/qa/STAGE_2_4_E2E_RLS_QA_2026-08-06.md`.
 2. [x] **Finish contact operations in code and dev QA** — required entry points, rate limiting, CAPTCHA fail-closed contract, contact-status mutation, audit, and cleanup passed on 2026-08-06; see `docs/qa/PCE_004_CONTACT_OPERATIONS_QA_2026-08-06.md`.
 3. [x] **LRN-001 Learner Core** — schema, grants, forced RLS, MFA, live role checks, and cleanup completed on 2026-08-07; see `docs/qa/LRN_001_LEARNER_CORE_QA_2026-08-07.md`.
-4. **Continue Stage 5 with LRN-002 Learner Emails**.
-5. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
-6. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
-7. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, and Learner Core layers.
+4. [x] **LRN-002 Learner Emails** — global case-insensitive uniqueness, one-primary constraint, forced RLS/MFA, live conflict checks, and cleanup completed on 2026-08-07; see `docs/qa/LRN_002_LEARNER_EMAILS_QA_2026-08-07.md`.
+5. **Continue Stage 5 with LRN-003 Learner Phones**.
+6. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
+7. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
+8. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, and learner core/email layers.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.
