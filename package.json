@@ -50,6 +50,7 @@
     "verify:lrn-003": "node scripts/verify-lrn-003.mjs",
     "verify:lrn-004": "node scripts/verify-lrn-004.mjs",
     "verify:crd-001": "node scripts/verify-crd-001.mjs",
+    "verify:crd-002": "node scripts/verify-crd-002.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",
