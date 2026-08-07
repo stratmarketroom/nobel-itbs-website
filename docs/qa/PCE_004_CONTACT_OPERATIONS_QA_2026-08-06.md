@@ -7,7 +7,7 @@ Scope: public contact entry points, protected contact processing, rate limiting,
 
 PCE-004 is complete at the implementation and dev-QA level. The website now has manager-oriented public enquiry forms for general questions, partnership proposals, and organisation enquiries in EN, UA, and CZ, in addition to the existing programme-question flow.
 
-The live dev pass verified creation through the public API, database-backed rate limiting, protected manager visibility, MFA enforcement, status processing, audit privacy, negative validation, and cleanup. Real CAPTCHA-provider verification and Google Workspace notification delivery remain production-configuration dependencies because their credentials are not available in the current environment.
+The live dev pass verified creation through the public API, database-backed rate limiting, protected manager visibility, MFA enforcement, status processing, audit privacy, negative validation, and cleanup. Google Workspace notification delivery remains a production-configuration dependency. CAPTCHA is a conditional control and is intentionally not connected at this stage.
 
 ## Public Entry Points
 
@@ -51,14 +51,14 @@ Migration `20260806170000_pce_004_public_contact_entry_points.sql` adds the serv
 
 All temporary contact records and the temporary Credential Manager were removed after QA. The dev project returned to one Owner account with no remaining PCE-004 QA contacts.
 
-## External Production Dependencies
+## External Production Dependencies and Deferred Controls
 
-- `BLOCKED`: choose/configure the CAPTCHA provider and provide its site key, verification endpoint, and secret.
 - `BLOCKED`: provide Google Workspace service-account/domain-delegation credentials and the destination inbox for real notification delivery.
 - `BLOCKED`: configure a production contact rate-limit secret of at least 32 characters.
+- `DEFERRED BY PRODUCT DECISION (2026-08-07)`: do not connect CAPTCHA now. Honeypot and database-backed rate limiting remain the active controls. A replaceable CAPTCHA provider may be added later only as a conditional check for suspicious or abusive traffic.
 
-These items block production acceptance of contact delivery and abuse protection, but they do not block the next implementation ticket, LRN-001 Learner Core.
+The notification and production-secret items block their respective production checks, but they do not block the next implementation ticket, LRN-001 Learner Core. The deferred CAPTCHA provider is not a Release 1 blocker.
 
 ## Result
 
-PCE-004 and the code-level portion of Stage 8 are accepted in dev. Production integration acceptance remains explicitly open until real CAPTCHA and Google Workspace credentials are available.
+PCE-004 and the code-level portion of Stage 8 are accepted in dev. Production notification acceptance remains open until Google Workspace credentials are available; CAPTCHA configuration is intentionally outside the current required work.

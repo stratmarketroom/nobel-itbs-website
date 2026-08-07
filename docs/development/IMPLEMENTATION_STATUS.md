@@ -57,12 +57,12 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 - The AI Production partner URL is intentionally pending; its CTA currently uses the question fallback.
 - The For Organisations application URL remains an Owner/Super Admin setting and needs its final destination.
 - Production contact notifications require Google Workspace server credentials and destination inbox configuration.
-- Production forms require a strong rate-limit secret and the chosen CAPTCHA provider configuration.
+- Production forms require a strong rate-limit secret. CAPTCHA is intentionally conditional and remains unconfigured until abuse signals justify enabling it.
 - Czech native-language review remains an external editorial check where noted in the approved source files.
 
 ## Important Remaining Product Work
 
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
-- Real CAPTCHA-provider verification and Google Workspace notification delivery remain production-configuration checks.
+- Google Workspace notification delivery remains a production-configuration check. CAPTCHA provider setup is deferred by product decision and is not a blocker.
 - Learners, credentials, issuance/email, and public credential verification have not started.
-- Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email/CAPTCHA end-to-end tests remain ahead.
+- Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email end-to-end tests remain ahead; CAPTCHA testing applies only if the conditional control is enabled later.

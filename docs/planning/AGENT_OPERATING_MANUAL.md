@@ -195,7 +195,6 @@ Depending on ticket phase, agents may need:
 - Playwright;
 - Gmail/Google Workspace credentials for integration stage;
 - Leeloo test URLs for CTA validation;
-- CAPTCHA provider configuration for anti-spam stage.
+- CAPTCHA provider configuration only if the conditional anti-spam control is explicitly enabled; it is otherwise not a launch blocker.
 
 Never assume external credentials exist. Ask the orchestrator when needed.
-

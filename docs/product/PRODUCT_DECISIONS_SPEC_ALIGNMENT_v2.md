@@ -359,6 +359,13 @@ No CRM workflow is included in Release 1.
 
 Programme `Ask a question` form is stored as a contact submission with type `programme_question` and linked programme context.
 
+CAPTCHA decision (confirmed 2026-08-07): CAPTCHA is conditional, not a mandatory
+step for every contact submission. Release 1 launches with the honeypot and
+database-backed rate limiting active. A replaceable CAPTCHA provider may be
+connected later and invoked only when abuse or suspicious repeated activity
+justifies the additional check. The absence of a configured CAPTCHA provider is
+not a Release 1 implementation blocker.
+
 ## 8. Credential Registry: Corrected Model
 
 ### 8.1 Credential Set

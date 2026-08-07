@@ -90,4 +90,4 @@ Audit records intentionally remain append-only and contain no passwords, MFA sec
 
 ## Result
 
-Stages 2–4 manager operations and current RLS boundaries are accepted at the dev level. Remaining blockers are operational values and integrations: final application URLs, contact-form scope, production CAPTCHA/rate limiting, and Google Workspace notification delivery.
+Stages 2–4 manager operations and current RLS boundaries are accepted at the dev level. Remaining blockers are operational values and integrations: final application URLs, production rate-limit secret, and Google Workspace notification delivery. Per the 2026-08-07 product decision, CAPTCHA is conditional, intentionally not connected now, and is not a Release 1 blocker.

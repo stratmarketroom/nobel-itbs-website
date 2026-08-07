@@ -476,13 +476,15 @@ Raw token, MFA secrets, private file contents are never returned.
 
 ## 13. Rate Limiting and CAPTCHA
 
-Required for:
+Rate limiting is required for:
 
 - contact submissions;
 - public manual verification;
 - suspicious repeated verification attempts.
 
-CAPTCHA provider should remain replaceable.
+CAPTCHA is an optional adaptive control. It is not shown for every ordinary
+contact submission and is not required to be configured at launch. If later
+enabled for suspicious or abusive traffic, the provider must remain replaceable.
 
 ## 14. Acceptance Criteria
 
