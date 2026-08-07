@@ -48,6 +48,7 @@
     "verify:lrn-001": "node scripts/verify-lrn-001.mjs",
     "verify:lrn-002": "node scripts/verify-lrn-002.mjs",
     "verify:lrn-003": "node scripts/verify-lrn-003.mjs",
+    "verify:lrn-004": "node scripts/verify-lrn-004.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",

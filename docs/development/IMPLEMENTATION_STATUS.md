@@ -39,6 +39,7 @@ All 31 local SQL migrations through `20260807120000_lrn_003_learner_phones.sql` 
 - Private Learner Core identity records with Latin first/last name, Ukrainian full name, internal note, soft archive, controlled column grants, forced RLS, and MFA-protected Owner/Super Admin/Credential Manager access.
 - Private learner emails with case-insensitive global uniqueness, at most one primary address per learner, immutable learner ownership, controlled grants, forced RLS, and MFA-protected management.
 - Private learner phones with canonical global uniqueness, at most one primary number per learner, Telegram/Viber/WhatsApp flags, immutable learner ownership, controlled grants, forced RLS, and MFA-protected management.
+- Protected learner API and responsive manager UI for profile creation/editing, archive/restore, contact search and management, primary contacts, messenger flags, protected duplicate navigation, and a Credential Core placeholder.
 
 ## Verified in Dev
 
@@ -51,6 +52,7 @@ All 31 local SQL migrations through `20260807120000_lrn_003_learner_phones.sql` 
 - Learner Core live RLS/MFA QA passed: anonymous and Content Manager denied, Credential Manager denied at AAL1 and allowed at AAL2, hard delete denied, and temporary data cleaned.
 - Learner Email live QA passed: case-insensitive duplicate and second-primary conflicts enforced, primary switching and authorized removal work, ownership changes are denied, and temporary data is cleaned.
 - Learner Phone live QA passed: canonical uniqueness, second-primary and messenger-consistency constraints are enforced, primary switching and authorized removal work, ownership changes are denied, and temporary data is cleaned.
+- Learner Admin API/UI live QA passed: role/MFA boundaries, profile and contact operations, protected duplicate references, archive filtering, desktop/mobile workflows, cleanup, and browser console checks passed.
 - All nine legal routes render full localized documents; their metadata is `noindex, follow`.
 
 ## Verification Limitation
@@ -70,5 +72,5 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
 - Telegram contact-alert delivery remains a deferred pre-launch check. Google Workspace remains required later for credential PDF delivery only. CAPTCHA provider setup is deferred by product decision and is not a blocker.
-- Learner Core, emails, and phones are complete; learner admin UI, credentials, issuance/email, and public credential verification remain.
+- Stage 5 Learner Foundation is complete; credentials, issuance/email, and public credential verification remain.
 - Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email end-to-end tests remain ahead; CAPTCHA testing applies only if the conditional control is enabled later.

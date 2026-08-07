@@ -12,6 +12,7 @@ export function jsonError(error: unknown) {
         error: {
           code: error.code,
           message: error.message,
+          ...(error.details ? { details: error.details } : {}),
         },
       },
       { status: error.status },

@@ -2897,6 +2897,260 @@ h1 span {
   .programme-admin-skeleton { animation: none; }
 }
 
+/* LRN-004 protected learner manager */
+.learner-admin-shell {
+  min-height: 100%;
+  color: oklch(25% 0.025 250);
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+.learner-admin-toolbar {
+  display: grid;
+  grid-template-columns: minmax(15rem, 1fr) minmax(10rem, 13rem) auto auto minmax(7rem, auto);
+  gap: 0.7rem;
+  align-items: end;
+  margin: 1.1rem 0 0.9rem;
+  padding-block: 0.8rem;
+  border-block: 1px solid oklch(87% 0.014 250);
+}
+
+.learner-admin-toolbar label,
+.learner-profile-form label,
+.learner-contact-row label,
+.learner-contact-add label {
+  display: grid;
+  gap: 0.32rem;
+  color: oklch(39% 0.025 250);
+  font-size: 0.73rem;
+  font-weight: 660;
+}
+
+.learner-admin-toolbar :is(input, select),
+.learner-profile-form :is(input, textarea),
+.learner-contact-row input,
+.learner-contact-add input {
+  width: 100%;
+  min-height: 2.45rem;
+  border: 1px solid oklch(82% 0.018 250);
+  border-radius: 7px;
+  padding: 0.55rem 0.68rem;
+  background: oklch(99% 0.004 250);
+  color: oklch(24% 0.025 250);
+  font: inherit;
+  font-size: 0.82rem;
+}
+
+.learner-admin-toolbar button,
+.learner-admin-notice button,
+.learner-profile-form button,
+.learner-contact-row button,
+.learner-contact-add button {
+  min-height: 2.45rem;
+  border: 1px solid oklch(42% 0.12 250);
+  border-radius: 7px;
+  padding: 0.55rem 0.85rem;
+  background: oklch(42% 0.12 250);
+  color: oklch(97% 0.007 250);
+  font: inherit;
+  font-size: 0.73rem;
+  font-weight: 730;
+  cursor: pointer;
+}
+
+.learner-admin-toolbar button.secondary {
+  border-color: oklch(72% 0.045 250);
+  background: oklch(98% 0.007 250);
+  color: oklch(34% 0.085 250);
+}
+
+.learner-admin-toolbar > span {
+  align-self: center;
+  color: oklch(50% 0.02 250);
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+.learner-admin-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin-bottom: 0.85rem;
+  border: 1px solid oklch(77% 0.05 155);
+  border-radius: 7px;
+  padding: 0.65rem 0.8rem;
+  background: oklch(96% 0.02 155);
+  color: oklch(37% 0.065 155);
+  font-size: 0.74rem;
+}
+
+.learner-admin-notice.error {
+  border-color: oklch(77% 0.055 25);
+  background: oklch(96% 0.02 25);
+  color: oklch(40% 0.075 25);
+}
+
+.learner-admin-notice button {
+  flex: 0 0 auto;
+  min-height: 2rem;
+  padding-block: 0.35rem;
+}
+
+.learner-admin-workspace {
+  display: grid;
+  grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
+  min-height: 39rem;
+  align-items: start;
+  overflow: clip;
+  border: 1px solid oklch(87% 0.014 250);
+  border-radius: 8px;
+  background: oklch(99% 0.004 250);
+}
+
+.learner-admin-list {
+  min-height: 39rem;
+  max-height: calc(100vh - 13rem);
+  overflow-y: auto;
+  border-right: 1px solid oklch(87% 0.014 250);
+  background: oklch(96.5% 0.008 250);
+}
+
+.learner-admin-list > button {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  border: 0;
+  border-bottom: 1px solid oklch(89% 0.012 250);
+  padding: 0.85rem 0.9rem;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.learner-admin-list > button:hover { background: oklch(98% 0.008 250); }
+.learner-admin-list > button[aria-pressed="true"] { background: oklch(93.5% 0.025 250); box-shadow: inset 0 0 0 1px oklch(68% 0.07 250); }
+.learner-admin-list > button > span { display: grid; gap: 0.14rem; overflow: hidden; }
+.learner-admin-list strong { overflow: hidden; color: oklch(26% 0.035 250); font-size: 0.82rem; text-overflow: ellipsis; white-space: nowrap; }
+.learner-admin-list small { overflow: hidden; color: oklch(51% 0.02 250); font-size: 0.65rem; text-overflow: ellipsis; white-space: nowrap; }
+
+.learner-admin-list em,
+.learner-editor-heading > span {
+  align-self: start;
+  width: fit-content;
+  border: 1px solid oklch(76% 0.055 155);
+  border-radius: 999px;
+  padding: 0.17rem 0.42rem;
+  background: oklch(95% 0.025 155);
+  color: oklch(38% 0.075 155);
+  font-size: 0.59rem;
+  font-style: normal;
+  font-weight: 760;
+}
+
+.learner-admin-list em.archived,
+.learner-editor-heading > span.archived {
+  border-color: oklch(80% 0.018 250);
+  background: oklch(93% 0.008 250);
+  color: oklch(49% 0.018 250);
+}
+
+.learner-list-skeleton {
+  display: block;
+  height: 5.15rem;
+  border-bottom: 1px solid oklch(89% 0.012 250);
+  background: oklch(93% 0.008 250);
+  animation: programme-skeleton 1.1s ease-in-out infinite alternate;
+}
+
+.learner-admin-editor { min-width: 0; }
+.learner-editor-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.05rem 1.2rem 0.85rem; }
+.learner-editor-heading small,
+.learner-profile-form header small,
+.learner-contacts section > header small { color: oklch(50% 0.025 250); font-size: 0.65rem; }
+.learner-editor-heading h2,
+.learner-profile-form h2,
+.learner-contacts h3 { margin: 0.18rem 0 0; color: oklch(22% 0.03 250); font-size: 1.1rem; line-height: 1.2; }
+
+.learner-editor-tabs { display: flex; gap: 0.15rem; overflow-x: auto; padding-inline: 1rem; border-bottom: 1px solid oklch(87% 0.014 250); }
+.learner-editor-tabs button { min-height: 2.55rem; border: 0; border-bottom: 2px solid transparent; padding: 0.55rem 0.7rem; background: transparent; color: oklch(48% 0.025 250); font: inherit; font-size: 0.72rem; font-weight: 680; white-space: nowrap; cursor: pointer; }
+.learner-editor-tabs button[aria-current="page"] { border-bottom-color: oklch(46% 0.12 250); color: oklch(30% 0.08 250); }
+
+.learner-profile-form { display: grid; gap: 1.1rem; padding: 1.2rem; }
+.learner-profile-form > header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.learner-profile-form button.quiet-danger,
+.learner-contact-row button.remove { border-color: oklch(76% 0.045 25); background: transparent; color: oklch(42% 0.075 25); }
+.learner-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; }
+.learner-form-grid .wide { grid-column: 1 / -1; }
+.learner-form-grid label > span > small { margin-left: 0.35rem; color: oklch(51% 0.02 250); font-size: 0.61rem; font-weight: 520; }
+.learner-profile-form textarea { min-height: 7rem; resize: vertical; line-height: 1.5; }
+.learner-profile-form > footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-top: 1px solid oklch(88% 0.012 250); padding-top: 0.9rem; }
+.learner-profile-form > footer span { color: oklch(51% 0.02 250); font-size: 0.67rem; }
+
+.learner-contacts { display: grid; gap: 1.35rem; padding: 1.2rem; }
+.learner-contacts > section { border-bottom: 1px solid oklch(87% 0.014 250); padding-bottom: 1.35rem; }
+.learner-contacts > section:last-child { border-bottom: 0; }
+.learner-contacts section > header { margin-bottom: 0.75rem; }
+.learner-contact-row,
+.learner-contact-add { display: grid; grid-template-columns: minmax(12rem, 1fr) auto auto; gap: 0.65rem; align-items: end; border-top: 1px solid oklch(90% 0.01 250); padding: 0.75rem 0; }
+.learner-contact-add { border: 1px solid oklch(86% 0.018 250); border-radius: 7px; padding: 0.75rem; background: oklch(97.5% 0.007 250); }
+.learner-contact-row > div,
+.learner-contact-row .contact-actions { display: flex; gap: 0.4rem; }
+.learner-contact-row.phone,
+.learner-contact-add.phone { grid-template-columns: minmax(11rem, 0.8fr) minmax(11rem, 0.8fr) minmax(14rem, 1.2fr) auto; }
+.learner-contact-row label.contact-check,
+.learner-contact-add label.contact-check,
+.learner-messenger-flags label { display: flex; min-height: 2.45rem; align-items: center; gap: 0.38rem; white-space: nowrap; }
+.learner-contact-row label.contact-check input,
+.learner-contact-add label.contact-check input,
+.learner-messenger-flags input { width: 1rem; min-height: 1rem; accent-color: oklch(43% 0.13 250); }
+.learner-messenger-flags { display: flex; flex-wrap: wrap; gap: 0.15rem 0.75rem; align-items: center; }
+
+.learner-credential-placeholder,
+.learner-empty { display: grid; place-content: center; gap: 0.35rem; min-height: 13rem; padding: 1.5rem; color: oklch(49% 0.02 250); text-align: center; }
+.learner-empty.editor { min-height: 39rem; }
+.learner-empty strong { color: oklch(32% 0.03 250); font-size: 0.84rem; }
+.learner-empty span { font-size: 0.7rem; }
+.learner-credential-placeholder { min-height: 24rem; }
+.learner-credential-placeholder > span { color: oklch(46% 0.11 250); font-size: 0.65rem; font-weight: 780; letter-spacing: 0.07em; text-transform: uppercase; }
+.learner-credential-placeholder h3 { margin: 0.15rem 0; color: oklch(25% 0.035 250); font-size: 1.1rem; }
+.learner-credential-placeholder p { max-width: 52ch; margin: 0; font-size: 0.76rem; line-height: 1.55; }
+
+.learner-admin-shell :is(button, input, select, textarea):focus-visible { outline: 3px solid oklch(67% 0.13 250 / 35%); outline-offset: 2px; }
+.learner-admin-shell button:disabled { opacity: 0.55; cursor: wait; }
+
+@media (max-width: 1080px) {
+  .learner-admin-toolbar { grid-template-columns: minmax(14rem, 1fr) minmax(9rem, 12rem) auto auto; }
+  .learner-admin-toolbar > span { grid-column: 1 / -1; text-align: left; }
+  .learner-contact-row.phone,
+  .learner-contact-add.phone { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .learner-contact-row.phone .contact-actions,
+  .learner-contact-add.phone > button { justify-self: end; }
+}
+
+@media (max-width: 760px) {
+  .learner-admin-toolbar { grid-template-columns: 1fr 1fr; }
+  .learner-admin-toolbar label:first-child { grid-column: 1 / -1; }
+  .learner-admin-workspace { display: block; overflow: visible; }
+  .learner-admin-list { min-height: 0; max-height: 18rem; border-right: 0; border-bottom: 1px solid oklch(87% 0.014 250); }
+  .learner-form-grid,
+  .learner-contact-row,
+  .learner-contact-add,
+  .learner-contact-row.phone,
+  .learner-contact-add.phone { grid-template-columns: 1fr; }
+  .learner-form-grid .wide { grid-column: auto; }
+  .learner-contact-row.phone .contact-actions,
+  .learner-contact-add.phone > button { justify-self: stretch; }
+  .learner-contact-row > div { flex-wrap: wrap; }
+  .learner-profile-form > footer { align-items: stretch; flex-direction: column; }
+  .learner-profile-form > footer button { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .learner-list-skeleton { animation: none; }
+}
+
 @media (max-width: 860px) {
   .admin-app-shell {
     display: block;

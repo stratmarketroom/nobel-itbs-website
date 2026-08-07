@@ -20,16 +20,18 @@ export type AdminContext = {
   mfaSatisfied: boolean;
 };
 
-export type ApiErrorCode = 'unauthorized' | 'forbidden' | 'bad_request' | 'not_found' | 'server_error';
+export type ApiErrorCode = 'unauthorized' | 'forbidden' | 'bad_request' | 'conflict' | 'not_found' | 'server_error';
 
 export class ApiError extends Error {
   code: ApiErrorCode;
   status: number;
+  details?: Record<string, unknown>;
 
-  constructor(code: ApiErrorCode, status: number, message: string) {
+  constructor(code: ApiErrorCode, status: number, message: string, details?: Record<string, unknown>) {
     super(message);
     this.code = code;
     this.status = status;
+    this.details = details;
   }
 }
 
@@ -207,6 +209,20 @@ export function assertCanAccessContactSubmissions(context: AdminContext): void {
 
   if (!context.mfaSatisfied) {
     throw new ApiError('forbidden', 403, 'MFA/AAL2 is required for contact submissions.');
+  }
+}
+
+export function assertCanManageLearners(context: AdminContext): void {
+  const allowed = context.roles.some((role) => (
+    role === 'owner' || role === 'super_admin' || role === 'credential_manager'
+  ));
+
+  if (!allowed) {
+    throw new ApiError('forbidden', 403, 'Learner management access is not permitted.');
+  }
+
+  if (!context.mfaSatisfied) {
+    throw new ApiError('forbidden', 403, 'MFA/AAL2 is required for learner management.');
   }
 }
 

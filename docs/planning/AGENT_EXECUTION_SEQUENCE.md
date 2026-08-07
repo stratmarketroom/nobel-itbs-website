@@ -471,11 +471,11 @@ The orchestrator controls:
 
 Next ticket:
 
-- `LRN-004 Learner Admin UI`
+- `CRD-001 Credential Types`
 
 Agent:
 
-- Backend/API Agent and Admin UI Agent
+- Database / Security Agent
 
 Parallel agents:
 
@@ -483,6 +483,5 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of LRN-004;
-- review the learner-management workflow after implementation;
+- approve start of CRD-001;
 - no external provider access is required.

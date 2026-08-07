@@ -148,7 +148,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Partners | Protected CRUD API plus responsive record, EN/UA/CZ copy, classification, URL, order, and logo-path UI | Authenticated CRUD/translation/asset-path validation/cleanup smoke passed |
 | Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/cleanup smoke passed |
 | Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, optional CAPTCHA fail-closed contract, audit, and cleanup smoke passed; privacy-minimised Telegram notification is deferred to PCE-005 |
-| Learners | Private identity, globally unique emails and canonical phones implemented with forced RLS/MFA | LRN-004 protected API/UI and credential placeholder |
+| Learners | Private identity, globally unique contacts, protected API, responsive manager UI, archive workflow, and credential placeholder implemented | Stage 5 accepted; credential records begin with CRD-001 |
 | Credential Sets / Credentials / Number Log | Planned for Stages 6–7 | CRD/WF sequence |
 | Email Templates | Planned with credential workflow | Protected editing and audit smoke |
 | Site Settings | Protected API/UI implemented | Authenticated AAL2 save/audit smoke passed; final For Organisations URL remains |
@@ -161,9 +161,9 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 - [x] LRN-001 learner core: private identity fields, soft archive, controlled grants, forced RLS, MFA, live role test, and cleanup.
 - [x] LRN-002 multiple globally unique learner emails and optional primary email: citext uniqueness, one-primary constraint, forced RLS/MFA, conflict tests, and cleanup.
 - [x] LRN-003 globally unique canonical phones, messenger flags, optional primary phone, forced RLS/MFA, live conflict tests, and cleanup.
-- [ ] LRN-004 protected learner admin UI and credential placeholder.
+- [x] LRN-004 protected learner API/UI, contact search and management, duplicate navigation, archive workflow, credential placeholder, role/MFA and desktop/mobile QA.
 
-Stage status: **in progress; LRN-001..003 complete, LRN-004 is next**.
+Stage status: **complete; LRN-001..004 accepted in dev**.
 
 ## Stage 6 — Credential Core
 
@@ -204,9 +204,9 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
 ## Stage 9 — Security, QA, and Launch Hardening
 
 - [-] Ticket-level migration/static verifiers, lint, TypeScript, builds, browser smoke, and selected RLS/API smoke checks pass.
-- [-] QA-001 live Stage 2–4 matrix plus LRN-001..003 learner core/email/phone RLS passed; future credential tables and the Docker-dependent full pgTAP suite remain.
+- [-] QA-001 live Stage 2–4 matrix plus complete Stage 5 learner RLS/API/UI passed; future credential tables and the Docker-dependent full pgTAP suite remain.
 - [ ] QA-002 credential verification privacy tests after credentials exist.
-- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings and learner core/email/phone actions; future learner UI and credential actions remain.
+- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings and complete learner management; future credential actions remain.
 - [ ] QA-004 end-to-end learner → credential → PDF → activation → verify → revoke flow.
 - [ ] QA-005 production environment, credential Gmail delivery, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
 - [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
@@ -234,8 +234,8 @@ The learner module is now open; external production integrations remain tracked 
 3. [x] **LRN-001 Learner Core** — schema, grants, forced RLS, MFA, live role checks, and cleanup completed on 2026-08-07; see `docs/qa/LRN_001_LEARNER_CORE_QA_2026-08-07.md`.
 4. [x] **LRN-002 Learner Emails** — global case-insensitive uniqueness, one-primary constraint, forced RLS/MFA, live conflict checks, and cleanup completed on 2026-08-07; see `docs/qa/LRN_002_LEARNER_EMAILS_QA_2026-08-07.md`.
 5. [x] **LRN-003 Learner Phones** — canonical global uniqueness, one-primary constraint, messenger consistency, forced RLS/MFA, live conflict checks, and cleanup completed on 2026-08-07; see `docs/qa/LRN_003_LEARNER_PHONES_QA_2026-08-07.md`.
-6. **Complete Stage 5 with LRN-004 Learner Admin UI**.
-7. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
+6. [x] **LRN-004 Learner Admin UI** — protected actor-scoped API, profile/contact/archive UI, duplicate navigation, credential placeholder, role/MFA and desktop/mobile QA completed on 2026-08-07; see `docs/qa/LRN_004_LEARNER_ADMIN_UI_QA_2026-08-07.md`.
+7. **Begin Stage 6 with CRD-001 Credential Types**.
 8. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
 9. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, and learner foundation layers.
 
