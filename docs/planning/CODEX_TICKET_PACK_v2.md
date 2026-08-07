@@ -193,7 +193,17 @@ PCE-004 Contact Submissions
 
 - new/processed/archived;
 - permissions;
-- notification email.
+- protected admin as source of truth;
+- notification channel contract remains non-blocking.
+
+PCE-005 Telegram Manager Notifications (deferred until pre-launch)
+
+- one-way Telegram Bot API notification after successful storage;
+- server-only bot token and manager chat ID;
+- submission type, locale, optional programme context, timestamp, and protected-admin link only;
+- no visitor message, email, or phone in Telegram;
+- notification failure never rejects or deletes the submission;
+- no webhook or inbound bot workflow in Release 1.
 
 ### Group F - Learners
 

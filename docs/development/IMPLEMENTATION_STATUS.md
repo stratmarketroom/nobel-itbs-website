@@ -1,6 +1,6 @@
 # Implementation Status
 
-Last updated: 2026-08-06
+Last updated: 2026-08-07
 
 This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
@@ -27,7 +27,7 @@ All 27 local SQL migrations through `20260806170000_pce_004_public_contact_entry
 - Structured core pages, legal pages, site settings, public navigation, locale fallback, and explicit Supabase-versus-seed data-source selection.
 - Programme areas, types, five programme records, runs, flexible pricing, public catalogue, programme/area/type pages, redirects, and programme-question flow.
 - Partner and expert records and their public Partnerships rendering.
-- Private contact-submission storage, programme-question plus general/partnership/organisation public forms, protected manager list/status workflow, audit logging, database-backed rate limiting, CAPTCHA hooks, and Google Workspace notification code.
+- Private contact-submission storage, programme-question plus general/partnership/organisation public forms, protected manager list/status workflow, audit logging, database-backed rate limiting, and CAPTCHA hooks. The existing contact-email adapter is dormant and scheduled to be replaced by PCE-005 Telegram notifications before launch.
 - Shared protected admin shell with role-aware desktop/mobile navigation, account context, and explicit signed-out, MFA-required, and access-denied states.
 - Actor-scoped Admin Programme API for areas, types, programmes/translations, runs, pricing options/translations, and read-only slug redirect review.
 - Responsive programme manager for list/create/edit, publication and catalogue settings, localized page copy, controlled sales sections, and SEO.
@@ -56,13 +56,13 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 - Leeloo URLs are still required for General Psychology, Child Psychology, and Space Business.
 - The AI Production partner URL is intentionally pending; its CTA currently uses the question fallback.
 - The For Organisations application URL remains an Owner/Super Admin setting and needs its final destination.
-- Production contact notifications require Google Workspace server credentials and destination inbox configuration.
+- Contact notifications will use a one-way Telegram bot and private manager chat under deferred pre-launch ticket PCE-005; Google Workspace is not required for contact alerts.
 - Production forms require a strong rate-limit secret. CAPTCHA is intentionally conditional and remains unconfigured until abuse signals justify enabling it.
 - Czech native-language review remains an external editorial check where noted in the approved source files.
 
 ## Important Remaining Product Work
 
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
-- Google Workspace notification delivery remains a production-configuration check. CAPTCHA provider setup is deferred by product decision and is not a blocker.
+- Telegram contact-alert delivery remains a deferred pre-launch check. Google Workspace remains required later for credential PDF delivery only. CAPTCHA provider setup is deferred by product decision and is not a blocker.
 - Learners, credentials, issuance/email, and public credential verification have not started.
 - Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email end-to-end tests remain ahead; CAPTCHA testing applies only if the conditional control is enabled later.

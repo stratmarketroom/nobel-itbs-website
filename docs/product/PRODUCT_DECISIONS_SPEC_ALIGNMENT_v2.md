@@ -339,7 +339,16 @@ Release 1 includes simple Site Settings where Owner/Super Admin can edit the For
 
 ## 7. Contact Submissions
 
-Public forms are stored in admin and also send email notifications to the general Nobel ITBS email address.
+Public forms are stored in the protected admin area, which remains the source of
+truth. Manager notifications use Telegram rather than email (decision confirmed
+2026-08-07). The Telegram integration is deferred until pre-launch and does not
+block the learner or credential implementation sequence.
+
+The notification is one-way and privacy-minimised: it identifies the submission
+type, locale, programme context where applicable, timestamp, and a link to the
+protected admin area. The visitor's message, email, and phone are read only in
+the admin area and are not copied into Telegram. A Telegram delivery failure
+must never reject or delete an accepted submission.
 
 Contact submissions are accessible to:
 

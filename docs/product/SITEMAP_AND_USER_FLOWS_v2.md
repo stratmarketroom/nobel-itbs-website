@@ -455,7 +455,7 @@ Application URL priority:
 2. On-site form opens.
 3. Form stores source programme automatically.
 4. Submission is saved as contact submission with type `programme_question`.
-5. Email notification is sent to general Nobel ITBS address.
+5. When the deferred Telegram integration is enabled, a privacy-minimised notification with a protected-admin link is sent to the manager chat.
 
 ## 10. Credential Admin User Flow
 

@@ -1,42 +1,51 @@
 # Contact Submission Notifications
 
-Ticket: PCE-004  
-Provider: Gmail / Google Workspace  
-Scope: server-only notification after a contact submission is stored
+Decision date: 2026-08-07
 
-## Runtime Configuration
+Current ticket: PCE-004 (admin storage and processing complete)
 
-Configure these values in `.env.local` for local development and in the hosting
-platform's private environment settings for deployment:
+Deferred ticket: PCE-005 (Telegram manager notifications before launch)
 
-- `CONTACT_NOTIFICATION_EMAIL`: the Nobel ITBS inbox that receives new enquiries;
-- `GOOGLE_WORKSPACE_SERVICE_ACCOUNT_EMAIL`: the Workspace-enabled service account;
-- `GOOGLE_WORKSPACE_PRIVATE_KEY`: its private key, stored only as a server secret;
-- `GOOGLE_WORKSPACE_DELEGATED_USER`: the authorized Nobel ITBS mailbox used as the sender.
+## Channel Decision
 
-The Workspace administrator must authorize the service account for the narrow
-`https://www.googleapis.com/auth/gmail.send` scope. Do not place any of these
-private credentials in `NEXT_PUBLIC_*` variables or commit real values.
+The protected admin area is the source of truth for every contact submission.
+Managers will receive optional one-way Telegram notifications instead of email
+copies. Telegram is intentionally not connected now and does not block LRN/CRD
+implementation.
 
-## Delivery Behaviour
+Google Workspace remains a separate future integration for sending credential
+PDFs to learners. It is not required for contact-submission notifications.
+
+## Planned Runtime Configuration
+
+PCE-005 will require server-only deployment secrets:
+
+- `TELEGRAM_BOT_TOKEN`: token for a dedicated Nobel ITBS notification bot;
+- `TELEGRAM_CONTACT_CHAT_ID`: private manager chat that receives notifications;
+- `ADMIN_BASE_URL`: production origin used to build the protected-admin link.
+
+Never expose these values through `NEXT_PUBLIC_*` variables or commit real
+values. The bot must be limited to the approved private manager chat.
+
+## Planned Delivery Behaviour
 
 1. The public route validates, rate-limits, and stores the submission.
-2. After storage succeeds, a background task attempts the Gmail notification.
-3. The message contains the form type, locale, programme context where present,
-   and the contact information needed for a response.
-4. The sender's reply action points to the visitor's validated email address.
-5. Missing configuration or a temporary Gmail error never deletes or rejects an
-   already accepted submission.
-6. Provider responses and public contact data are not written to application logs.
+2. Only after storage succeeds, a background task may call Telegram Bot API
+   `sendMessage`.
+3. The notification contains only submission type, locale, optional programme
+   context, timestamp, and a link to `/admin/contact-submissions`.
+4. The visitor's message, email, and phone are never copied into Telegram.
+5. Missing configuration or a Telegram error never deletes or rejects an
+   accepted submission and never exposes provider errors publicly.
+6. Release 1 needs no Telegram webhook or inbound bot commands.
 
-The protected admin list remains the source of truth even when notification
-delivery is unavailable.
+## Pre-launch Acceptance
 
-## Smoke Check
-
-- submit a programme question through a published programme page;
-- confirm the public route returns `201`;
-- confirm the new record appears under `/admin/contact-submissions`;
-- confirm the configured destination inbox receives the notification;
-- change the status and confirm the audit log records only the old and new
-  statuses, without copying the contact message or contact details.
+- create a dedicated bot and private manager chat;
+- add the bot token and chat ID to private deployment settings;
+- submit each public enquiry type and confirm the record appears in admin first;
+- confirm one minimal Telegram notification arrives with a working admin link;
+- confirm no visitor message, email, or phone appears in Telegram;
+- simulate Telegram failure and confirm the form still returns success and the
+  stored submission remains available;
+- confirm status changes remain audit-logged without copying contact details.

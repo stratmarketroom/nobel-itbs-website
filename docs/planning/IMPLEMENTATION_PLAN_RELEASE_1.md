@@ -220,14 +220,15 @@ Scope:
 - programme question form;
 - organisation/partnership forms if needed by content pages;
 - contact submission statuses: new, processed, archived;
-- email notification to general Nobel ITBS address;
+- deferred one-way Telegram notification to the manager chat, with minimal metadata and a protected-admin link;
 - admin contact submission list/detail.
 
 Acceptance:
 
 - Content Manager cannot access submissions;
 - Owner/Super Admin/Credential Manager can access submissions;
-- programme question stores source programme.
+- programme question stores source programme;
+- Telegram delivery is non-blocking and does not contain the visitor message, email, or phone.
 
 ## Stage 9 - Security, QA, and Launch Hardening
 

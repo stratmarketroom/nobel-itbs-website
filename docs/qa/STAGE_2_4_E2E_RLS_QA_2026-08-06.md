@@ -90,4 +90,4 @@ Audit records intentionally remain append-only and contain no passwords, MFA sec
 
 ## Result
 
-Stages 2–4 manager operations and current RLS boundaries are accepted at the dev level. Remaining blockers are operational values and integrations: final application URLs, production rate-limit secret, and Google Workspace notification delivery. Per the 2026-08-07 product decision, CAPTCHA is conditional, intentionally not connected now, and is not a Release 1 blocker.
+Stages 2–4 manager operations and current RLS boundaries are accepted at the dev level. Remaining operational values are the final application URLs and production rate-limit secret. Per the 2026-08-07 decisions, contact alerts will use deferred Telegram PCE-005 rather than email, while CAPTCHA is conditional and intentionally not connected now; neither blocks Stage 5.

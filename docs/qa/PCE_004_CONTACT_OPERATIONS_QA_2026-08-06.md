@@ -7,7 +7,7 @@ Scope: public contact entry points, protected contact processing, rate limiting,
 
 PCE-004 is complete at the implementation and dev-QA level. The website now has manager-oriented public enquiry forms for general questions, partnership proposals, and organisation enquiries in EN, UA, and CZ, in addition to the existing programme-question flow.
 
-The live dev pass verified creation through the public API, database-backed rate limiting, protected manager visibility, MFA enforcement, status processing, audit privacy, negative validation, and cleanup. Google Workspace notification delivery remains a production-configuration dependency. CAPTCHA is a conditional control and is intentionally not connected at this stage.
+The live dev pass verified creation through the public API, database-backed rate limiting, protected manager visibility, MFA enforcement, status processing, audit privacy, negative validation, and cleanup. Per the 2026-08-07 channel decision, contact alerts will use Telegram rather than Google Workspace and are deferred to pre-launch PCE-005. CAPTCHA is a conditional control and is intentionally not connected at this stage.
 
 ## Public Entry Points
 
@@ -53,12 +53,12 @@ All temporary contact records and the temporary Credential Manager were removed 
 
 ## External Production Dependencies and Deferred Controls
 
-- `BLOCKED`: provide Google Workspace service-account/domain-delegation credentials and the destination inbox for real notification delivery.
 - `BLOCKED`: configure a production contact rate-limit secret of at least 32 characters.
+- `DEFERRED BY PRODUCT DECISION (2026-08-07)`: implement a one-way, privacy-minimised Telegram manager notification under PCE-005 before launch. Google Workspace is not required for contact alerts.
 - `DEFERRED BY PRODUCT DECISION (2026-08-07)`: do not connect CAPTCHA now. Honeypot and database-backed rate limiting remain the active controls. A replaceable CAPTCHA provider may be added later only as a conditional check for suspicious or abusive traffic.
 
-The notification and production-secret items block their respective production checks, but they do not block the next implementation ticket, LRN-001 Learner Core. The deferred CAPTCHA provider is not a Release 1 blocker.
+The production-secret item blocks its production check, but it does not block the next implementation ticket, LRN-001 Learner Core. Deferred Telegram notification and CAPTCHA configuration are not Stage 5 blockers.
 
 ## Result
 
-PCE-004 and the code-level portion of Stage 8 are accepted in dev. Production notification acceptance remains open until Google Workspace credentials are available; CAPTCHA configuration is intentionally outside the current required work.
+PCE-004 and the code-level portion of Stage 8 are accepted in dev. Telegram notification acceptance is deferred to PCE-005 before launch; CAPTCHA configuration is intentionally outside the current required work.

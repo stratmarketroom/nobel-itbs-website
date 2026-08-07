@@ -378,19 +378,20 @@ Active agents:
 Tickets:
 
 - PCE-004 Contact Submissions;
-- Gmail integration hardening;
+- PCE-005 one-way Telegram manager notifications, deferred until pre-launch;
 - Leeloo and partner-site CTA checks;
 - CAPTCHA/rate limiting.
 
 Owner checkpoint:
 
-- provide production/general email details when needed;
+- create/approve the Telegram bot and private manager chat when PCE-005 starts;
 - provide Leeloo URLs/test funnels and approved partner-site URLs when needed.
 
 Orchestrator checks:
 
 - Content Manager cannot access submissions;
-- notifications work;
+- Telegram notification failure does not affect stored submissions;
+- Telegram contains no visitor message, email, or phone;
 - no CRM expansion.
 
 ### Phase 9 - QA and Launch Hardening

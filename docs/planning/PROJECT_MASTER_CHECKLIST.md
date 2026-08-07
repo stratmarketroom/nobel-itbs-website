@@ -1,6 +1,6 @@
 # Nobel ITBS Release 1 — Project Master Checklist
 
-Last reviewed: 2026-08-06
+Last reviewed: 2026-08-07
 Baseline: v2 product, technical, security, sitemap, and implementation documents
 Purpose: keep implementation aligned with Release 1 and make the next non-design step unambiguous.
 
@@ -126,10 +126,11 @@ Stage status: **implementation and manager/RLS QA complete; production acceptanc
 - [x] Manager CRUD UI for partners, experts, order, publication states, and approved logo/photo paths.
 - [x] Authenticated Content Manager/Super Admin/Owner partner/expert CRUD smoke, including translations, asset-path validation, and cleanup.
 - [x] General, organisation, and partnership public forms in EN/UA/CZ with validation, privacy acknowledgement, and honeypot handling.
-- `BLOCKED`: Google Workspace notification credentials/destination inbox.
+- [x] Contact notification channel decision: protected admin is the source of truth; email is replaced by a deferred one-way Telegram manager notification.
+- [ ] PCE-005 Telegram manager notification — intentionally deferred until pre-launch and not a blocker for LRN/CRD work.
 - [x] Product decision: CAPTCHA is conditional, is not connected now, and is not a Release 1 blocker; honeypot and database-backed rate limiting remain active.
 
-Module status: **implementation and dev QA complete; Google Workspace notification credentials and the production rate-limit secret remain operational dependencies; CAPTCHA is intentionally deferred**.
+Module status: **implementation and dev QA complete; Telegram notification is a deferred pre-launch enhancement, the production rate-limit secret remains an operational dependency, and CAPTCHA is intentionally deferred**.
 
 ## Admin Module Coverage
 
@@ -146,7 +147,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Pricing Options | Protected CRUD API plus 1–3 option UI, localized copy, activation guard, and visible URL hierarchy | Authenticated 1–3 options, translation, fourth-option guard, and cleanup smoke passed |
 | Partners | Protected CRUD API plus responsive record, EN/UA/CZ copy, classification, URL, order, and logo-path UI | Authenticated CRUD/translation/asset-path validation/cleanup smoke passed |
 | Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/cleanup smoke passed |
-| Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, optional CAPTCHA fail-closed contract, audit, and cleanup smoke passed; production notifications remain |
+| Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, optional CAPTCHA fail-closed contract, audit, and cleanup smoke passed; privacy-minimised Telegram notification is deferred to PCE-005 |
 | Learners | Planned for Stage 5 | LRN-001..004 |
 | Credential Sets / Credentials / Number Log | Planned for Stages 6–7 | CRD/WF sequence |
 | Email Templates | Planned with credential workflow | Protected editing and audit smoke |
@@ -194,10 +195,11 @@ Stage status: **not started**.
 - [x] General, partnership, and organisation public entry points are implemented in EN/UA/CZ.
 - [x] Authenticated status processing, MFA/RLS boundaries, privacy-safe audit, validation, honeypot, and cleanup passed live dev QA.
 - [x] Database-backed five-per-15-minute rate limiting and CAPTCHA fail-closed server contract passed live dev QA.
-- `BLOCKED`: configure and test real Google Workspace notification delivery.
+- [x] Notification-channel decision: contact alerts use Telegram, while Google Workspace is reserved for the later credential-delivery workflow.
+- [ ] PCE-005: configure/test the one-way Telegram manager notification before launch; no webhook or inbound bot workflow is required.
 - [x] CAPTCHA remains an optional conditional control and is intentionally not connected now; configure/test it only if later enabled because of abuse signals.
 
-Stage status: **implementation and dev QA complete; Google Workspace notification delivery and the production rate-limit secret remain operational dependencies, while CAPTCHA is intentionally deferred**.
+Stage status: **core implementation and dev QA complete; Telegram notification is intentionally deferred until pre-launch and does not block Stage 5**.
 
 ## Stage 9 — Security, QA, and Launch Hardening
 
@@ -206,7 +208,7 @@ Stage status: **implementation and dev QA complete; Google Workspace notificatio
 - [ ] QA-002 credential verification privacy tests after credentials exist.
 - [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings actions; future credential actions remain.
 - [ ] QA-004 end-to-end learner → credential → PDF → activation → verify → revoke flow.
-- [ ] QA-005 production environment, Gmail, Leeloo, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
+- [ ] QA-005 production environment, credential Gmail delivery, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
 - [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
 
 Stage status: **foundation checks active; launch QA not started**.
@@ -231,7 +233,7 @@ The next implementation step can open the learner module; external production in
 2. [x] **Finish contact operations in code and dev QA** — required entry points, rate limiting, CAPTCHA fail-closed contract, contact-status mutation, audit, and cleanup passed on 2026-08-06; see `docs/qa/PCE_004_CONTACT_OPERATIONS_QA_2026-08-06.md`.
 3. **Start Stage 5 with LRN-001 Learner Core**.
 4. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
-5. Configure/test Google Workspace notification delivery during production readiness; revisit conditional CAPTCHA only if abuse signals justify enabling it.
+5. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
 6. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager and contact layers.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.

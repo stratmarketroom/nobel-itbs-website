@@ -138,11 +138,14 @@ Processing:
 - rate limit;
 - CAPTCHA where required;
 - save submission;
-- send notification to general Nobel ITBS email.
+- optionally send a privacy-minimised Telegram notification to the manager chat.
 
 Notification sending is attempted only after the submission is stored. A
-temporary Google Workspace delivery failure must not discard an accepted
-submission or expose provider errors in the public response.
+temporary Telegram delivery failure must not discard an accepted submission or
+expose provider errors in the public response. The Telegram message contains no
+visitor message, email, or phone; managers open the protected admin area to read
+the submission. The Telegram provider is intentionally not configured until the
+pre-launch integration ticket.
 
 Admin operations:
 

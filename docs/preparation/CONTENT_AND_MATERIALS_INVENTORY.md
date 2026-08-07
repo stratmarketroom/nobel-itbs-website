@@ -81,7 +81,7 @@ Integration:
 - For Organisations Leeloo URL;
 - programme-level Leeloo or partner-site URLs when supplied;
 - pricing-option application URLs, if used later;
-- general contact notification email;
+- pre-launch Telegram manager-chat decision, bot token, and chat ID for PCE-005;
 - analytics provider decision;
 - CAPTCHA provider decision;
 - cookie/provider inventory and consent implementation.
