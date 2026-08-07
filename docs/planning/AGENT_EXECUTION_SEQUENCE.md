@@ -471,11 +471,11 @@ The orchestrator controls:
 
 Next ticket:
 
-- `LRN-003 Learner Phones`
+- `LRN-004 Learner Admin UI`
 
 Agent:
 
-- Database / Security Agent
+- Backend/API Agent and Admin UI Agent
 
 Parallel agents:
 
@@ -483,5 +483,6 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of LRN-003;
+- approve start of LRN-004;
+- review the learner-management workflow after implementation;
 - no external provider access is required.

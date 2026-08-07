@@ -148,7 +148,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Partners | Protected CRUD API plus responsive record, EN/UA/CZ copy, classification, URL, order, and logo-path UI | Authenticated CRUD/translation/asset-path validation/cleanup smoke passed |
 | Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/cleanup smoke passed |
 | Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, optional CAPTCHA fail-closed contract, audit, and cleanup smoke passed; privacy-minimised Telegram notification is deferred to PCE-005 |
-| Learners | Planned for Stage 5 | LRN-001..004 |
+| Learners | Private identity, globally unique emails and canonical phones implemented with forced RLS/MFA | LRN-004 protected API/UI and credential placeholder |
 | Credential Sets / Credentials / Number Log | Planned for Stages 6–7 | CRD/WF sequence |
 | Email Templates | Planned with credential workflow | Protected editing and audit smoke |
 | Site Settings | Protected API/UI implemented | Authenticated AAL2 save/audit smoke passed; final For Organisations URL remains |
@@ -160,10 +160,10 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 
 - [x] LRN-001 learner core: private identity fields, soft archive, controlled grants, forced RLS, MFA, live role test, and cleanup.
 - [x] LRN-002 multiple globally unique learner emails and optional primary email: citext uniqueness, one-primary constraint, forced RLS/MFA, conflict tests, and cleanup.
-- [ ] LRN-003 globally unique phones and messenger flags.
+- [x] LRN-003 globally unique canonical phones, messenger flags, optional primary phone, forced RLS/MFA, live conflict tests, and cleanup.
 - [ ] LRN-004 protected learner admin UI and credential placeholder.
 
-Stage status: **in progress; LRN-001 and LRN-002 complete, LRN-003 is next**.
+Stage status: **in progress; LRN-001..003 complete, LRN-004 is next**.
 
 ## Stage 6 — Credential Core
 
@@ -204,9 +204,9 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
 ## Stage 9 — Security, QA, and Launch Hardening
 
 - [-] Ticket-level migration/static verifiers, lint, TypeScript, builds, browser smoke, and selected RLS/API smoke checks pass.
-- [-] QA-001 live Stage 2–4 matrix plus LRN-001/002 learner core/email RLS passed; future learner phone/credential tables and the Docker-dependent full pgTAP suite remain.
+- [-] QA-001 live Stage 2–4 matrix plus LRN-001..003 learner core/email/phone RLS passed; future credential tables and the Docker-dependent full pgTAP suite remain.
 - [ ] QA-002 credential verification privacy tests after credentials exist.
-- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings and learner core/email actions; future learner phone and credential actions remain.
+- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings and learner core/email/phone actions; future learner UI and credential actions remain.
 - [ ] QA-004 end-to-end learner → credential → PDF → activation → verify → revoke flow.
 - [ ] QA-005 production environment, credential Gmail delivery, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
 - [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
@@ -215,7 +215,7 @@ Stage status: **foundation checks active; launch QA not started**.
 
 ## Verified Current Dev Baseline
 
-- [x] One ordered chain of 29 local migrations matches the remote dev history.
+- [x] One ordered chain of 31 local migrations matches the remote dev history.
 - [x] Pre-integration dev backup exists in the ignored backup directory.
 - [x] Public reads use Supabase by default; seed content is explicit offline mode only.
 - [x] Dev data: 3 languages, 3 areas, 3 types, 5 programmes, 5 runs, 5 partners, 3 experts.
@@ -233,9 +233,10 @@ The learner module is now open; external production integrations remain tracked 
 2. [x] **Finish contact operations in code and dev QA** — required entry points, rate limiting, CAPTCHA fail-closed contract, contact-status mutation, audit, and cleanup passed on 2026-08-06; see `docs/qa/PCE_004_CONTACT_OPERATIONS_QA_2026-08-06.md`.
 3. [x] **LRN-001 Learner Core** — schema, grants, forced RLS, MFA, live role checks, and cleanup completed on 2026-08-07; see `docs/qa/LRN_001_LEARNER_CORE_QA_2026-08-07.md`.
 4. [x] **LRN-002 Learner Emails** — global case-insensitive uniqueness, one-primary constraint, forced RLS/MFA, live conflict checks, and cleanup completed on 2026-08-07; see `docs/qa/LRN_002_LEARNER_EMAILS_QA_2026-08-07.md`.
-5. **Continue Stage 5 with LRN-003 Learner Phones**.
-6. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
-7. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
-8. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, and learner core/email layers.
+5. [x] **LRN-003 Learner Phones** — canonical global uniqueness, one-primary constraint, messenger consistency, forced RLS/MFA, live conflict checks, and cleanup completed on 2026-08-07; see `docs/qa/LRN_003_LEARNER_PHONES_QA_2026-08-07.md`.
+6. **Complete Stage 5 with LRN-004 Learner Admin UI**.
+7. Only after Stage 5 acceptance, begin CRD-001 and the credential sequence.
+8. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
+9. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, and learner foundation layers.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.
