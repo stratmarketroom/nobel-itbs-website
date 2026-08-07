@@ -471,11 +471,11 @@ The orchestrator controls:
 
 Next ticket:
 
-- `DBF-001 Supabase Foundation`
+- `LRN-002 Learner Emails`
 
 Agent:
 
-- Foundation / DevOps Agent
+- Database / Security Agent
 
 Parallel agents:
 
@@ -483,5 +483,5 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of DBF-001;
-- approve dependency installation/network access if required by setup.
+- approve start of LRN-002;
+- no external provider access is required.

@@ -45,6 +45,7 @@
     "verify:pce-002": "node scripts/verify-pce-002.mjs",
     "verify:pce-003": "node scripts/verify-pce-003.mjs",
     "verify:pce-004": "node scripts/verify-pce-004.mjs",
+    "verify:lrn-001": "node scripts/verify-lrn-001.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",

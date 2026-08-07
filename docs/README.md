@@ -35,6 +35,7 @@ Current implementation notes:
 - `docs/qa/AUTH-007_QA_REVIEW_2026-07-27.md`
 - `docs/qa/STAGE_2_4_E2E_RLS_QA_2026-08-06.md`
 - `docs/qa/PCE_004_CONTACT_OPERATIONS_QA_2026-08-06.md`
+- `docs/qa/LRN_001_LEARNER_CORE_QA_2026-08-07.md`
 - `docs/development/DESIGN_SKILLS_SETUP.md`
 - `docs/development/DOCUMENTATION_MAINTENANCE.md`
 - `docs/development/CONTACT_NOTIFICATIONS.md`

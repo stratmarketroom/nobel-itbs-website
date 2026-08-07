@@ -18,7 +18,7 @@ This is the current implementation record. The v2 product and technical specific
 - Local secrets remain in ignored environment files and must never be committed.
 - A pre-integration backup is available under the ignored `backups/supabase/2026-08-05-pre-content/` directory.
 
-All 27 local SQL migrations through `20260806170000_pce_004_public_contact_entry_points.sql` are applied to the remote dev database. The local and remote migration histories match.
+All 28 local SQL migrations through `20260807100000_lrn_001_learner_core.sql` are applied to the remote dev database. The local and remote migration histories match.
 
 ## Implemented Foundation
 
@@ -36,6 +36,7 @@ All 27 local SQL migrations through `20260806170000_pce_004_public_contact_entry
 - Actor-scoped partner/expert APIs and responsive managers for records, EN/UA/CZ public copy, publication, ordering, destinations, and approved WebP paths.
 - Manager-friendly Content Pages editor for fixed sections, nested cards/lists, legal paragraphs, H1, SEO, and EN/UA/CZ publication without raw JSON editing.
 - Manager interfaces for users and roles, content pages, site settings, and contact submissions.
+- Private Learner Core identity records with Latin first/last name, Ukrainian full name, internal note, soft archive, controlled column grants, forced RLS, and MFA-protected Owner/Super Admin/Credential Manager access.
 
 ## Verified in Dev
 
@@ -45,6 +46,7 @@ All 27 local SQL migrations through `20260806170000_pce_004_public_contact_entry
 - Production build, TypeScript, lint, ticket verification scripts, public API smoke checks, and browser checks pass.
 - Signed-out admin-shell and login-route browser checks pass; the authenticated access matrix passed for all four roles and a multi-role account.
 - Public contact entry points, validation, honeypot, five-per-15-minute rate limit, CAPTCHA fail-closed contract, Credential Manager MFA, status transitions, and privacy-safe audit passed live dev QA.
+- Learner Core live RLS/MFA QA passed: anonymous and Content Manager denied, Credential Manager denied at AAL1 and allowed at AAL2, hard delete denied, and temporary data cleaned.
 - All nine legal routes render full localized documents; their metadata is `noindex, follow`.
 
 ## Verification Limitation
@@ -64,5 +66,5 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
 - Telegram contact-alert delivery remains a deferred pre-launch check. Google Workspace remains required later for credential PDF delivery only. CAPTCHA provider setup is deferred by product decision and is not a blocker.
-- Learners, credentials, issuance/email, and public credential verification have not started.
+- Learner Core is complete; learner emails, phones, admin UI, credentials, issuance/email, and public credential verification remain.
 - Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email end-to-end tests remain ahead; CAPTCHA testing applies only if the conditional control is enabled later.
