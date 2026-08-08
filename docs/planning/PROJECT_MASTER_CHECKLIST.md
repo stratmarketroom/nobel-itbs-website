@@ -149,7 +149,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/cleanup smoke passed |
 | Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, optional CAPTCHA fail-closed contract, audit, and cleanup smoke passed; privacy-minimised Telegram notification is deferred to PCE-005 |
 | Learners | Private identity, globally unique contacts, protected API, responsive manager UI, archive workflow, and credential placeholder implemented | Stage 5 accepted |
-| Credential Types / Sets / Credentials / Number Log | Types, Sets, Number Log, lifecycle-constrained Credentials, and private PDF metadata/Storage foundation with one-primary and no-version rules implemented | CRD-006 and WF sequence |
+| Credential Types / Sets / Credentials / Number Log | Types, Sets, Number Log, lifecycle-constrained Credentials, private PDF metadata/Storage, append-only History, and controlled internal Notes implemented | WF sequence and credential-detail admin UI |
 | Email Templates | Planned with credential workflow | Protected editing and audit smoke |
 | Site Settings | Protected API/UI implemented | Authenticated AAL2 save/audit smoke passed; final For Organisations URL remains |
 | Users and Roles | Protected API/UI implemented | Authenticated create/roles/deactivate/reactivate/audit/cleanup smoke passed |
@@ -172,9 +172,9 @@ Stage status: **complete; LRN-001..004 accepted in dev**.
 - [x] CRD-003 permanent document-number log: shared non-cycling sequence from `000001`, automatic and controlled manual reservation, `reserved`/`issued`/`voided`, mandatory void reason, immutable/no-delete enforcement, audit, forced RLS/MFA, and live role QA.
 - [x] CRD-004 credentials: only `pending`/`valid`/`revoked`/`voided`, private current public fields, HMAC/encrypted token fields, context and lifecycle integrity, deferred Number Log linkage, controlled audited set move, forced RLS/MFA, and live role/integrity QA.
 - [x] CRD-005 private PDF storage and files: private PDF-only 20 MB bucket, configurable file types, canonical paths, one-primary rule, replacement-in-place/no old versions, audit without paths/content, forced RLS/MFA, and live DB/Storage privacy QA.
-- [ ] CRD-006 credential history, notes, and edit/delete rules.
+- [x] CRD-006 private append-only credential history, controlled notes, author-only edit, author/Owner/Super Admin soft-delete rules, privacy-minimal History/Audit events, forced RLS/MFA, and live role QA.
 
-Stage status: **in progress; CRD-001..005 complete, CRD-006 next**.
+Stage status: **complete at the database/security-foundation level; CRD-001..006 accepted in dev**.
 
 ## Stage 7 — Credential Workflows and Public Verification
 
@@ -204,9 +204,9 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
 ## Stage 9 — Security, QA, and Launch Hardening
 
 - [-] Ticket-level migration/static verifiers, lint, TypeScript, builds, browser smoke, and selected RLS/API smoke checks pass.
-- [-] QA-001 live Stage 2–4 matrix, complete Stage 5 learner RLS/API/UI, and CRD-001..005 role/RLS/integrity/Storage checks passed; credential history/notes and the Docker-dependent full pgTAP suite remain.
+- [-] QA-001 live Stage 2–4 matrix, complete Stage 5 learner RLS/API/UI, and CRD-001..006 role/RLS/integrity/Storage/History/Notes checks passed; the Docker-dependent full pgTAP suite remains.
 - [ ] QA-002 credential verification privacy tests after credentials exist.
-- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings, complete learner management, and CRD-001..005 credential-core/file reads; future WF-002 file mutations and issuance actions remain.
+- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings, complete learner management, and CRD-001..006 credential-core/file/history/note reads and note operations; future WF-002 file mutations and issuance actions remain.
 - [ ] QA-004 end-to-end learner → credential → PDF → activation → verify → revoke flow.
 - [ ] QA-005 production environment, credential Gmail delivery, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
 - [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
@@ -215,7 +215,7 @@ Stage status: **foundation checks active; launch QA not started**.
 
 ## Verified Current Dev Baseline
 
-- [x] One ordered chain of 37 local migrations matches the remote dev history.
+- [x] One ordered chain of 38 local migrations matches the remote dev history.
 - [x] Pre-integration dev backup exists in the ignored backup directory.
 - [x] Public reads use Supabase by default; seed content is explicit offline mode only.
 - [x] Dev data: 3 languages, 3 areas, 3 types, 5 programmes, 5 runs, 5 partners, 3 experts.
@@ -227,7 +227,7 @@ Stage status: **foundation checks active; launch QA not started**.
 
 ## Next Implementation Sequence
 
-The learner module is now open; external production integrations remain tracked for launch readiness:
+The credential workflow stage is now open; external production integrations remain tracked for launch readiness:
 
 1. [x] **Authenticated manager and live RLS QA for Stages 2–4** — completed on 2026-08-06; see `docs/qa/STAGE_2_4_E2E_RLS_QA_2026-08-06.md`.
 2. [x] **Finish contact operations in code and dev QA** — required entry points, rate limiting, CAPTCHA fail-closed contract, contact-status mutation, audit, and cleanup passed on 2026-08-06; see `docs/qa/PCE_004_CONTACT_OPERATIONS_QA_2026-08-06.md`.
@@ -240,8 +240,9 @@ The learner module is now open; external production integrations remain tracked 
 9. [x] **CRD-003 Document Number Log** — shared non-cycling sequence from `000001`, controlled automatic/manual reservation, voiding, no-delete/no-reuse protection, audit, forced RLS/MFA, and rollback-only live role QA completed on 2026-08-08; see `docs/qa/CRD_003_DOCUMENT_NUMBER_LOG_QA_2026-08-08.md`.
 10. [x] **CRD-004 Credentials** — private credential lifecycle/current-public/token schema, context and immutable transition checks, deferred two-way Number Log link, no direct mutations, creation/set-move audit, controlled set move, and rollback-only live QA completed on 2026-08-08; see `docs/qa/CRD_004_CREDENTIALS_QA_2026-08-08.md`.
 11. [x] **CRD-005 Credential Files** — private PDF-only 20 MB bucket, configurable types, canonical current-object metadata, one-primary and no-version rules, audit, forced RLS/MFA, and live DB/Storage privacy QA completed on 2026-08-08; see `docs/qa/CRD_005_CREDENTIAL_FILES_QA_2026-08-08.md`.
-12. **Continue Stage 6 with CRD-006 Credential History and Notes**.
-13. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
-14. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, and CRD-001..005 foundation layers.
+12. [x] **CRD-006 Credential History and Notes** — private append-only timeline, author edit/soft-delete, Owner/Super Admin deletion of others' notes, privacy-minimal History/Audit events, forced RLS/MFA, and rollback-only live QA completed on 2026-08-08; see `docs/qa/CRD_006_CREDENTIAL_HISTORY_NOTES_QA_2026-08-08.md`.
+13. **Start Stage 7 with WF-001 Create Pending Credential** — controlled set creation, permanent number reservation, and verification-token generation.
+14. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
+15. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, and CRD-001..006 foundation layers.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.

@@ -471,11 +471,11 @@ The orchestrator controls:
 
 Next ticket:
 
-- `CRD-006 Credential History and Notes`
+- `WF-001 Create Pending Credential`
 
 Agent:
 
-- Database / Security Agent
+- Backend/API Agent with Database / Security review
 
 Parallel agents:
 
@@ -483,5 +483,6 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of CRD-006;
-- no external provider access is required.
+- approve start of WF-001;
+- review the credential create/detail workflow before activation and email implementation;
+- no external provider access is required for WF-001.
