@@ -471,7 +471,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- `CRD-004 Credentials`
+- `CRD-005 Credential Files`
 
 Agent:
 
@@ -483,5 +483,5 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of CRD-004;
+- approve start of CRD-005;
 - no external provider access is required.
