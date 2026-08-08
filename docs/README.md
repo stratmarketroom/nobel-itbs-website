@@ -41,6 +41,7 @@ Current implementation notes:
 - `docs/qa/LRN_004_LEARNER_ADMIN_UI_QA_2026-08-07.md`
 - `docs/qa/CRD_001_CREDENTIAL_TYPES_QA_2026-08-07.md`
 - `docs/qa/CRD_002_CREDENTIAL_SETS_QA_2026-08-07.md`
+- `docs/qa/CRD_003_DOCUMENT_NUMBER_LOG_QA_2026-08-08.md`
 - `docs/development/DESIGN_SKILLS_SETUP.md`
 - `docs/development/DOCUMENTATION_MAINTENANCE.md`
 - `docs/development/CONTACT_NOTIFICATIONS.md`

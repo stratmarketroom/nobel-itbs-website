@@ -1,6 +1,6 @@
 # Nobel ITBS Release 1 — Project Master Checklist
 
-Last reviewed: 2026-08-07
+Last reviewed: 2026-08-08
 Baseline: v2 product, technical, security, sitemap, and implementation documents
 Purpose: keep implementation aligned with Release 1 and make the next non-design step unambiguous.
 
@@ -149,7 +149,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/cleanup smoke passed |
 | Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, optional CAPTCHA fail-closed contract, audit, and cleanup smoke passed; privacy-minimised Telegram notification is deferred to PCE-005 |
 | Learners | Private identity, globally unique contacts, protected API, responsive manager UI, archive workflow, and credential placeholder implemented | Stage 5 accepted |
-| Credential Types / Sets / Credentials / Number Log | Credential Types and private status-free Credential Sets with exact-context matching, audit, RLS/MFA, and role boundaries implemented | CRD-003..006 and WF sequence |
+| Credential Types / Sets / Credentials / Number Log | Credential Types, private status-free Sets, and permanent shared-sequence Number Log with controlled reservation/voiding, audit, RLS/MFA, and no reuse implemented | CRD-004..006 and WF sequence |
 | Email Templates | Planned with credential workflow | Protected editing and audit smoke |
 | Site Settings | Protected API/UI implemented | Authenticated AAL2 save/audit smoke passed; final For Organisations URL remains |
 | Users and Roles | Protected API/UI implemented | Authenticated create/roles/deactivate/reactivate/audit/cleanup smoke passed |
@@ -169,12 +169,12 @@ Stage status: **complete; LRN-001..004 accepted in dev**.
 
 - [x] CRD-001 credential/document types: Certificate and Diploma reference records, EN/UA/CZ labels, forced RLS, MFA-protected read access, Owner/Super Admin mutation, no hard delete, and live role QA.
 - [x] CRD-002 credential sets: private status-free grouping, programme-run consistency, exact-context uniqueness, idempotent automatic find/create, creation audit, forced RLS/MFA, and live role QA.
-- [ ] CRD-003 permanent document-number log and no-reuse sequence.
+- [x] CRD-003 permanent document-number log: shared non-cycling sequence from `000001`, automatic and controlled manual reservation, `reserved`/`issued`/`voided`, mandatory void reason, immutable/no-delete enforcement, audit, forced RLS/MFA, and live role QA.
 - [ ] CRD-004 credentials with only `pending`, `valid`, `revoked`, `voided`.
 - [ ] CRD-005 private PDF storage and primary-file rules.
 - [ ] CRD-006 credential history, notes, and edit/delete rules.
 
-Stage status: **in progress; CRD-001 and CRD-002 complete, CRD-003 next**.
+Stage status: **in progress; CRD-001..003 complete, CRD-004 next**.
 
 ## Stage 7 — Credential Workflows and Public Verification
 
@@ -204,9 +204,9 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
 ## Stage 9 — Security, QA, and Launch Hardening
 
 - [-] Ticket-level migration/static verifiers, lint, TypeScript, builds, browser smoke, and selected RLS/API smoke checks pass.
-- [-] QA-001 live Stage 2–4 matrix, complete Stage 5 learner RLS/API/UI, and CRD-001/002 role and RLS checks passed; future credential tables and the Docker-dependent full pgTAP suite remain.
+- [-] QA-001 live Stage 2–4 matrix, complete Stage 5 learner RLS/API/UI, and CRD-001..003 role/RLS checks passed; future credential tables and the Docker-dependent full pgTAP suite remain.
 - [ ] QA-002 credential verification privacy tests after credentials exist.
-- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings, complete learner management, and CRD-001/002 type/set access; future credential actions remain.
+- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings, complete learner management, and CRD-001..003 type/set/number access; future credential actions remain.
 - [ ] QA-004 end-to-end learner → credential → PDF → activation → verify → revoke flow.
 - [ ] QA-005 production environment, credential Gmail delivery, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
 - [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
@@ -215,7 +215,7 @@ Stage status: **foundation checks active; launch QA not started**.
 
 ## Verified Current Dev Baseline
 
-- [x] One ordered chain of 33 local migrations matches the remote dev history.
+- [x] One ordered chain of 34 local migrations matches the remote dev history.
 - [x] Pre-integration dev backup exists in the ignored backup directory.
 - [x] Public reads use Supabase by default; seed content is explicit offline mode only.
 - [x] Dev data: 3 languages, 3 areas, 3 types, 5 programmes, 5 runs, 5 partners, 3 experts.
@@ -237,8 +237,9 @@ The learner module is now open; external production integrations remain tracked 
 6. [x] **LRN-004 Learner Admin UI** — protected actor-scoped API, profile/contact/archive UI, duplicate navigation, credential placeholder, role/MFA and desktop/mobile QA completed on 2026-08-07; see `docs/qa/LRN_004_LEARNER_ADMIN_UI_QA_2026-08-07.md`.
 7. [x] **CRD-001 Credential Types** — Certificate/Diploma reference schema, localized labels, forced RLS/MFA, role matrix, live mutation/constraint QA, and cleanup completed on 2026-08-07; see `docs/qa/CRD_001_CREDENTIAL_TYPES_QA_2026-08-07.md`.
 8. [x] **CRD-002 Credential Sets** — private status-free schema, exact-context matching, automatic find/create, creation audit, forced RLS/MFA, programme-run consistency, live role QA, and rollback cleanup completed on 2026-08-07; see `docs/qa/CRD_002_CREDENTIAL_SETS_QA_2026-08-07.md`.
-9. **Continue Stage 6 with CRD-003 Document Number Log**.
-10. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
-11. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, credential-type, and credential-set foundation layers.
+9. [x] **CRD-003 Document Number Log** — shared non-cycling sequence from `000001`, controlled automatic/manual reservation, voiding, no-delete/no-reuse protection, audit, forced RLS/MFA, and rollback-only live role QA completed on 2026-08-08; see `docs/qa/CRD_003_DOCUMENT_NUMBER_LOG_QA_2026-08-08.md`.
+10. **Continue Stage 6 with CRD-004 Credentials**.
+11. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
+12. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, credential-type, credential-set, and number-log foundation layers.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.
