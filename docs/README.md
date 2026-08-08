@@ -43,6 +43,7 @@ Current implementation notes:
 - `docs/qa/CRD_002_CREDENTIAL_SETS_QA_2026-08-07.md`
 - `docs/qa/CRD_003_DOCUMENT_NUMBER_LOG_QA_2026-08-08.md`
 - `docs/qa/CRD_004_CREDENTIALS_QA_2026-08-08.md`
+- `docs/qa/CRD_005_CREDENTIAL_FILES_QA_2026-08-08.md`
 - `docs/development/DESIGN_SKILLS_SETUP.md`
 - `docs/development/DOCUMENTATION_MAINTENANCE.md`
 - `docs/development/CONTACT_NOTIFICATIONS.md`
