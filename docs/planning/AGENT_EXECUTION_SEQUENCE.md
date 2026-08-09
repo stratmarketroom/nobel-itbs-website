@@ -471,7 +471,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- `WF-002 Upload and Manage PDFs`
+- `WF-003 Activate and Email`
 
 Agent:
 
@@ -483,6 +483,6 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of WF-002;
+- approve start of WF-003;
 - review the credential create/detail workflow before activation and email implementation;
-- no external provider access is required for WF-002.
+- Google Workspace credentials are not required to start the failure-independent activation implementation, but are required before real delivery QA can be accepted.

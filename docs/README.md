@@ -46,6 +46,7 @@ Current implementation notes:
 - `docs/qa/CRD_005_CREDENTIAL_FILES_QA_2026-08-08.md`
 - `docs/qa/CRD_006_CREDENTIAL_HISTORY_NOTES_QA_2026-08-08.md`
 - `docs/qa/WF_001_CREATE_PENDING_CREDENTIAL_QA_2026-08-09.md`
+- `docs/qa/WF_002_MANAGE_CREDENTIAL_FILES_QA_2026-08-09.md`
 - `docs/development/DESIGN_SKILLS_SETUP.md`
 - `docs/development/DOCUMENTATION_MAINTENANCE.md`
 - `docs/development/CONTACT_NOTIFICATIONS.md`

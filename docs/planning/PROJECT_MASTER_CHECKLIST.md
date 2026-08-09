@@ -149,7 +149,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/cleanup smoke passed |
 | Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, optional CAPTCHA fail-closed contract, audit, and cleanup smoke passed; privacy-minimised Telegram notification is deferred to PCE-005 |
 | Learners | Private identity, globally unique contacts, protected API, responsive manager UI, archive workflow, and credential placeholder implemented | Stage 5 accepted |
-| Credential Types / Sets / Credentials / Number Log | Core schema plus actor-scoped pending creation with permanent number reservation, HMAC/AES-GCM token protection, History, and Notes implemented | WF-002..008 and credential-detail admin UI |
+| Credential Types / Sets / Credentials / Number Log | Core schema, pending creation, number/token protection, and private PDF workflow through signed admin access implemented | WF-003..008 and credential-detail admin UI |
 | Email Templates | Planned with credential workflow | Protected editing and audit smoke |
 | Site Settings | Protected API/UI implemented | Authenticated AAL2 save/audit smoke passed; final For Organisations URL remains |
 | Users and Roles | Protected API/UI implemented | Authenticated create/roles/deactivate/reactivate/audit/cleanup smoke passed |
@@ -179,7 +179,7 @@ Stage status: **complete at the database/security-foundation level; CRD-001..006
 ## Stage 7 — Credential Workflows and Public Verification
 
 - [x] WF-001 actor-scoped pending credential creation: exact Set reuse, permanent automatic/manual number reservation, 256-bit token, HMAC lookup, AES-256-GCM encryption, safe QR URL response, History/Audit, MFA/RLS, and live rollback QA.
-- [ ] WF-002 upload/manage private PDFs.
+- [x] WF-002 controlled private PDF list/upload/replace/metadata/primary/delete/signed URL workflow, valid-change reasons, lifecycle guards, compensating Storage rollback, History/Audit, and live DB/Storage QA.
 - [ ] WF-003 activate and send via Google Workspace; activation independent of mail result.
 - [ ] WF-004 resend with recipient override and history.
 - [ ] WF-005 irreversible revoke with mandatory reason.
@@ -187,7 +187,7 @@ Stage status: **complete at the database/security-foundation level; CRD-001..006
 - [ ] WF-007 controlled valid-public-data update with reason/history.
 - [ ] WF-008 verification by QR token or document number only.
 
-Stage status: **in progress; WF-001 complete, WF-002 next**.
+Stage status: **in progress; WF-001..002 complete, WF-003 next**.
 
 ## Stage 8 — Contact Operations
 
@@ -204,9 +204,9 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
 ## Stage 9 — Security, QA, and Launch Hardening
 
 - [-] Ticket-level migration/static verifiers, lint, TypeScript, builds, browser smoke, and selected RLS/API smoke checks pass.
-- [-] QA-001 live Stage 2–4 matrix, complete Stage 5 learner RLS/API/UI, CRD-001..006, and WF-001 role/RLS/integrity/token/privacy checks passed; the Docker-dependent full pgTAP suite remains.
+- [-] QA-001 live Stage 2–4 matrix, complete Stage 5 learner RLS/API/UI, CRD-001..006, and WF-001..002 role/RLS/integrity/token/file/Storage/privacy checks passed; the Docker-dependent full pgTAP suite remains.
 - [ ] QA-002 credential verification privacy tests after credentials exist.
-- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings, complete learner management, CRD-001..006, and WF-001 credential creation; future WF-002 file mutations and later issuance actions remain.
+- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings, complete learner management, CRD-001..006, WF-001 credential creation, and WF-002 private PDF operations; later issuance actions remain.
 - [ ] QA-004 end-to-end learner → credential → PDF → activation → verify → revoke flow.
 - [ ] QA-005 production environment, credential Gmail delivery, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
 - [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
@@ -215,7 +215,7 @@ Stage status: **foundation checks active; launch QA not started**.
 
 ## Verified Current Dev Baseline
 
-- [x] One ordered chain of 39 local migrations matches the remote dev history.
+- [x] One ordered chain of 40 local migrations matches the remote dev history.
 - [x] Pre-integration dev backup exists in the ignored backup directory.
 - [x] Public reads use Supabase by default; seed content is explicit offline mode only.
 - [x] Dev data: 3 languages, 3 areas, 3 types, 5 programmes, 5 runs, 5 partners, 3 experts.
@@ -242,8 +242,9 @@ The credential workflow stage is now open; external production integrations rema
 11. [x] **CRD-005 Credential Files** — private PDF-only 20 MB bucket, configurable types, canonical current-object metadata, one-primary and no-version rules, audit, forced RLS/MFA, and live DB/Storage privacy QA completed on 2026-08-08; see `docs/qa/CRD_005_CREDENTIAL_FILES_QA_2026-08-08.md`.
 12. [x] **CRD-006 Credential History and Notes** — private append-only timeline, author edit/soft-delete, Owner/Super Admin deletion of others' notes, privacy-minimal History/Audit events, forced RLS/MFA, and rollback-only live QA completed on 2026-08-08; see `docs/qa/CRD_006_CREDENTIAL_HISTORY_NOTES_QA_2026-08-08.md`.
 13. [x] **WF-001 Create Pending Credential** — actor-scoped API, exact Set reuse, permanent automatic/manual reservation, HMAC/AES-GCM token protection, safe QR URL response, History/Audit, MFA/RLS, and rollback-only live QA completed on 2026-08-09; see `docs/qa/WF_001_CREATE_PENDING_CREDENTIAL_QA_2026-08-09.md`.
-14. **Continue Stage 7 with WF-002 Upload and Manage PDFs** — controlled private Storage operations, metadata coordination, replacements, deletion rules, and primary-file management.
-15. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
-16. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, CRD-001..006, and WF-001 layers.
+14. [x] **WF-002 Upload and Manage PDFs** — actor-scoped private upload/list/signed URL, replacement-in-place with compensating restore, metadata/primary workflow, lifecycle/reason rules, History/Audit, and live DB/Storage QA completed on 2026-08-09; see `docs/qa/WF_002_MANAGE_CREDENTIAL_FILES_QA_2026-08-09.md`.
+15. **Continue Stage 7 with WF-003 Activate and Email** — require pending plus primary PDF, issue the number, attempt all-current-PDF delivery, and keep activation successful if email fails.
+16. Before launch, complete PCE-005 Telegram manager notifications; configure Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
+17. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, CRD-001..006, and WF-001..002 layers.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.
