@@ -354,6 +354,21 @@ Content Manager has no access.
 
 ## 10. Admin Credential API
 
+### Manager Workspace Reads and Notes
+
+Implemented protected routes for Credential Manager/Super Admin/Owner with MFA:
+
+- `GET /api/v1/admin/credentials` — credential list plus safe creation references;
+- `GET /api/v1/admin/credentials/{id}` — private administrative detail, current PDFs, append-only History, and controlled Notes;
+- `GET /api/v1/admin/credential-sets` — read-only status-free grouping list;
+- `GET /api/v1/admin/document-numbers` — read-only permanent number log;
+- `POST /api/v1/admin/credentials/{id}/notes`;
+- `PATCH|DELETE /api/v1/admin/credentials/{id}/notes/{noteId}`.
+
+These responses never include verification-token hashes/ciphertext/raw values,
+private Storage paths, or PDF bytes. Note ownership and soft-delete rules remain
+enforced by the CRD-006 controlled functions and forced RLS.
+
 ### Create Pending Credential
 
 `POST /api/v1/admin/credentials`

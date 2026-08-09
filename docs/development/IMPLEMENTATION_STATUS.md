@@ -1,6 +1,6 @@
 # Implementation Status
 
-Last updated: 2026-08-08
+Last updated: 2026-08-09
 
 This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
@@ -39,7 +39,7 @@ All 40 local SQL migrations through `20260809110000_wf_002_manage_credential_fil
 - Private Learner Core identity records with Latin first/last name, Ukrainian full name, internal note, soft archive, controlled column grants, forced RLS, and MFA-protected Owner/Super Admin/Credential Manager access.
 - Private learner emails with case-insensitive global uniqueness, at most one primary address per learner, immutable learner ownership, controlled grants, forced RLS, and MFA-protected management.
 - Private learner phones with canonical global uniqueness, at most one primary number per learner, Telegram/Viber/WhatsApp flags, immutable learner ownership, controlled grants, forced RLS, and MFA-protected management.
-- Protected learner API and responsive manager UI for profile creation/editing, archive/restore, contact search and management, primary contacts, messenger flags, protected duplicate navigation, and a Credential Core placeholder.
+- Protected learner API and responsive manager UI for profile creation/editing, archive/restore, contact search and management, primary contacts, messenger flags, protected duplicate navigation, and real linked credential summaries.
 - Credential type reference data for Certificate and Diploma, localized EN/UA/CZ labels, stable machine codes and document letters, deactivation support, forced RLS, MFA-protected reference access, and Owner/Super Admin-only configuration changes.
 - Private status-free Credential Sets with exact learner/programme/run/completion-context matching, programme-run consistency, idempotent automatic find/create, creation audit, forced RLS, MFA, and no authenticated context mutation or hard delete.
 - Permanent Document Number Log with `reserved`/`issued`/`voided` states, a shared non-cycling sequence starting at `000001`, automatic and rare audited manual reservation, controlled voiding, immutable identity/no-delete enforcement, forced RLS, and MFA-protected reads.
@@ -50,6 +50,7 @@ All 40 local SQL migrations through `20260809110000_wf_002_manage_credential_fil
 - Server-only verification-token protection with 256-bit random tokens, HMAC-SHA-256 lookup, independent AES-256-GCM encryption, key versioning, and ready QR verification paths without separate token/hash/ciphertext response fields.
 - Actor-scoped credential PDF routes for private upload/list, replacement-in-place with compensating restore, metadata/primary management, pending-only deletion, and 60-second admin signed URLs.
 - Lifecycle-aware PDF rules: valid changes require History/Audit reason and retain a primary PDF; revoked/voided mutations and valid deletion are denied.
+- Protected Credential Admin Workspace with role-aware navigation, actor-scoped list/detail/reference APIs, pending creation form, current private PDF controls, read-only Credential Sets and permanent Number Log, append-only History, controlled Notes, and no premature activation/revoke/void/resend/public-verification actions.
 
 ## Verified in Dev
 
@@ -71,6 +72,7 @@ All 40 local SQL migrations through `20260809110000_wf_002_manage_credential_fil
 - Credential History/Notes live QA passed: anonymous/Content Manager/AAL1 access is denied, AAL2 Credential Manager read and own-note operations work, another Credential Manager cannot edit/delete the note, Super Admin soft deletion works, History is append-only, note text/private paths stay out of journals, event hooks passed, all records rolled back, and the automatic number sequence remained unused.
 - Pending Credential live QA passed: Content Manager/AAL1/anonymous denied, manual override restricted, AAL2 Super Admin creation and exact Set reuse work, reserved numbers link correctly, History/Audit exclude protected token material, all QA records rolled back, and automatic `000001` remains unused; local unauthenticated API smoke returns `401`.
 - Credential PDF Workflow live QA passed: 16 database role/lifecycle/primary/reason/privacy checks and 6 private Storage upload/signed URL/replacement/MIME checks passed; rollback/cleanup completed and automatic `000001` remains unused.
+- Credential Admin Workspace QA passed in an authenticated Owner/AAL2 browser session: empty real registries, five programme/two document-type references, pending-form guards, Sets/Number Log navigation, clean console, responsive 390 px layout without horizontal overflow, and `401` on all new list APIs without a Bearer token. No test record was created, so the automatic number remains unused.
 - All nine legal routes render full localized documents; their metadata is `noindex, follow`.
 
 ## Verification Limitation
@@ -90,5 +92,5 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
 - Telegram contact-alert delivery remains a deferred pre-launch check. Google Workspace remains required later for credential PDF delivery only. CAPTCHA provider setup is deferred by product decision and is not a blocker.
-- Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001..002 accepted; activation/email, remaining lifecycle workflows, credential admin UI, and public verification remain.
+- Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001..002 plus ADM-CRD-001 accepted; activation/email, remaining lifecycle workflows, and public verification remain.
 - Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email end-to-end tests remain ahead; CAPTCHA testing applies only if the conditional control is enabled later.

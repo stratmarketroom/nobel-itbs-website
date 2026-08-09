@@ -1,0 +1,301 @@
+'use client';
+
+import Link from 'next/link';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { PendingCredentialAdminItem } from '@/lib/credentials/types';
+import type {
+  CredentialAdminDetail,
+  CredentialAdminListItem,
+  CredentialReferenceData,
+  CredentialSetAdminItem,
+  CredentialStatus,
+  DocumentNumberAdminItem,
+} from '@/lib/credentials/workspace-types';
+import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+
+type WorkspaceTab = 'credentials' | 'sets' | 'numbers';
+type DetailTab = 'summary' | 'files' | 'history';
+type Notice = { kind: 'success' | 'error'; message: string; verificationUrl?: string } | null;
+
+const statusLabels: Record<CredentialStatus, string> = {
+  pending: 'Pending', valid: 'Valid', revoked: 'Revoked', voided: 'Voided',
+};
+
+function apiMessage(payload: unknown, fallback: string): string {
+  if (payload && typeof payload === 'object' && 'error' in payload && payload.error && typeof payload.error === 'object' && 'message' in payload.error && typeof payload.error.message === 'string') {
+    return payload.error.message;
+  }
+  return fallback;
+}
+
+function date(value: string | null): string {
+  return value ? new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium' }).format(new Date(value)) : '—';
+}
+
+function bytes(value: number): string {
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${Math.round(value / 1024)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+export function AdminCredentials() {
+  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const [tab, setTab] = useState<WorkspaceTab>('credentials');
+  const [detailTab, setDetailTab] = useState<DetailTab>('summary');
+  const [credentials, setCredentials] = useState<CredentialAdminListItem[]>([]);
+  const [references, setReferences] = useState<CredentialReferenceData | null>(null);
+  const [detail, setDetail] = useState<CredentialAdminDetail | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [sets, setSets] = useState<CredentialSetAdminItem[]>([]);
+  const [numbers, setNumbers] = useState<DocumentNumberAdminItem[]>([]);
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState<'all' | CredentialStatus>('all');
+  const [creating, setCreating] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState<Notice>(null);
+
+  const token = useCallback(async () => {
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session?.access_token) throw new Error('Sign in to manage credentials.');
+    return data.session.access_token;
+  }, [supabase]);
+
+  const request = useCallback(async <T,>(path: string, init?: RequestInit): Promise<T> => {
+    const accessToken = await token();
+    const isForm = init?.body instanceof FormData;
+    const response = await fetch(path, {
+      ...init,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        ...(!isForm && init?.body ? { 'Content-Type': 'application/json' } : {}),
+        ...init?.headers,
+      },
+      cache: 'no-store',
+    });
+    const payload = await response.json().catch(() => null) as T | null;
+    if (!response.ok || !payload) throw new Error(apiMessage(payload, 'Credential operation could not be completed.'));
+    return payload;
+  }, [token]);
+
+  const loadCredentials = useCallback(async (preferredId?: string) => {
+    setLoading(true);
+    try {
+      const payload = await request<{ credentials: CredentialAdminListItem[]; references: CredentialReferenceData }>('/api/v1/admin/credentials');
+      setCredentials(payload.credentials);
+      setReferences(payload.references);
+      const queryId = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('credential') : null;
+      const learnerQuery = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('learner') : null;
+      if (learnerQuery) {
+        const learner = payload.references.learners.find(({ id }) => id === learnerQuery);
+        if (learner) setSearch(learner.name);
+      }
+      const nextId = preferredId ?? queryId;
+      if (nextId && payload.credentials.some(({ id }) => id === nextId)) setSelectedId(nextId);
+    } catch (error) {
+      setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Credentials could not be loaded.' });
+    } finally { setLoading(false); }
+  }, [request]);
+
+  const loadDetail = useCallback(async (id: string) => {
+    setLoading(true);
+    try {
+      const payload = await request<{ credential: CredentialAdminDetail }>(`/api/v1/admin/credentials/${id}`);
+      setDetail(payload.credential);
+    } catch (error) {
+      setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Credential could not be loaded.' });
+      setDetail(null);
+    } finally { setLoading(false); }
+  }, [request]);
+
+  useEffect(() => { const task = window.setTimeout(() => void loadCredentials(), 0); return () => window.clearTimeout(task); }, [loadCredentials]);
+  useEffect(() => {
+    const task = window.setTimeout(() => {
+      if (selectedId && !creating) void loadDetail(selectedId);
+      else setDetail(null);
+    }, 0);
+    return () => window.clearTimeout(task);
+  }, [creating, loadDetail, selectedId]);
+
+  async function openTab(next: WorkspaceTab) {
+    setTab(next);
+    setNotice(null);
+    if (next === 'sets' && sets.length === 0) {
+      setLoading(true);
+      try { setSets((await request<{ credentialSets: CredentialSetAdminItem[] }>('/api/v1/admin/credential-sets')).credentialSets); }
+      catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Credential sets could not be loaded.' }); }
+      finally { setLoading(false); }
+    }
+    if (next === 'numbers' && numbers.length === 0) {
+      setLoading(true);
+      try { setNumbers((await request<{ documentNumbers: DocumentNumberAdminItem[] }>('/api/v1/admin/document-numbers')).documentNumbers); }
+      catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Document number log could not be loaded.' }); }
+      finally { setLoading(false); }
+    }
+  }
+
+  const filtered = credentials.filter((item) => {
+    const needle = search.trim().toLocaleLowerCase();
+    return (status === 'all' || item.status === status) && (!needle || [item.documentNumber, item.learnerName, item.programmeTitle, item.credentialType].some((value) => value.toLocaleLowerCase().includes(needle)));
+  });
+
+  async function createCredential(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setSaving(true);
+    setNotice(null);
+    try {
+      const body = {
+        learnerId: String(form.get('learnerId') ?? ''), programmeId: String(form.get('programmeId') ?? ''),
+        programmeRunId: String(form.get('programmeRunId') ?? '') || null, completionDate: String(form.get('completionDate') ?? '') || null,
+        credentialTypeId: String(form.get('credentialTypeId') ?? ''), languageCode: String(form.get('languageCode') ?? ''),
+        issueDate: String(form.get('issueDate') ?? ''), publicHolderName: String(form.get('publicHolderName') ?? ''),
+        publicProgrammeTitle: String(form.get('publicProgrammeTitle') ?? ''), publicCredentialType: String(form.get('publicCredentialType') ?? ''),
+        manualDocumentNumber: String(form.get('manualDocumentNumber') ?? '') || null, manualReason: String(form.get('manualReason') ?? '') || null,
+      };
+      const payload = await request<{ credential: PendingCredentialAdminItem }>('/api/v1/admin/credentials', { method: 'POST', body: JSON.stringify(body) });
+      setCreating(false);
+      setSelectedId(payload.credential.id);
+      setDetailTab('summary');
+      await loadCredentials(payload.credential.id);
+      setNotice({
+        kind: 'success',
+        message: `Pending credential ${payload.credential.documentNumber} created. Save the verification URL securely; it will not be shown again.`,
+        verificationUrl: payload.credential.verificationUrl,
+      });
+    } catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Pending credential could not be created.' }); }
+    finally { setSaving(false); }
+  }
+
+  async function reloadDetail(success?: string) {
+    if (!selectedId) return;
+    await loadDetail(selectedId);
+    if (success) setNotice({ kind: 'success', message: success });
+  }
+
+  return <main className="credential-admin-shell">
+    <header className="admin-module-header"><div><p className="admin-kicker">Credential registry</p><h1>Credentials</h1><p>Create pending documents, manage private PDFs, review permanent numbers, sets, history, and internal notes.</p></div></header>
+    <nav className="credential-workspace-tabs" aria-label="Credential registry sections">
+      <button type="button" aria-current={tab === 'credentials' ? 'page' : undefined} onClick={() => void openTab('credentials')}>Credentials <span>{credentials.length}</span></button>
+      <button type="button" aria-current={tab === 'sets' ? 'page' : undefined} onClick={() => void openTab('sets')}>Credential sets <span>{sets.length}</span></button>
+      <button type="button" aria-current={tab === 'numbers' ? 'page' : undefined} onClick={() => void openTab('numbers')}>Number log <span>{numbers.length}</span></button>
+    </nav>
+    {notice ? <div className={`credential-notice ${notice.kind}`} role={notice.kind === 'error' ? 'alert' : 'status'}><span>{notice.message}</span>{notice.verificationUrl ? <div><code>{notice.verificationUrl}</code><button type="button" onClick={() => void navigator.clipboard.writeText(notice.verificationUrl!)}>Copy verification URL</button></div> : null}</div> : null}
+    {tab === 'credentials' ? <>
+      <div className="credential-toolbar">
+        <label><span>Search</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Number, learner, programme" /></label>
+        <label><span>Status</span><select value={status} onChange={(event) => setStatus(event.target.value as typeof status)}><option value="all">All statuses</option>{Object.entries(statusLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
+        <button type="button" onClick={() => { setCreating(true); setSelectedId(null); setNotice(null); }}>Create pending credential</button>
+        <span>{loading ? 'Loading…' : `${filtered.length} shown`}</span>
+      </div>
+      <section className="credential-workspace">
+        <nav className="credential-list" aria-label="Credentials">
+          {!loading && filtered.length === 0 ? <Empty title="No credentials found" body="Change the filters or create the first pending credential." /> : null}
+          {filtered.map((item) => <button type="button" key={item.id} aria-pressed={selectedId === item.id} onClick={() => { setSelectedId(item.id); setCreating(false); setDetailTab('summary'); setNotice(null); }}><span><strong>{item.documentNumber}</strong><small>{item.learnerName}</small><small>{item.programmeTitle}</small></span><em className={item.status}>{statusLabels[item.status]}</em></button>)}
+        </nav>
+        <section className="credential-editor">
+          {creating && references ? <CreateForm references={references} saving={saving} onSubmit={createCredential} onCancel={() => setCreating(false)} /> : null}
+          {!creating && detail ? <CredentialDetail credential={detail} tab={detailTab} saving={saving} setTab={setDetailTab} request={request} setSaving={setSaving} setNotice={setNotice} reload={reloadDetail} /> : null}
+          {!creating && !detail ? <Empty title="Select a credential" body="Choose a document to review its private administrative record." editor /> : null}
+        </section>
+      </section>
+    </> : null}
+    {tab === 'sets' ? <RegistryTable headers={['Learner', 'Programme', 'Run / completion', 'Documents', 'Created']} rows={sets.map((item) => [item.learnerName, item.programmeTitle, [item.programmeRunLabel, item.completionDate].filter(Boolean).join(' · ') || '—', String(item.credentialCount), date(item.createdAt)])} empty="No credential sets yet." /> : null}
+    {tab === 'numbers' ? <RegistryTable headers={['Document number', 'Type', 'Status', 'Origin', 'Credential', 'Created']} rows={numbers.map((item) => [item.documentNumber, item.credentialType, item.status, item.isManual ? 'Manual' : 'Automatic', item.credentialId ? 'Linked' : 'Unlinked', date(item.createdAt)])} empty="No document numbers reserved yet." /> : null}
+  </main>;
+}
+
+function CreateForm({ references, saving, onSubmit, onCancel }: { references: CredentialReferenceData; saving: boolean; onSubmit: (event: React.FormEvent<HTMLFormElement>) => void; onCancel: () => void }) {
+  const [learnerId, setLearnerId] = useState(references.learners.find(({ archived }) => !archived)?.id ?? '');
+  const [programmeId, setProgrammeId] = useState(references.programmes[0]?.id ?? '');
+  const [typeId, setTypeId] = useState(references.credentialTypes[0]?.id ?? '');
+  const learner = references.learners.find(({ id }) => id === learnerId);
+  const programme = references.programmes.find(({ id }) => id === programmeId);
+  const type = references.credentialTypes.find(({ id }) => id === typeId);
+  return <form className="credential-create-form" onSubmit={onSubmit}>
+    <header><div><small>New record</small><h2>Create pending credential</h2><p>Activation and delivery are intentionally handled by the next workflow ticket.</p></div><button className="secondary" type="button" onClick={onCancel}>Cancel</button></header>
+    <div className="credential-form-grid">
+      <label><span>Learner</span><select name="learnerId" required value={learnerId} onChange={(event) => setLearnerId(event.target.value)}>{references.learners.map((item) => <option key={item.id} value={item.id}>{item.name}{item.archived ? ' (archived)' : ''}</option>)}</select></label>
+      <label><span>Programme</span><select name="programmeId" required value={programmeId} onChange={(event) => setProgrammeId(event.target.value)}>{references.programmes.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
+      <label><span>Programme run <small>optional</small></span><select name="programmeRunId"><option value="">No specific run</option>{references.programmeRuns.filter((run) => run.programmeId === programmeId).map((run) => <option key={run.id} value={run.id}>{run.label}</option>)}</select></label>
+      <label><span>Completion date <small>optional</small></span><input name="completionDate" type="date" /></label>
+      <label><span>Document type</span><select name="credentialTypeId" required value={typeId} onChange={(event) => setTypeId(event.target.value)}>{references.credentialTypes.map((item) => <option key={item.id} value={item.id}>{item.label} ({item.documentLetter})</option>)}</select></label>
+      <label><span>Document language</span><select name="languageCode" defaultValue="en"><option value="en">English</option><option value="ua">Ukrainian</option><option value="cz">Czech</option></select></label>
+      <label><span>Issue date</span><input name="issueDate" type="date" required defaultValue={new Date().toISOString().slice(0, 10)} /></label>
+      <label><span>Public holder name</span><input name="publicHolderName" required defaultValue={learner?.name ?? ''} key={learnerId} /></label>
+      <label className="wide"><span>Public programme title</span><input name="publicProgrammeTitle" required defaultValue={programme?.title ?? ''} key={programmeId} /></label>
+      <label className="wide"><span>Public document type</span><input name="publicCredentialType" required defaultValue={type?.label ?? ''} key={typeId} /></label>
+      {references.canUseManualNumber ? <><label><span>Manual number <small>rare, optional</small></span><input name="manualDocumentNumber" placeholder="NITBS-C-2026-000123" /></label><label><span>Manual reason</span><input name="manualReason" placeholder="Required when manual number is used" /></label></> : null}
+    </div>
+    <footer><span>A permanent number is consumed when this record is created and is never reused.</span><button disabled={saving || !learnerId || !programmeId || !typeId} type="submit">{saving ? 'Creating…' : 'Create pending credential'}</button></footer>
+  </form>;
+}
+
+function CredentialDetail({ credential, tab, saving, setTab, request, setSaving, setNotice, reload }: {
+  credential: CredentialAdminDetail; tab: DetailTab; saving: boolean; setTab: (tab: DetailTab) => void;
+  request: <T>(path: string, init?: RequestInit) => Promise<T>; setSaving: (saving: boolean) => void;
+  setNotice: (notice: Notice) => void; reload: (success?: string) => Promise<void>;
+}) {
+  async function action(work: () => Promise<unknown>, success: string) {
+    setSaving(true); setNotice(null);
+    try { await work(); await reload(success); }
+    catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Credential operation failed.' }); }
+    finally { setSaving(false); }
+  }
+
+  async function upload(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault(); const form = new FormData(event.currentTarget);
+    await action(() => request(`/api/v1/admin/credentials/${credential.id}/files`, { method: 'POST', body: form }), 'Private PDF uploaded.');
+  }
+
+  async function addNote(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault(); const formElement = event.currentTarget; const form = new FormData(formElement);
+    await action(() => request(`/api/v1/admin/credentials/${credential.id}/notes`, { method: 'POST', body: JSON.stringify({ body: String(form.get('body') ?? '') }) }), 'Internal note added.');
+    formElement.reset();
+  }
+
+  return <>
+    <header className="credential-editor-heading"><div><small>Private credential record</small><h2>{credential.documentNumber}</h2><p>{credential.learnerName} · {credential.programmeTitle}</p></div><em className={credential.status}>{statusLabels[credential.status]}</em></header>
+    <nav className="credential-detail-tabs" aria-label="Credential record sections">
+      <button type="button" aria-current={tab === 'summary' ? 'page' : undefined} onClick={() => setTab('summary')}>Summary</button>
+      <button type="button" aria-current={tab === 'files' ? 'page' : undefined} onClick={() => setTab('files')}>Private PDFs ({credential.files.length})</button>
+      <button type="button" aria-current={tab === 'history' ? 'page' : undefined} onClick={() => setTab('history')}>History & notes</button>
+    </nav>
+    {tab === 'summary' ? <section className="credential-summary">
+      <dl>
+        <div><dt>Status</dt><dd>{statusLabels[credential.status]}</dd></div><div><dt>Issue date</dt><dd>{date(credential.issueDate)}</dd></div>
+        <div><dt>Language</dt><dd>{credential.languageCode.toUpperCase()}</dd></div><div><dt>Document type</dt><dd>{credential.credentialType}</dd></div>
+        <div><dt>Credential set</dt><dd><code>{credential.credentialSetId}</code></dd></div><div><dt>Programme run</dt><dd>{credential.programmeRunId ?? 'No specific run'}</dd></div>
+      </dl>
+      <div className="credential-public-snapshot"><small>Approved public snapshot</small><p><strong>{credential.publicHolderName}</strong></p><p>{credential.publicProgrammeTitle}</p><p>{credential.publicCredentialType}</p></div>
+      <p className="credential-workflow-note">Activation, resend, revoke, void, and valid-record changes are not available in this workspace yet. They remain separate WF tickets.</p>
+    </section> : null}
+    {tab === 'files' ? <section className="credential-files">
+      <form className="credential-file-upload" onSubmit={upload}><header><div><small>Private storage</small><h3>Upload PDF</h3></div><span>PDF only · max 20 MB</span></header><div>
+        <label><span>PDF file</span><input name="file" type="file" accept="application/pdf" required /></label>
+        <label><span>File type</span><select name="fileTypeId" required>{credential.fileTypes.map((type) => <option key={type.id} value={type.id}>{type.defaultLabel}</option>)}</select></label>
+        <label><span>Admin label</span><input name="adminLabel" placeholder="Signed certificate" /></label>
+        <label><span>Change reason</span><input name="reason" placeholder="Initial document upload" /></label>
+        <label className="check"><input name="isPrimary" type="checkbox" value="true" defaultChecked={credential.files.length === 0} /><span>Primary PDF</span></label>
+        <button disabled={saving} type="submit">{saving ? 'Saving…' : 'Upload PDF'}</button>
+      </div></form>
+      <div className="credential-file-list">{credential.files.length === 0 ? <Empty title="No private PDFs" body="Upload the approved document before activation." /> : credential.files.map((file) => <article key={`${file.id}-${file.updatedAt}`}><div><strong>{file.adminLabel || credential.fileTypes.find(({ id }) => id === file.fileTypeId)?.defaultLabel || 'Credential PDF'}</strong><span>{bytes(file.sizeBytes)} · updated {date(file.updatedAt)}{file.isPrimary ? ' · Primary' : ''}</span></div><div>
+        <button type="button" disabled={saving} onClick={() => void action(async () => { const result = await request<{ signedUrl: string }>(`/api/v1/admin/credentials/${credential.id}/files/${file.id}`); window.open(result.signedUrl, '_blank', 'noopener,noreferrer'); }, 'Secure download link created.')}>Download</button>
+        {!file.isPrimary && (credential.status === 'pending' || credential.status === 'valid') ? <button type="button" disabled={saving} onClick={() => void action(() => request(`/api/v1/admin/credentials/${credential.id}/files/${file.id}`, { method: 'PATCH', body: JSON.stringify({ isPrimary: true, reason: 'Set as primary in credential workspace' }) }), 'Primary PDF changed.')}>Make primary</button> : null}
+        {credential.status === 'pending' ? <button className="danger" type="button" disabled={saving} onClick={() => { if (window.confirm('Delete this private PDF?')) void action(() => request(`/api/v1/admin/credentials/${credential.id}/files/${file.id}`, { method: 'DELETE' }), 'Private PDF deleted.'); }}>Delete</button> : null}
+      </div>{credential.status === 'pending' || credential.status === 'valid' ? <form onSubmit={(event) => { event.preventDefault(); const form = new FormData(event.currentTarget); void action(() => request(`/api/v1/admin/credentials/${credential.id}/files/${file.id}`, { method: 'PUT', body: form }), 'Private PDF replaced.'); }}><input name="file" type="file" accept="application/pdf" required /><input name="reason" required={credential.status === 'valid'} placeholder={credential.status === 'valid' ? 'Replacement reason (required)' : 'Replacement reason'} /><button disabled={saving} type="submit">Replace</button></form> : null}</article>)}</div>
+    </section> : null}
+    {tab === 'history' ? <section className="credential-history-notes">
+      <div className="credential-notes"><header><small>Private internal comments</small><h3>Notes</h3></header><form onSubmit={addNote}><textarea name="body" required maxLength={4000} placeholder="Add context for other credential managers" /><button disabled={saving} type="submit">Add note</button></form>{credential.notes.filter(({ deletedAt }) => !deletedAt).map((note) => <article key={`${note.id}-${note.updatedAt}`}><p>{note.body}</p><span>{note.canEdit ? 'You' : 'Administrator'} · {date(note.updatedAt)}</span><div>{note.canEdit ? <button type="button" disabled={saving} onClick={() => { const next = window.prompt('Edit internal note', note.body); if (next?.trim()) void action(() => request(`/api/v1/admin/credentials/${credential.id}/notes/${note.id}`, { method: 'PATCH', body: JSON.stringify({ body: next }) }), 'Internal note updated.'); }}>Edit</button> : null}{note.canDelete ? <button className="danger" type="button" disabled={saving} onClick={() => { if (window.confirm('Delete this internal note?')) void action(() => request(`/api/v1/admin/credentials/${credential.id}/notes/${note.id}`, { method: 'DELETE' }), 'Internal note deleted.'); }}>Delete</button> : null}</div></article>)}</div>
+      <div className="credential-timeline"><header><small>Append-only record</small><h3>History</h3></header>{credential.history.map((item) => <article key={item.id}><span>{date(item.createdAt)}</span><strong>{item.eventType.replaceAll('_', ' ')}</strong>{item.reason ? <p>{item.reason}</p> : null}{item.afterData && Object.keys(item.afterData).length ? <code>{JSON.stringify(item.afterData)}</code> : null}</article>)}</div>
+    </section> : null}
+  </>;
+}
+
+function RegistryTable({ headers, rows, empty }: { headers: string[]; rows: string[][]; empty: string }) {
+  return <div className="credential-registry-table"><table><thead><tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={`${row[0]}-${index}`}>{row.map((cell, cellIndex) => <td key={`${cellIndex}-${cell}`}>{cell}</td>)}</tr>)}</tbody></table>{rows.length === 0 ? <Empty title={empty} body="The registry will populate automatically as credentials are created." /> : null}</div>;
+}
+
+function Empty({ title, body, editor = false }: { title: string; body: string; editor?: boolean }) {
+  return <div className={`credential-empty${editor ? ' editor' : ''}`}><strong>{title}</strong><span>{body}</span>{editor ? <Link href="/admin/learners">Open learners</Link> : null}</div>;
+}

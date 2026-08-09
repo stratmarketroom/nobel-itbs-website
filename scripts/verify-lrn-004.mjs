@@ -28,11 +28,11 @@ if (errors.length === 0) {
   for (const snippet of ['export async function GET', 'export async function POST', 'export async function PATCH', 'export async function DELETE', 'getAdminContext(request)']) {
     if (!routeSource.includes(snippet)) errors.push(`Learner routes missing required behavior: ${snippet}`);
   }
-  for (const snippet of ['assertCanManageLearners', 'getSupabaseRequestClient', "'learners'", "'learner_emails'", "'learner_phones'", 'conflictReference', "'conflict'", 'credentials: []']) {
+  for (const snippet of ['assertCanManageLearners', 'getSupabaseRequestClient', "'learners'", "'learner_emails'", "'learner_phones'", 'conflictReference', "'conflict'", 'credentials (id, document_number']) {
     if (!source.data.includes(snippet) && !source.server.includes(snippet)) errors.push(`Learner data layer missing: ${snippet}`);
   }
   if (/getSupabaseAdminClient|SUPABASE_SERVICE_ROLE_KEY/.test(source.data + source.input + routeSource)) errors.push('Learner management must preserve actor-scoped RLS and never use service role.');
-  if (/credential_sets|from\(['"]credentials['"]\)|create table/i.test(source.data + source.input + routeSource)) errors.push('LRN-004 must not implement Credential Core tables or data access.');
+  if (/credential_sets|create table/i.test(source.data + source.input + routeSource)) errors.push('Learner management must not implement Credential Core tables or Set workflows.');
   for (const snippet of ['latinFirstName', 'ukrainianFullName', 'internalNote', 'isPrimary', 'hasTelegram', 'telegramUsername', 'hasViber', 'hasWhatsapp', '+420123456789']) {
     if (!source.input.includes(snippet) && !source.component.includes(snippet)) errors.push(`Learner validation/UI missing: ${snippet}`);
   }

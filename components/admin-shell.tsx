@@ -31,6 +31,7 @@ const navItems: AdminNavItem[] = [
   { href: '/admin/experts', label: 'Experts', shortLabel: 'Experts', roles: ['owner', 'super_admin', 'content_manager'] },
   { href: '/admin/contact-submissions', label: 'Contact submissions', shortLabel: 'Contacts', roles: ['owner', 'super_admin', 'credential_manager'] },
   { href: '/admin/learners', label: 'Learners', shortLabel: 'Learners', roles: ['owner', 'super_admin', 'credential_manager'] },
+  { href: '/admin/credentials', label: 'Credentials', shortLabel: 'Credentials', roles: ['owner', 'super_admin', 'credential_manager'] },
   { href: '/admin/site-settings', label: 'Site settings', shortLabel: 'Settings', roles: ['owner', 'super_admin'] },
   { href: '/admin/users', label: 'Users and roles', shortLabel: 'Users', roles: ['owner', 'super_admin'] },
 ];

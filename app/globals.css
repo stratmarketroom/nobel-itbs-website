@@ -3116,6 +3116,17 @@ h1 span {
 .learner-credential-placeholder > span { color: oklch(46% 0.11 250); font-size: 0.65rem; font-weight: 780; letter-spacing: 0.07em; text-transform: uppercase; }
 .learner-credential-placeholder h3 { margin: 0.15rem 0; color: oklch(25% 0.035 250); font-size: 1.1rem; }
 .learner-credential-placeholder p { max-width: 52ch; margin: 0; font-size: 0.76rem; line-height: 1.55; }
+.learner-credentials { padding: 1.1rem; }
+.learner-credentials > header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.7rem; }
+.learner-credentials > header small { color: oklch(50% 0.025 250); font-size: 0.65rem; }
+.learner-credentials > header h3 { margin: 0.15rem 0 0; color: oklch(22% 0.03 250); font-size: 1.05rem; }
+.learner-credentials > header a { color: oklch(35% 0.1 250); font-size: 0.7rem; font-weight: 700; }
+.learner-credentials > div:not(.learner-credential-placeholder) { border-top: 1px solid oklch(87% 0.014 250); }
+.learner-credentials > div > a { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.7rem; border-bottom: 1px solid oklch(88% 0.012 250); padding: 0.75rem 0.2rem; color: inherit; text-decoration: none; }
+.learner-credentials > div > a > span { display: grid; gap: 0.14rem; }
+.learner-credentials > div > a strong { color: oklch(28% 0.03 250); font-size: 0.76rem; }
+.learner-credentials > div > a small { color: oklch(50% 0.02 250); font-size: 0.64rem; }
+.learner-credentials > div > a em { border: 1px solid oklch(78% 0.02 250); border-radius: 999px; padding: 0.16rem 0.4rem; color: oklch(42% 0.025 250); font-size: 0.58rem; font-style: normal; font-weight: 760; text-transform: uppercase; }
 
 .learner-admin-shell :is(button, input, select, textarea):focus-visible { outline: 3px solid oklch(67% 0.13 250 / 35%); outline-offset: 2px; }
 .learner-admin-shell button:disabled { opacity: 0.55; cursor: wait; }
@@ -3149,6 +3160,144 @@ h1 span {
 
 @media (prefers-reduced-motion: reduce) {
   .learner-list-skeleton { animation: none; }
+}
+
+/* ADM-CRD-001 protected credential workspace */
+.credential-admin-shell { min-height: 100%; color: oklch(25% 0.025 250); font-family: var(--font-manrope), system-ui, sans-serif; }
+.credential-workspace-tabs { display: flex; gap: 0.2rem; overflow-x: auto; margin-top: 1rem; border-bottom: 1px solid oklch(86% 0.014 250); }
+.credential-workspace-tabs button,
+.credential-detail-tabs button { min-height: 2.65rem; border: 0; border-bottom: 2px solid transparent; padding: 0.6rem 0.8rem; background: transparent; color: oklch(47% 0.025 250); font: inherit; font-size: 0.74rem; font-weight: 700; white-space: nowrap; cursor: pointer; }
+.credential-workspace-tabs button[aria-current="page"],
+.credential-detail-tabs button[aria-current="page"] { border-bottom-color: oklch(44% 0.13 250); color: oklch(28% 0.09 250); }
+.credential-workspace-tabs span { margin-left: 0.25rem; border-radius: 999px; padding: 0.1rem 0.38rem; background: oklch(92% 0.018 250); font-size: 0.62rem; }
+.credential-notice { margin: 0.8rem 0; border: 1px solid oklch(76% 0.05 155); border-radius: 7px; padding: 0.68rem 0.8rem; background: oklch(96% 0.02 155); color: oklch(36% 0.065 155); font-size: 0.74rem; line-height: 1.45; }
+.credential-notice.error { border-color: oklch(77% 0.055 25); background: oklch(96% 0.02 25); color: oklch(40% 0.075 25); }
+.credential-notice > div { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.55rem; }
+.credential-notice code { overflow-wrap: anywhere; color: inherit; font-size: 0.66rem; }
+.credential-notice button { min-height: 2rem; border: 1px solid currentColor; border-radius: 6px; padding: 0.35rem 0.58rem; background: transparent; color: inherit; font: inherit; font-size: 0.65rem; font-weight: 730; cursor: pointer; }
+.credential-toolbar { display: grid; grid-template-columns: minmax(15rem, 1fr) minmax(10rem, 12rem) auto auto; gap: 0.7rem; align-items: end; padding: 0.85rem 0; }
+.credential-toolbar label,
+.credential-create-form label,
+.credential-file-upload label { display: grid; gap: 0.32rem; color: oklch(39% 0.025 250); font-size: 0.71rem; font-weight: 670; }
+.credential-toolbar :is(input, select),
+.credential-create-form :is(input, select),
+.credential-file-upload :is(input, select),
+.credential-notes textarea,
+.credential-file-list form input { width: 100%; min-height: 2.4rem; border: 1px solid oklch(82% 0.018 250); border-radius: 7px; padding: 0.52rem 0.65rem; background: oklch(99% 0.004 250); color: oklch(24% 0.025 250); font: inherit; font-size: 0.79rem; }
+.credential-toolbar button,
+.credential-create-form button,
+.credential-files button,
+.credential-notes button { min-height: 2.4rem; border: 1px solid oklch(42% 0.12 250); border-radius: 7px; padding: 0.52rem 0.78rem; background: oklch(42% 0.12 250); color: white; font: inherit; font-size: 0.7rem; font-weight: 730; cursor: pointer; }
+.credential-toolbar > span { align-self: center; color: oklch(50% 0.02 250); font-size: 0.69rem; text-align: right; }
+.credential-workspace { display: grid; grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr); min-height: 41rem; overflow: clip; border: 1px solid oklch(87% 0.014 250); border-radius: 8px; background: oklch(99% 0.004 250); }
+.credential-list { min-height: 41rem; max-height: calc(100vh - 16rem); overflow-y: auto; border-right: 1px solid oklch(87% 0.014 250); background: oklch(96.5% 0.008 250); }
+.credential-list > button { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr) auto; gap: 0.6rem; border: 0; border-bottom: 1px solid oklch(89% 0.012 250); padding: 0.82rem 0.9rem; background: transparent; text-align: left; cursor: pointer; }
+.credential-list > button:hover { background: oklch(98% 0.008 250); }
+.credential-list > button[aria-pressed="true"] { background: oklch(93.5% 0.025 250); box-shadow: inset 0 0 0 1px oklch(68% 0.07 250); }
+.credential-list > button > span { display: grid; gap: 0.15rem; overflow: hidden; }
+.credential-list strong { color: oklch(25% 0.035 250); font-size: 0.77rem; }
+.credential-list small { overflow: hidden; color: oklch(50% 0.02 250); font-size: 0.64rem; text-overflow: ellipsis; white-space: nowrap; }
+.credential-list em,
+.credential-editor-heading > em { width: fit-content; border: 1px solid oklch(78% 0.02 250); border-radius: 999px; padding: 0.18rem 0.42rem; background: oklch(94% 0.01 250); color: oklch(42% 0.025 250); font-size: 0.58rem; font-style: normal; font-weight: 780; text-transform: uppercase; }
+.credential-list em.valid,
+.credential-editor-heading > em.valid { border-color: oklch(74% 0.07 155); background: oklch(95% 0.03 155); color: oklch(37% 0.08 155); }
+.credential-list em.revoked,
+.credential-list em.voided,
+.credential-editor-heading > em.revoked,
+.credential-editor-heading > em.voided { border-color: oklch(76% 0.05 25); background: oklch(95% 0.025 25); color: oklch(40% 0.075 25); }
+.credential-editor { min-width: 0; }
+.credential-editor-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1rem 1.15rem 0.78rem; }
+.credential-editor-heading small,
+.credential-create-form small,
+.credential-files small,
+.credential-history-notes small { color: oklch(49% 0.025 250); font-size: 0.64rem; }
+.credential-editor-heading h2,
+.credential-create-form h2,
+.credential-files h3,
+.credential-history-notes h3 { margin: 0.15rem 0 0; color: oklch(22% 0.03 250); font-size: 1.08rem; }
+.credential-editor-heading p,
+.credential-create-form header p { margin: 0.28rem 0 0; color: oklch(49% 0.02 250); font-size: 0.7rem; }
+.credential-detail-tabs { display: flex; gap: 0.15rem; overflow-x: auto; padding-inline: 0.85rem; border-bottom: 1px solid oklch(87% 0.014 250); }
+.credential-create-form { display: grid; gap: 1rem; padding: 1.15rem; }
+.credential-create-form > header,
+.credential-create-form > footer,
+.credential-file-upload > header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.credential-create-form button.secondary { border-color: oklch(72% 0.045 250); background: transparent; color: oklch(34% 0.085 250); }
+.credential-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem; }
+.credential-form-grid .wide { grid-column: 1 / -1; }
+.credential-form-grid label > span small { margin-left: 0.25rem; font-weight: 500; }
+.credential-create-form > footer { border-top: 1px solid oklch(88% 0.012 250); padding-top: 0.85rem; }
+.credential-create-form > footer > span { max-width: 50ch; color: oklch(50% 0.02 250); font-size: 0.66rem; line-height: 1.45; }
+.credential-summary { display: grid; gap: 1rem; padding: 1.1rem; }
+.credential-summary dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; border-top: 1px solid oklch(88% 0.012 250); }
+.credential-summary dl > div { min-width: 0; border-bottom: 1px solid oklch(88% 0.012 250); padding: 0.72rem 0.2rem; }
+.credential-summary dt { color: oklch(50% 0.02 250); font-size: 0.62rem; font-weight: 680; }
+.credential-summary dd { overflow-wrap: anywhere; margin: 0.18rem 0 0; color: oklch(28% 0.025 250); font-size: 0.76rem; }
+.credential-summary code { font-size: 0.65rem; }
+.credential-public-snapshot { border-left: 3px solid oklch(55% 0.1 250); padding: 0.75rem 0.9rem; background: oklch(97% 0.009 250); }
+.credential-public-snapshot p { margin: 0.22rem 0; font-size: 0.75rem; }
+.credential-workflow-note { margin: 0; border: 1px dashed oklch(78% 0.035 250); padding: 0.72rem; color: oklch(48% 0.025 250); font-size: 0.68rem; line-height: 1.5; }
+.credential-files { display: grid; gap: 1rem; padding: 1rem; }
+.credential-file-upload { display: grid; gap: 0.75rem; border-bottom: 1px solid oklch(87% 0.014 250); padding-bottom: 1rem; }
+.credential-file-upload > header > span { color: oklch(50% 0.02 250); font-size: 0.63rem; }
+.credential-file-upload > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; align-items: end; }
+.credential-file-upload label.check { display: flex; min-height: 2.4rem; align-items: center; gap: 0.4rem; }
+.credential-file-upload label.check input { width: 1rem; min-height: 1rem; }
+.credential-file-list { display: grid; gap: 0.65rem; }
+.credential-file-list > article { display: grid; gap: 0.6rem; border: 1px solid oklch(86% 0.015 250); border-radius: 7px; padding: 0.75rem; }
+.credential-file-list > article > div { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.credential-file-list > article > div:first-child { display: grid; justify-content: stretch; }
+.credential-file-list article strong { font-size: 0.76rem; }
+.credential-file-list article span { color: oklch(50% 0.02 250); font-size: 0.63rem; }
+.credential-file-list article form { display: grid; grid-template-columns: minmax(10rem, 1fr) minmax(10rem, 1fr) auto; gap: 0.45rem; align-items: end; border-top: 1px solid oklch(89% 0.012 250); padding-top: 0.6rem; }
+.credential-files button.danger,
+.credential-notes button.danger { border-color: oklch(74% 0.05 25); background: transparent; color: oklch(41% 0.08 25); }
+.credential-history-notes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; padding: 1rem; }
+.credential-history-notes > div { min-width: 0; }
+.credential-notes > form { display: grid; gap: 0.45rem; margin: 0.7rem 0; }
+.credential-notes textarea { min-height: 5.2rem; resize: vertical; }
+.credential-notes article,
+.credential-timeline article { border-top: 1px solid oklch(88% 0.012 250); padding: 0.68rem 0; }
+.credential-notes article p,
+.credential-timeline article p { margin: 0 0 0.35rem; font-size: 0.72rem; line-height: 1.45; }
+.credential-notes article span,
+.credential-timeline article > span { color: oklch(52% 0.018 250); font-size: 0.6rem; }
+.credential-notes article > div { display: flex; gap: 0.35rem; margin-top: 0.45rem; }
+.credential-notes article button { min-height: 1.9rem; padding: 0.3rem 0.55rem; }
+.credential-timeline article { display: grid; gap: 0.26rem; }
+.credential-timeline article strong { color: oklch(30% 0.035 250); font-size: 0.7rem; }
+.credential-timeline article code { overflow-x: auto; padding: 0.38rem; background: oklch(95% 0.008 250); color: oklch(38% 0.025 250); font-size: 0.58rem; white-space: pre; }
+.credential-registry-table { overflow-x: auto; margin-top: 1rem; border: 1px solid oklch(87% 0.014 250); border-radius: 8px; background: oklch(99% 0.004 250); }
+.credential-registry-table table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+.credential-registry-table th { background: oklch(95% 0.01 250); color: oklch(43% 0.025 250); font-size: 0.62rem; letter-spacing: 0.05em; text-align: left; text-transform: uppercase; }
+.credential-registry-table :is(th, td) { border-bottom: 1px solid oklch(88% 0.012 250); padding: 0.7rem 0.75rem; white-space: nowrap; }
+.credential-empty { display: grid; place-content: center; gap: 0.32rem; min-height: 11rem; padding: 1.2rem; color: oklch(50% 0.02 250); text-align: center; }
+.credential-empty.editor { min-height: 41rem; }
+.credential-empty strong { color: oklch(32% 0.03 250); font-size: 0.82rem; }
+.credential-empty span,
+.credential-empty a { font-size: 0.68rem; }
+.credential-admin-shell :is(button, input, select, textarea):focus-visible { outline: 3px solid oklch(67% 0.13 250 / 35%); outline-offset: 2px; }
+.credential-admin-shell button:disabled { opacity: 0.55; cursor: wait; }
+
+@media (max-width: 980px) {
+  .credential-toolbar { grid-template-columns: minmax(13rem, 1fr) minmax(9rem, 11rem) auto; }
+  .credential-toolbar > span { grid-column: 1 / -1; text-align: left; }
+  .credential-history-notes { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  .credential-toolbar { grid-template-columns: 1fr 1fr; }
+  .credential-toolbar label:first-child,
+  .credential-toolbar button { grid-column: 1 / -1; }
+  .credential-workspace { display: block; overflow: visible; }
+  .credential-list { min-height: 0; max-height: 18rem; border-right: 0; border-bottom: 1px solid oklch(87% 0.014 250); }
+  .credential-form-grid,
+  .credential-file-upload > div,
+  .credential-file-list article form,
+  .credential-summary dl { grid-template-columns: 1fr; }
+  .credential-form-grid .wide { grid-column: auto; }
+  .credential-create-form > footer,
+  .credential-create-form > header { align-items: stretch; flex-direction: column; }
 }
 
 @media (max-width: 860px) {

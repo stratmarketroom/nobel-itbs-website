@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import type { LearnerAdminItem, LearnerConflictReference, LearnerEmail, LearnerPhone } from '@/lib/learners/types';
@@ -210,7 +211,7 @@ export function AdminLearners() {
             <nav className="learner-editor-tabs" aria-label="Learner record sections">{(['profile', 'contacts', 'credentials'] as EditorTab[]).map((item) => <button type="button" key={item} aria-current={tab === item ? 'page' : undefined} onClick={() => setTab(item)}>{item === 'contacts' ? `Contacts (${selected.emails.length + selected.phones.length})` : item[0].toUpperCase() + item.slice(1)}</button>)}</nav>
             {tab === 'profile' ? <ProfileForm learner={selected} saving={saving} onSubmit={(event) => void submitProfile(event, selected)} onArchive={() => void toggleArchive(selected)} /> : null}
             {tab === 'contacts' ? <ContactEditor learner={selected} saving={saving} onEmail={submitEmail} onPhone={submitPhone} onRemove={removeContact} /> : null}
-            {tab === 'credentials' ? <section className="learner-credential-placeholder"><span>Credential records</span><h3>No credentials yet</h3><p>The credential list will appear here after Credential Core is implemented. Learner identity and contacts are ready for that next stage.</p></section> : null}
+            {tab === 'credentials' ? <section className="learner-credentials"><header><div><small>Credential registry</small><h3>{selected.credentials.length} document{selected.credentials.length === 1 ? '' : 's'}</h3></div><Link href={`/admin/credentials?learner=${selected.id}`}>Open credential workspace</Link></header>{selected.credentials.length === 0 ? <div className="learner-credential-placeholder"><span>Credential records</span><h3>No credentials yet</h3><p>Create the first pending credential from the protected credential workspace.</p></div> : <div>{selected.credentials.map((credential) => <Link key={credential.id} href={`/admin/credentials?credential=${credential.id}`}><span><strong>{credential.documentNumber}</strong><small>{credential.programmeTitle} · {credential.credentialType}</small><small>Issued {credential.issueDate}</small></span><em className={credential.status}>{credential.status}</em></Link>)}</div>}</section> : null}
           </> : <div className="learner-empty editor"><strong>Select a learner</strong><span>Choose a record to manage profile, contacts, and future credentials.</span></div>}
         </section>
       </section>

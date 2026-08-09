@@ -29,6 +29,15 @@ type LearnerRow = {
     created_at: string;
     updated_at: string;
   }> | null;
+  credentials: Array<{
+    id: string;
+    document_number: string;
+    status: 'pending' | 'valid' | 'revoked' | 'voided';
+    issue_date: string;
+    public_programme_title: string;
+    public_credential_type: string;
+    created_at: string;
+  }> | null;
 };
 
 export type LearnerListFilters = { query?: string; archived?: 'active' | 'archived' | 'all' };
@@ -36,7 +45,8 @@ export type LearnerContactKind = 'email' | 'phone';
 
 const learnerSelect = `id, latin_first_name, latin_last_name, ukrainian_full_name, internal_note, archived_at, created_at, updated_at,
   learner_emails (id, email, is_primary, created_at, updated_at),
-  learner_phones (id, phone, has_telegram, telegram_username, has_viber, has_whatsapp, is_primary, created_at, updated_at)`;
+  learner_phones (id, phone, has_telegram, telegram_username, has_viber, has_whatsapp, is_primary, created_at, updated_at),
+  credentials (id, document_number, status, issue_date, public_programme_title, public_credential_type, created_at)`;
 
 function client(context: AdminContext): SupabaseClient {
   assertCanManageLearners(context);
@@ -71,7 +81,15 @@ function toItem(row: LearnerRow): LearnerAdminItem {
       createdAt: phone.created_at,
       updatedAt: phone.updated_at,
     })).sort((left, right) => Number(right.isPrimary) - Number(left.isPrimary) || left.phone.localeCompare(right.phone)),
-    credentials: [],
+    credentials: (row.credentials ?? []).map((credential) => ({
+      id: credential.id,
+      documentNumber: credential.document_number,
+      status: credential.status,
+      issueDate: credential.issue_date,
+      programmeTitle: credential.public_programme_title,
+      credentialType: credential.public_credential_type,
+      createdAt: credential.created_at,
+    })).sort((left, right) => right.createdAt.localeCompare(left.createdAt)),
   };
 }
 

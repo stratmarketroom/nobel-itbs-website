@@ -484,5 +484,5 @@ Parallel agents:
 Owner action needed:
 
 - approve start of WF-003;
-- review the credential create/detail workflow before activation and email implementation;
+- credential create/detail workflow review is complete under `ADM-CRD-001`;
 - Google Workspace credentials are not required to start the failure-independent activation implementation, but are required before real delivery QA can be accepted.

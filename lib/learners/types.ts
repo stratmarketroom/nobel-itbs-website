@@ -18,6 +18,16 @@ export type LearnerPhone = {
   updatedAt: string;
 };
 
+export type LearnerCredentialSummary = {
+  id: string;
+  documentNumber: string;
+  status: 'pending' | 'valid' | 'revoked' | 'voided';
+  issueDate: string;
+  programmeTitle: string;
+  credentialType: string;
+  createdAt: string;
+};
+
 export type LearnerAdminItem = {
   id: string;
   latinFirstName: string;
@@ -29,7 +39,7 @@ export type LearnerAdminItem = {
   updatedAt: string;
   emails: LearnerEmail[];
   phones: LearnerPhone[];
-  credentials: [];
+  credentials: LearnerCredentialSummary[];
 };
 
 export type LearnerConflictReference = {

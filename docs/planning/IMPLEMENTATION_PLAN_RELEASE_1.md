@@ -144,7 +144,7 @@ Scope:
 - multiple unique phones;
 - Telegram/Viber/WhatsApp flags;
 - optional Telegram username;
-- learner credential list placeholder;
+- learner credential list linked to the protected credential workspace;
 - learner permissions.
 
 Acceptance:
