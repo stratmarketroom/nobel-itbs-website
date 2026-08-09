@@ -471,7 +471,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- `WF-003 Activate and Email`
+- `WF-004 Resend Credential`
 
 Agent:
 
@@ -483,6 +483,6 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of WF-003;
-- credential create/detail workflow review is complete under `ADM-CRD-001`;
-- Google Workspace credentials are not required to start the failure-independent activation implementation, but are required before real delivery QA can be accepted.
+- approve start of WF-004;
+- WF-003 activation implementation and current dev QA are complete;
+- Google Workspace credentials are not required to implement failure-independent resend, but remain required before real credential-delivery acceptance can be completed.

@@ -1,5 +1,5 @@
 import 'server-only';
-import { createCipheriv, createHmac, randomBytes } from 'node:crypto';
+import { createCipheriv, createDecipheriv, createHmac, randomBytes } from 'node:crypto';
 import { ApiError } from '@/lib/supabase/server';
 
 const hmacSecretEnvName = 'CREDENTIAL_TOKEN_HMAC_SECRET';
@@ -63,4 +63,30 @@ export function createCredentialTokenMaterial(): CredentialTokenMaterial {
     keyVersion,
     verificationUrl: `/verify/${encodeURIComponent(token)}`,
   };
+}
+
+export function decryptCredentialVerificationUrl(encryptedToken: string, storedKeyVersion: number): string {
+  const { encryptionKey, keyVersion } = tokenConfiguration();
+  if (storedKeyVersion !== keyVersion) {
+    throw new ApiError('server_error', 500, 'Credential token encryption key version is unavailable.');
+  }
+
+  const [algorithm, ivValue, tagValue, ciphertextValue, ...extra] = encryptedToken.split('.');
+  if (algorithm !== 'aes-256-gcm' || !ivValue || !tagValue || !ciphertextValue || extra.length) {
+    throw new ApiError('server_error', 500, 'Credential token material is invalid.');
+  }
+
+  try {
+    const initializationVector = Buffer.from(ivValue, 'base64url');
+    const authenticationTag = Buffer.from(tagValue, 'base64url');
+    const ciphertext = Buffer.from(ciphertextValue, 'base64url');
+    if (initializationVector.length !== 12 || authenticationTag.length !== 16 || ciphertext.length < 1) throw new Error('invalid token envelope');
+    const decipher = createDecipheriv('aes-256-gcm', encryptionKey, initializationVector);
+    decipher.setAuthTag(authenticationTag);
+    const token = Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString('utf8');
+    if (!/^[A-Za-z0-9_-]{43}$/.test(token)) throw new Error('invalid token');
+    return `/verify/${encodeURIComponent(token)}`;
+  } catch {
+    throw new ApiError('server_error', 500, 'Credential token material could not be decrypted.');
+  }
 }

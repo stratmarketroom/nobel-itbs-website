@@ -3237,6 +3237,18 @@ h1 span {
 .credential-public-snapshot { border-left: 3px solid oklch(55% 0.1 250); padding: 0.75rem 0.9rem; background: oklch(97% 0.009 250); }
 .credential-public-snapshot p { margin: 0.22rem 0; font-size: 0.75rem; }
 .credential-workflow-note { margin: 0; border: 1px dashed oklch(78% 0.035 250); padding: 0.72rem; color: oklch(48% 0.025 250); font-size: 0.68rem; line-height: 1.5; }
+.credential-activation-form { display: grid; gap: 0.7rem; border: 1px solid oklch(77% 0.055 250); border-radius: 7px; padding: 0.85rem; background: oklch(97% 0.01 250); }
+.credential-activation-form > header,
+.credential-activation-form > footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.credential-activation-form h3 { margin: 0.12rem 0 0; color: oklch(24% 0.035 250); font-size: 0.95rem; }
+.credential-activation-form small,
+.credential-activation-form > header span,
+.credential-activation-form > footer span { color: oklch(49% 0.025 250); font-size: 0.63rem; }
+.credential-activation-form label { display: grid; gap: 0.3rem; color: oklch(38% 0.028 250); font-size: 0.7rem; font-weight: 680; }
+.credential-activation-form :is(input, textarea) { width: 100%; min-height: 2.4rem; border: 1px solid oklch(81% 0.02 250); border-radius: 7px; padding: 0.55rem 0.65rem; background: oklch(99% 0.004 250); color: oklch(24% 0.025 250); font: inherit; font-size: 0.77rem; }
+.credential-activation-form textarea { min-height: 9rem; resize: vertical; line-height: 1.45; }
+.credential-activation-form button { min-height: 2.4rem; border: 1px solid oklch(40% 0.13 250); border-radius: 7px; padding: 0.52rem 0.78rem; background: oklch(40% 0.13 250); color: oklch(99% 0.004 250); font: inherit; font-size: 0.7rem; font-weight: 760; cursor: pointer; }
+.credential-activation-form .activation-blocked { margin: 0; border: 1px solid oklch(76% 0.08 35); border-radius: 6px; padding: 0.55rem 0.65rem; background: oklch(95% 0.03 35); color: oklch(42% 0.09 35); font-size: 0.68rem; }
 .credential-files { display: grid; gap: 1rem; padding: 1rem; }
 .credential-file-upload { display: grid; gap: 0.75rem; border-bottom: 1px solid oklch(87% 0.014 250); padding-bottom: 1rem; }
 .credential-file-upload > header > span { color: oklch(50% 0.02 250); font-size: 0.63rem; }
@@ -3267,6 +3279,18 @@ h1 span {
 .credential-timeline article { display: grid; gap: 0.26rem; }
 .credential-timeline article strong { color: oklch(30% 0.035 250); font-size: 0.7rem; }
 .credential-timeline article code { overflow-x: auto; padding: 0.38rem; background: oklch(95% 0.008 250); color: oklch(38% 0.025 250); font-size: 0.58rem; white-space: pre; }
+.credential-delivery-history { grid-column: 1 / -1; border-top: 1px solid oklch(86% 0.014 250); padding-top: 0.9rem; }
+.credential-delivery-history > p { color: oklch(50% 0.02 250); font-size: 0.7rem; }
+.credential-delivery-history details { border-bottom: 1px solid oklch(88% 0.012 250); }
+.credential-delivery-history summary { padding: 0.7rem 0.15rem; color: oklch(30% 0.03 250); cursor: pointer; }
+.credential-delivery-history summary > span { display: inline-grid; gap: 0.12rem; margin-left: 0.35rem; }
+.credential-delivery-history summary strong { font-size: 0.7rem; text-transform: uppercase; }
+.credential-delivery-history summary small { font-size: 0.61rem; }
+.credential-delivery-history details > div { padding: 0 0.8rem 0.8rem 1.35rem; }
+.credential-delivery-history p,
+.credential-delivery-history li { font-size: 0.67rem; line-height: 1.45; }
+.credential-delivery-history pre { overflow-x: auto; max-height: 15rem; padding: 0.65rem; background: oklch(95% 0.008 250); font: inherit; font-size: 0.65rem; white-space: pre-wrap; }
+.credential-delivery-history .delivery-error { color: oklch(42% 0.09 25); }
 .credential-registry-table { overflow-x: auto; margin-top: 1rem; border: 1px solid oklch(87% 0.014 250); border-radius: 8px; background: oklch(99% 0.004 250); }
 .credential-registry-table table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
 .credential-registry-table th { background: oklch(95% 0.01 250); color: oklch(43% 0.025 250); font-size: 0.62rem; letter-spacing: 0.05em; text-align: left; text-transform: uppercase; }
@@ -3297,7 +3321,9 @@ h1 span {
   .credential-summary dl { grid-template-columns: 1fr; }
   .credential-form-grid .wide { grid-column: auto; }
   .credential-create-form > footer,
-  .credential-create-form > header { align-items: stretch; flex-direction: column; }
+  .credential-create-form > header,
+  .credential-activation-form > header,
+  .credential-activation-form > footer { align-items: stretch; flex-direction: column; }
 }
 
 @media (max-width: 860px) {

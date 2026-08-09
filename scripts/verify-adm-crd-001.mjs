@@ -54,14 +54,14 @@ if (!errors.length) {
     'Number log',
     'Private PDFs',
     'History & notes',
-    'Activation and delivery are intentionally handled by the next workflow ticket.',
+    'Create pending credential',
     'Copy verification URL',
     '/api/v1/admin/credentials',
     '/api/v1/admin/credential-sets',
     '/api/v1/admin/document-numbers',
   ]) if (!source.component.includes(snippet)) errors.push(`Credential UI missing: ${snippet}`);
 
-  for (const forbidden of ['Activate credential', 'Resend credential', 'Revoke credential', 'Void credential', 'SUPABASE_SERVICE_ROLE_KEY']) {
+  for (const forbidden of ['Resend credential', 'Revoke credential', 'Void credential', 'SUPABASE_SERVICE_ROLE_KEY']) {
     if (source.component.includes(forbidden)) errors.push(`ADM-CRD-001 must not expose later workflow action: ${forbidden}`);
   }
 

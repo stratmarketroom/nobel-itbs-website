@@ -1,5 +1,5 @@
 import 'server-only';
-import { createSign } from 'node:crypto';
+import { createSign, randomBytes } from 'node:crypto';
 
 const googleTokenEndpoint = 'https://oauth2.googleapis.com/token';
 const gmailSendScope = 'https://www.googleapis.com/auth/gmail.send';
@@ -16,6 +16,11 @@ export type GoogleWorkspaceMessage = {
   replyTo?: string;
   subject: string;
   text: string;
+  attachments?: Array<{
+    filename: string;
+    contentType: 'application/pdf';
+    content: Buffer;
+  }>;
 };
 
 function base64Url(value: string | Buffer): string {
@@ -87,21 +92,58 @@ async function accessToken(config: GoogleWorkspaceMailConfig): Promise<string> {
   return payload.access_token;
 }
 
+function encodedHeader(value: string): string {
+  return `=?UTF-8?B?${Buffer.from(value, 'utf8').toString('base64')}?=`;
+}
+
+function base64Lines(value: Buffer): string {
+  return value.toString('base64').match(/.{1,76}/g)?.join('\r\n') ?? '';
+}
+
+function safeFilename(value: string): { ascii: string; encoded: string } {
+  const normalized = value.replace(/[\r\n/\\]/g, '-').trim().slice(0, 180) || 'credential-document.pdf';
+  const pdfName = normalized.toLowerCase().endsWith('.pdf') ? normalized : `${normalized}.pdf`;
+  const ascii = pdfName.replace(/[^A-Za-z0-9._ -]/g, '_');
+  return { ascii, encoded: encodeURIComponent(pdfName) };
+}
+
 function rawMessage(config: GoogleWorkspaceMailConfig, message: GoogleWorkspaceMessage): string {
   const to = safeMailbox(message.to);
   const replyTo = message.replyTo ? safeMailbox(message.replyTo) : null;
+  const subject = safeSubject(message.subject);
+  const boundary = `nobel-itbs-${randomBytes(12).toString('hex')}`;
   const lines = [
     `From: Nobel ITBS <${config.delegatedUser}>`,
     `To: ${to}`,
     ...(replyTo ? [`Reply-To: ${replyTo}`] : []),
-    `Subject: ${safeSubject(message.subject)}`,
+    `Subject: ${encodedHeader(subject)}`,
     'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    'Content-Transfer-Encoding: 8bit',
+    `Content-Type: multipart/mixed; boundary="${boundary}"`,
     '',
-    message.text,
+    `--${boundary}`,
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    base64Lines(Buffer.from(message.text, 'utf8')),
+    ...(message.attachments ?? []).flatMap((attachment) => {
+      const filename = safeFilename(attachment.filename);
+      return [
+        `--${boundary}`,
+        `Content-Type: ${attachment.contentType}; name="${filename.ascii}"`,
+        'Content-Transfer-Encoding: base64',
+        `Content-Disposition: attachment; filename="${filename.ascii}"; filename*=UTF-8''${filename.encoded}`,
+        '',
+        base64Lines(attachment.content),
+      ];
+    }),
+    `--${boundary}--`,
+    '',
   ];
   return base64Url(lines.join('\r\n'));
+}
+
+export function isGoogleWorkspaceConfigured(): boolean {
+  return mailConfig() !== null;
 }
 
 export async function sendGoogleWorkspaceMessage(message: GoogleWorkspaceMessage): Promise<'sent' | 'not_configured'> {

@@ -1,6 +1,8 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { listCredentialFiles } from '@/lib/credentials/files';
+import { getCredentialActivationDraft } from '@/lib/credentials/activation';
+import type { CredentialEmailSendItem } from '@/lib/credentials/activation-types';
 import {
   ApiError,
   assertCanManageCredentials,
@@ -114,19 +116,22 @@ export async function listCredentials(context: AdminContext): Promise<Credential
   return ((result.data ?? []) as CredentialRow[]).map((row) => toCredential(row, lookup));
 }
 
-export async function getCredentialDetail(context: AdminContext, credentialId: string): Promise<CredentialAdminDetail> {
+export async function getCredentialDetail(context: AdminContext, credentialId: string, requestOrigin: string): Promise<CredentialAdminDetail> {
   const db = client(context);
-  const [lookup, credentialResult, filesResult, historyResult, notesResult] = await Promise.all([
+  const [lookup, credentialResult, filesResult, historyResult, notesResult, sendsResult, activationDraft] = await Promise.all([
     lookups(db),
     db.from('credentials').select(credentialSelect).eq('id', credentialId).maybeSingle(),
     listCredentialFiles(context, credentialId),
     db.from('credential_history').select('id, event_type, actor_id, reason, before_data, after_data, created_at').eq('credential_id', credentialId).order('created_at', { ascending: false }).limit(250),
     db.from('credential_notes').select('id, author_id, body, deleted_at, created_at, updated_at').eq('credential_id', credentialId).order('created_at', { ascending: false }).limit(250),
+    db.from('credential_email_sends').select('id, recipient_email, subject, body, status, technical_error, sent_by, sent_at, files').eq('credential_id', credentialId).order('sent_at', { ascending: false }).limit(100),
+    getCredentialActivationDraft(context, credentialId, requestOrigin),
   ]);
   if (credentialResult.error) throw databaseError(credentialResult.error, 'Credential could not be loaded.');
   if (!credentialResult.data) throw new ApiError('not_found', 404, 'Credential was not found.');
   if (historyResult.error) throw databaseError(historyResult.error, 'Credential history could not be loaded.');
   if (notesResult.error) throw databaseError(notesResult.error, 'Credential notes could not be loaded.');
+  if (sendsResult.error) throw databaseError(sendsResult.error, 'Credential delivery history could not be loaded.');
   const canAdminDelete = context.roles.includes('owner') || context.roles.includes('super_admin');
   return {
     ...toCredential(credentialResult.data as CredentialRow, lookup),
@@ -141,6 +146,28 @@ export async function getCredentialDetail(context: AdminContext, credentialId: s
       canEdit: row.author_id === context.user.id && row.deleted_at === null,
       canDelete: (row.author_id === context.user.id || canAdminDelete) && row.deleted_at === null,
     })),
+    emailSends: (sendsResult.data ?? []).map((row): CredentialEmailSendItem => ({
+      id: row.id,
+      recipientEmail: row.recipient_email,
+      subject: row.subject,
+      body: row.body,
+      status: row.status,
+      technicalError: row.technical_error,
+      sentBy: row.sent_by,
+      sentAt: row.sent_at,
+      files: Array.isArray(row.files) ? row.files.map((file) => {
+        const item = file as Record<string, unknown>;
+        return {
+          fileId: String(item.file_id ?? ''),
+          fileTypeId: String(item.file_type_id ?? ''),
+          fileType: String(item.file_type ?? ''),
+          filename: String(item.filename ?? ''),
+          sizeBytes: Number(item.size_bytes ?? 0),
+          isPrimary: item.is_primary === true,
+        };
+      }) : [],
+    })),
+    activationDraft,
   };
 }
 

@@ -18,7 +18,7 @@ This is the current implementation record. The v2 product and technical specific
 - Local secrets remain in ignored environment files and must never be committed.
 - A pre-integration backup is available under the ignored `backups/supabase/2026-08-05-pre-content/` directory.
 
-All 40 local SQL migrations through `20260809110000_wf_002_manage_credential_files.sql` are applied to the remote dev database. The local and remote migration histories match.
+All 41 local SQL migrations through `20260809120000_wf_003_activate_and_email.sql` are applied to the remote dev database. The local and remote migration histories match.
 
 ## Implemented Foundation
 
@@ -51,6 +51,9 @@ All 40 local SQL migrations through `20260809110000_wf_002_manage_credential_fil
 - Actor-scoped credential PDF routes for private upload/list, replacement-in-place with compensating restore, metadata/primary management, pending-only deletion, and 60-second admin signed URLs.
 - Lifecycle-aware PDF rules: valid changes require History/Audit reason and retain a primary PDF; revoked/voided mutations and valid deletion are denied.
 - Protected Credential Admin Workspace with role-aware navigation, actor-scoped list/detail/reference APIs, pending creation form, current private PDF controls, read-only Credential Sets and permanent Number Log, append-only History, controlled Notes, and no premature activation/revoke/void/resend/public-verification actions.
+- Atomic pending-to-valid credential activation with primary-PDF and complete-current-file guards, permanent number issuance, editable EN/UA delivery drafts, and permanent private delivery outcome/file manifests.
+- Server-only AES-256-GCM verification-token decryption for the email verification URL and Google Workspace MIME delivery of all current private PDFs. Missing recipient, missing provider configuration, or provider failure never rolls back an already successful activation.
+- Pending-only activation controls and private email-delivery history are integrated into the protected Credential Admin Workspace; resend, revoke, void, valid-public-data editing, and public verification remain separate tickets.
 
 ## Verified in Dev
 
@@ -73,6 +76,8 @@ All 40 local SQL migrations through `20260809110000_wf_002_manage_credential_fil
 - Pending Credential live QA passed: Content Manager/AAL1/anonymous denied, manual override restricted, AAL2 Super Admin creation and exact Set reuse work, reserved numbers link correctly, History/Audit exclude protected token material, all QA records rolled back, and automatic `000001` remains unused; local unauthenticated API smoke returns `401`.
 - Credential PDF Workflow live QA passed: 16 database role/lifecycle/primary/reason/privacy checks and 6 private Storage upload/signed URL/replacement/MIME checks passed; rollback/cleanup completed and automatic `000001` remains unused.
 - Credential Admin Workspace QA passed in an authenticated Owner/AAL2 browser session: empty real registries, five programme/two document-type references, pending-form guards, Sets/Number Log navigation, clean console, responsive 390 px layout without horizontal overflow, and `401` on all new list APIs without a Bearer token. No test record was created, so the automatic number remains unused.
+- WF-003 static verifier, ADM-CRD-001/PCE-004 regressions, TypeScript, ESLint, and production build pass. The additive migration dry-run and remote push succeeded, and local/remote histories match at 41 migrations.
+- WF-003 authenticated Owner/AAL2 browser smoke passed after migration: the real credential workspace loads without alerts, exposes the protected registry and guarded pending form, and creates no test record. The activation mutation was intentionally not exercised because no approved credential/PDF exists and document numbers are permanent; unauthenticated activation returns `401`.
 - All nine legal routes render full localized documents; their metadata is `noindex, follow`.
 
 ## Verification Limitation
@@ -85,6 +90,7 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 - The AI Production partner URL is intentionally pending; its CTA currently uses the question fallback.
 - The For Organisations application URL remains an Owner/Super Admin setting and needs its final destination.
 - Contact notifications will use a one-way Telegram bot and private manager chat under deferred pre-launch ticket PCE-005; Google Workspace is not required for contact alerts.
+- Google Workspace service-account/domain-delegation credentials and the delegated Nobel ITBS sender remain required for the first real credential PDF delivery acceptance test. WF-003 records `not_configured` without undoing activation until they are supplied.
 - Production forms require a strong rate-limit secret. CAPTCHA is intentionally conditional and remains unconfigured until abuse signals justify enabling it.
 - Czech native-language review remains an external editorial check where noted in the approved source files.
 
@@ -92,5 +98,5 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
 - Telegram contact-alert delivery remains a deferred pre-launch check. Google Workspace remains required later for credential PDF delivery only. CAPTCHA provider setup is deferred by product decision and is not a blocker.
-- Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001..002 plus ADM-CRD-001 accepted; activation/email, remaining lifecycle workflows, and public verification remain.
+- Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001..003 plus ADM-CRD-001 accepted at the documented dev level; resend, remaining lifecycle workflows, and public verification remain.
 - Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email end-to-end tests remain ahead; CAPTCHA testing applies only if the conditional control is enabled later.

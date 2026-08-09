@@ -1,19 +1,20 @@
 import { jsonError, jsonOk } from '@/lib/api/responses';
-import { getCredentialDetail } from '@/lib/credentials/workspace';
+import { readActivateCredentialInput } from '@/lib/credentials/activation-input';
+import { activateCredential } from '@/lib/credentials/activation';
 import { assertUuid } from '@/lib/learners/admin-input';
 import { getAdminContext } from '@/lib/supabase/server';
 
 type RouteProps = { params: Promise<{ id: string }> };
 
-export async function GET(request: Request, props: RouteProps) {
+export async function POST(request: Request, props: RouteProps) {
   try {
     const context = await getAdminContext(request);
     const { id } = await props.params;
     return jsonOk({
-      credential: await getCredentialDetail(
+      activation: await activateCredential(
         context,
         assertUuid(id, 'credential ID'),
-        new URL(request.url).origin,
+        await readActivateCredentialInput(request),
       ),
     });
   } catch (error) {

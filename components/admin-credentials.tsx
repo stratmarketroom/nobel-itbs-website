@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { PendingCredentialAdminItem } from '@/lib/credentials/types';
+import type { ActivateCredentialResult } from '@/lib/credentials/activation-types';
 import type {
   CredentialAdminDetail,
   CredentialAdminListItem,
@@ -213,7 +214,7 @@ function CreateForm({ references, saving, onSubmit, onCancel }: { references: Cr
   const programme = references.programmes.find(({ id }) => id === programmeId);
   const type = references.credentialTypes.find(({ id }) => id === typeId);
   return <form className="credential-create-form" onSubmit={onSubmit}>
-    <header><div><small>New record</small><h2>Create pending credential</h2><p>Activation and delivery are intentionally handled by the next workflow ticket.</p></div><button className="secondary" type="button" onClick={onCancel}>Cancel</button></header>
+    <header><div><small>New record</small><h2>Create pending credential</h2><p>After creation, upload the approved primary PDF and review the delivery message before activation.</p></div><button className="secondary" type="button" onClick={onCancel}>Cancel</button></header>
     <div className="credential-form-grid">
       <label><span>Learner</span><select name="learnerId" required value={learnerId} onChange={(event) => setLearnerId(event.target.value)}>{references.learners.map((item) => <option key={item.id} value={item.id}>{item.name}{item.archived ? ' (archived)' : ''}</option>)}</select></label>
       <label><span>Programme</span><select name="programmeId" required value={programmeId} onChange={(event) => setProgrammeId(event.target.value)}>{references.programmes.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
@@ -254,6 +255,31 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
     formElement.reset();
   }
 
+  async function activate(input: { recipientEmail: string | null; subject: string; body: string }) {
+    setSaving(true);
+    setNotice(null);
+    try {
+      const payload = await request<{ activation: ActivateCredentialResult }>(`/api/v1/admin/credentials/${credential.id}/activate`, {
+        method: 'POST',
+        body: JSON.stringify({
+          recipientEmail: input.recipientEmail,
+          emailSubject: input.subject,
+          emailBody: input.body,
+        }),
+      });
+      const copy = {
+        sent: 'Credential activated and all current PDFs sent.',
+        failed: `Credential activated. Delivery failed: ${payload.activation.delivery.technicalError ?? 'provider error'}`,
+        not_configured: 'Credential activated. Google Workspace is not configured, so no email was sent.',
+        skipped_empty_recipient: 'Credential activated without email because the recipient was empty.',
+        pending: 'Credential activated, but the delivery result could not be finalized. Do not activate again.',
+      }[payload.activation.delivery.status];
+      await reload(copy);
+    } catch (error) {
+      setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Credential could not be activated.' });
+    } finally { setSaving(false); }
+  }
+
   return <>
     <header className="credential-editor-heading"><div><small>Private credential record</small><h2>{credential.documentNumber}</h2><p>{credential.learnerName} · {credential.programmeTitle}</p></div><em className={credential.status}>{statusLabels[credential.status]}</em></header>
     <nav className="credential-detail-tabs" aria-label="Credential record sections">
@@ -268,7 +294,8 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
         <div><dt>Credential set</dt><dd><code>{credential.credentialSetId}</code></dd></div><div><dt>Programme run</dt><dd>{credential.programmeRunId ?? 'No specific run'}</dd></div>
       </dl>
       <div className="credential-public-snapshot"><small>Approved public snapshot</small><p><strong>{credential.publicHolderName}</strong></p><p>{credential.publicProgrammeTitle}</p><p>{credential.publicCredentialType}</p></div>
-      <p className="credential-workflow-note">Activation, resend, revoke, void, and valid-record changes are not available in this workspace yet. They remain separate WF tickets.</p>
+      {credential.status === 'pending' && credential.activationDraft ? <ActivationForm credential={credential} saving={saving} onActivate={activate} /> : null}
+      <p className="credential-workflow-note">Resend, revoke, void, valid-record changes, and public verification remain separate WF tickets.</p>
     </section> : null}
     {tab === 'files' ? <section className="credential-files">
       <form className="credential-file-upload" onSubmit={upload}><header><div><small>Private storage</small><h3>Upload PDF</h3></div><span>PDF only · max 20 MB</span></header><div>
@@ -288,8 +315,35 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
     {tab === 'history' ? <section className="credential-history-notes">
       <div className="credential-notes"><header><small>Private internal comments</small><h3>Notes</h3></header><form onSubmit={addNote}><textarea name="body" required maxLength={4000} placeholder="Add context for other credential managers" /><button disabled={saving} type="submit">Add note</button></form>{credential.notes.filter(({ deletedAt }) => !deletedAt).map((note) => <article key={`${note.id}-${note.updatedAt}`}><p>{note.body}</p><span>{note.canEdit ? 'You' : 'Administrator'} · {date(note.updatedAt)}</span><div>{note.canEdit ? <button type="button" disabled={saving} onClick={() => { const next = window.prompt('Edit internal note', note.body); if (next?.trim()) void action(() => request(`/api/v1/admin/credentials/${credential.id}/notes/${note.id}`, { method: 'PATCH', body: JSON.stringify({ body: next }) }), 'Internal note updated.'); }}>Edit</button> : null}{note.canDelete ? <button className="danger" type="button" disabled={saving} onClick={() => { if (window.confirm('Delete this internal note?')) void action(() => request(`/api/v1/admin/credentials/${credential.id}/notes/${note.id}`, { method: 'DELETE' }), 'Internal note deleted.'); }}>Delete</button> : null}</div></article>)}</div>
       <div className="credential-timeline"><header><small>Append-only record</small><h3>History</h3></header>{credential.history.map((item) => <article key={item.id}><span>{date(item.createdAt)}</span><strong>{item.eventType.replaceAll('_', ' ')}</strong>{item.reason ? <p>{item.reason}</p> : null}{item.afterData && Object.keys(item.afterData).length ? <code>{JSON.stringify(item.afterData)}</code> : null}</article>)}</div>
+      <div className="credential-delivery-history"><header><small>Private delivery record</small><h3>Email delivery</h3></header>{credential.emailSends.length === 0 ? <p>No delivery attempts yet.</p> : credential.emailSends.map((send) => <details key={send.id}><summary><span><strong>{send.status.replaceAll('_', ' ')}</strong><small>{date(send.sentAt)} · {send.recipientEmail || 'No recipient'} · {send.files.length} PDF{send.files.length === 1 ? '' : 's'}</small></span></summary><div><p><strong>Subject:</strong> {send.subject}</p><pre>{send.body}</pre>{send.technicalError ? <p className="delivery-error">{send.technicalError}</p> : null}<ul>{send.files.map((file) => <li key={file.fileId}>{file.filename} · {file.fileType}{file.isPrimary ? ' · Primary' : ''}</li>)}</ul></div></details>)}</div>
     </section> : null}
   </>;
+}
+
+function ActivationForm({ credential, saving, onActivate }: {
+  credential: CredentialAdminDetail;
+  saving: boolean;
+  onActivate: (input: { recipientEmail: string | null; subject: string; body: string }) => Promise<void>;
+}) {
+  const draft = credential.activationDraft!;
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!window.confirm('Activate this credential now? Its number will be issued permanently even if email delivery fails.')) return;
+    const form = new FormData(event.currentTarget);
+    await onActivate({
+      recipientEmail: String(form.get('recipientEmail') ?? '').trim() || null,
+      subject: String(form.get('subject') ?? ''),
+      body: String(form.get('body') ?? ''),
+    });
+  }
+  return <form className="credential-activation-form" onSubmit={(event) => void submit(event)}>
+    <header><div><small>WF-003 · irreversible transition</small><h3>Activate and deliver</h3></div><span>{draft.fileCount} current PDF{draft.fileCount === 1 ? '' : 's'}</span></header>
+    {!draft.hasPrimaryPdf ? <p className="activation-blocked">Choose a primary PDF before activation.</p> : null}
+    <label><span>Recipient email <small>optional</small></span><input name="recipientEmail" type="email" defaultValue={draft.recipientEmail} placeholder="Leave empty to activate without email" /></label>
+    <label><span>Email subject</span><input name="subject" required maxLength={180} defaultValue={draft.subject} /></label>
+    <label><span>Email body <small>{draft.templateLanguage.toUpperCase()} template, editable for this send</small></span><textarea name="body" required maxLength={20000} defaultValue={draft.body} /></label>
+    <footer><span>Activation succeeds even when the recipient is empty or Google Workspace fails.</span><button type="submit" disabled={saving || !draft.hasPrimaryPdf}>{saving ? 'Activating…' : 'Activate credential'}</button></footer>
+  </form>;
 }
 
 function RegistryTable({ headers, rows, empty }: { headers: string[]; rows: string[][]; empty: string }) {
