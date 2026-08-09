@@ -226,6 +226,20 @@ export function assertCanManageLearners(context: AdminContext): void {
   }
 }
 
+export function assertCanManageCredentials(context: AdminContext): void {
+  const allowed = context.roles.some((role) => (
+    role === 'owner' || role === 'super_admin' || role === 'credential_manager'
+  ));
+
+  if (!allowed) {
+    throw new ApiError('forbidden', 403, 'Credential management access is not permitted.');
+  }
+
+  if (!context.mfaSatisfied) {
+    throw new ApiError('forbidden', 403, 'MFA/AAL2 is required for credential management.');
+  }
+}
+
 export function assertCanManageContent(context: AdminContext): void {
   const allowed = context.roles.some((role) => (
     role === 'owner' || role === 'super_admin' || role === 'content_manager'

@@ -55,6 +55,7 @@
     "verify:crd-004": "node scripts/verify-crd-004.mjs",
     "verify:crd-005": "node scripts/verify-crd-005.mjs",
     "verify:crd-006": "node scripts/verify-crd-006.mjs",
+    "verify:wf-001": "node scripts/verify-wf-001.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",

@@ -18,7 +18,7 @@ This is the current implementation record. The v2 product and technical specific
 - Local secrets remain in ignored environment files and must never be committed.
 - A pre-integration backup is available under the ignored `backups/supabase/2026-08-05-pre-content/` directory.
 
-All 38 local SQL migrations through `20260808130000_crd_006_credential_history_notes.sql` are applied to the remote dev database. The local and remote migration histories match.
+All 39 local SQL migrations through `20260809100000_wf_001_create_pending_credential.sql` are applied to the remote dev database. The local and remote migration histories match.
 
 ## Implemented Foundation
 
@@ -46,6 +46,8 @@ All 38 local SQL migrations through `20260808130000_crd_006_credential_history_n
 - Private Credential identities with only `pending`/`valid`/`revoked`/`voided`, current curated public fields, HMAC lookup plus encrypted token storage, immutable identity/lifecycle checks, two-way deferred Number Log integrity, set/programme/run/type/year validation, controlled audited set moves, forced RLS, and no direct mutation grants.
 - Private `private-credentials` Storage bucket restricted to PDF and 20 MB, configurable seeded file types, canonical credential/file object paths, one-primary metadata rule, replacement-in-place/no-version model, file-change audit without paths/content, forced RLS, and no browser Storage policies or direct metadata mutations.
 - Private append-only credential history plus current-text internal notes with controlled author edit/soft-delete, Owner/Super Admin deletion of others' notes, privacy-minimal History/Audit events, forced RLS, MFA, and no direct note/history mutations.
+- Actor-scoped pending-credential creation API and controlled database workflow for exact Credential Set reuse, automatic or Owner/Super Admin manual number reservation, pending identity creation, Number Log linkage, and privacy-safe History/Audit.
+- Server-only verification-token protection with 256-bit random tokens, HMAC-SHA-256 lookup, independent AES-256-GCM encryption, key versioning, and ready QR verification paths without separate token/hash/ciphertext response fields.
 
 ## Verified in Dev
 
@@ -65,6 +67,7 @@ All 38 local SQL migrations through `20260808130000_crd_006_credential_history_n
 - Credential Core live QA passed: anonymous/Content Manager/AAL1 denied, Credential Manager AAL2 read-only, direct insert denied, a linked pending credential passed forced deferred integrity, invalid year/lifecycle/delete/identity rewrite were rejected, token material stayed out of audit, controlled set move preserved the number link and wrote one audit event, and all records were rolled back.
 - Credential File live QA passed: bucket is private/PDF-only/20 MB, service-side upload/download works, anonymous download and invalid MIME are denied, one-primary uniqueness and replacement-in-place metadata work, audit excludes private paths, test metadata rolled back, the temporary Storage object was deleted, and the automatic number sequence remained unused.
 - Credential History/Notes live QA passed: anonymous/Content Manager/AAL1 access is denied, AAL2 Credential Manager read and own-note operations work, another Credential Manager cannot edit/delete the note, Super Admin soft deletion works, History is append-only, note text/private paths stay out of journals, event hooks passed, all records rolled back, and the automatic number sequence remained unused.
+- Pending Credential live QA passed: Content Manager/AAL1/anonymous denied, manual override restricted, AAL2 Super Admin creation and exact Set reuse work, reserved numbers link correctly, History/Audit exclude protected token material, all QA records rolled back, and automatic `000001` remains unused; local unauthenticated API smoke returns `401`.
 - All nine legal routes render full localized documents; their metadata is `noindex, follow`.
 
 ## Verification Limitation
@@ -84,5 +87,5 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
 - Telegram contact-alert delivery remains a deferred pre-launch check. Google Workspace remains required later for credential PDF delivery only. CAPTCHA provider setup is deferred by product decision and is not a blocker.
-- Stage 5 Learner Foundation and the Stage 6 Credential Core database/security foundation are complete through CRD-006; controlled issuance/email, credential admin workflow UI, and public verification remain.
+- Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001 accepted; PDF management, activation/email, remaining lifecycle workflows, credential admin UI, and public verification remain.
 - Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email end-to-end tests remain ahead; CAPTCHA testing applies only if the conditional control is enabled later.

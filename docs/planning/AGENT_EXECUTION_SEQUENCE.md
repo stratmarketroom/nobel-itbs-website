@@ -471,7 +471,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- `WF-001 Create Pending Credential`
+- `WF-002 Upload and Manage PDFs`
 
 Agent:
 
@@ -483,6 +483,6 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of WF-001;
+- approve start of WF-002;
 - review the credential create/detail workflow before activation and email implementation;
-- no external provider access is required for WF-001.
+- no external provider access is required for WF-002.
