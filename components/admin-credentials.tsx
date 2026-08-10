@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { PendingCredentialAdminItem } from '@/lib/credentials/types';
 import type { ActivateCredentialResult } from '@/lib/credentials/activation-types';
+import type { UpdateValidPublicDataInput } from '@/lib/credentials/public-data-types';
 import type {
   CredentialAdminDetail,
   CredentialAdminListItem,
@@ -300,6 +301,16 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
     );
   }
 
+  async function updatePublicData(input: UpdateValidPublicDataInput) {
+    await action(
+      () => request(`/api/v1/admin/credentials/${credential.id}/public-data`, {
+        method: 'PUT',
+        body: JSON.stringify(input),
+      }),
+      'Current public credential data updated. The correction is recorded in private History and Audit.',
+    );
+  }
+
   return <>
     <header className="credential-editor-heading"><div><small>Private credential record</small><h2>{credential.documentNumber}</h2><p>{credential.learnerName} · {credential.programmeTitle}</p></div><em className={credential.status}>{statusLabels[credential.status]}</em></header>
     <nav className="credential-detail-tabs" aria-label="Credential record sections">
@@ -313,13 +324,14 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
         <div><dt>Language</dt><dd>{credential.languageCode.toUpperCase()}</dd></div><div><dt>Document type</dt><dd>{credential.credentialType}</dd></div>
         <div><dt>Credential set</dt><dd><code>{credential.credentialSetId}</code></dd></div><div><dt>Programme run</dt><dd>{credential.programmeRunId ?? 'No specific run'}</dd></div>
       </dl>
-      <div className="credential-public-snapshot"><small>Approved public snapshot</small><p><strong>{credential.publicHolderName}</strong></p><p>{credential.publicProgrammeTitle}</p><p>{credential.publicCredentialType}</p></div>
+      <div className="credential-public-snapshot"><small>Current public verification data</small><p><strong>{credential.publicHolderName}</strong></p><p>{credential.publicProgrammeTitle}</p><p>{credential.publicCredentialType}</p></div>
       {credential.status === 'pending' && credential.activationDraft ? <ActivationForm credential={credential} saving={saving} onActivate={activate} /> : null}
       {credential.status === 'pending' ? <VoidPendingForm saving={saving} onVoid={voidPending} /> : null}
+      {credential.status === 'valid' ? <PublicDataForm key={credential.updatedAt} credential={credential} saving={saving} onSave={updatePublicData} /> : null}
       {credential.status === 'valid' ? <RevokeForm saving={saving} onRevoke={revoke} /> : null}
       {credential.status === 'revoked' ? <section className="credential-revocation-record" aria-label="Revocation record"><header><small>Private lifecycle record</small><h3>Revoked permanently</h3></header><dl><div><dt>Revoked on</dt><dd>{date(credential.revokedAt)}</dd></div><div><dt>Reason</dt><dd>{credential.revocationReason}</dd></div></dl></section> : null}
       {credential.status === 'voided' ? <section className="credential-void-record" aria-label="Void record"><header><small>Private lifecycle record</small><h3>Voided permanently</h3></header><dl><div><dt>Voided on</dt><dd>{date(credential.voidedAt)}</dd></div><div><dt>Reason</dt><dd>{credential.voidReason}</dd></div></dl></section> : null}
-      <p className="credential-workflow-note">Resend is deferred. Valid-record changes and public verification remain separate WF tickets.</p>
+      <p className="credential-workflow-note">Resend is deferred. Public verification remains a separate WF ticket.</p>
     </section> : null}
     {tab === 'files' ? <section className="credential-files">
       <form className="credential-file-upload" onSubmit={upload}><header><div><small>Private storage</small><h3>Upload PDF</h3></div><span>PDF only · max 20 MB</span></header><div>
@@ -410,6 +422,37 @@ function VoidPendingForm({ saving, onVoid }: {
       <p>Use this when the pending record must be cancelled before activation. It will behave as not found in public verification.</p>
       <label><span>Void reason</span><textarea name="reason" required maxLength={4000} disabled={saving} placeholder="Explain why this pending credential must be voided" /></label>
       <footer><span>Neither the credential nor its number can be restored through the standard workflow.</span><button type="submit" disabled={saving}>{saving ? 'Voiding…' : 'Void permanently'}</button></footer>
+    </form>
+  </details>;
+}
+
+function PublicDataForm({ credential, saving, onSave }: {
+  credential: CredentialAdminDetail;
+  saving: boolean;
+  onSave: (input: UpdateValidPublicDataInput) => Promise<void>;
+}) {
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    await onSave({
+      publicHolderName: String(form.get('publicHolderName') ?? ''),
+      publicProgrammeTitle: String(form.get('publicProgrammeTitle') ?? ''),
+      publicCredentialType: String(form.get('publicCredentialType') ?? ''),
+      reason: String(form.get('reason') ?? ''),
+    });
+  }
+
+  return <details className="credential-public-data-panel">
+    <summary><span><small>WF-007 · controlled correction</small><strong>Correct public verification data</strong></span><em>Valid only</em></summary>
+    <form onSubmit={(event) => void submit(event)}>
+      <p>These values are shown publicly for a valid document. The change reason stays private and no revision notice is shown publicly.</p>
+      <div>
+        <label><span>Public holder name</span><input name="publicHolderName" required maxLength={320} disabled={saving} defaultValue={credential.publicHolderName} /></label>
+        <label><span>Public document type</span><input name="publicCredentialType" required maxLength={200} disabled={saving} defaultValue={credential.publicCredentialType} /></label>
+        <label className="wide"><span>Public programme title</span><input name="publicProgrammeTitle" required maxLength={500} disabled={saving} defaultValue={credential.publicProgrammeTitle} /></label>
+        <label className="wide"><span>Change reason</span><textarea name="reason" required maxLength={4000} disabled={saving} placeholder="Explain why the public credential data must be corrected" /></label>
+      </div>
+      <footer><span>Only the current public verification record changes. The issued number, PDF, learner, programme, and lifecycle stay unchanged.</span><button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save correction'}</button></footer>
     </form>
   </details>;
 }

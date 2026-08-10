@@ -3287,6 +3287,23 @@ h1 span {
 .credential-void-panel footer span { max-width: 58ch; color: oklch(48% 0.04 65); font-size: 0.63rem; line-height: 1.45; }
 .credential-void-panel button { min-height: 2.4rem; border: 1px solid oklch(45% 0.11 55); border-radius: 7px; padding: 0.52rem 0.78rem; background: oklch(45% 0.11 55); color: oklch(99% 0.004 70); font: inherit; font-size: 0.7rem; font-weight: 760; cursor: pointer; }
 .credential-void-panel :is(button, textarea):disabled { cursor: not-allowed; opacity: 0.58; }
+.credential-public-data-panel { border: 1px solid oklch(78% 0.045 250); border-radius: 7px; background: oklch(97% 0.01 250); }
+.credential-public-data-panel > summary { display: flex; min-height: 3.2rem; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.72rem 0.85rem; color: oklch(31% 0.065 250); cursor: pointer; }
+.credential-public-data-panel > summary > span { display: grid; gap: 0.12rem; }
+.credential-public-data-panel > summary small { color: oklch(49% 0.04 250); font-size: 0.61rem; font-weight: 600; }
+.credential-public-data-panel > summary strong { font-size: 0.8rem; }
+.credential-public-data-panel > summary em { font-size: 0.62rem; font-style: normal; font-weight: 760; text-transform: uppercase; }
+.credential-public-data-panel > form { display: grid; gap: 0.75rem; border-top: 1px solid oklch(84% 0.025 250); padding: 0.85rem; }
+.credential-public-data-panel > form > p { max-width: 70ch; margin: 0; color: oklch(43% 0.03 250); font-size: 0.69rem; line-height: 1.5; }
+.credential-public-data-panel > form > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+.credential-public-data-panel label { display: grid; gap: 0.3rem; color: oklch(38% 0.035 250); font-size: 0.7rem; font-weight: 680; }
+.credential-public-data-panel label.wide { grid-column: 1 / -1; }
+.credential-public-data-panel :is(input, textarea) { width: 100%; min-height: 2.4rem; border: 1px solid oklch(81% 0.025 250); border-radius: 7px; padding: 0.55rem 0.65rem; background: oklch(99% 0.004 250); color: oklch(24% 0.025 250); font: inherit; font-size: 0.77rem; }
+.credential-public-data-panel textarea { min-height: 5.5rem; resize: vertical; line-height: 1.45; }
+.credential-public-data-panel footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.credential-public-data-panel footer span { max-width: 62ch; color: oklch(48% 0.025 250); font-size: 0.63rem; line-height: 1.45; }
+.credential-public-data-panel button { min-height: 2.4rem; border: 1px solid oklch(41% 0.12 250); border-radius: 7px; padding: 0.52rem 0.78rem; background: oklch(41% 0.12 250); color: oklch(99% 0.004 250); font: inherit; font-size: 0.7rem; font-weight: 760; cursor: pointer; }
+.credential-public-data-panel :is(button, input, textarea):disabled { cursor: not-allowed; opacity: 0.58; }
 .credential-files { display: grid; gap: 1rem; padding: 1rem; }
 .credential-file-upload { display: grid; gap: 0.75rem; border-bottom: 1px solid oklch(87% 0.014 250); padding-bottom: 1rem; }
 .credential-file-upload > header > span { color: oklch(50% 0.02 250); font-size: 0.63rem; }
@@ -3356,15 +3373,18 @@ h1 span {
   .credential-form-grid,
   .credential-file-upload > div,
   .credential-file-list article form,
-  .credential-summary dl { grid-template-columns: 1fr; }
+  .credential-summary dl,
+  .credential-public-data-panel > form > div { grid-template-columns: 1fr; }
   .credential-form-grid .wide { grid-column: auto; }
+  .credential-public-data-panel label.wide { grid-column: auto; }
   .credential-create-form > footer,
   .credential-create-form > header,
   .credential-activation-form > header,
   .credential-activation-form > footer,
   .credential-revoke-form > header,
   .credential-revoke-form > footer,
-  .credential-void-panel footer { align-items: stretch; flex-direction: column; }
+  .credential-void-panel footer,
+  .credential-public-data-panel footer { align-items: stretch; flex-direction: column; }
 }
 
 @media (max-width: 860px) {
