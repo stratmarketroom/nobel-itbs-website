@@ -49,6 +49,7 @@ Current implementation notes:
 - `docs/qa/WF_002_MANAGE_CREDENTIAL_FILES_QA_2026-08-09.md`
 - `docs/qa/ADM_CRD_001_CREDENTIAL_ADMIN_WORKSPACE_QA_2026-08-09.md`
 - `docs/qa/WF_003_ACTIVATE_AND_EMAIL_QA_2026-08-09.md`
+- `docs/qa/WF_008_PUBLIC_VERIFICATION_QA_2026-08-10.md`
 - `docs/development/DESIGN_SKILLS_SETUP.md`
 - `docs/development/DOCUMENTATION_MAINTENANCE.md`
 - `docs/development/CONTACT_NOTIFICATIONS.md`

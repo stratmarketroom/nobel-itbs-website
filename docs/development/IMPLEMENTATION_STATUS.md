@@ -1,6 +1,6 @@
 # Implementation Status
 
-Last updated: 2026-08-09
+Last updated: 2026-08-10
 
 This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
@@ -18,7 +18,7 @@ This is the current implementation record. The v2 product and technical specific
 - Local secrets remain in ignored environment files and must never be committed.
 - A pre-integration backup is available under the ignored `backups/supabase/2026-08-05-pre-content/` directory.
 
-All 41 local SQL migrations through `20260809120000_wf_003_activate_and_email.sql` are applied to the remote dev database. The local and remote migration histories match.
+All 45 local SQL migrations through `20260810130000_wf_008_public_verification.sql` are applied to the remote dev database. The local and remote migration histories match.
 
 ## Implemented Foundation
 
@@ -53,7 +53,8 @@ All 41 local SQL migrations through `20260809120000_wf_003_activate_and_email.sq
 - Protected Credential Admin Workspace with role-aware navigation, actor-scoped list/detail/reference APIs, pending creation form, current private PDF controls, read-only Credential Sets and permanent Number Log, append-only History, controlled Notes, and no premature activation/revoke/void/resend/public-verification actions.
 - Atomic pending-to-valid credential activation with primary-PDF and complete-current-file guards, permanent number issuance, editable EN/UA delivery drafts, and permanent private delivery outcome/file manifests.
 - Server-only AES-256-GCM verification-token decryption for the email verification URL and Google Workspace MIME delivery of all current private PDFs. Missing recipient, missing provider configuration, or provider failure never rolls back an already successful activation.
-- Pending-only activation controls and private email-delivery history are integrated into the protected Credential Admin Workspace; resend, revoke, void, valid-public-data editing, and public verification remain separate tickets.
+- Pending-only activation, irreversible valid revocation, irreversible pending void, controlled valid public-data correction, and private email-delivery history are integrated into the protected Credential Admin Workspace. Resend remains intentionally deferred.
+- Server-mediated public verification by document number or QR token with HMAC lookup, persistent rate limiting, strict valid/revoked/not-found privacy projection, localized EN/UA/CZ pages, and noindex QR/results.
 
 ## Verified in Dev
 
@@ -76,9 +77,10 @@ All 41 local SQL migrations through `20260809120000_wf_003_activate_and_email.sq
 - Pending Credential live QA passed: Content Manager/AAL1/anonymous denied, manual override restricted, AAL2 Super Admin creation and exact Set reuse work, reserved numbers link correctly, History/Audit exclude protected token material, all QA records rolled back, and automatic `000001` remains unused; local unauthenticated API smoke returns `401`.
 - Credential PDF Workflow live QA passed: 16 database role/lifecycle/primary/reason/privacy checks and 6 private Storage upload/signed URL/replacement/MIME checks passed; rollback/cleanup completed and automatic `000001` remains unused.
 - Credential Admin Workspace QA passed in an authenticated Owner/AAL2 browser session: empty real registries, five programme/two document-type references, pending-form guards, Sets/Number Log navigation, clean console, responsive 390 px layout without horizontal overflow, and `401` on all new list APIs without a Bearer token. No test record was created, so the automatic number remains unused.
-- WF-003 static verifier, ADM-CRD-001/PCE-004 regressions, TypeScript, ESLint, and production build pass. The additive migration dry-run and remote push succeeded, and local/remote histories match at 41 migrations.
+- WF-003 and WF-005..008 static verifiers, ADM-CRD-001/PCE-004 regressions, TypeScript, ESLint, and production build pass. Additive migration pushes succeeded, and local/remote histories match at 45 migrations.
 - WF-003 authenticated Owner/AAL2 browser smoke passed after migration: the real credential workspace loads without alerts, exposes the protected registry and guarded pending form, and creates no test record. The activation mutation was intentionally not exercised because no approved credential/PDF exists and document numbers are permanent; unauthenticated activation returns `401`.
 - All nine legal routes render full localized documents; their metadata is `noindex, follow`.
+- WF-008 real dev smoke passed for unknown number/token parity, no-store/noindex headers, anonymous direct-access denial, the 30-per-15-minute database limit, EN/UA/CZ routing, localized manual UI, 390 px responsive layout without horizontal overflow, and clean browser console. The dev registry is empty, so valid/revoked rendering awaits the first approved lifecycle E2E rather than consuming a fake permanent number.
 
 ## Verification Limitation
 
@@ -92,11 +94,13 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 - Contact notifications will use a one-way Telegram bot and private manager chat under deferred pre-launch ticket PCE-005; Google Workspace is not required for contact alerts.
 - Google Workspace service-account/domain-delegation credentials and the delegated Nobel ITBS sender remain required for the first real credential PDF delivery acceptance test. WF-003 records `not_configured` without undoing activation until they are supplied.
 - Production forms require a strong rate-limit secret. CAPTCHA is intentionally conditional and remains unconfigured until abuse signals justify enabling it.
+- Production verification should use an independent `CREDENTIAL_VERIFICATION_RATE_LIMIT_SECRET`; local development has an ignored dev-only value and the server supports the existing contact secret only as a backward-compatible fallback.
 - Czech native-language review remains an external editorial check where noted in the approved source files.
 
 ## Important Remaining Product Work
 
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
 - Telegram contact-alert delivery remains a deferred pre-launch check. Google Workspace remains required later for credential PDF delivery only. CAPTCHA provider setup is deferred by product decision and is not a blocker.
-- Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001..003 plus ADM-CRD-001 accepted at the documented dev level. The Owner deferred WF-004 resend until after WF-008 or pre-launch hardening because managers can correct an address and resend manually; WF-005 revoke is next, followed by WF-006, WF-007, and WF-008.
+- Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001..003, WF-005..008, and ADM-CRD-001 accepted at the documented dev level. WF-004 resend remains deferred to pre-launch because managers can correct an address and resend manually.
+- The next focused ticket is QA-001 RLS Tests. QA-002 verification privacy and the first approved full credential lifecycle in QA-004 follow when an approved credential or transaction-capable database test runner is available. Telegram PCE-005, real Google Workspace delivery acceptance, analytics, CAPTCHA if later enabled, and final external CTA values remain pre-launch/operational work.
 - Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email end-to-end tests remain ahead; CAPTCHA testing applies only if the conditional control is enabled later.

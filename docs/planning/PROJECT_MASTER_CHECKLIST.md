@@ -30,7 +30,7 @@ An `[x]` beside a data/public ticket means that the described data/public capabi
 - [x] Partner-site and Leeloo destinations use the documented CTA hierarchy.
 - [x] Partners are separate from the future credential-verification result.
 - [x] Service-role credentials remain server-only.
-- [ ] Credential-specific guardrails become testable only after CRD/WF implementation.
+- [x] Credential-specific guardrails are implemented through WF-008: four statuses only, permanent numbers, private PDFs, server-mediated verification, valid details only, revoked status only, and pending/voided not found.
 
 ## Stage 0 — Specification Alignment
 
@@ -149,7 +149,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/cleanup smoke passed |
 | Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, optional CAPTCHA fail-closed contract, audit, and cleanup smoke passed; privacy-minimised Telegram notification is deferred to PCE-005 |
 | Learners | Private identity, globally unique contacts, protected API, responsive manager UI, archive workflow, and real linked credential summaries implemented | Stage 5 plus ADM-CRD-001 authenticated smoke passed |
-| Credential Types / Sets / Credentials / Number Log | Core schema plus protected manager workspace for pending creation, list/detail, private PDFs, activation, irreversible valid revocation, irreversible pending void with permanent number voiding, controlled valid public-data correction, delivery history, Sets, Number Log, History, and Notes | ADM-CRD-001, WF-003, and WF-005..007 passed at the current dev level; WF-008 is next and WF-004 is deferred |
+| Credential Types / Sets / Credentials / Number Log | Core schema plus protected manager workspace for pending creation, list/detail, private PDFs, activation, irreversible valid revocation, irreversible pending void with permanent number voiding, controlled valid public-data correction, server-mediated public verification, delivery history, Sets, Number Log, History, and Notes | ADM-CRD-001, WF-003, and WF-005..008 passed at the current dev level; WF-004 is deferred |
 | Email Templates | Private seeded EN/UA credential-delivery templates are implemented and used by activation | Protected editing UI/API and audit smoke remain |
 | Site Settings | Protected API/UI implemented | Authenticated AAL2 save/audit smoke passed; final For Organisations URL remains |
 | Users and Roles | Protected API/UI implemented | Authenticated create/roles/deactivate/reactivate/audit/cleanup smoke passed |
@@ -186,9 +186,9 @@ Stage status: **complete at the database/security-foundation level; CRD-001..006
 - [x] WF-005 valid-only irreversible revoke with a mandatory private reason, actor/time fields, unchanged issued number, protected API/UI, History/Audit, MFA, and dev migration acceptance.
 - [x] WF-006 pending-only irreversible void with mandatory private reason, atomic reserved-number voiding, protected API/UI, History/Audit, MFA, and dev migration acceptance.
 - [x] WF-007 valid-only current public-data correction with complete bounded fields, mandatory private reason, no-op rejection, protected API/UI, detailed History, PII-minimal Audit, MFA, and dev migration acceptance.
-- [ ] WF-008 verification by QR token or document number only.
+- [x] WF-008 server-mediated verification by QR token or document number only, with HMAC lookup, database-backed rate limiting, EN/UA/CZ UI, QR noindex, valid-only details, revoked status only, and pending/voided/absent not found.
 
-Stage status: **in progress; WF-001..003, WF-005..007, and the manager workspace are complete at the current dev level, WF-004 is deferred by Owner decision, and WF-008 is next**.
+Stage status: **implemented at the current dev level except Owner-deferred WF-004 resend and the real Google Workspace delivery acceptance; WF-001..003, WF-005..008, and the manager workspace are complete**.
 
 ## Stage 8 — Contact Operations
 
@@ -249,9 +249,10 @@ The credential workflow stage is now open; external production integrations rema
 17. [x] **WF-005 Revoke** — protected valid-only irreversible transition with a mandatory private reason, actor/time fields, unchanged issued number, History/Audit, UI confirmation, and synced dev migration completed on 2026-08-10; see `docs/qa/WF_005_REVOKE_CREDENTIAL_QA_2026-08-10.md`.
 18. [x] **WF-006 Void Pending** — protected pending-only irreversible transition, atomic permanent voiding of its reserved number, mandatory private reason, History/Audit, progressive UI confirmation, and synced dev migration completed on 2026-08-10; see `docs/qa/WF_006_VOID_PENDING_CREDENTIAL_QA_2026-08-10.md`.
 19. [x] **WF-007 Update Valid Public Data** — protected valid-only correction of holder name, programme title, and document type, with no-op rejection, mandatory private reason, detailed History, PII-minimal Audit, responsive manager UI, and synced dev migration completed on 2026-08-10; see `docs/qa/WF_007_UPDATE_VALID_PUBLIC_DATA_QA_2026-08-10.md`.
-20. **Continue Stage 7 with WF-008 Public Verification** — verification by QR token or document number only, with the approved valid/revoked/not-found privacy model.
+20. [x] **WF-008 Public Verification** — server-mediated QR/document-number API, HMAC token lookup, persistent rate limiting, approved privacy projection, localized UI, QR noindex, and dev smoke completed on 2026-08-10; see `docs/qa/WF_008_PUBLIC_VERIFICATION_QA_2026-08-10.md`.
 21. **Return to WF-004 Resend Credential after WF-008 or during pre-launch hardening** — until then, managers may correct the learner email and resend manually from their mailbox; a previous send-history row remains immutable.
 22. Before launch, complete PCE-005 Telegram manager notifications; configure and acceptance-test Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
-23. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, CRD-001..006, WF-001..003, WF-005..007, and ADM-CRD-001 layers.
+23. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, CRD-001..006, WF-001..003, WF-005..008, and ADM-CRD-001 layers.
+24. **Proceed with QA-001 RLS Tests** while the registry is empty. Run QA-002 verification privacy and the first approved full credential lifecycle under QA-004 when an approved credential or transaction-capable database test runner is available; do not create a fake permanent document number solely for smoke testing.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.

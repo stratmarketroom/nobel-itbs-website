@@ -471,11 +471,11 @@ The orchestrator controls:
 
 Next ticket:
 
-- `WF-008 Public Verification`
+- `QA-001 RLS Tests`
 
 Agent:
 
-- Backend/API Agent with Database / Security review
+- QA / Security Review Agent
 
 Parallel agents:
 
@@ -483,11 +483,8 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of WF-008;
-- review the approved valid, revoked, and not-found public verification result content during WF-008;
-- WF-007 valid public-data correction implementation and current dev acceptance are complete;
-- WF-006 pending credential void implementation and current dev acceptance are complete;
-- WF-005 revoke implementation and current dev acceptance are complete;
-- WF-003 activation implementation and current dev QA are complete;
+- no new value is required to begin QA-001;
+- WF-008 implementation and current dev acceptance are complete;
+- QA-002 and QA-004 valid/revoked verification require the first approved test credential or a transaction-capable database test runner;
 - WF-004 resend is intentionally deferred because managers can correct the learner email and resend manually during the interim period;
-- Google Workspace credentials remain required before real credential-delivery acceptance can be completed, but they do not block WF-008.
+- Google Workspace credentials remain required before real credential-delivery acceptance can be completed, but they do not block QA-001.
