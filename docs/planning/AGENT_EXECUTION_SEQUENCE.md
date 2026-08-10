@@ -471,7 +471,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- `WF-006 Void Pending`
+- `WF-007 Update Valid Public Data`
 
 Agent:
 
@@ -483,8 +483,9 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of WF-006;
+- approve start of WF-007;
+- WF-006 pending credential void implementation and current dev acceptance are complete;
 - WF-005 revoke implementation and current dev acceptance are complete;
 - WF-003 activation implementation and current dev QA are complete;
 - WF-004 resend is intentionally deferred because managers can correct the learner email and resend manually during the interim period;
-- Google Workspace credentials remain required before real credential-delivery acceptance can be completed, but they do not block WF-006.
+- Google Workspace credentials remain required before real credential-delivery acceptance can be completed, but they do not block WF-007.

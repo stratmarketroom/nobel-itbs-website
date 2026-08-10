@@ -290,6 +290,16 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
     );
   }
 
+  async function voidPending(reason: string) {
+    await action(
+      () => request(`/api/v1/admin/credentials/${credential.id}/void`, {
+        method: 'POST',
+        body: JSON.stringify({ reason }),
+      }),
+      'Pending credential and its reserved document number were voided permanently.',
+    );
+  }
+
   return <>
     <header className="credential-editor-heading"><div><small>Private credential record</small><h2>{credential.documentNumber}</h2><p>{credential.learnerName} · {credential.programmeTitle}</p></div><em className={credential.status}>{statusLabels[credential.status]}</em></header>
     <nav className="credential-detail-tabs" aria-label="Credential record sections">
@@ -305,9 +315,11 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
       </dl>
       <div className="credential-public-snapshot"><small>Approved public snapshot</small><p><strong>{credential.publicHolderName}</strong></p><p>{credential.publicProgrammeTitle}</p><p>{credential.publicCredentialType}</p></div>
       {credential.status === 'pending' && credential.activationDraft ? <ActivationForm credential={credential} saving={saving} onActivate={activate} /> : null}
+      {credential.status === 'pending' ? <VoidPendingForm saving={saving} onVoid={voidPending} /> : null}
       {credential.status === 'valid' ? <RevokeForm saving={saving} onRevoke={revoke} /> : null}
       {credential.status === 'revoked' ? <section className="credential-revocation-record" aria-label="Revocation record"><header><small>Private lifecycle record</small><h3>Revoked permanently</h3></header><dl><div><dt>Revoked on</dt><dd>{date(credential.revokedAt)}</dd></div><div><dt>Reason</dt><dd>{credential.revocationReason}</dd></div></dl></section> : null}
-      <p className="credential-workflow-note">Resend is deferred. Void pending, valid-record changes, and public verification remain separate WF tickets.</p>
+      {credential.status === 'voided' ? <section className="credential-void-record" aria-label="Void record"><header><small>Private lifecycle record</small><h3>Voided permanently</h3></header><dl><div><dt>Voided on</dt><dd>{date(credential.voidedAt)}</dd></div><div><dt>Reason</dt><dd>{credential.voidReason}</dd></div></dl></section> : null}
+      <p className="credential-workflow-note">Resend is deferred. Valid-record changes and public verification remain separate WF tickets.</p>
     </section> : null}
     {tab === 'files' ? <section className="credential-files">
       <form className="credential-file-upload" onSubmit={upload}><header><div><small>Private storage</small><h3>Upload PDF</h3></div><span>PDF only · max 20 MB</span></header><div>
@@ -377,6 +389,29 @@ function RevokeForm({ saving, onRevoke }: {
     <label><span>Revocation reason</span><textarea name="reason" required maxLength={4000} disabled={saving} placeholder="Explain why this credential must be revoked" /></label>
     <footer><span>The credential cannot be restored through the standard workflow.</span><button type="submit" disabled={saving}>{saving ? 'Revoking…' : 'Revoke permanently'}</button></footer>
   </form>;
+}
+
+function VoidPendingForm({ saving, onVoid }: {
+  saving: boolean;
+  onVoid: (reason: string) => Promise<void>;
+}) {
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const reason = String(form.get('reason') ?? '').trim();
+    if (!reason) return;
+    if (!window.confirm('Void this pending credential? Its reserved document number will be voided permanently and can never be reused.')) return;
+    await onVoid(reason);
+  }
+
+  return <details className="credential-void-panel">
+    <summary><span><small>WF-006 · irreversible transition</small><strong>Void pending credential</strong></span><em>Reserved → Voided</em></summary>
+    <form onSubmit={(event) => void submit(event)}>
+      <p>Use this when the pending record must be cancelled before activation. It will behave as not found in public verification.</p>
+      <label><span>Void reason</span><textarea name="reason" required maxLength={4000} disabled={saving} placeholder="Explain why this pending credential must be voided" /></label>
+      <footer><span>Neither the credential nor its number can be restored through the standard workflow.</span><button type="submit" disabled={saving}>{saving ? 'Voiding…' : 'Void permanently'}</button></footer>
+    </form>
+  </details>;
 }
 
 function RegistryTable({ headers, rows, empty }: { headers: string[]; rows: string[][]; empty: string }) {

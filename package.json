@@ -59,6 +59,7 @@
     "verify:wf-002": "node scripts/verify-wf-002.mjs",
     "verify:wf-003": "node scripts/verify-wf-003.mjs",
     "verify:wf-005": "node scripts/verify-wf-005.mjs",
+    "verify:wf-006": "node scripts/verify-wf-006.mjs",
     "verify:adm-crd-001": "node scripts/verify-adm-crd-001.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
