@@ -343,11 +343,11 @@ Tickets:
 - WF-001 Create Pending Credential;
 - WF-002 Upload and Manage PDFs;
 - WF-003 Activate and Email;
-- WF-004 Resend Credential;
 - WF-005 Revoke;
 - WF-006 Void Pending;
 - WF-007 Update Valid Public Data;
-- WF-008 Public Verification.
+- WF-008 Public Verification;
+- WF-004 Resend Credential, deferred by Owner decision until after WF-008 or pre-launch hardening.
 
 Parallel work:
 
@@ -471,7 +471,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- `WF-004 Resend Credential`
+- `WF-005 Revoke`
 
 Agent:
 
@@ -483,6 +483,7 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of WF-004;
+- approve start of WF-005;
 - WF-003 activation implementation and current dev QA are complete;
-- Google Workspace credentials are not required to implement failure-independent resend, but remain required before real credential-delivery acceptance can be completed.
+- WF-004 resend is intentionally deferred because managers can correct the learner email and resend manually during the interim period;
+- Google Workspace credentials remain required before real credential-delivery acceptance can be completed, but they do not block WF-005.

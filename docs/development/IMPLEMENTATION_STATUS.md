@@ -98,5 +98,5 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
 - Telegram contact-alert delivery remains a deferred pre-launch check. Google Workspace remains required later for credential PDF delivery only. CAPTCHA provider setup is deferred by product decision and is not a blocker.
-- Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001..003 plus ADM-CRD-001 accepted at the documented dev level; resend, remaining lifecycle workflows, and public verification remain.
+- Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001..003 plus ADM-CRD-001 accepted at the documented dev level. The Owner deferred WF-004 resend until after WF-008 or pre-launch hardening because managers can correct an address and resend manually; WF-005 revoke is next, followed by WF-006, WF-007, and WF-008.
 - Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email end-to-end tests remain ahead; CAPTCHA testing applies only if the conditional control is enabled later.

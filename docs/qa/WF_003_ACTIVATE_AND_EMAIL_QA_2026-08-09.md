@@ -71,6 +71,6 @@ The isolated 40-assertion pgTAP file is committed. Supabase CLI could not execut
 - Email-template editing UI/API remains a separate admin capability; WF-003 seeds and reads the approved templates.
 - Resend, revoke, void, valid-public-data update, and public verification are outside this ticket.
 
-## Next Dependency
+## Post-ticket Scheduling Decision
 
-`WF-004 Resend Credential`: allow a valid credential to send all current PDFs again to an editable recipient and create a separate permanent delivery-history entry, while preserving the same role/MFA and privacy boundaries.
+On 2026-08-10 the Owner deferred `WF-004 Resend Credential` until after WF-008 or pre-launch hardening. During the interim period, a manager may correct the learner email and resend manually from the manager mailbox; the original delivery-history row remains immutable. The next implementation ticket is `WF-005 Revoke`.
