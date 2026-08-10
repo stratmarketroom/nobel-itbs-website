@@ -62,6 +62,8 @@
     "verify:wf-006": "node scripts/verify-wf-006.mjs",
     "verify:wf-007": "node scripts/verify-wf-007.mjs",
     "verify:wf-008": "node scripts/verify-wf-008.mjs",
+    "verify:qa-001": "node scripts/verify-qa-001.mjs",
+    "verify:qa-001:live": "node --env-file=.env.local scripts/verify-qa-001-live.mjs",
     "verify:adm-crd-001": "node scripts/verify-adm-crd-001.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",

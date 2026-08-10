@@ -205,7 +205,7 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
 ## Stage 9 — Security, QA, and Launch Hardening
 
 - [-] Ticket-level migration/static verifiers, lint, TypeScript, builds, browser smoke, and selected RLS/API smoke checks pass.
-- [-] QA-001 live Stage 2–4 matrix, complete Stage 5 learner RLS/API/UI, CRD-001..006, WF-001..003, and ADM-CRD-001 protected workspace checks passed at their documented dev level; the Docker-dependent full pgTAP suite and real Google Workspace delivery acceptance remain.
+- [-] QA-001 aggregate 38-assertion RLS matrix is implemented for all 36 public tables, four roles, service-only RPCs, and private Storage; the live anonymous boundary passed 18 public reads, 18 private denials, and two RPC denials. Earlier authenticated role evidence was reconciled; only execution of the Docker-dependent full pgTAP file remains.
 - [ ] QA-002 credential verification privacy tests after credentials exist.
 - [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings, complete learner management, CRD-001..006, WF-001 credential creation, WF-002 private PDF operations, and WF-003 protected Owner/MFA workspace smoke; full activation mutation stays in the later end-to-end credential flow.
 - [ ] QA-004 end-to-end learner → credential → PDF → activation → verify → revoke flow.
@@ -216,7 +216,7 @@ Stage status: **foundation checks active; launch QA not started**.
 
 ## Verified Current Dev Baseline
 
-- [x] One ordered chain of 41 local migrations matches the remote dev history.
+- [x] One ordered chain of 45 local migrations matches the remote dev history.
 - [x] Pre-integration dev backup exists in the ignored backup directory.
 - [x] Public reads use Supabase by default; seed content is explicit offline mode only.
 - [x] Dev data: 3 languages, 3 areas, 3 types, 5 programmes, 5 runs, 5 partners, 3 experts.
@@ -253,6 +253,7 @@ The credential workflow stage is now open; external production integrations rema
 21. **Return to WF-004 Resend Credential after WF-008 or during pre-launch hardening** — until then, managers may correct the learner email and resend manually from their mailbox; a previous send-history row remains immutable.
 22. Before launch, complete PCE-005 Telegram manager notifications; configure and acceptance-test Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
 23. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, CRD-001..006, WF-001..003, WF-005..008, and ADM-CRD-001 layers.
-24. **Proceed with QA-001 RLS Tests** while the registry is empty. Run QA-002 verification privacy and the first approved full credential lifecycle under QA-004 when an approved credential or transaction-capable database test runner is available; do not create a fake permanent document number solely for smoke testing.
+24. [x] **QA-001 RLS Tests** — aggregate coverage now protects all 36 public tables, four roles, MFA/service boundaries, private Storage, and controlled RPCs; non-mutating live anonymous QA passed on 2026-08-10. See `docs/qa/QA_001_RLS_MATRIX_2026-08-10.md`; execute its complete pgTAP file when a compatible database runner is available.
+25. **Proceed with QA-003 MFA Tests** while the registry is empty. Run QA-002 verification privacy and the first approved full credential lifecycle under QA-004 when an approved credential or transaction-capable database test runner is available; do not create a fake permanent document number solely for smoke testing.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.

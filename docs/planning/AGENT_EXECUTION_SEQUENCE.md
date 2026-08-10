@@ -471,7 +471,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- `QA-001 RLS Tests`
+- `QA-003 MFA Tests`
 
 Agent:
 
@@ -483,8 +483,8 @@ Parallel agents:
 
 Owner action needed:
 
-- no new value is required to begin QA-001;
-- WF-008 implementation and current dev acceptance are complete;
+- no new value is required to begin QA-003;
+- QA-001 implementation and current dev acceptance are complete; its full pgTAP execution remains queued for a compatible database runner;
 - QA-002 and QA-004 valid/revoked verification require the first approved test credential or a transaction-capable database test runner;
 - WF-004 resend is intentionally deferred because managers can correct the learner email and resend manually during the interim period;
-- Google Workspace credentials remain required before real credential-delivery acceptance can be completed, but they do not block QA-001.
+- Google Workspace credentials remain required before real credential-delivery acceptance can be completed, but they do not block QA-003.
