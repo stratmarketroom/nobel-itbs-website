@@ -3249,6 +3249,24 @@ h1 span {
 .credential-activation-form textarea { min-height: 9rem; resize: vertical; line-height: 1.45; }
 .credential-activation-form button { min-height: 2.4rem; border: 1px solid oklch(40% 0.13 250); border-radius: 7px; padding: 0.52rem 0.78rem; background: oklch(40% 0.13 250); color: oklch(99% 0.004 250); font: inherit; font-size: 0.7rem; font-weight: 760; cursor: pointer; }
 .credential-activation-form .activation-blocked { margin: 0; border: 1px solid oklch(76% 0.08 35); border-radius: 6px; padding: 0.55rem 0.65rem; background: oklch(95% 0.03 35); color: oklch(42% 0.09 35); font-size: 0.68rem; }
+.credential-revoke-form { display: grid; gap: 0.7rem; border: 1px solid oklch(76% 0.055 25); border-radius: 7px; padding: 0.85rem; background: oklch(97% 0.012 25); }
+.credential-revoke-form > header,
+.credential-revoke-form > footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.credential-revoke-form h3,
+.credential-revocation-record h3 { margin: 0.12rem 0 0; color: oklch(30% 0.06 25); font-size: 0.95rem; }
+.credential-revoke-form small,
+.credential-revoke-form > header span,
+.credential-revoke-form > footer span,
+.credential-revocation-record small { color: oklch(48% 0.04 25); font-size: 0.63rem; }
+.credential-revoke-form > p { margin: 0; color: oklch(42% 0.035 25); font-size: 0.69rem; line-height: 1.5; }
+.credential-revoke-form label { display: grid; gap: 0.3rem; color: oklch(38% 0.04 25); font-size: 0.7rem; font-weight: 680; }
+.credential-revoke-form textarea { width: 100%; min-height: 5.5rem; resize: vertical; border: 1px solid oklch(81% 0.03 25); border-radius: 7px; padding: 0.55rem 0.65rem; background: oklch(99% 0.005 25); color: oklch(24% 0.025 250); font: inherit; font-size: 0.77rem; line-height: 1.45; }
+.credential-revoke-form button { min-height: 2.4rem; border: 1px solid oklch(43% 0.13 25); border-radius: 7px; padding: 0.52rem 0.78rem; background: oklch(43% 0.13 25); color: oklch(99% 0.004 25); font: inherit; font-size: 0.7rem; font-weight: 760; cursor: pointer; }
+.credential-revoke-form :is(button, textarea):disabled { cursor: not-allowed; opacity: 0.58; }
+.credential-revocation-record { display: grid; gap: 0.6rem; border: 1px solid oklch(79% 0.04 25); border-radius: 7px; padding: 0.85rem; background: oklch(97% 0.012 25); }
+.credential-revocation-record dl { display: grid; grid-template-columns: minmax(8rem, 0.35fr) minmax(0, 1fr); margin: 0; border-top: 1px solid oklch(86% 0.025 25); }
+.credential-revocation-record dl > div { border-bottom: 1px solid oklch(86% 0.025 25); padding: 0.65rem 0.2rem; }
+.credential-revocation-record dd { white-space: pre-wrap; }
 .credential-files { display: grid; gap: 1rem; padding: 1rem; }
 .credential-file-upload { display: grid; gap: 0.75rem; border-bottom: 1px solid oklch(87% 0.014 250); padding-bottom: 1rem; }
 .credential-file-upload > header > span { color: oklch(50% 0.02 250); font-size: 0.63rem; }

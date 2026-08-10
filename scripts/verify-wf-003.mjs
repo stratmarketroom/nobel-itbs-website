@@ -110,7 +110,8 @@ if (!errors.length) {
     'Email delivery',
     'credential.emailSends',
   ]) if (!source.component.includes(snippet)) errors.push(`WF-003 admin UI missing: ${snippet}`);
-  for (const forbidden of ['Resend credential', 'Revoke credential', 'Void credential']) {
+  // Revoke is allowed here after WF-005; resend and void remain later workflows.
+  for (const forbidden of ['Resend credential', 'Void credential']) {
     if (source.component.includes(forbidden)) errors.push(`WF-003 must not expose later action: ${forbidden}`);
   }
 

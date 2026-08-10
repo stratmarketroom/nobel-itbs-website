@@ -170,7 +170,7 @@ export function AdminCredentials() {
 
   async function reloadDetail(success?: string) {
     if (!selectedId) return;
-    await loadDetail(selectedId);
+    await Promise.all([loadDetail(selectedId), loadCredentials(selectedId)]);
     if (success) setNotice({ kind: 'success', message: success });
   }
 
@@ -280,6 +280,16 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
     } finally { setSaving(false); }
   }
 
+  async function revoke(reason: string) {
+    await action(
+      () => request(`/api/v1/admin/credentials/${credential.id}/revoke`, {
+        method: 'POST',
+        body: JSON.stringify({ reason }),
+      }),
+      'Credential revoked permanently. Its document number remains issued and cannot be reused.',
+    );
+  }
+
   return <>
     <header className="credential-editor-heading"><div><small>Private credential record</small><h2>{credential.documentNumber}</h2><p>{credential.learnerName} · {credential.programmeTitle}</p></div><em className={credential.status}>{statusLabels[credential.status]}</em></header>
     <nav className="credential-detail-tabs" aria-label="Credential record sections">
@@ -295,7 +305,9 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
       </dl>
       <div className="credential-public-snapshot"><small>Approved public snapshot</small><p><strong>{credential.publicHolderName}</strong></p><p>{credential.publicProgrammeTitle}</p><p>{credential.publicCredentialType}</p></div>
       {credential.status === 'pending' && credential.activationDraft ? <ActivationForm credential={credential} saving={saving} onActivate={activate} /> : null}
-      <p className="credential-workflow-note">Resend, revoke, void, valid-record changes, and public verification remain separate WF tickets.</p>
+      {credential.status === 'valid' ? <RevokeForm saving={saving} onRevoke={revoke} /> : null}
+      {credential.status === 'revoked' ? <section className="credential-revocation-record" aria-label="Revocation record"><header><small>Private lifecycle record</small><h3>Revoked permanently</h3></header><dl><div><dt>Revoked on</dt><dd>{date(credential.revokedAt)}</dd></div><div><dt>Reason</dt><dd>{credential.revocationReason}</dd></div></dl></section> : null}
+      <p className="credential-workflow-note">Resend is deferred. Void pending, valid-record changes, and public verification remain separate WF tickets.</p>
     </section> : null}
     {tab === 'files' ? <section className="credential-files">
       <form className="credential-file-upload" onSubmit={upload}><header><div><small>Private storage</small><h3>Upload PDF</h3></div><span>PDF only · max 20 MB</span></header><div>
@@ -343,6 +355,27 @@ function ActivationForm({ credential, saving, onActivate }: {
     <label><span>Email subject</span><input name="subject" required maxLength={180} defaultValue={draft.subject} /></label>
     <label><span>Email body <small>{draft.templateLanguage.toUpperCase()} template, editable for this send</small></span><textarea name="body" required maxLength={20000} defaultValue={draft.body} /></label>
     <footer><span>Activation succeeds even when the recipient is empty or Google Workspace fails.</span><button type="submit" disabled={saving || !draft.hasPrimaryPdf}>{saving ? 'Activating…' : 'Activate credential'}</button></footer>
+  </form>;
+}
+
+function RevokeForm({ saving, onRevoke }: {
+  saving: boolean;
+  onRevoke: (reason: string) => Promise<void>;
+}) {
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const reason = String(form.get('reason') ?? '').trim();
+    if (!reason) return;
+    if (!window.confirm('Revoke this valid credential? This action is permanent and its document number will never be reused.')) return;
+    await onRevoke(reason);
+  }
+
+  return <form className="credential-revoke-form" onSubmit={(event) => void submit(event)}>
+    <header><div><small>WF-005 · irreversible transition</small><h3>Revoke credential</h3></div><span>Valid → Revoked</span></header>
+    <p>Use this only when the issued document must no longer verify as valid. The reason stays private in History.</p>
+    <label><span>Revocation reason</span><textarea name="reason" required maxLength={4000} disabled={saving} placeholder="Explain why this credential must be revoked" /></label>
+    <footer><span>The credential cannot be restored through the standard workflow.</span><button type="submit" disabled={saving}>{saving ? 'Revoking…' : 'Revoke permanently'}</button></footer>
   </form>;
 }
 
