@@ -207,7 +207,7 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
 - [-] Ticket-level migration/static verifiers, lint, TypeScript, builds, browser smoke, and selected RLS/API smoke checks pass.
 - [-] QA-001 aggregate 38-assertion RLS matrix is implemented for all 36 public tables, four roles, service-only RPCs, and private Storage; the live anonymous boundary passed 18 public reads, 18 private denials, and two RPC denials. Earlier authenticated role evidence was reconciled; only execution of the Docker-dependent full pgTAP file remains.
 - [ ] QA-002 credential verification privacy tests after credentials exist.
-- [-] QA-003 MFA matrix passed for current admin/content/programme/contact/settings, complete learner management, CRD-001..006, WF-001 credential creation, WF-002 private PDF operations, and WF-003 protected Owner/MFA workspace smoke; full activation mutation stays in the later end-to-end credential flow.
+- [x] QA-003 aggregate 27-assertion MFA matrix and fresh Owner AAL1 live test passed: verified TOTP enrollment was detected and all 11 sensitive admin routes returned explicit MFA/AAL2 denials without mutation. Existing AAL2 role/module evidence was reconciled; see `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.
 - [ ] QA-004 end-to-end learner → credential → PDF → activation → verify → revoke flow.
 - [ ] QA-005 production environment, credential Gmail delivery, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
 - [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
@@ -254,6 +254,7 @@ The credential workflow stage is now open; external production integrations rema
 22. Before launch, complete PCE-005 Telegram manager notifications; configure and acceptance-test Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
 23. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, CRD-001..006, WF-001..003, WF-005..008, and ADM-CRD-001 layers.
 24. [x] **QA-001 RLS Tests** — aggregate coverage now protects all 36 public tables, four roles, MFA/service boundaries, private Storage, and controlled RPCs; non-mutating live anonymous QA passed on 2026-08-10. See `docs/qa/QA_001_RLS_MATRIX_2026-08-10.md`; execute its complete pgTAP file when a compatible database runner is available.
-25. **Proceed with QA-003 MFA Tests** while the registry is empty. Run QA-002 verification privacy and the first approved full credential lifecycle under QA-004 when an approved credential or transaction-capable database test runner is available; do not create a fake permanent document number solely for smoke testing.
+25. [x] **QA-003 MFA Tests** — the four-role/AAL matrix, server guards, private RLS policies, credential/PDF functions, fresh Owner AAL1 state, verified TOTP enrollment, and 11 sensitive-route denials passed on 2026-08-10. See `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.
+26. **Proceed with QA-002 Verification Privacy Tests and QA-004 full lifecycle** when an approved credential or transaction-capable database test runner is available; do not create a fake permanent document number solely for smoke testing.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.

@@ -471,7 +471,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- `QA-003 MFA Tests`
+- `QA-002 Verification Privacy Tests`
 
 Agent:
 
@@ -483,8 +483,8 @@ Parallel agents:
 
 Owner action needed:
 
-- no new value is required to begin QA-003;
-- QA-001 implementation and current dev acceptance are complete; its full pgTAP execution remains queued for a compatible database runner;
-- QA-002 and QA-004 valid/revoked verification require the first approved test credential or a transaction-capable database test runner;
+- approve the first test learner/document that may consume a permanent number, or provide a transaction-capable database test runner;
+- QA-001 and QA-003 implementation/current dev acceptance are complete; their full pgTAP execution remains queued for a compatible database runner;
+- QA-002 and QA-004 valid/revoked verification require that approved test credential or runner;
 - WF-004 resend is intentionally deferred because managers can correct the learner email and resend manually during the interim period;
-- Google Workspace credentials remain required before real credential-delivery acceptance can be completed, but they do not block QA-003.
+- Google Workspace credentials remain required before real credential-delivery acceptance can be completed under QA-004/QA-005.

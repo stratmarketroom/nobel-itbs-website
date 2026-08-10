@@ -50,6 +50,8 @@ Current implementation notes:
 - `docs/qa/ADM_CRD_001_CREDENTIAL_ADMIN_WORKSPACE_QA_2026-08-09.md`
 - `docs/qa/WF_003_ACTIVATE_AND_EMAIL_QA_2026-08-09.md`
 - `docs/qa/WF_008_PUBLIC_VERIFICATION_QA_2026-08-10.md`
+- `docs/qa/QA_001_RLS_MATRIX_2026-08-10.md`
+- `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`
 - `docs/development/DESIGN_SKILLS_SETUP.md`
 - `docs/development/DOCUMENTATION_MAINTENANCE.md`
 - `docs/development/CONTACT_NOTIFICATIONS.md`
