@@ -66,6 +66,7 @@
     "verify:qa-001:live": "node --env-file=.env.local scripts/verify-qa-001-live.mjs",
     "verify:qa-003": "node scripts/verify-qa-003.mjs",
     "verify:qa-003:live": "node --env-file=.env.local scripts/verify-qa-003-live.mjs",
+    "verify:qa-004:activation-fix": "node scripts/verify-qa-004-activation-fix.mjs",
     "verify:adm-crd-001": "node scripts/verify-adm-crd-001.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",

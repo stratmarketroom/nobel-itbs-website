@@ -206,17 +206,17 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
 
 - [-] Ticket-level migration/static verifiers, lint, TypeScript, builds, browser smoke, and selected RLS/API smoke checks pass.
 - [-] QA-001 aggregate 38-assertion RLS matrix is implemented for all 36 public tables, four roles, service-only RPCs, and private Storage; the live anonymous boundary passed 18 public reads, 18 private denials, and two RPC denials. Earlier authenticated role evidence was reconciled; only execution of the Docker-dependent full pgTAP file remains.
-- [ ] QA-002 credential verification privacy tests after credentials exist.
+- [x] QA-002 valid and revoked verification privacy passed with the first approved retained credential by both document number and QR token; revoked output contains status only.
 - [x] QA-003 aggregate 27-assertion MFA matrix and fresh Owner AAL1 live test passed: verified TOTP enrollment was detected and all 11 sensitive admin routes returned explicit MFA/AAL2 denials without mutation. Existing AAL2 role/module evidence was reconciled; see `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.
-- [ ] QA-004 end-to-end learner → credential → PDF → activation → verify → revoke flow.
+- [x] QA-004 learner → credential → private PDF → activation → valid verification → irreversible revoke → status-only revoked verification passed with `NITBS-C-2027-123450`.
 - [ ] QA-005 production environment, credential Gmail delivery, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
 - [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
 
-Stage status: **foundation checks active; launch QA not started**.
+Stage status: **QA-001..004 are accepted at the current dev level; QA-005 production/launch readiness, full pgTAP execution, and cross-browser/accessibility acceptance remain open**.
 
 ## Verified Current Dev Baseline
 
-- [x] One ordered chain of 45 local migrations matches the remote dev history.
+- [x] One ordered chain of 46 local migrations matches the remote dev history.
 - [x] Pre-integration dev backup exists in the ignored backup directory.
 - [x] Public reads use Supabase by default; seed content is explicit offline mode only.
 - [x] Dev data: 3 languages, 3 areas, 3 types, 5 programmes, 5 runs, 5 partners, 3 experts.
@@ -255,6 +255,8 @@ The credential workflow stage is now open; external production integrations rema
 23. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, CRD-001..006, WF-001..003, WF-005..008, and ADM-CRD-001 layers.
 24. [x] **QA-001 RLS Tests** — aggregate coverage now protects all 36 public tables, four roles, MFA/service boundaries, private Storage, and controlled RPCs; non-mutating live anonymous QA passed on 2026-08-10. See `docs/qa/QA_001_RLS_MATRIX_2026-08-10.md`; execute its complete pgTAP file when a compatible database runner is available.
 25. [x] **QA-003 MFA Tests** — the four-role/AAL matrix, server guards, private RLS policies, credential/PDF functions, fresh Owner AAL1 state, verified TOTP enrollment, and 11 sensitive-route denials passed on 2026-08-10. See `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.
-26. **Proceed with QA-002 Verification Privacy Tests and QA-004 full lifecycle** when an approved credential or transaction-capable database test runner is available; do not create a fake permanent document number solely for smoke testing.
+26. [x] **QA-002 / QA-004 first approved credential lifecycle** — Owner-approved `NITBS-C-2027-123450` completed learner → credential → private PDF → activation → valid verification → irreversible revoke → status-only revoked verification by number and QR on 2026-08-10. The activation-manifest exact-key correction was applied to dev. See `docs/qa/QA_002_004_FIRST_CREDENTIAL_LIFECYCLE_2026-08-10.md`.
+27. [x] **Irreversible revoked half** — the retained test credential is permanently revoked; its number remains issued and linked, and public lookup exposes no document details or private reason.
+28. **Proceed with QA-005 Launch Checklist** — production configuration, selected external integrations, canonical-domain verification, backups, analytics/consent, responsive/accessibility/browser acceptance, and final release decision.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.

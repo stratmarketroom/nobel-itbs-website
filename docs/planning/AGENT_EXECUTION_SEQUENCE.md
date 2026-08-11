@@ -471,7 +471,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- `QA-002 Verification Privacy Tests`
+- `QA-005 Launch Checklist`;
 
 Agent:
 
@@ -483,8 +483,8 @@ Parallel agents:
 
 Owner action needed:
 
-- approve the first test learner/document that may consume a permanent number, or provide a transaction-capable database test runner;
+- provide or approve production-only service configuration when its checklist item is reached; do not add Google Workspace, Telegram, analytics, or CAPTCHA credentials before the corresponding launch decision;
 - QA-001 and QA-003 implementation/current dev acceptance are complete; their full pgTAP execution remains queued for a compatible database runner;
-- QA-002 and QA-004 valid/revoked verification require that approved test credential or runner;
+- QA-002 and QA-004 are complete at the current dev level: the retained credential passed valid verification, irreversible revocation, and status-only revoked verification by number and QR;
 - WF-004 resend is intentionally deferred because managers can correct the learner email and resend manually during the interim period;
-- Google Workspace credentials remain required before real credential-delivery acceptance can be completed under QA-004/QA-005.
+- Google Workspace credentials remain required only if real credential-email delivery is enabled and acceptance-tested under QA-005.

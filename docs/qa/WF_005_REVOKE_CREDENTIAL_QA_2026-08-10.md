@@ -57,9 +57,10 @@ The 16-assertion pgTAP contract is committed. Supabase CLI could not execute it 
 
 ## Deviations or Open Questions
 
-- No real credential was revoked during QA. Revocation is destructive and irreversible, and no specific approved `valid` record was authorized as a test target. The first approved real revocation should be used as the operational mutation smoke, including private History/Audit review.
-- Public revoked output remains intentionally absent until WF-008. Its contract must expose status only and must not expose reason, holder, programme, type, date, partner, IDs, or PDF links.
+- The original ticket QA did not revoke a real record because no target had been approved at that time. On 2026-08-10 the Owner explicitly authorized revocation of retained QA credential `NITBS-C-2027-123450`.
+- The live transition passed: credential `revoked`, timestamp and private reason present, number still `issued` and linked, History reason present, and one privacy-minimal Audit event recorded.
+- WF-008 verification by both document number and QR returned revoked status only, without number, holder, programme, type, issue date, private reason, partner data, IDs, or PDF access.
 
 ## Next Dependency
 
-Proceed with `WF-006 Void Pending`: a pending-only irreversible transition that permanently voids its reserved document number with a mandatory reason. WF-004 resend remains deferred until after WF-008 or pre-launch hardening.
+WF-005 now has real operational acceptance evidence. QA-002 and QA-004 are complete; proceed with `QA-005 Launch Checklist`. WF-004 resend remains intentionally deferred to pre-launch hardening.

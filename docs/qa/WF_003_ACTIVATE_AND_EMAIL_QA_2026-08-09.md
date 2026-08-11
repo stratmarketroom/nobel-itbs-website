@@ -64,6 +64,10 @@ Passed:
 
 The isolated 40-assertion pgTAP file is committed. Supabase CLI could not execute it because this machine has no Docker Desktop, even with `--linked`; this is the same documented infrastructure limitation as the full pgTAP suite.
 
+## QA-004 Follow-up — 2026-08-10
+
+The first real retained credential exposed a defect in the original manifest guard: its broad `bytes` text match also rejected the approved `size_bytes` metadata key. Migration `20260810181500_qa_004_fix_activation_manifest_keys.sql` now checks forbidden manifest keys exactly, preserving the Storage/privacy boundary while allowing `size_bytes`. Focused verification, migration parity/push, real activation, number issuance, and valid public verification passed. See `docs/qa/QA_002_004_FIRST_CREDENTIAL_LIFECYCLE_2026-08-10.md`.
+
 ## Deviations and Open Questions
 
 - No real activation was performed because the dev registry has no approved learner credential with an approved primary PDF, and a test activation would consume a permanent document number. The later end-to-end credential flow will exercise the mutation with real approved data.
