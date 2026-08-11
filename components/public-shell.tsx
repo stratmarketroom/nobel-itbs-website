@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { HomeCopy, Locale } from '@/lib/i18n';
 import { localeLinks } from '@/lib/i18n';
+import { HomeVerificationCard } from '@/components/home-verification-card';
 
 type PublicShellProps = {
   copy: HomeCopy;
@@ -10,6 +11,20 @@ type PublicShellProps = {
 
 export function PublicShell({ copy, locale }: PublicShellProps) {
   const visibleNav = copy.nav.filter((item) => item.label !== copy.verify.navLabel);
+  const heroTitleBreakWord: Record<Locale, string> = {
+    en: 'moves',
+    ua: 'рухає',
+    cz: 'vás',
+  };
+  const titleBreakIndex = copy.hero.title.indexOf(heroTitleBreakWord[locale]);
+  const heroTitleLines = titleBreakIndex > 0
+    ? [copy.hero.title.slice(0, titleBreakIndex).trim(), copy.hero.title.slice(titleBreakIndex).trim()]
+    : [copy.hero.title];
+  const mobileHeroTitleLines: Record<Locale, string[]> = {
+    en: ['Education that', 'moves you', 'forward'],
+    ua: ['Освіта, що', 'рухає', 'вперед'],
+    cz: ['Vzdělávání,', 'které vás', 'posouvá'],
+  };
 
   return (
     <main className="home-page">
@@ -29,7 +44,7 @@ export function PublicShell({ copy, locale }: PublicShellProps) {
 
           <div className="header-actions">
             <Link className="verify-nav-button" href={copy.verify.link.href}>
-              {copy.verify.navLabel}
+              Verify
             </Link>
             <nav className="locale-switcher" aria-label={copy.localeLabel}>
               {localeLinks.map((item) => (
@@ -39,12 +54,52 @@ export function PublicShell({ copy, locale }: PublicShellProps) {
               ))}
             </nav>
           </div>
+
+          <details className="mobile-menu">
+            <summary aria-label="Menu">
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+            </summary>
+            <div className="mobile-menu-panel">
+              <nav aria-label={copy.navLabel}>
+                {visibleNav.map((item) => (
+                  <Link key={item.href} href={item.href}>
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+              <Link className="mobile-menu-verify" href={copy.verify.link.href}>
+                Verify
+              </Link>
+              <nav className="mobile-menu-locales" aria-label={copy.localeLabel}>
+                {localeLinks.map((item) => (
+                  <Link key={item.locale} href={item.href} aria-current={item.locale === locale ? 'page' : undefined}>
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          </details>
         </header>
 
         <div className="hero-layout">
           <div className="hero-copy">
             <p className="eyebrow">{copy.hero.eyebrow}</p>
-            <h1 id="home-title">{copy.hero.title}</h1>
+            <h1 id="home-title" aria-label={copy.hero.title}>
+              <span className="hero-title-desktop" aria-hidden="true">
+                {heroTitleLines.map((line, index) => (
+                  <span className="hero-title-line" key={line}>
+                    {line}{index < heroTitleLines.length - 1 ? ' ' : ''}
+                  </span>
+                ))}
+              </span>
+              <span className="hero-title-mobile" aria-hidden="true">
+                {mobileHeroTitleLines[locale].map((line) => (
+                  <span className="hero-title-line" key={line}>{line}</span>
+                ))}
+              </span>
+            </h1>
             <p className="hero-lead">{copy.hero.lead}</p>
             <div className="hero-actions">
               <Link className="button primary" href={copy.hero.cta.href}>
@@ -55,26 +110,7 @@ export function PublicShell({ copy, locale }: PublicShellProps) {
             </div>
           </div>
 
-          <div className="hero-visual" aria-hidden="true">
-            <Image src="/brand/generated/nobel-hero-3d.png" width={840} height={840} alt="" priority />
-          </div>
-
-          <aside className="verify-panel" aria-label={copy.verify.title}>
-            <p className="panel-index">Registry utility</p>
-            <h2>{copy.verify.title}</h2>
-            <p>{copy.verify.body}</p>
-            <form className="verify-mini-form" action={copy.verify.link.href}>
-              <label htmlFor={`document-number-${locale}`}>{copy.verify.inputLabel}</label>
-              <div>
-                <input id={`document-number-${locale}`} name="documentNumber" placeholder={copy.verify.placeholder} />
-                <button type="submit">{copy.verify.submitLabel}</button>
-              </div>
-            </form>
-            <Link className="text-link" href={copy.verify.link.href}>
-              {copy.verify.link.label}
-              <span aria-hidden="true">→</span>
-            </Link>
-          </aside>
+          <HomeVerificationCard copy={copy.verify} locale={locale} />
         </div>
       </section>
 
