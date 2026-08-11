@@ -209,14 +209,20 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
 - [x] QA-002 valid and revoked verification privacy passed with the first approved retained credential by both document number and QR token; revoked output contains status only.
 - [x] QA-003 aggregate 27-assertion MFA matrix and fresh Owner AAL1 live test passed: verified TOTP enrollment was detected and all 11 sensitive admin routes returned explicit MFA/AAL2 denials without mutation. Existing AAL2 role/module evidence was reconciled; see `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.
 - [x] QA-004 learner → credential → private PDF → activation → valid verification → irreversible revoke → status-only revoked verification passed with `NITBS-C-2027-123450`.
-- [ ] QA-005 production environment, credential Gmail delivery, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
+- [ ] QA-005 production environment, approved credential delivery provider, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
+  - [x] Separate `nobel-itbs-prod` Supabase project created in Frankfurt; all 47 migrations, approved seed data, anonymous RLS boundary, and required server reads passed.
+  - [x] Production Supabase secrets are prepared in an ignored local environment file; none are committed.
+  - [ ] Add production-only secrets to Vercel, deploy, and run public/admin smoke tests before connecting the domain.
+  - [ ] Configure production Auth URLs, bootstrap the single Owner, enroll MFA, and repeat protected-route QA.
+  - [ ] Align the approved VEDOS SMTP decision with the v2 documents and WF-003 implementation, then acceptance-test real credential delivery.
+  - [ ] Configure final CTA destinations, Telegram alert, analytics/consent, database plus private-PDF backups, canonical domain, and final responsive/accessibility/browser acceptance.
 - [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
 
 Stage status: **QA-001..004 are accepted at the current dev level; QA-005 production/launch readiness, full pgTAP execution, and cross-browser/accessibility acceptance remain open**.
 
 ## Verified Current Dev Baseline
 
-- [x] One ordered chain of 46 local migrations matches the remote dev history.
+- [x] One ordered chain of 47 local migrations matches both remote dev and production histories.
 - [x] Pre-integration dev backup exists in the ignored backup directory.
 - [x] Public reads use Supabase by default; seed content is explicit offline mode only.
 - [x] Dev data: 3 languages, 3 areas, 3 types, 5 programmes, 5 runs, 5 partners, 3 experts.
@@ -257,6 +263,6 @@ The credential workflow stage is now open; external production integrations rema
 25. [x] **QA-003 MFA Tests** — the four-role/AAL matrix, server guards, private RLS policies, credential/PDF functions, fresh Owner AAL1 state, verified TOTP enrollment, and 11 sensitive-route denials passed on 2026-08-10. See `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.
 26. [x] **QA-002 / QA-004 first approved credential lifecycle** — Owner-approved `NITBS-C-2027-123450` completed learner → credential → private PDF → activation → valid verification → irreversible revoke → status-only revoked verification by number and QR on 2026-08-10. The activation-manifest exact-key correction was applied to dev. See `docs/qa/QA_002_004_FIRST_CREDENTIAL_LIFECYCLE_2026-08-10.md`.
 27. [x] **Irreversible revoked half** — the retained test credential is permanently revoked; its number remains issued and linked, and public lookup exposes no document details or private reason.
-28. **Proceed with QA-005 Launch Checklist** — production configuration, selected external integrations, canonical-domain verification, backups, analytics/consent, responsive/accessibility/browser acceptance, and final release decision.
+28. **Proceed with QA-005 Launch Checklist** — Supabase production foundation is accepted; next configure Vercel production secrets/deployment, Auth/Owner/MFA, selected external integrations, canonical-domain verification, backups, analytics/consent, responsive/accessibility/browser acceptance, and the final release decision.
 
 This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.

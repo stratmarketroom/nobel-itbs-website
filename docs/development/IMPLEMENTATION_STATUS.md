@@ -1,14 +1,14 @@
 # Implementation Status
 
-Last updated: 2026-08-10
+Last updated: 2026-08-11
 
 This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
 ## Current Branch
 
-- Active branch: `codex/stabilize-content-integration`
-- The stabilization work is committed locally as separate documentation, content, programme, partner/expert/contact, Supabase integration, and CNT-002..005 commits.
-- The branch has not been pushed or merged.
+- The stabilization branch was merged into `main` through PR #1.
+- Current focused branch: `codex/qa-005-production-grants`.
+- No direct push to `main` is used.
 
 ## Supabase Dev Project
 
@@ -18,7 +18,7 @@ This is the current implementation record. The v2 product and technical specific
 - Local secrets remain in ignored environment files and must never be committed.
 - A pre-integration backup is available under the ignored `backups/supabase/2026-08-05-pre-content/` directory.
 
-All 45 local SQL migrations through `20260810130000_wf_008_public_verification.sql` are applied to the remote dev database. The local and remote migration histories match.
+All 47 local SQL migrations through `20260811120000_qa_005_restore_partnership_service_grants.sql` are applied to the remote dev and production databases. Both local/remote migration histories match. The separate `nobel-itbs-prod` project is in Frankfurt; its secrets remain outside Git.
 
 ## Implemented Foundation
 
@@ -77,7 +77,7 @@ All 45 local SQL migrations through `20260810130000_wf_008_public_verification.s
 - Pending Credential live QA passed: Content Manager/AAL1/anonymous denied, manual override restricted, AAL2 Super Admin creation and exact Set reuse work, reserved numbers link correctly, History/Audit exclude protected token material, all QA records rolled back, and automatic `000001` remains unused; local unauthenticated API smoke returns `401`.
 - Credential PDF Workflow live QA passed: 16 database role/lifecycle/primary/reason/privacy checks and 6 private Storage upload/signed URL/replacement/MIME checks passed; rollback/cleanup completed and automatic `000001` remains unused.
 - Credential Admin Workspace QA passed in an authenticated Owner/AAL2 browser session: empty real registries, five programme/two document-type references, pending-form guards, Sets/Number Log navigation, clean console, responsive 390 px layout without horizontal overflow, and `401` on all new list APIs without a Bearer token. No test record was created, so the automatic number remains unused.
-- WF-003 and WF-005..008 static verifiers, ADM-CRD-001/PCE-004 regressions, TypeScript, ESLint, and production build pass. Additive migration pushes succeeded, and local/remote histories match at 45 migrations.
+- WF-003 and WF-005..008 static verifiers, ADM-CRD-001/PCE-004 regressions, TypeScript, ESLint, and production build pass. Additive migration pushes succeeded, and dev/production histories match all 47 local migrations.
 - WF-003 authenticated Owner/AAL2 browser smoke passed after migration: the real credential workspace loads without alerts, exposes the protected registry and guarded pending form, and creates no test record. The activation mutation was intentionally not exercised because no approved credential/PDF exists and document numbers are permanent; unauthenticated activation returns `401`.
 - All nine legal routes render full localized documents; their metadata is `noindex, follow`.
 - WF-008 real dev smoke passed for unknown number/token parity, no-store/noindex headers, anonymous direct-access denial, the 30-per-15-minute database limit, EN/UA/CZ routing, localized manual UI, 390 px responsive layout without horizontal overflow, and clean browser console. The dev registry is empty, so valid/revoked rendering awaits the first approved lifecycle E2E rather than consuming a fake permanent number.
@@ -92,7 +92,7 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 - The AI Production partner URL is intentionally pending; its CTA currently uses the question fallback.
 - The For Organisations application URL remains an Owner/Super Admin setting and needs its final destination.
 - Contact notifications will use a one-way Telegram bot and private manager chat under deferred pre-launch ticket PCE-005; Google Workspace is not required for contact alerts.
-- Google Workspace service-account/domain-delegation credentials and the delegated Nobel ITBS sender remain required for the first real credential PDF delivery acceptance test. WF-003 records `not_configured` without undoing activation until they are supplied.
+- The Owner approved VEDOS SMTP for credential delivery instead of Google Workspace. Current v2 documents and WF-003 code still use Google Workspace; align them in a separate scoped ticket before the first real delivery acceptance test. Until then, WF-003 records `not_configured` without undoing activation.
 - Production forms require a strong rate-limit secret. CAPTCHA is intentionally conditional and remains unconfigured until abuse signals justify enabling it.
 - Production verification should use an independent `CREDENTIAL_VERIFICATION_RATE_LIMIT_SECRET`; local development has an ignored dev-only value and the server supports the existing contact secret only as a backward-compatible fallback.
 - Czech native-language review remains an external editorial check where noted in the approved source files.
@@ -100,7 +100,7 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 ## Important Remaining Product Work
 
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
-- Telegram contact-alert delivery remains a deferred pre-launch check. Google Workspace remains required later for credential PDF delivery only. CAPTCHA provider setup is deferred by product decision and is not a blocker.
+- Telegram contact-alert delivery remains a deferred pre-launch check. Credential PDF delivery will move from the current Google Workspace implementation to the Owner-approved VEDOS SMTP path in a separate scoped alignment ticket. CAPTCHA provider setup is deferred by product decision and is not a blocker.
 - Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001..003, WF-005..008, and ADM-CRD-001 accepted at the documented dev level. WF-004 resend remains deferred to pre-launch because managers can correct an address and resend manually.
-- The next focused ticket is QA-001 RLS Tests. QA-002 verification privacy and the first approved full credential lifecycle in QA-004 follow when an approved credential or transaction-capable database test runner is available. Telegram PCE-005, real Google Workspace delivery acceptance, analytics, CAPTCHA if later enabled, and final external CTA values remain pre-launch/operational work.
-- Launch hardening, production environment setup, full role/RLS QA, responsive QA, and email end-to-end tests remain ahead; CAPTCHA testing applies only if the conditional control is enabled later.
+- QA-001..004 are accepted at the documented dev level. QA-005 production foundation now has a separate Supabase project, 47/47 migration parity, approved seed data, anonymous RLS smoke, and required server-table access. Telegram PCE-005, VEDOS delivery alignment/acceptance, analytics, CAPTCHA if later enabled, and final external CTA values remain pre-launch work.
+- Next configure the existing Vercel project with production secrets and deploy without connecting the public domain. Production Auth/Owner/MFA, backup coverage, full responsive/accessibility/browser QA, and external integrations still remain before launch.
