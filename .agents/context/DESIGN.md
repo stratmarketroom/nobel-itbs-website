@@ -16,7 +16,7 @@ The Nobel ITBS interface should feel:
 
 The public site should communicate EU credibility and international professional education. The emotional tone is aspirational: education that moves careers and lives forward, while staying credible, European, and professional.
 
-The design reference in `docs/source/v1/design-concept-site.png` is the approved home-page visual reference. The home page should stay very close to this concept's layout, hierarchy, and premium digital atmosphere, while replacing any v1 scope conflicts with v2-compliant content and behavior.
+The Owner-approved Home composition is defined in `docs/design/HOME_VISUAL_BASELINE.md` and preserved in Git commit `24f728b` on branch `codex/cnt-003-approved-home-visual-baseline`. Archived v1 imagery may inform historical atmosphere only and must not override that baseline.
 
 Approved design direction:
 
@@ -104,17 +104,17 @@ Core logo colors:
 
 Recommended palette behavior:
 
-- public site: deep blue/near-black hero foundations, Nobel blue identity, concept-inspired primary CTA treatment, restrained gold as a fine detail only, restrained green/red accents by context;
+- public site: deep blue/near-black hero foundations, Nobel blue identity, baseline-aligned primary CTA treatment, restrained gold as a fine detail only, restrained green/red accents by context;
 - admin: tinted light neutrals, Nobel blue as brand anchor, low-chroma status colors, minimal decorative color;
 - verification: status color must be semantic and accessible, not only brand-colored;
-- avoid a purple-only interface. Purple may appear as a legacy accent from the concept, but the real brand system should be led by Nobel blue and supported by gold/green/red with discipline.
+- avoid a purple-only interface. Purple may appear as a legacy accent, but the real brand system should be led by Nobel blue and supported by gold/green/red with discipline.
 
 Approved color rules:
 
 - use a deep Nobel premium base: near-black, midnight, deep blue, and Nobel blue;
 - do not use light yellow buttons or large light yellow surfaces as a main UI pattern;
 - use gold only as restrained premium detailing: thin lines, small highlights, borders, credential/trust accents;
-- primary CTA may borrow energy from the design concept, but must stay adapted to the Nobel palette;
+- primary CTA should follow the approved Home baseline and stay adapted to the Nobel palette;
 - secondary CTA treatment is not approved yet and should be designed separately.
 
 Never use pure `#000` or `#fff` as authored design tokens in new UI. Use tinted neutrals. Logo source files may contain black/white paths, but interface tokens should remain softened.
@@ -152,38 +152,30 @@ Required public signals:
 - clear path to Programmes;
 - utility path to Verify a Document.
 
-Home page concept alignment:
+Home page baseline alignment:
 
-- reproduce the design concept's page structure as closely as practical;
-- keep the large dark premium hero on the left;
-- use a large sculptural/3D-feeling Nobel `N` as the main hero visual object;
-- keep the right-side light `Verify a Document` column/block on the first screen;
-- keep the concept's programme-card section rhythm below the hero;
-- keep a dark trust strip, partner/accreditation row, organisation block, digital badge/credential storytelling block, certificate CTA block, and dark footer in the same overall spirit;
-- preserve the concept's premium digital blue/violet atmosphere where it supports the approved Nobel palette;
-- use a primary CTA style close to the concept, adapted to the approved palette;
-- do not replace the concept with a generic SaaS hero, generic course grid, or purely abstract wireframe.
+- use one dark, full-width premium first viewport rather than a dark hero plus a separate light side column;
+- use a large left-aligned localized heading, concise supporting copy, and one programme-catalogue CTA;
+- place a compact dark verification card inside the hero composition;
+- provide document-number and QR tabs without exposing verification internals;
+- make `Verify` a prominent header/nav utility action;
+- use the full Nobel ITBS identity in the header and an intentional mobile menu;
+- preserve deep Nobel blue, tinted dark neutrals, restrained gold detail, confident typography, and high contrast;
+- do not use a large decorative 3D Nobel `N` as the hero object;
+- do not use a separate light `Verify a Document` panel;
+- do not add a hero programme slider or a second competing hero CTA;
+- do not replace the baseline with a generic SaaS hero, generic course grid, or purely abstract wireframe.
 
-Home hero and slider rules:
-
-- the home first screen may use a premium brand/programme slider within the concept-like hero composition;
-- use one brand/institutional slide and five programme slides;
-- brand slide CTA: `View programmes`;
-- programme slide CTA: `Apply now`;
-- do not show a global `Apply now` on the general home hero;
-- use only one CTA button per slide;
-- do not use a secondary hero button;
-- make `Verify` a prominent header/nav button;
-- include the compact verification block on the first screen in the role and placement style of the design concept;
-- verification should not compete with the slide CTA.
-
-Required v2 adaptations to the concept:
+Required v2 adaptations and integration rules:
 
 - remove News/Blog navigation and sections;
 - no public PDF download affordance;
 - no public name/surname verification;
 - no partner/accreditation information inside credential verification results;
 - replace v1 programme groups with Release 1-approved programme areas and flagship programmes.
+- load Home content and programme facts from the current structured Supabase-backed model;
+- localize every visible action and label in EN, UA, and CZ;
+- preserve the existing WF-008 server-mediated verification flow.
 
 Programme-first direction:
 
@@ -197,15 +189,6 @@ Programme-first direction:
 - catalogue has no visible filters in Release 1;
 - programme sales pages must use `Apply now` as the primary CTA;
 - programme pages use one main CTA; secondary CTA is not approved yet.
-
-Home hero programme slides:
-
-- first slide: brand/institutional intro with `View programmes`;
-- AI Production;
-- General Psychology;
-- Child Psychology;
-- Neuroplastic Reconstruction;
-- Space Business.
 
 Programmes overview:
 
@@ -364,7 +347,7 @@ Motion should feel precise and confident.
 Draft-approved motion direction:
 
 - subtle premium transitions;
-- controlled hero slider;
+- no hero slider in the approved Home baseline;
 - no flashy animation;
 - final behavior should be reviewed in prototype.
 
