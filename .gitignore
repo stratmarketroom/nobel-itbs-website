@@ -8,6 +8,8 @@ out/
 dist/
 coverage/
 backups/
+# Generated credential/document artifacts can contain private verification data.
+output/
 *.tsbuildinfo
 
 .DS_Store
