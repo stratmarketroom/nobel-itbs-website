@@ -50,13 +50,21 @@ Fields:
 
 - slug;
 - title;
-- summary;
+- catalogue description;
+- compact duration, learning volume, delivery, and instruction-language facts;
+- completion-document summary;
 - area;
 - type;
 - format;
-- language summary;
+- instruction-language codes, kept separate from the website locale;
 - enrolment badge;
+- current run start date where applicable;
 - featured image/media if available.
+
+The public endpoint accepts `locale=en|ua|cz`, falls back to published English
+when a requested translation is missing or draft, and returns programmes in
+manager-controlled `catalogue_sort_order`. Release 1 does not return pricing in
+the catalogue projection.
 
 ### Public Programme Detail
 
@@ -83,7 +91,17 @@ The backend resolves slug against shared programme namespace:
 - programme type landing page;
 - redirect.
 
+A historical published slug returns HTTP `301` directly to the same public API
+path with the entity's current slug. The `locale` query parameter is preserved,
+and redirect chains are not returned.
+
 Slug collisions are forbidden in admin.
+
+The response identifies the resolved entity kind. Programme responses include
+structured sales sections, calculated run presentation, optional active pricing
+options, and the external/contact CTA destination. Area and type responses
+include structured introduction content and an automatic list of matching
+published programmes.
 
 ## 4. Contact API
 
@@ -107,13 +125,39 @@ For programme question:
 - request includes programme slug/id context from page;
 - server stores linked programme.
 
+The public form sends the programme slug, website locale, name, email, optional
+phone, message, and required privacy acknowledgement. The server resolves the
+published programme ID; the visitor never selects or submits an internal UUID.
+Successful creation returns `201` without returning the submission ID. Invalid
+fields return `400`, an unknown programme returns `404`, and a rate-limited
+request returns `429` with `Retry-After`.
+
 Processing:
 
 - validate;
 - rate limit;
 - CAPTCHA where required;
 - save submission;
-- send notification to general Nobel ITBS email.
+- optionally send a privacy-minimised Telegram notification to the manager chat.
+
+Notification sending is attempted only after the submission is stored. A
+temporary Telegram delivery failure must not discard an accepted submission or
+expose provider errors in the public response. The Telegram message contains no
+visitor message, email, or phone; managers open the protected admin area to read
+the submission. The Telegram provider is intentionally not configured until the
+pre-launch integration ticket.
+
+Admin operations:
+
+- `GET /api/v1/admin/contact-submissions` lists submissions and supports
+  optional `status` and `type` filters;
+- `GET /api/v1/admin/contact-submissions/{id}` returns the private detail for an
+  authorized manager;
+- `PATCH /api/v1/admin/contact-submissions/{id}` changes only the Release 1
+  status.
+
+These routes require an active Owner, Super Admin, or Credential Manager
+session with satisfied MFA. Content Manager has no access.
 
 ## 5. Public Verification API
 
@@ -257,7 +301,41 @@ Capabilities:
 - publish/draft translation status per language;
 - manage sales sections;
 - manage pricing options;
-- manage Leeloo URLs.
+- manage Leeloo and partner-site application URLs.
+
+Implemented Release 1 routes:
+
+- `GET|POST /api/v1/admin/programme-areas`;
+- `GET|PATCH|DELETE /api/v1/admin/programme-areas/{id}`;
+- `GET|POST /api/v1/admin/programme-types`;
+- `GET|PATCH|DELETE /api/v1/admin/programme-types/{id}`;
+- `GET|POST /api/v1/admin/programmes`;
+- `GET|PATCH|DELETE /api/v1/admin/programmes/{id}`;
+- `GET|POST /api/v1/admin/programme-runs`;
+- `GET|PATCH|DELETE /api/v1/admin/programme-runs/{id}`;
+- `GET|POST /api/v1/admin/programme-pricing-options`;
+- `GET|PATCH|DELETE /api/v1/admin/programme-pricing-options/{id}`;
+- `GET /api/v1/admin/programme-slug-redirects`.
+
+Record creation uses the entity fields directly. Update requests use exactly one
+of `record` or `translation`, so a failed translation publication cannot silently
+partially apply a record update. Slug redirects are read-only because published
+slug changes create and collapse redirect rows through database triggers.
+
+### Partner and Expert manager routes
+
+Content Manager, Super Admin, and Owner can manage public partner and expert
+cards and their EN/UA/CZ translation states through:
+
+- `GET|POST /api/v1/admin/partners`;
+- `GET|PATCH|DELETE /api/v1/admin/partners/{id}`;
+- `GET|POST /api/v1/admin/experts`;
+- `GET|PATCH|DELETE /api/v1/admin/experts/{id}`.
+
+Record creation uses direct entity fields. Updates use exactly one of `record`
+or `translation`. Public assets remain approved WebP files under the existing
+`/partners/` and `/experts/` paths; asset upload/storage expansion is not part
+of this manager API.
 
 ## 9. Admin Learner API
 
@@ -275,6 +353,21 @@ Duplicate email/phone returns conflict with existing learner reference.
 Content Manager has no access.
 
 ## 10. Admin Credential API
+
+### Manager Workspace Reads and Notes
+
+Implemented protected routes for Credential Manager/Super Admin/Owner with MFA:
+
+- `GET /api/v1/admin/credentials` — credential list plus safe creation references;
+- `GET /api/v1/admin/credentials/{id}` — private administrative detail, current PDFs, append-only History, and controlled Notes;
+- `GET /api/v1/admin/credential-sets` — read-only status-free grouping list;
+- `GET /api/v1/admin/document-numbers` — read-only permanent number log;
+- `POST /api/v1/admin/credentials/{id}/notes`;
+- `PATCH|DELETE /api/v1/admin/credentials/{id}/notes/{noteId}`.
+
+These responses never include verification-token hashes/ciphertext/raw values,
+private Storage paths, or PDF bytes. Note ownership and soft-delete rules remain
+enforced by the CRD-006 controlled functions and forced RLS.
 
 ### Create Pending Credential
 
@@ -401,13 +494,15 @@ Raw token, MFA secrets, private file contents are never returned.
 
 ## 13. Rate Limiting and CAPTCHA
 
-Required for:
+Rate limiting is required for:
 
 - contact submissions;
 - public manual verification;
 - suspicious repeated verification attempts.
 
-CAPTCHA provider should remain replaceable.
+CAPTCHA is an optional adaptive control. It is not shown for every ordinary
+contact submission and is not required to be configured at launch. If later
+enabled for suspicious or abusive traffic, the provider must remain replaceable.
 
 ## 14. Acceptance Criteria
 
@@ -420,6 +515,5 @@ API v2 is implemented when:
 - Owner-only user actions are enforced;
 - Content Manager cannot access restricted modules;
 - Credential Manager cannot edit programmes;
-- programme sales/pricing/Leeloo APIs support Release 1 flows;
+- programme sales/pricing/application APIs support Leeloo and partner-site Release 1 flows;
 - public routes do not expose internal IDs or raw errors.
-

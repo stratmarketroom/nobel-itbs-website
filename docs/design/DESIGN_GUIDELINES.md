@@ -91,7 +91,7 @@ Programme pages must be sales-oriented.
 
 Required behaviour:
 
-- primary CTA to Leeloo;
+- primary CTA to the configured Leeloo or partner website;
 - secondary CTA Ask a question;
 - pricing block only if pricing exists;
 - blocks can hide when empty;
@@ -197,4 +197,3 @@ Programme enrolment badge:
 - Enrolment open / ongoing;
 - Coming soon;
 - Enrolment inactive.
-

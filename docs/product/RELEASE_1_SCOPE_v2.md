@@ -9,7 +9,7 @@ Based on: original v1 specifications + Product Decisions / Spec Alignment v2
 Release 1 must launch a professional, content-managed education platform that:
 
 - presents Nobel ITBS as a Czech/EU professional education company;
-- promotes programmes and drives applications/payments through Leeloo;
+- promotes programmes and drives applications/payments through Leeloo or approved partner websites;
 - manages programmes, content, learners, and credentials from an admin panel;
 - issues verifiable credentials with QR/document-number verification;
 - sends private credential PDFs to learners through Gmail/Google Workspace.
@@ -26,7 +26,9 @@ Release 1 must launch a professional, content-managed education platform that:
 - About Us;
 - Partnerships;
 - For Organisations;
-- Legal pages;
+- three mandatory full legal pages: Privacy Policy, Terms of Use (Public
+  Contract), and Refund Policy;
+- minimal localized cookie-consent block with accept/decline actions;
 - Verify document pages;
 - Contact / programme question forms.
 
@@ -46,7 +48,7 @@ Release 1 must launch a professional, content-managed education platform that:
 - Programme runs;
 - structured sales content sections;
 - pricing options;
-- Leeloo URLs at programme/pricing option level;
+- vendor-neutral external application URLs at programme/run/pricing-option level;
 - automatic enrolment badge with admin correction ability;
 - SEO landing pages under `/programmes/[slug]`;
 - slug uniqueness and redirects.
@@ -116,7 +118,7 @@ Release 1 must launch a professional, content-managed education platform that:
 
 ### Integrations
 
-- Leeloo outbound funnels;
+- Leeloo outbound funnels and approved programme partner websites;
 - Gmail/Google Workspace sending;
 - analytics events for CTA/contact/verification basics;
 - private Supabase Storage for credential PDFs.
@@ -156,7 +158,7 @@ Release 1 is successful when:
 - all core public pages are content-managed;
 - at least EN content can be published, with UA/CZ fallback behavior;
 - programmes can be published as sales pages;
-- Leeloo CTAs work from programme pages and pricing options;
+- configured Leeloo or partner-site CTAs work from programme pages and pricing options;
 - learners and credentials can be managed by authorized admins;
 - credential number and QR are generated before activation;
 - credential PDF files can be uploaded and emailed;

@@ -27,6 +27,50 @@ Current planning baseline:
 - `docs/planning/IMPLEMENTATION_PLAN_RELEASE_1.md`
 - `docs/planning/CODEX_TICKET_PACK_v2.md`
 
+Current implementation notes:
+
+- `docs/development/IMPLEMENTATION_STATUS.md`
+- `docs/development/SUPABASE_LOCAL_SETUP.md`
+- `docs/development/MIGRATION_STANDARDS.md`
+- `docs/qa/AUTH-007_QA_REVIEW_2026-07-27.md`
+- `docs/qa/STAGE_2_4_E2E_RLS_QA_2026-08-06.md`
+- `docs/qa/PCE_004_CONTACT_OPERATIONS_QA_2026-08-06.md`
+- `docs/qa/LRN_001_LEARNER_CORE_QA_2026-08-07.md`
+- `docs/qa/LRN_002_LEARNER_EMAILS_QA_2026-08-07.md`
+- `docs/qa/LRN_003_LEARNER_PHONES_QA_2026-08-07.md`
+- `docs/qa/LRN_004_LEARNER_ADMIN_UI_QA_2026-08-07.md`
+- `docs/qa/CRD_001_CREDENTIAL_TYPES_QA_2026-08-07.md`
+- `docs/qa/CRD_002_CREDENTIAL_SETS_QA_2026-08-07.md`
+- `docs/qa/CRD_003_DOCUMENT_NUMBER_LOG_QA_2026-08-08.md`
+- `docs/qa/CRD_004_CREDENTIALS_QA_2026-08-08.md`
+- `docs/qa/CRD_005_CREDENTIAL_FILES_QA_2026-08-08.md`
+- `docs/qa/CRD_006_CREDENTIAL_HISTORY_NOTES_QA_2026-08-08.md`
+- `docs/qa/WF_001_CREATE_PENDING_CREDENTIAL_QA_2026-08-09.md`
+- `docs/qa/WF_002_MANAGE_CREDENTIAL_FILES_QA_2026-08-09.md`
+- `docs/qa/ADM_CRD_001_CREDENTIAL_ADMIN_WORKSPACE_QA_2026-08-09.md`
+- `docs/qa/WF_003_ACTIVATE_AND_EMAIL_QA_2026-08-09.md`
+- `docs/qa/WF_008_PUBLIC_VERIFICATION_QA_2026-08-10.md`
+- `docs/qa/QA_001_RLS_MATRIX_2026-08-10.md`
+- `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`
+- `docs/development/DESIGN_SKILLS_SETUP.md`
+- `docs/development/DOCUMENTATION_MAINTENANCE.md`
+- `docs/development/CONTACT_NOTIFICATIONS.md`
+
+Current preparation-stage working documents:
+
+- `docs/preparation/PREPARATION_STAGE_PLAN.md`
+- `docs/preparation/SEO_PREPARATION_BRIEF.md`
+- `docs/preparation/UI_DESIGN_SYSTEM_BRIEF.md`
+- `docs/preparation/CONTENT_AND_MATERIALS_INVENTORY.md`
+- `docs/preparation/RELEASE_1_SEO_URL_MAP.md`
+- `docs/preparation/SEO_OG_METADATA_REGISTER.md`
+- `docs/preparation/SEO_TECHNICAL_PUBLICATION_SPEC.md`
+- `docs/preparation/SYSTEM_AND_FORM_COPY.md`
+- `docs/preparation/LOCALIZATION_PARITY_QA_2026-07-31.md`
+- `docs/preparation/programmes/PROGRAMME_SOURCE_AUDIT.md`
+- `docs/preparation/programmes/UA_PROGRAMME_MASTER_COPY.md`
+- `docs/preparation/programmes/PROGRAMME_APPROVAL_MATRIX.md`
+
 The v2 documents reflect product-owner decisions made after reviewing the original v1 specification pack.
 
 Original v1 source materials are archived in:

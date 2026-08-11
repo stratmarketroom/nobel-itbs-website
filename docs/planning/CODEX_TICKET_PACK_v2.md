@@ -143,19 +143,24 @@ PRG-005 Pricing Options
 
 - flexible pricing options;
 - language/currency support;
-- Leeloo fallback.
+- Leeloo/partner-site application fallback.
 
 PRG-006 Programme Catalogue
 
 - simple grid/list;
 - no visible filters;
-- fields ready for future filters.
+- fields ready for future filters;
+- manager-controlled catalogue order;
+- localized comparison facts and document summary;
+- no pricing in the catalogue projection.
 
 PRG-007 SEO Landing Pages
 
 - area/type landing pages;
 - shared `/programmes/[slug]` namespace;
-- slug collision prevention.
+- programme detail rendering through the same namespace resolver;
+- slug collision prevention;
+- localized canonical, hreflang, and Open Graph metadata.
 
 PRG-008 Slug Redirects
 
@@ -188,7 +193,17 @@ PCE-004 Contact Submissions
 
 - new/processed/archived;
 - permissions;
-- notification email.
+- protected admin as source of truth;
+- notification channel contract remains non-blocking.
+
+PCE-005 Telegram Manager Notifications (deferred until pre-launch)
+
+- one-way Telegram Bot API notification after successful storage;
+- server-only bot token and manager chat ID;
+- submission type, locale, optional programme context, timestamp, and protected-admin link only;
+- no visitor message, email, or phone in Telegram;
+- notification failure never rejects or deletes the submission;
+- no webhook or inbound bot workflow in Release 1.
 
 ### Group F - Learners
 
@@ -366,4 +381,3 @@ During Group A, do not implement:
 - email sending;
 - Leeloo;
 - public verification.
-

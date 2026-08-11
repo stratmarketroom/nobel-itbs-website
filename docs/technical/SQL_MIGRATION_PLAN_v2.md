@@ -74,7 +74,7 @@ Seed:
 
 - Business & Management;
 - Technology & Innovation;
-- Human & Behavioral Sciences;
+- Psychology & Human;
 - Certificate programme;
 - Mini-MBA;
 - Professional development course.
@@ -230,4 +230,3 @@ Migration plan is complete when:
 - public verification follows v2 privacy rules;
 - private PDFs are protected;
 - tests cover critical security and lifecycle flows.
-

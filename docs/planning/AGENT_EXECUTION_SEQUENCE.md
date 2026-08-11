@@ -93,7 +93,7 @@ Owns:
 - public verification routes;
 - credential workflows;
 - Gmail/Google Workspace integration;
-- Leeloo CTA support.
+- Leeloo and partner-site CTA support.
 
 Starts after relevant database schema exists.
 
@@ -263,7 +263,7 @@ Orchestrator checks:
 - no public catalogue filters in Release 1;
 - SEO pages under `/programmes/[slug]`;
 - slug collision prevention;
-- primary CTA to Leeloo;
+- primary CTA to the configured Leeloo or partner site;
 - secondary Ask a question form.
 
 ### Phase 5 - Learners
@@ -343,11 +343,11 @@ Tickets:
 - WF-001 Create Pending Credential;
 - WF-002 Upload and Manage PDFs;
 - WF-003 Activate and Email;
-- WF-004 Resend Credential;
 - WF-005 Revoke;
 - WF-006 Void Pending;
 - WF-007 Update Valid Public Data;
-- WF-008 Public Verification.
+- WF-008 Public Verification;
+- WF-004 Resend Credential, deferred by Owner decision until after WF-008 or pre-launch hardening.
 
 Parallel work:
 
@@ -378,19 +378,20 @@ Active agents:
 Tickets:
 
 - PCE-004 Contact Submissions;
-- Gmail integration hardening;
-- Leeloo CTA checks;
+- PCE-005 one-way Telegram manager notifications, deferred until pre-launch;
+- Leeloo and partner-site CTA checks;
 - CAPTCHA/rate limiting.
 
 Owner checkpoint:
 
-- provide production/general email details when needed;
-- provide Leeloo URLs/test funnels when needed.
+- create/approve the Telegram bot and private manager chat when PCE-005 starts;
+- provide Leeloo URLs/test funnels and approved partner-site URLs when needed.
 
 Orchestrator checks:
 
 - Content Manager cannot access submissions;
-- notifications work;
+- Telegram notification failure does not affect stored submissions;
+- Telegram contains no visitor message, email, or phone;
 - no CRM expansion.
 
 ### Phase 9 - QA and Launch Hardening
@@ -470,11 +471,11 @@ The orchestrator controls:
 
 Next ticket:
 
-- `DBF-001 Supabase Foundation`
+- `QA-005 Launch Checklist`;
 
 Agent:
 
-- Foundation / DevOps Agent
+- QA / Security Review Agent
 
 Parallel agents:
 
@@ -482,6 +483,8 @@ Parallel agents:
 
 Owner action needed:
 
-- approve start of DBF-001;
-- approve dependency installation/network access if required by setup.
-
+- provide or approve production-only service configuration when its checklist item is reached; do not add Google Workspace, Telegram, analytics, or CAPTCHA credentials before the corresponding launch decision;
+- QA-001 and QA-003 implementation/current dev acceptance are complete; their full pgTAP execution remains queued for a compatible database runner;
+- QA-002 and QA-004 are complete at the current dev level: the retained credential passed valid verification, irreversible revocation, and status-only revoked verification by number and QR;
+- WF-004 resend is intentionally deferred because managers can correct the learner email and resend manually during the interim period;
+- Google Workspace credentials remain required only if real credential-email delivery is enabled and acceptance-tested under QA-005.

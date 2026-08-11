@@ -146,7 +146,7 @@ Seed:
 
 - `business-management`;
 - `technology-innovation`;
-- `human-behavioral-sciences`.
+- `psychology-human`.
 
 ### `programme_area_translations`
 
@@ -158,8 +158,11 @@ Fields:
 - `title text`;
 - `short_description text`;
 - `intro_content text`;
+- `sections jsonb`; fixed About, Audience, Outcomes, Listing, and Closing CTA blocks;
 - `seo_title text`;
-- `seo_description text`.
+- `seo_description text`;
+- `og_title text`;
+- `og_description text`.
 
 ### `programme_types`
 
@@ -191,9 +194,12 @@ Fields:
 - `slug text unique`;
 - `publication_status programme_publication_status`;
 - `format programme_format`;
-- `default_leeloo_url text`;
-- `enrolment_badge_override text null`;
+- `application_provider programme_application_provider` (`leeloo` or `partner_site`);
+- `application_url text null`;
+- `enrolment_badge_override text null`; allowed keys: `open`, `ongoing`, `coming_soon`, `inactive`;
 - `featured boolean`;
+- `catalogue_sort_order int`;
+- `instruction_language_codes text[]`; ISO 639-1 codes, independent from the website locale;
 - timestamps.
 
 No public visible filters in Release 1, but fields are present for future filters.
@@ -208,6 +214,9 @@ Fields:
 - `title text`;
 - `summary text`;
 - `hero_copy text`;
+- `catalogue_description text`;
+- `catalogue_facts text`;
+- `catalogue_document_summary text`;
 - `sections jsonb`;
 - `seo_title text`;
 - `seo_description text`;
@@ -217,6 +226,13 @@ Fields:
 
 ### `programme_runs`
 
+`programme_run_status`:
+
+- `upcoming`;
+- `open`;
+- `ongoing`;
+- `closed`.
+
 Fields:
 
 - `id uuid`;
@@ -224,10 +240,22 @@ Fields:
 - `status programme_run_status`;
 - `starts_at date null`;
 - `ends_at date null`;
-- `leeloo_url text null`;
+- `application_url text null`;
 - timestamps.
 
 Used to calculate enrolment badge.
+
+Badge mapping:
+
+- `open` run -> `open`;
+- `ongoing` run -> `ongoing`;
+- `upcoming` run -> `coming_soon`;
+- only closed/expired runs or no run -> `inactive`;
+- `enrolment_badge_override`, when set, takes precedence.
+
+`open` and `ongoing` are two labels within the active-enrolment public state.
+`starts_at` is the learning start date and does not by itself mean that
+enrolment is closed before that date.
 
 ### `programme_pricing_options`
 
@@ -235,18 +263,34 @@ Fields:
 
 - `id uuid`;
 - `programme_id uuid`;
-- `language_code text`;
-- `title text`;
 - `price numeric null`;
 - `currency_code text null`;
-- `description text null`;
-- `cta_label text null`;
-- `leeloo_url text null`;
+- `application_url text null`;
 - `sort_order int`;
 - `is_active boolean`;
 - timestamps.
 
-If no active pricing options exist, pricing block is hidden.
+### `programme_pricing_option_translations`
+
+Fields:
+
+- `pricing_option_id uuid`;
+- `language_code text`;
+- `translation_status translation_status`;
+- `title text`;
+- `description text`;
+- `cta_label text`;
+- timestamps.
+
+If no active pricing options exist, pricing block is hidden. Pricing-option and
+run URLs are vendor-neutral external application URLs. The programme-level
+`application_provider` identifies whether the destination is Leeloo or a partner
+website.
+
+The model renders a variable number of tariff cards; programmes may use one,
+two, or three options without schema or layout-data changes. No pricing record
+is required for publication. Partner-managed prices are not duplicated unless
+the product owner explicitly changes the sales model.
 
 ### `programme_slug_redirects`
 
@@ -259,6 +303,10 @@ Fields:
 - `created_at`.
 
 Slug namespace under `/programmes/[slug]` must be unique across programmes, areas, and types.
+
+Cross-entity uniqueness is enforced by database triggers on `programmes`,
+`programme_areas`, and `programme_types`. Individual table unique constraints
+remain in place as a second layer.
 
 ## 7. Partners and Experts
 
@@ -608,4 +656,3 @@ Remove or replace:
 - partner fields in credential verification;
 - single `user_profiles.role`;
 - `/uk` and `/cs` language assumptions.
-
