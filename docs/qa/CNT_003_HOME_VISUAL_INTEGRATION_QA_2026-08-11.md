@@ -43,9 +43,9 @@ The Home page now reads:
 - Dynamic catalogue projection: five published programme cards rendered in EN,
   UA, and CZ.
 
-## Data Conflict Found
+## Data Conflict Resolution
 
-The production Supabase `home` content does not currently match the approved
+The historical production Supabase `home` content did not match the approved
 master-copy documents:
 
 - EN and UA `programme_areas` contain two cards instead of the approved three;
@@ -56,9 +56,11 @@ The malformed values reproduce the output of historical migration
 `20260805120000_cnt_003_public_layout_navigation.sql`. They are not introduced by
 the visual integration.
 
-No fallback business copy was embedded in React to hide this discrepancy. A
-separate forward-only content correction must update production through the
-approved migration/admin workflow before final EN/UA/CZ acceptance.
+No fallback business copy was embedded in React to hide this discrepancy.
+Forward-only migration `20260811130000_cnt_003_correct_home_content.sql` was
+applied to production on 2026-08-11. Live local rendering against production
+data now shows three programme areas, four trust items, four process steps, and
+complete localized verification fields in EN, UA, and CZ.
 
 ## Security Notes
 
@@ -72,8 +74,7 @@ approved migration/admin workflow before final EN/UA/CZ acceptance.
 
 ## Remaining Acceptance
 
-1. Apply and verify the forward-only Home content correction for EN/UA/CZ.
-2. Deploy this branch to Vercel Preview with the production-like environment.
-3. Obtain Owner desktop/mobile acceptance on the corrected three-language
+1. Deploy this branch to Vercel Preview with the production-like environment.
+2. Obtain Owner desktop/mobile acceptance on the corrected three-language
    Preview.
-4. Merge only after those checks; PR #3 remains rejected.
+3. Merge only after those checks; PR #3 remains rejected.
