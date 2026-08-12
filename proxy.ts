@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { htmlLanguageForPathname, htmlLanguageHeader } from '@/lib/content/html-language';
 import { prefixedLocales } from '@/lib/i18n';
 import { getProgrammeSlugRedirect } from '@/lib/programmes/slug-redirects';
 
@@ -17,6 +18,17 @@ function programmeSlugPath(pathname: string): { locale: 'en' | 'ua' | 'cz'; slug
     return { locale: segments[0] as 'ua' | 'cz', slug: segments[2] };
   }
   return null;
+}
+
+function nextWithHtmlLanguage(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(htmlLanguageHeader, htmlLanguageForPathname(request.nextUrl.pathname));
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 export async function proxy(request: NextRequest) {
@@ -49,7 +61,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  return nextWithHtmlLanguage(request);
 }
 
 export const config = {
