@@ -1,6 +1,6 @@
 begin;
 
-select plan(14);
+select plan(15);
 
 select is(
   (
@@ -115,6 +115,23 @@ select ok(
     where page.page_key = 'home' and translation.language_code = 'cz'
   ),
   'Czech Home should expose the fourth trust item'
+);
+
+select is(
+  (
+    select count(*)::integer
+    from public.content_page_translations as translation
+    join public.content_pages as page on page.id = translation.page_id
+    cross join lateral jsonb_path_query_first(
+      translation.sections,
+      '$.blocks[*] ? (@.key == "why_nobel_itbs")'
+    ) as trust(block)
+    where page.page_key = 'home'
+      and translation.language_code in ('en', 'ua', 'cz')
+      and jsonb_array_length(trust.block -> 'cards') = 4
+  ),
+  3,
+  'Every Home translation should expose four normalized trust cards'
 );
 
 select is(

@@ -1,5 +1,13 @@
 # CNT-003 Home Content Correction QA
 
+> Audit correction, 2026-08-12: the production migration journal did not
+> contain `20260811130000_cnt_003_correct_home_content.sql`, and the approved
+> 3-area/4-trust payload was not present in production. The production state
+> and remediation are recorded in
+> `CNT_003_PRODUCTION_HOME_REPAIR_QA_2026-08-12.md`. The report below is retained
+> as historical execution context and must not be used as current production
+> acceptance evidence.
+
 Date: 2026-08-11  
 Ticket: CNT-003 Home content correction  
 Migration: `20260811130000_cnt_003_correct_home_content.sql`
