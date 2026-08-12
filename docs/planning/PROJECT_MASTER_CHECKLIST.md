@@ -1,6 +1,6 @@
 # Nobel ITBS Release 1 — Project Master Checklist
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-12
 Baseline: v2 product, technical, security, sitemap, and implementation documents
 Purpose: keep implementation aligned with Release 1 and make the next non-design step unambiguous.
 
@@ -219,7 +219,7 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
   - [ ] Configure production Auth URLs, bootstrap the single Owner, enroll MFA, and repeat protected-route QA.
   - [ ] Align the approved VEDOS SMTP decision with the v2 documents and WF-003 implementation, then acceptance-test real credential delivery.
   - [ ] Configure final CTA destinations, Telegram alert, analytics/consent, database plus private-PDF backups, canonical domain, and final responsive/accessibility/browser acceptance.
-- [-] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA. Home touch targets now pass the local production build at 320 px and 390 px; Vercel Production, accessibility, error-state, and cross-browser acceptance remain open. See `docs/qa/QA_005_MOBILE_TOUCH_TARGETS_2026-08-12.md`.
+- [-] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA. Home and all shared public page shells now pass the local production build at 390 px with `44 x 44` touch targets, localized UA/CZ navigation and footers, and no horizontal overflow; Vercel Production, accessibility, error-state, and cross-browser acceptance remain open. See `docs/qa/QA_005_MOBILE_TOUCH_TARGETS_2026-08-12.md`.
 
 Stage status: **QA-001..004 are accepted at the current dev level; QA-005 production/launch readiness, full pgTAP execution, and cross-browser/accessibility acceptance remain open**.
 

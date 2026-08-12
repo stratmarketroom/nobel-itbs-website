@@ -221,7 +221,7 @@ export function PublicShell({ copy, locale, partners }: PublicShellProps) {
           </nav>
         ))}
         <address>
-          <h2>Contact</h2>
+          <h2>{copy.footer.contactTitle}</h2>
           {copy.footer.contact.map((line) => (
             <span key={line}>{line}</span>
           ))}

@@ -75,6 +75,8 @@ export type HomeCopy = {
   footer: {
     text: string;
     columns: Array<{ title: string; links: NavItem[] }>;
+    legal: NavItem[];
+    contactTitle: string;
     contact: string[];
   };
 };
@@ -134,6 +136,54 @@ const englishFooterColumns = [
   {
     title: 'Verify',
     links: [{ label: 'Verify a Document', href: '/verify' }],
+  },
+];
+
+const ukrainianFooterColumns = [
+  {
+    title: 'Програми',
+    links: [
+      { label: 'Business & Management', href: '/ua/programmes/business-management' },
+      { label: 'Psychology & Human', href: '/ua/programmes/psychology-human' },
+      { label: 'Technology & Innovation', href: '/ua/programmes/technology-innovation' },
+      { label: 'Усі програми', href: '/ua/programmes' },
+    ],
+  },
+  {
+    title: 'Компанія',
+    links: [
+      { label: 'Про нас', href: '/ua/about' },
+      { label: 'Партнерства', href: '/ua/partnerships' },
+      { label: 'Для організацій', href: '/ua/for-organisations' },
+    ],
+  },
+  {
+    title: 'Перевірка',
+    links: [{ label: 'Перевірити документ', href: '/ua/verify' }],
+  },
+];
+
+const czechFooterColumns = [
+  {
+    title: 'Programy',
+    links: [
+      { label: 'Business & Management', href: '/cz/programmes/business-management' },
+      { label: 'Psychology & Human', href: '/cz/programmes/psychology-human' },
+      { label: 'Technology & Innovation', href: '/cz/programmes/technology-innovation' },
+      { label: 'Všechny programy', href: '/cz/programmes' },
+    ],
+  },
+  {
+    title: 'Společnost',
+    links: [
+      { label: 'O nás', href: '/cz/about' },
+      { label: 'Partnerství', href: '/cz/partnerships' },
+      { label: 'Pro organizace', href: '/cz/for-organisations' },
+    ],
+  },
+  {
+    title: 'Ověření',
+    links: [{ label: 'Ověřit dokument', href: '/cz/verify' }],
   },
 ];
 
@@ -231,6 +281,12 @@ export const homeCopy: Record<Locale, HomeCopy> = {
     footer: {
       text: 'Professional education that empowers you to grow, lead, and make an impact.',
       columns: englishFooterColumns,
+      legal: [
+        { label: 'Privacy Policy', href: '/privacy-policy' },
+        { label: 'Terms of Use', href: '/terms-of-use' },
+        { label: 'Refund Policy', href: '/refund-policy' },
+      ],
+      contactTitle: 'Contact',
       contact: ['Nobel ITBS s.r.o.', 'Praha, Czech Republic', 'info@nobel-itbs.eu'],
     },
   },
@@ -326,7 +382,13 @@ export const homeCopy: Record<Locale, HomeCopy> = {
     },
     footer: {
       text: 'Професійна освіта, що допомагає зростати, вести й впливати.',
-      columns: englishFooterColumns,
+      columns: ukrainianFooterColumns,
+      legal: [
+        { label: 'Політика конфіденційності', href: '/ua/privacy-policy' },
+        { label: 'Умови використання', href: '/ua/terms-of-use' },
+        { label: 'Політика повернення коштів', href: '/ua/refund-policy' },
+      ],
+      contactTitle: 'Контакти',
       contact: ['Nobel ITBS s.r.o.', 'Praha, Czech Republic', 'info@nobel-itbs.eu'],
     },
   },
@@ -422,7 +484,13 @@ export const homeCopy: Record<Locale, HomeCopy> = {
     },
     footer: {
       text: 'Profesní vzdělávání, které pomáhá růst, vést a mít dopad.',
-      columns: englishFooterColumns,
+      columns: czechFooterColumns,
+      legal: [
+        { label: 'Zásady ochrany osobních údajů', href: '/cz/privacy-policy' },
+        { label: 'Podmínky použití', href: '/cz/terms-of-use' },
+        { label: 'Zásady vrácení peněz', href: '/cz/refund-policy' },
+      ],
+      contactTitle: 'Kontakt',
       contact: ['Nobel ITBS s.r.o.', 'Praha, Czech Republic', 'info@nobel-itbs.eu'],
     },
   },

@@ -15,7 +15,6 @@ type PartnershipsPageProps = {
 };
 
 const localeLabels: Record<ContentLocale, string> = { en: 'EN', ua: 'UA', cz: 'CZ' };
-const contactLabels: Record<ContentLocale, string> = { en: 'Contact', ua: 'Контакти', cz: 'Kontakt' };
 
 function PageHeader({ locale }: { locale: ContentLocale }) {
   const shell = homeCopy[locale];
@@ -55,7 +54,7 @@ function PageFooter({ locale }: { locale: ContentLocale }) {
         </nav>
       ))}
       <address>
-        <h2>{contactLabels[locale]}</h2>
+        <h2>{shell.footer.contactTitle}</h2>
         {shell.footer.contact.map((line) => <span key={line}>{line}</span>)}
       </address>
     </footer>
