@@ -151,7 +151,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Partners | Protected CRUD API plus responsive record, EN/UA/CZ copy, classification, URL, order, and logo-path UI | Authenticated CRUD/translation/asset-path validation/cleanup smoke passed |
 | Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/cleanup smoke passed |
 | Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, optional CAPTCHA fail-closed contract, audit, and cleanup smoke passed; privacy-minimised Telegram notification is deferred to PCE-005 |
-| Learners | Private identity, globally unique contacts, protected API, responsive manager UI, archive workflow, and real linked credential summaries implemented | Stage 5 plus ADM-CRD-001 authenticated smoke passed |
+| Learners | Private identity, globally unique contacts, protected API, responsive manager UI, archive workflow, real linked credential summaries, and controlled list import implemented | LRN-001..005 accepted in dev; production promotion remains part of the normal release path |
 | Credential Types / Sets / Credentials / Number Log | Core schema plus protected manager workspace for pending creation, list/detail, private PDFs, activation, irreversible valid revocation, irreversible pending void with permanent number voiding, controlled valid public-data correction, server-mediated public verification, delivery history, Sets, Number Log, History, and Notes | ADM-CRD-001, WF-003, and WF-005..008 passed at the current dev level; WF-004 is deferred |
 | Email Templates | Private seeded EN/UA credential-delivery templates are implemented and used by activation | Protected editing UI/API and audit smoke remain |
 | Site Settings | Protected API/UI implemented | Authenticated AAL2 save/audit smoke passed; final For Organisations URL remains |
@@ -165,8 +165,9 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 - [x] LRN-002 multiple globally unique learner emails and optional primary email: citext uniqueness, one-primary constraint, forced RLS/MFA, conflict tests, and cleanup.
 - [x] LRN-003 globally unique canonical phones, messenger flags, optional primary phone, forced RLS/MFA, live conflict tests, and cleanup.
 - [x] LRN-004 protected learner API/UI, contact search and management, duplicate navigation, archive workflow, role/MFA and desktop/mobile QA; ADM-CRD-001 later replaced the credential placeholder with real linked summaries.
+- [x] LRN-005 controlled `.xlsx`/`.csv` learner import: template, no-write preview, valid/invalid separation, error CSV, duplicate protection, no overwrite, explicit confirmation, atomic role/MFA-protected persistence, count-only audit, dev migration, live role/MFA verification, and authenticated desktop/mobile acceptance passed. See `docs/qa/LRN_005_LEARNER_LIST_IMPORT_QA_2026-08-12.md`.
 
-Stage status: **complete; LRN-001..004 accepted in dev**.
+Stage status: **LRN-001..005 accepted in dev**.
 
 ## Stage 6 — Credential Core
 
@@ -216,7 +217,7 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
   - [x] Separate `nobel-itbs-prod` Supabase project created in Frankfurt; all 47 migrations, approved seed data, anonymous RLS boundary, and required server reads passed.
   - [x] Production Supabase secrets are prepared in an ignored local environment file; none are committed.
   - [x] Add production-only secrets to Vercel, deploy, and run public Production smoke before connecting the domain; protected admin smoke remains in the next Auth/Owner/MFA item.
-  - [ ] Configure production Auth URLs, bootstrap the single Owner, enroll MFA, and repeat protected-route QA.
+  - [x] Configure production Auth URLs, bootstrap the single Owner, enroll MFA, and repeat protected-route QA; the MFA-verified Owner session and all 11 protected admin modules passed non-mutating Production acceptance on 2026-08-12. See `docs/qa/QA_005_PRODUCTION_OWNER_MFA_ADMIN_2026-08-12.md`.
   - [ ] Align the approved VEDOS SMTP decision with the v2 documents and WF-003 implementation, then acceptance-test real credential delivery.
   - [ ] Configure final CTA destinations, Telegram alert, analytics/consent, database plus private-PDF backups, canonical domain, and final responsive/accessibility/browser acceptance.
 - [-] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA. Vercel Production Chromium acceptance passed across the 27-route EN/UA/CZ mobile matrix and the 18-route desktop matrix, including `44 x 44` touch targets, localized shell, metadata, not-found handling, verification privacy, and no horizontal overflow. Physical-device, full accessibility, and cross-browser acceptance remain open. See `docs/qa/QA_005_MOBILE_TOUCH_TARGETS_2026-08-12.md` and `docs/qa/QA_005_PRODUCTION_PUBLIC_ACCEPTANCE_2026-08-12.md`.
@@ -267,6 +268,8 @@ The credential workflow stage is now open; external production integrations rema
 26. [x] **QA-002 / QA-004 first approved credential lifecycle** — Owner-approved `NITBS-C-2027-123450` completed learner → credential → private PDF → activation → valid verification → irreversible revoke → status-only revoked verification by number and QR on 2026-08-10. The activation-manifest exact-key correction was applied to dev. See `docs/qa/QA_002_004_FIRST_CREDENTIAL_LIFECYCLE_2026-08-10.md`.
 27. [x] **Irreversible revoked half** — the retained test credential is permanently revoked; its number remains issued and linked, and public lookup exposes no document details or private reason.
 28. [x] **CNT-003 Home visual integration and public Production acceptance** — the approved Home, EN/UA/CZ managed content, localized shell, Czech metadata, and mobile touch targets are merged, deployed, and accepted in Vercel Production on 2026-08-12.
-29. **Proceed with production Auth/Owner/MFA and protected admin acceptance** — after that, continue selected external integrations, canonical-domain verification, backups, analytics/consent, physical-device/accessibility/cross-browser acceptance, and the final release decision.
+29. [x] **Production Auth/Owner/MFA and protected admin acceptance** — production Auth URLs, the single active Owner, mandatory MFA, and all 11 protected admin modules passed non-mutating Production acceptance on 2026-08-12. See `docs/qa/QA_005_PRODUCTION_OWNER_MFA_ADMIN_2026-08-12.md`.
+30. [x] **LRN-005 Learner List Import** — the migration is synced to dev; controlled XLSX round trip, CSV preview, role/MFA denials, atomic valid-row import, stale/duplicate rejection, count-only audit, cleanup, and authenticated desktop/mobile acceptance passed on 2026-08-12. See `docs/qa/LRN_005_LEARNER_LIST_IMPORT_QA_2026-08-12.md`.
+31. **Continue operational launch readiness** — align and acceptance-test VEDOS credential delivery, configure final CTA destinations and Telegram contact alerts, define database/private-PDF backups, attach and verify the canonical domain, configure analytics/consent, complete physical-device/accessibility/cross-browser acceptance, and make the final release decision.
 
-The backend, permissions, workflow, public visual baseline, and public Production layer remain accepted at their documented level. Production launch now depends first on Auth/Owner/MFA and protected admin acceptance, followed by the remaining operational launch items.
+The backend, permissions, workflow, public visual baseline, public Production layer, and production Owner/MFA-protected admin are accepted at their documented level. Production launch now depends on the remaining operational integrations, backup/domain setup, and final acceptance items.

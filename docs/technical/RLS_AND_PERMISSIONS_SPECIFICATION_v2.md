@@ -160,6 +160,7 @@ Owner, Super Admin, Credential Manager:
 
 - create/update learners;
 - manage learner emails/phones;
+- preview and atomically import a learner list;
 - view learner credential list.
 
 Content Manager:
@@ -167,6 +168,8 @@ Content Manager:
 - no access.
 
 Duplicate contact checks must not leak data publicly, only in admin context.
+
+The application preview uses the acting administrator's RLS-scoped request client. Final persistence is available only through `public.import_learners(jsonb)`, which is `SECURITY DEFINER`, uses a fixed `search_path`, and invokes the shared role/MFA sensitive-action guard before any write. `anon`, Content Manager, and unauthenticated callers cannot execute the workflow.
 
 ## 8. Credential Permissions
 
@@ -324,4 +327,3 @@ RLS/permissions are accepted when:
 - public verification leaks no private data;
 - private Storage is not public;
 - service role is server-only.
-

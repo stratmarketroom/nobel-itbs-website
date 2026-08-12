@@ -412,6 +412,10 @@ Constraint:
 
 - one primary phone per learner.
 
+### Learner import workflow
+
+`public.import_learners(jsonb)` is a controlled, atomic persistence workflow rather than a new data table. It accepts 1–500 normalized rows, repeats critical value and duplicate checks, creates learner/contact records in one transaction, and rejects the full batch if any submitted row conflicts. Existing learner records are never overwritten. Its Audit Log event is `learners.imported` with the imported count only and no learner personal data.
+
 ## 10. Credentials
 
 ### Enums

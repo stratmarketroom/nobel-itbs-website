@@ -3015,6 +3015,47 @@ h1 span {
   background: oklch(99% 0.004 250);
 }
 
+.learner-import { display: grid; gap: 1rem; border: 1px solid oklch(82% 0.025 250); border-radius: 8px; padding: 1.15rem; background: oklch(98% 0.006 250); }
+.learner-import > header,
+.learner-import-preview section > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.learner-import > header small,
+.learner-import-preview section > header small { color: oklch(47% 0.08 250); font-size: 0.62rem; font-weight: 760; letter-spacing: 0.08em; text-transform: uppercase; }
+.learner-import h2,
+.learner-import h3 { margin: 0.15rem 0 0; color: oklch(23% 0.03 250); }
+.learner-import h2 { font-size: 1.15rem; }
+.learner-import h3 { font-size: 0.9rem; }
+.learner-import p { max-width: 65ch; margin: 0.28rem 0 0; color: oklch(48% 0.022 250); font-size: 0.72rem; line-height: 1.5; }
+.learner-import button { min-height: 2.55rem; border: 1px solid oklch(45% 0.105 250); border-radius: 6px; padding: 0.55rem 0.85rem; background: oklch(42% 0.12 250); color: oklch(98% 0.006 250); font: inherit; font-size: 0.7rem; font-weight: 720; cursor: pointer; }
+.learner-import button.secondary { border-color: oklch(75% 0.025 250); background: transparent; color: oklch(35% 0.055 250); }
+.learner-import button:disabled { cursor: not-allowed; opacity: 0.5; }
+.learner-import-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; overflow: hidden; border: 1px solid oklch(86% 0.016 250); border-radius: 6px; background: oklch(86% 0.016 250); }
+.learner-import-steps span { min-height: 2.55rem; padding: 0.7rem 0.8rem; background: oklch(96.5% 0.009 250); color: oklch(50% 0.022 250); font-size: 0.67rem; font-weight: 680; }
+.learner-import-steps span.current { background: oklch(92.5% 0.03 250); color: oklch(30% 0.085 250); }
+.learner-import-steps span.done { color: oklch(38% 0.075 150); }
+.learner-import-upload { display: grid; grid-template-columns: minmax(14rem, 1fr) auto minmax(16rem, 1fr) auto; gap: 0.8rem; align-items: end; border-block: 1px solid oklch(87% 0.014 250); padding-block: 1rem; }
+.learner-import-upload > div { display: grid; gap: 0.2rem; align-self: center; }
+.learner-import-upload strong { color: oklch(29% 0.03 250); font-size: 0.72rem; }
+.learner-import-upload span { color: oklch(50% 0.02 250); font-size: 0.65rem; line-height: 1.45; }
+.learner-import-upload label { display: grid; gap: 0.35rem; color: oklch(36% 0.03 250); font-size: 0.67rem; font-weight: 680; }
+.learner-import-upload input[type="file"] { min-height: 2.55rem; border: 1px solid oklch(78% 0.02 250); border-radius: 6px; padding: 0.48rem; background: oklch(99% 0.004 250); color: oklch(34% 0.03 250); font: inherit; }
+.learner-import-preview { display: grid; gap: 1rem; }
+.learner-import-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid oklch(85% 0.016 250); border-radius: 6px; }
+.learner-import-summary span { display: grid; gap: 0.14rem; min-height: 4.5rem; align-content: center; padding: 0.75rem 1rem; color: oklch(48% 0.02 250); font-size: 0.65rem; }
+.learner-import-summary span + span { border-left: 1px solid oklch(85% 0.016 250); }
+.learner-import-summary strong { color: oklch(27% 0.035 250); font-size: 1.05rem; }
+.learner-import-summary .valid strong { color: oklch(38% 0.08 150); }
+.learner-import-summary .invalid strong { color: oklch(43% 0.09 28); }
+.learner-import-table { overflow: auto; max-height: 20rem; margin-top: 0.7rem; border: 1px solid oklch(84% 0.018 250); border-radius: 6px; background: oklch(99% 0.004 250); }
+.learner-import-table table { width: 100%; border-collapse: collapse; font-size: 0.67rem; }
+.learner-import-table th { position: sticky; top: 0; padding: 0.7rem; background: oklch(94% 0.014 250); color: oklch(40% 0.03 250); text-align: left; }
+.learner-import-table td { border-top: 1px solid oklch(89% 0.01 250); padding: 0.7rem; color: oklch(42% 0.028 250); vertical-align: top; }
+.learner-import-table td > :is(strong, span, small) { display: block; }
+.learner-import-table td small { margin-top: 0.2rem; color: oklch(52% 0.02 250); }
+.learner-import-all-valid { border-radius: 6px; padding: 0.85rem 1rem; background: oklch(94% 0.025 150); color: oklch(35% 0.07 150) !important; font-weight: 680; }
+.learner-import-preview > footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-top: 1px solid oklch(86% 0.015 250); padding-top: 1rem; }
+.learner-import-preview > footer label { display: flex; max-width: 70ch; align-items: flex-start; gap: 0.55rem; color: oklch(39% 0.025 250); font-size: 0.68rem; line-height: 1.45; }
+.learner-import-preview > footer input { width: 1.1rem; min-height: 1.1rem; flex: 0 0 auto; accent-color: oklch(42% 0.12 250); }
+
 .learner-admin-list {
   min-height: 39rem;
   max-height: calc(100vh - 13rem);
@@ -3142,6 +3183,7 @@ h1 span {
 @media (max-width: 1080px) {
   .learner-admin-toolbar { grid-template-columns: minmax(14rem, 1fr) minmax(9rem, 12rem) auto auto; }
   .learner-admin-toolbar > span { grid-column: 1 / -1; text-align: left; }
+  .learner-import-upload { grid-template-columns: minmax(14rem, 1fr) auto; }
   .learner-contact-row.phone,
   .learner-contact-add.phone { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .learner-contact-row.phone .contact-actions,
@@ -3151,7 +3193,20 @@ h1 span {
 @media (max-width: 760px) {
   .learner-admin-toolbar { grid-template-columns: 1fr 1fr; }
   .learner-admin-toolbar label:first-child { grid-column: 1 / -1; }
+  .learner-admin-toolbar :is(input, select, button) { min-height: 44px; }
   .learner-admin-workspace { display: block; overflow: visible; }
+  .learner-import { padding: 0.9rem; }
+  .learner-import > header,
+  .learner-import-preview section > header,
+  .learner-import-preview > footer { align-items: stretch; flex-direction: column; }
+  .learner-import-steps,
+  .learner-import-summary,
+  .learner-import-upload { grid-template-columns: 1fr; }
+  .learner-import-summary span + span { border-top: 1px solid oklch(85% 0.016 250); border-left: 0; }
+  .learner-import button,
+  .learner-import-upload input[type="file"] { min-height: 44px; }
+  .learner-import-preview > footer label { min-height: 44px; }
+  .learner-import-preview > footer button { width: 100%; }
   .learner-admin-list { min-height: 0; max-height: 18rem; border-right: 0; border-bottom: 1px solid oklch(87% 0.014 250); }
   .learner-form-grid,
   .learner-contact-row,

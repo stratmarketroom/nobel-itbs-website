@@ -145,6 +145,7 @@ Scope:
 - Telegram/Viber/WhatsApp flags;
 - optional Telegram username;
 - learner credential list linked to the protected credential workspace;
+- controlled learner-list import from `.xlsx`/`.csv` with preview, validation, duplicate detection, and an error report;
 - learner permissions.
 
 Acceptance:
@@ -152,6 +153,8 @@ Acceptance:
 - same email cannot belong to two learners;
 - same phone cannot belong to two learners;
 - duplicate contact entry points admin to existing learner;
+- imports save only explicitly confirmed valid rows and never overwrite existing learners;
+- the database repeats critical validation and persists an accepted import atomically;
 - Content Manager cannot access learner data.
 
 ## Stage 6 - Credential Core

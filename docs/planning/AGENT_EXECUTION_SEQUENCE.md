@@ -279,7 +279,8 @@ Tickets:
 - LRN-001 Learner Core;
 - LRN-002 Learner Emails;
 - LRN-003 Learner Phones;
-- LRN-004 Learner Admin UI.
+- LRN-004 Learner Admin UI;
+- [x] LRN-005 Learner List Import — accepted in dev on 2026-08-12; see `docs/qa/LRN_005_LEARNER_LIST_IMPORT_QA_2026-08-12.md`.
 
 Parallel work:
 
@@ -295,6 +296,8 @@ Orchestrator checks:
 - phone uniqueness;
 - primary email;
 - Telegram/Viber/WhatsApp flags;
+- spreadsheet preview and duplicate/error handling before import;
+- atomic confirmed import without overwriting existing learners;
 - Content Manager no access.
 
 ### Phase 6 - Credential Core

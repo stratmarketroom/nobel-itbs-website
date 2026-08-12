@@ -64,7 +64,7 @@ Release 1 must launch a professional, content-managed education platform that:
 
 ### Credential Registry
 
-- Learners with multiple emails/phones;
+- Learners with multiple emails/phones and controlled list import;
 - Credential Sets;
 - Credentials;
 - document number generation;

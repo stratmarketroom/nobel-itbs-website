@@ -46,3 +46,34 @@ export type LearnerConflictReference = {
   id: string;
   displayName: string;
 };
+
+export type LearnerImportRow = {
+  rowNumber: number;
+  latinFirstName: string;
+  latinLastName: string;
+  ukrainianFullName: string;
+  email: string | null;
+  phone: string | null;
+  hasTelegram: boolean;
+  telegramUsername: string | null;
+  hasViber: boolean;
+  hasWhatsapp: boolean;
+  internalNote: string | null;
+};
+
+export type LearnerImportPreviewRow = LearnerImportRow & {
+  issues: string[];
+  valid: boolean;
+};
+
+export type LearnerImportPreview = {
+  fileName: string;
+  totalRows: number;
+  validRows: LearnerImportPreviewRow[];
+  invalidRows: LearnerImportPreviewRow[];
+};
+
+export type LearnerImportResult = {
+  importedCount: number;
+  learnerIds: string[];
+};
