@@ -36,3 +36,4 @@ Current database tests:
 - `database/pce_001_partners.test.sql`
 - `database/pce_002_experts.test.sql`
 - `database/pce_004_contact_submissions.test.sql`
+- `database/lrn_005_learner_import.test.sql`

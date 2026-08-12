@@ -350,6 +350,16 @@ Credential Manager/Super Admin/Owner:
 
 Duplicate email/phone returns conflict with existing learner reference.
 
+### Learner List Import
+
+Implemented protected routes for Credential Manager/Super Admin/Owner with MFA:
+
+- `GET /api/v1/admin/learners/import/template` — controlled `.xlsx` template;
+- `POST /api/v1/admin/learners/import/preview` — in-memory `.xlsx`/`.csv` parsing and preview; no learner data is written;
+- `POST /api/v1/admin/learners/import/commit` — revalidates the submitted valid rows, repeats database conflict checks, then invokes the atomic import workflow.
+
+Limits: 5 MB and 500 data rows per file. Invalid rows are reported separately and are not submitted. Duplicate learner identity, email, or phone is rejected both inside the file and against existing records. Existing records are never updated by the import. A race or data change after preview returns `409` and requires a fresh preview.
+
 Content Manager has no access.
 
 ## 10. Admin Credential API

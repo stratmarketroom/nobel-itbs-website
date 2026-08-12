@@ -35,3 +35,4 @@ Current foundation migrations:
 - `20260804180000_pce_001_partners.sql`
 - `20260804200000_pce_002_experts.sql`
 - `20260805090000_pce_004_contact_submissions.sql`
+- `20260812110000_lrn_005_learner_import.sql`

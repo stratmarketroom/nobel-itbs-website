@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
-import type { LearnerAdminItem, LearnerConflictReference, LearnerEmail, LearnerPhone } from '@/lib/learners/types';
+import type { LearnerAdminItem, LearnerConflictReference, LearnerEmail, LearnerImportPreview, LearnerImportResult, LearnerPhone } from '@/lib/learners/types';
 
 type ArchiveFilter = 'active' | 'archived' | 'all';
 type EditorTab = 'profile' | 'contacts' | 'credentials';
@@ -44,6 +44,11 @@ export function AdminLearners() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importPreview, setImportPreview] = useState<LearnerImportPreview | null>(null);
+  const [importConfirmed, setImportConfirmed] = useState(false);
+  const [importing, setImporting] = useState(false);
   const selected = learners.find(({ id }) => id === selectedId) ?? null;
 
   const token = useCallback(async () => {
@@ -182,6 +187,51 @@ export function AdminLearners() {
     }
   }
 
+  async function downloadTemplate() {
+    setImporting(true); setNotice(null);
+    try {
+      const accessToken = await token();
+      const response = await fetch('/api/v1/admin/learners/import/template', { headers: { Authorization: `Bearer ${accessToken}` }, cache: 'no-store' });
+      if (!response.ok) throw new RequestError('The import template could not be downloaded.');
+      downloadBlob(await response.blob(), 'nobel-itbs-learners-template.xlsx');
+    } catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'The import template could not be downloaded.' }); }
+    finally { setImporting(false); }
+  }
+
+  async function previewImport(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!importFile) { setNotice({ kind: 'error', message: 'Choose an .xlsx or .csv file.' }); return; }
+    setImporting(true); setNotice(null); setImportPreview(null); setImportConfirmed(false);
+    try {
+      const accessToken = await token(); const form = new FormData(); form.set('file', importFile);
+      const response = await fetch('/api/v1/admin/learners/import/preview', { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` }, body: form, cache: 'no-store' });
+      const payload = await response.json().catch(() => null) as { preview?: LearnerImportPreview } | null;
+      if (!response.ok || !payload?.preview) throw apiError(payload, 'The learner file could not be checked.');
+      setImportPreview(payload.preview);
+      setNotice({ kind: 'success', message: `Checked ${payload.preview.totalRows} rows. Nothing has been saved yet.` });
+    } catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'The learner file could not be checked.' }); }
+    finally { setImporting(false); }
+  }
+
+  async function commitImport() {
+    if (!importPreview || !importConfirmed || importPreview.validRows.length === 0) return;
+    setImporting(true); setNotice(null);
+    try {
+      const rows = importPreview.validRows.map(toImportRow);
+      const payload = await request<{ result: LearnerImportResult }>('/api/v1/admin/learners/import/commit', { method: 'POST', body: JSON.stringify({ rows }) });
+      setNotice({ kind: 'success', message: `${payload.result.importedCount} learners imported. Invalid rows were not saved.` });
+      setImportPreview(null); setImportFile(null); setImportConfirmed(false); setImportOpen(false); await load();
+    } catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Learners could not be imported. No rows were saved.' }); }
+    finally { setImporting(false); }
+  }
+
+  function downloadErrors() {
+    if (!importPreview?.invalidRows.length) return;
+    const header = ['Row', 'Latin first name', 'Latin last name', 'Ukrainian full name', 'Email', 'Phone', 'Issues'];
+    const lines = [header, ...importPreview.invalidRows.map((row) => [row.rowNumber, row.latinFirstName, row.latinLastName, row.ukrainianFullName, row.email ?? '', row.phone ?? '', row.issues.join(' | ')])];
+    downloadBlob(new Blob([`\uFEFF${lines.map((line) => line.map(csvCell).join(',')).join('\r\n')}`], { type: 'text/csv;charset=utf-8' }), 'learner-import-errors.csv');
+  }
+
   return (
     <main className="learner-admin-shell">
       <header className="admin-module-header">
@@ -193,10 +243,13 @@ export function AdminLearners() {
         <label><span>Status</span><select value={archiveFilter} onChange={(event) => setArchiveFilter(event.target.value as ArchiveFilter)}><option value="active">Active learners</option><option value="archived">Archived learners</option><option value="all">All learners</option></select></label>
         <button type="submit">Search</button>
         <button className="secondary" type="button" onClick={() => { setCreating(true); setSelectedId(null); setTab('profile'); setNotice(null); }}>Add learner</button>
+        <button className="secondary" type="button" aria-expanded={importOpen} onClick={() => { setImportOpen((current) => !current); setImportPreview(null); setImportConfirmed(false); setNotice(null); }}>Import list</button>
         <span aria-live="polite">{loading ? 'Loading learners' : `${learners.length} learner${learners.length === 1 ? '' : 's'}`}</span>
       </form>
 
       {notice ? <div className={`learner-admin-notice ${notice.kind}`} role={notice.kind === 'error' ? 'alert' : 'status'}><span>{notice.message}</span>{notice.conflict ? <button disabled={saving} type="button" onClick={() => void openConflict(notice.conflict!)}>Open {notice.conflict.displayName}</button> : null}</div> : null}
+
+      {importOpen ? <LearnerImportPanel file={importFile} preview={importPreview} confirmed={importConfirmed} busy={importing} onFile={(file) => { setImportFile(file); setImportPreview(null); setImportConfirmed(false); }} onPreview={previewImport} onTemplate={() => void downloadTemplate()} onErrors={downloadErrors} onConfirmed={setImportConfirmed} onCommit={() => void commitImport()} onClose={() => { setImportOpen(false); setImportPreview(null); setImportFile(null); setImportConfirmed(false); }} /> : null}
 
       <section className="learner-admin-workspace">
         <nav className="learner-admin-list" aria-label="Learner list">
@@ -217,6 +270,47 @@ export function AdminLearners() {
       </section>
     </main>
   );
+}
+
+function csvCell(value: unknown): string { return `"${String(value).replace(/"/g, '""')}"`; }
+
+function toImportRow(row: LearnerImportPreview['validRows'][number]) {
+  return {
+    rowNumber: row.rowNumber,
+    latinFirstName: row.latinFirstName,
+    latinLastName: row.latinLastName,
+    ukrainianFullName: row.ukrainianFullName,
+    email: row.email,
+    phone: row.phone,
+    hasTelegram: row.hasTelegram,
+    telegramUsername: row.telegramUsername,
+    hasViber: row.hasViber,
+    hasWhatsapp: row.hasWhatsapp,
+    internalNote: row.internalNote,
+  };
+}
+
+function downloadBlob(blob: Blob, name: string) {
+  const url = URL.createObjectURL(blob); const anchor = document.createElement('a');
+  anchor.href = url; anchor.download = name; document.body.appendChild(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url);
+}
+
+function LearnerImportPanel({ file, preview, confirmed, busy, onFile, onPreview, onTemplate, onErrors, onConfirmed, onCommit, onClose }: { file: File | null; preview: LearnerImportPreview | null; confirmed: boolean; busy: boolean; onFile: (file: File | null) => void; onPreview: (event: React.FormEvent<HTMLFormElement>) => void; onTemplate: () => void; onErrors: () => void; onConfirmed: (confirmed: boolean) => void; onCommit: () => void; onClose: () => void }) {
+  return <section className="learner-import" aria-labelledby="learner-import-heading">
+    <header><div><small>Batch operation</small><h2 id="learner-import-heading">Import learner list</h2><p>Check an Excel or CSV file before saving. Existing records are never overwritten.</p></div><button className="secondary" type="button" onClick={onClose} disabled={busy}>Close import</button></header>
+    <div className="learner-import-steps" aria-label="Import steps"><span className={!preview ? 'current' : 'done'}>1. Choose file</span><span className={preview ? 'current' : ''}>2. Review</span><span>3. Confirm</span></div>
+    <form className="learner-import-upload" onSubmit={onPreview}>
+      <div><strong>Start with the controlled template</strong><span>.xlsx or .csv, up to 500 learners and 5 MB. The example row must be removed.</span></div>
+      <button className="secondary" type="button" onClick={onTemplate} disabled={busy}>Download template</button>
+      <label><span>Learner file</span><input type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={(event) => onFile(event.target.files?.[0] ?? null)} /></label>
+      <button type="submit" disabled={!file || busy}>{busy ? 'Checking…' : 'Check file'}</button>
+    </form>
+    {preview ? <div className="learner-import-preview">
+      <div className="learner-import-summary"><span><strong>{preview.totalRows}</strong>Total rows</span><span className="valid"><strong>{preview.validRows.length}</strong>Ready to import</span><span className={preview.invalidRows.length ? 'invalid' : ''}><strong>{preview.invalidRows.length}</strong>Need attention</span></div>
+      {preview.invalidRows.length ? <section><header><div><small>Not imported</small><h3>Rows that need correction</h3></div><button className="secondary" type="button" onClick={onErrors}>Download errors CSV</button></header><div className="learner-import-table" role="region" aria-label="Invalid learner rows" tabIndex={0}><table><thead><tr><th>Row</th><th>Learner</th><th>Contact</th><th>Issue</th></tr></thead><tbody>{preview.invalidRows.map((row) => <tr key={row.rowNumber}><td>{row.rowNumber}</td><td><strong>{row.latinFirstName} {row.latinLastName}</strong><small>{row.ukrainianFullName}</small></td><td><span>{row.email ?? '—'}</span><small>{row.phone ?? '—'}</small></td><td>{row.issues.join(' ')}</td></tr>)}</tbody></table></div></section> : <p className="learner-import-all-valid">All rows passed validation.</p>}
+      <footer><label><input type="checkbox" checked={confirmed} onChange={(event) => onConfirmed(event.target.checked)} /><span>I reviewed the preview. Import {preview.validRows.length} valid learner{preview.validRows.length === 1 ? '' : 's'} without changing existing records.</span></label><button type="button" disabled={!confirmed || preview.validRows.length === 0 || busy} onClick={onCommit}>{busy ? 'Importing…' : `Import ${preview.validRows.length} learners`}</button></footer>
+    </div> : null}
+  </section>;
 }
 
 function ProfileForm({ learner, saving, onSubmit, onArchive }: { learner?: LearnerAdminItem; saving: boolean; onSubmit: (event: React.FormEvent<HTMLFormElement>) => void; onArchive?: () => void }) {

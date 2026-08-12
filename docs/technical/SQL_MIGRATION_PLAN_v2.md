@@ -107,6 +107,7 @@ Migrations:
 4. Primary email/phone constraints.
 5. Duplicate contact indexes.
 6. Learner RLS.
+7. Controlled atomic learner-list import workflow and privacy-minimal audit.
 
 ## 8. Phase 6 - Credential Core
 

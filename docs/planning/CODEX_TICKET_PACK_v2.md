@@ -231,6 +231,16 @@ LRN-004 Learner Admin UI
 - contact management;
 - credential list.
 
+LRN-005 Learner List Import
+
+- controlled `.xlsx`/`.csv` template and parser;
+- preview before persistence with valid and invalid row separation;
+- duplicate detection inside the file and against existing learners, emails, and phones;
+- invalid rows are excluded and existing records are never overwritten;
+- downloadable error report;
+- one explicitly confirmed, atomic import for Owner/Super Admin/Credential Manager with MFA;
+- privacy-minimal audit entry containing the imported count only.
+
 ### Group G - Credential Core
 
 CRD-001 Credential Types
