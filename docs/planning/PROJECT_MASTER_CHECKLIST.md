@@ -73,6 +73,7 @@ Stage status: **complete and accepted at the current dev level**.
 - [x] CNT-003 data/public foundation: Home, About, Partnerships, For Organisations, localized routes, public shell, and navigation.
 - [x] CNT-003 approved Home visual baseline preserved in branch `codex/cnt-003-approved-home-visual-baseline` at commit `24f728b`; see `docs/design/HOME_VISUAL_BASELINE.md`.
 - [-] CNT-003 Home visual integration: code integration and local EN/UA/CZ responsive QA are complete. The 2026-08-12 production audit confirmed the correct Supabase project and restored 3 programme areas plus 4 trust cards in EN/UA/CZ; merge, Production redeployment, and final Owner acceptance remain open. See `docs/qa/CNT_003_HOME_VISUAL_INTEGRATION_QA_2026-08-11.md` and `docs/qa/CNT_003_PRODUCTION_HOME_REPAIR_QA_2026-08-12.md`.
+- [-] QA-005 HTML language: server-side EN/UA/CZ document-language correction implemented; Vercel Preview DOM acceptance remains open. See `docs/qa/QA_005_HTML_LANGUAGE_2026-08-12.md`.
 - [x] CNT-004 protected Site Settings and For Organisations URL override.
 - [x] CNT-005 full Privacy Policy, Terms of Use, Refund Policy in three languages.
 - [x] localized cookie consent with accept/decline; no optional trackers load before consent because none are installed.
