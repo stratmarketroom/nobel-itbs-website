@@ -4,6 +4,7 @@ import type { ContentLocale } from '@/lib/content/localization';
 import { localizePublicPath } from '@/lib/content/localization';
 import type { PartnerCard } from '@/lib/partners/types';
 import type { ExpertCard } from '@/lib/experts/types';
+import { homeCopy } from '@/lib/i18n';
 import { ExpertCards } from './expert-cards';
 import { PublicEnquiryForm } from './public-enquiry-form';
 
@@ -47,19 +48,16 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
   const enquiryType = page.pageKey === 'about' ? 'general'
     : page.pageKey === 'partnerships' ? 'partner_enquiry'
       : page.pageKey === 'for_organisations' ? 'organisation_enquiry' : null;
+  const shell = homeCopy[locale];
 
   return (
     <main className="managed-page">
       <header className="managed-header">
         <Link className="managed-brand" href={localizePublicPath(locale, '/')}>NOBEL <span>ITBS</span></Link>
-        <nav aria-label="Primary navigation">
-          <Link href={localizePublicPath(locale, '/programmes')}>Programmes</Link>
-          <Link href={localizePublicPath(locale, '/for-organisations')}>For Organisations</Link>
-          <Link href={localizePublicPath(locale, '/partnerships')}>Partnerships</Link>
-          <Link href={localizePublicPath(locale, '/about')}>About Us</Link>
-          <Link href={localizePublicPath(locale, '/verify')}>Verify</Link>
+        <nav aria-label={shell.navLabel}>
+          {shell.nav.map((item) => <Link href={item.href} key={item.href}>{item.label}</Link>)}
         </nav>
-        <nav aria-label="Language">
+        <nav aria-label={shell.localeLabel}>
           <Link href={page.pageKey === 'home' ? '/' : `/${page.pageKey.replaceAll('_', '-')}`}>EN</Link>
           <Link href={page.pageKey === 'home' ? '/ua' : `/ua/${page.pageKey.replaceAll('_', '-')}`}>UA</Link>
           <Link href={page.pageKey === 'home' ? '/cz' : `/cz/${page.pageKey.replaceAll('_', '-')}`}>CZ</Link>
@@ -113,9 +111,7 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
 
       <footer className="managed-footer">
         <strong>Nobel ITBS s.r.o.</strong><span>Praha, Czech Republic</span><a href="mailto:info@nobel-itbs.eu">info@nobel-itbs.eu</a>
-        <Link href={localizePublicPath(locale, '/privacy-policy')}>Privacy Policy</Link>
-        <Link href={localizePublicPath(locale, '/terms-of-use')}>Terms of Use</Link>
-        <Link href={localizePublicPath(locale, '/refund-policy')}>Refund Policy</Link>
+        {shell.footer.legal.map((item) => <Link href={item.href} key={item.href}>{item.label}</Link>)}
       </footer>
     </main>
   );

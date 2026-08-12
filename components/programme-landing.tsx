@@ -63,7 +63,7 @@ function PublicFooter({ locale }: { locale: ContentLocale }) {
         </nav>
       ))}
       <address>
-        <h2>{ui[locale].contact}</h2>
+        <h2>{copy.footer.contactTitle}</h2>
         {copy.footer.contact.map((line) => <span key={line}>{line}</span>)}
       </address>
     </footer>

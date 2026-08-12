@@ -46,8 +46,16 @@
   .managed-header > nav:first-of-type { grid-column: 1 / -1; justify-content: flex-start; order: 3; }
 }
 @media (max-width: 640px) {
-  .managed-header > nav:first-of-type { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .managed-header a {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+  }
+  .managed-header > nav:first-of-type { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem .75rem; }
+  .managed-header > nav:last-of-type a { min-width: 2.75rem; justify-content: center; }
   .managed-hero h1 { font-size: clamp(2.5rem, 13vw, 4rem); }
+  .managed-footer a { display: inline-flex; min-height: 2.75rem; align-items: center; }
+  .privacy-field a { display: inline-flex; min-height: 2.75rem; align-items: center; }
 }
 .legal-page { min-height: 100vh; background: #f8f7f4; color: #211f2d; }
 .legal-document { width: min(58rem, calc(100% - 2.5rem)); margin: 0 auto; padding: clamp(3rem, 8vw, 7rem) 0; }
@@ -4598,6 +4606,15 @@ h1 span {
     height: auto;
   }
 
+  .site-header .brand {
+    min-height: 2.75rem;
+  }
+
+  .site-header .locale-switcher a {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+
   .header-actions {
     justify-self: end;
     gap: 0.35rem;
@@ -4727,6 +4744,12 @@ h1 span {
 
   .site-footer {
     grid-template-columns: 1fr;
+  }
+
+  .site-footer a {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
   }
 }
 
@@ -4916,6 +4939,9 @@ h1 span {
 }
 
 .catalogue-taxonomy a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2rem;
 }

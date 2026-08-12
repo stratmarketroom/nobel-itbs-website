@@ -17,12 +17,6 @@ const localeLabels: Record<ContentLocale, string> = {
   cz: 'CZ',
 };
 
-const contactLabels: Record<ContentLocale, string> = {
-  en: 'Contact',
-  ua: 'Контакти',
-  cz: 'Kontakt',
-};
-
 export function ProgrammeCatalogue({ locale, programmes }: ProgrammeCatalogueProps) {
   const copy = programmeCatalogueCopy[locale];
   const shellCopy = homeCopy[locale];
@@ -131,7 +125,7 @@ export function ProgrammeCatalogue({ locale, programmes }: ProgrammeCataloguePro
           </nav>
         ))}
         <address>
-          <h2>{contactLabels[locale]}</h2>
+          <h2>{shellCopy.footer.contactTitle}</h2>
           {shellCopy.footer.contact.map((line) => <span key={line}>{line}</span>)}
         </address>
       </footer>

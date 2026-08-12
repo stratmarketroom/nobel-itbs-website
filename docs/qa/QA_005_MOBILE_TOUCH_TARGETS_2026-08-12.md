@@ -5,14 +5,21 @@ Ticket: QA-005 mobile touch-target hardening
 
 ## Summary
 
-The public Home now preserves a minimum `44 x 44` CSS-pixel interaction area
-for the mobile header, menu, language switcher, text links, and footer links.
-The visual composition, content, colours, typography, routes, and business
-behaviour remain unchanged.
+The public Home and all shared Release 1 public page shells now preserve a
+minimum `44 x 44` CSS-pixel interaction area for the mobile header, menu,
+language switcher, taxonomy links, consent links, and footer links. The visual
+composition, colours, typography, routes, and business behaviour remain
+unchanged.
+
+The same correction removes an audit-discovered localization defect: managed
+content pages and shared footers now use the localized EN/UA/CZ shell copy
+instead of hard-coded English navigation and legal labels.
 
 ## Files Changed
 
 - `app/globals.css`;
+- `lib/i18n.ts`;
+- shared public-shell components;
 - this QA record;
 - the directly related launch checklist item.
 
@@ -33,6 +40,14 @@ None.
   - zero visible interactive elements below `44 x 44`;
   - document width equals viewport width, with no horizontal overflow;
 - browser console: zero errors.
+- follow-up public-shell matrix at `390 x 844`:
+  - About, For Organisations, Partnerships, Programmes, and Verify in UA/CZ;
+  - zero visible interactive elements below `44 x 44`;
+  - zero horizontal overflow;
+  - document languages remain `uk` and `cs`;
+  - managed-page header and legal-footer labels are localized;
+  - catalogue and verification footer headings, links, and destinations are
+    localized.
 
 ## Security Notes
 
@@ -49,6 +64,6 @@ pass.
 
 ## Next Dependency
 
-Merge this branch, wait for the Vercel Production deployment, then repeat the
-public Production QA before configuring production Auth, Owner, MFA, and admin
-acceptance.
+Merge `codex/qa-005-public-shell-mobile`, wait for the Vercel Production
+deployment, then repeat the public Production QA before configuring production
+Auth, Owner, MFA, and admin acceptance.
