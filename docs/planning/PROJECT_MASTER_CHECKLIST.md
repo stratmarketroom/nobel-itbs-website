@@ -72,8 +72,8 @@ Stage status: **complete and accepted at the current dev level**.
 - [x] CNT-002 structured content pages, translations, permissions, audit, admin API/editor.
 - [x] CNT-003 data/public foundation: Home, About, Partnerships, For Organisations, localized routes, public shell, and navigation.
 - [x] CNT-003 approved Home visual baseline preserved in branch `codex/cnt-003-approved-home-visual-baseline` at commit `24f728b`; see `docs/design/HOME_VISUAL_BASELINE.md`.
-- [-] CNT-003 Home visual integration: code integration and local EN/UA/CZ responsive QA are complete. The 2026-08-12 production audit confirmed the correct Supabase project and restored 3 programme areas plus 4 trust cards in EN/UA/CZ; merge, Production redeployment, and final Owner acceptance remain open. See `docs/qa/CNT_003_HOME_VISUAL_INTEGRATION_QA_2026-08-11.md` and `docs/qa/CNT_003_PRODUCTION_HOME_REPAIR_QA_2026-08-12.md`.
-- [-] QA-005 HTML language: server-side EN/UA/CZ document-language correction implemented; Vercel Preview DOM acceptance remains open. See `docs/qa/QA_005_HTML_LANGUAGE_2026-08-12.md`.
+- [x] CNT-003 Home visual integration: the approved Home baseline and corrected Supabase-managed content are merged, deployed, and accepted in Vercel Production in EN/UA/CZ. See `docs/qa/CNT_003_HOME_VISUAL_INTEGRATION_QA_2026-08-11.md`, `docs/qa/CNT_003_PRODUCTION_HOME_REPAIR_QA_2026-08-12.md`, and `docs/qa/QA_005_PRODUCTION_PUBLIC_ACCEPTANCE_2026-08-12.md`.
+- [x] QA-005 HTML language: the server-side EN/UA/CZ document language and localized public shell passed Vercel Production DOM acceptance. See `docs/qa/QA_005_HTML_LANGUAGE_2026-08-12.md` and `docs/qa/QA_005_PRODUCTION_PUBLIC_ACCEPTANCE_2026-08-12.md`.
 - [x] CNT-004 protected Site Settings and For Organisations URL override.
 - [x] CNT-005 full Privacy Policy, Terms of Use, Refund Policy in three languages.
 - [x] localized cookie consent with accept/decline; no optional trackers load before consent because none are installed.
@@ -81,7 +81,7 @@ Stage status: **complete and accepted at the current dev level**.
 - [x] Authenticated Content Manager and Super Admin content-edit smoke, including controlled-field persistence and MFA enforcement.
 - `BLOCKED`: final For Organisations application URL.
 
-Stage status: **Home visual code integration and production content correction are complete; Owner Preview acceptance and the final production CTA value remain open**.
+Stage status: **Home visual integration and public Production acceptance are complete; the final production CTA value remains open**.
 
 ## Stage 4 — Programme Catalogue and Sales Pages
 
@@ -215,11 +215,11 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
 - [ ] QA-005 production environment, approved credential delivery provider, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
   - [x] Separate `nobel-itbs-prod` Supabase project created in Frankfurt; all 47 migrations, approved seed data, anonymous RLS boundary, and required server reads passed.
   - [x] Production Supabase secrets are prepared in an ignored local environment file; none are committed.
-  - [ ] Add production-only secrets to Vercel, deploy, and run public/admin smoke tests before connecting the domain.
+  - [x] Add production-only secrets to Vercel, deploy, and run public Production smoke before connecting the domain; protected admin smoke remains in the next Auth/Owner/MFA item.
   - [ ] Configure production Auth URLs, bootstrap the single Owner, enroll MFA, and repeat protected-route QA.
   - [ ] Align the approved VEDOS SMTP decision with the v2 documents and WF-003 implementation, then acceptance-test real credential delivery.
   - [ ] Configure final CTA destinations, Telegram alert, analytics/consent, database plus private-PDF backups, canonical domain, and final responsive/accessibility/browser acceptance.
-- [-] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA. Home and all shared public page shells now pass the local production build at 390 px with `44 x 44` touch targets, localized UA/CZ navigation and footers, and no horizontal overflow; Vercel Production, accessibility, error-state, and cross-browser acceptance remain open. See `docs/qa/QA_005_MOBILE_TOUCH_TARGETS_2026-08-12.md`.
+- [-] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA. Vercel Production Chromium acceptance passed across the 27-route EN/UA/CZ mobile matrix and the 18-route desktop matrix, including `44 x 44` touch targets, localized shell, metadata, not-found handling, verification privacy, and no horizontal overflow. Physical-device, full accessibility, and cross-browser acceptance remain open. See `docs/qa/QA_005_MOBILE_TOUCH_TARGETS_2026-08-12.md` and `docs/qa/QA_005_PRODUCTION_PUBLIC_ACCEPTANCE_2026-08-12.md`.
 
 Stage status: **QA-001..004 are accepted at the current dev level; QA-005 production/launch readiness, full pgTAP execution, and cross-browser/accessibility acceptance remain open**.
 
@@ -266,7 +266,7 @@ The credential workflow stage is now open; external production integrations rema
 25. [x] **QA-003 MFA Tests** — the four-role/AAL matrix, server guards, private RLS policies, credential/PDF functions, fresh Owner AAL1 state, verified TOTP enrollment, and 11 sensitive-route denials passed on 2026-08-10. See `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.
 26. [x] **QA-002 / QA-004 first approved credential lifecycle** — Owner-approved `NITBS-C-2027-123450` completed learner → credential → private PDF → activation → valid verification → irreversible revoke → status-only revoked verification by number and QR on 2026-08-10. The activation-manifest exact-key correction was applied to dev. See `docs/qa/QA_002_004_FIRST_CREDENTIAL_LIFECYCLE_2026-08-10.md`.
 27. [x] **Irreversible revoked half** — the retained test credential is permanently revoked; its number remains issued and linked, and public lookup exposes no document details or private reason.
-28. [-] **CNT-003 Home visual integration** — the intended production Supabase project is confirmed and its EN/UA/CZ Home data now has 3 programme areas and 4 trust cards; next merge the repair branch, verify the new Vercel Production build, and obtain Owner desktop/mobile acceptance.
-29. **Proceed with the remaining QA-005 Launch Checklist** — Supabase production foundation is accepted; after Home integration, continue Auth/Owner/MFA, selected external integrations, canonical-domain verification, backups, analytics/consent, responsive/accessibility/browser acceptance, and the final release decision.
+28. [x] **CNT-003 Home visual integration and public Production acceptance** — the approved Home, EN/UA/CZ managed content, localized shell, Czech metadata, and mobile touch targets are merged, deployed, and accepted in Vercel Production on 2026-08-12.
+29. **Proceed with production Auth/Owner/MFA and protected admin acceptance** — after that, continue selected external integrations, canonical-domain verification, backups, analytics/consent, physical-device/accessibility/cross-browser acceptance, and the final release decision.
 
-The backend, permissions, workflow, and operational layers remain accepted at their documented level. Production launch now also depends on integrating and approving the preserved Home visual baseline.
+The backend, permissions, workflow, public visual baseline, and public Production layer remain accepted at their documented level. Production launch now depends first on Auth/Owner/MFA and protected admin acceptance, followed by the remaining operational launch items.

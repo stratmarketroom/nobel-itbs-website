@@ -59,11 +59,12 @@ None.
 ## Deviations / Open Questions
 
 The implementation follows the project target of `44 x 44` CSS pixels. Real
-device and Vercel Production checks remain part of the subsequent Production QA
-pass.
+device and cross-browser checks remain part of final launch acceptance. Vercel
+Production Chromium acceptance passed on 2026-08-12; see
+`docs/qa/QA_005_PRODUCTION_PUBLIC_ACCEPTANCE_2026-08-12.md`.
 
 ## Next Dependency
 
-Merge `codex/qa-005-public-shell-mobile`, wait for the Vercel Production
-deployment, then repeat the public Production QA before configuring production
-Auth, Owner, MFA, and admin acceptance.
+The branch is merged and public Vercel Production acceptance has passed. Next,
+configure production Auth, the single Owner, MFA, and protected admin
+acceptance.
