@@ -14,9 +14,11 @@ The Nobel ITBS website should feel:
 - education-focused;
 - clear rather than flashy.
 
-The design concept in `docs/source/v1/design-concept-site.png` is the visual reference, not a pixel-perfect requirement.
+The Owner-approved Home reference is `docs/design/HOME_VISUAL_BASELINE.md`, backed by immutable Git commit `24f728b` on branch `codex/cnt-003-approved-home-visual-baseline`.
 
-Frontend work must turn the concept into a responsive, usable product.
+The archived image in `docs/source/v1/design-concept-site.png` may inform historical brand atmosphere only. It must not override the approved Home composition or reintroduce the large 3D Nobel `N`, a separate light verification column, or a hero slider.
+
+Frontend work must implement the approved baseline as a responsive, content-managed product rather than copying its older static data layer.
 
 ## 2. Product Priorities
 
@@ -32,7 +34,7 @@ Every major page should support one clear primary action.
 
 ## 3. Visual Direction
 
-Use the brand direction from the concept:
+Use the brand direction from the approved Home baseline:
 
 - dark premium hero areas;
 - clean light content sections;
@@ -170,7 +172,7 @@ Required:
 
 Use real project assets when available.
 
-The design concept image may guide visual styling but should not be embedded as the actual website UI.
+The approved Home baseline guides current visual styling and must not be embedded as a static screenshot. The archived concept may inform historical color atmosphere only.
 
 Avoid generated decorative assets unless explicitly requested.
 

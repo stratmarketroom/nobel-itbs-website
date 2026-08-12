@@ -5,7 +5,7 @@ import { isContentLocale } from '@/lib/content/localization';
 import { verificationCopy } from '@/lib/credentials/verification-copy';
 import { isPrefixedLocale } from '@/lib/i18n';
 
-type Props = { params: Promise<{ locale: string }> };
+type Props = { params: Promise<{ locale: string }>; searchParams: Promise<{ documentNumber?: string | string[] }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -19,8 +19,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function LocaleVerifyPage({ params }: Props) {
+export default async function LocaleVerifyPage({ params, searchParams }: Props) {
   const { locale } = await params;
   if (!isPrefixedLocale(locale) || !isContentLocale(locale)) notFound();
-  return <PublicVerification locale={locale} />;
+  const value = (await searchParams).documentNumber;
+  return <PublicVerification locale={locale} initialDocumentNumber={Array.isArray(value) ? value[0] : value} />;
 }

@@ -2,8 +2,8 @@
 
 Product: Nobel ITBS Website and Credential Registry
 Stage: Release 1 UI design preparation
-Status: working brief
-Date: 2026-07-29
+Status: working brief, Home baseline owner-approved
+Date: 2026-08-11
 
 ## 1. Design Goal
 
@@ -18,12 +18,13 @@ The system should feel premium, trustworthy, modern, international, education-fo
 
 Use:
 
+- `docs/design/HOME_VISUAL_BASELINE.md` for Home composition and interaction direction
 - `docs/design/DESIGN_GUIDELINES.md`
 - `.agents/context/PRODUCT.md`
 - `.agents/context/DESIGN.md`
-- `docs/source/v1/design-concept-site.png` as visual reference only
+- `docs/source/v1/design-concept-site.png` for historical atmosphere only
 
-Do not use archived v1 product logic when v2 conflicts.
+Do not use archived v1 product logic or layout instructions when v2 or the approved Home baseline conflicts.
 
 ## 3. Register Split
 
@@ -175,7 +176,7 @@ Admin scale:
 
 - site header;
 - public footer;
-- hero slide;
+- Home hero;
 - compact verification block;
 - programme area card;
 - programme card;
@@ -262,13 +263,15 @@ Admin templates:
 
 Home:
 
-- keep close to approved concept;
-- dark premium first viewport;
+- follow `docs/design/HOME_VISUAL_BASELINE.md` and Git commit `24f728b`;
+- use a dark, full-width premium first viewport;
 - strong Nobel ITBS identity;
-- compact verification block in first screen;
-- first slide CTA `View programmes`;
-- programme slides CTA `Apply now`;
-- no secondary hero CTA.
+- large left-aligned localized heading and one `View programmes` CTA;
+- compact dark document-number/QR verification block inside the hero;
+- prominent header `Verify` utility action;
+- no secondary hero CTA;
+- no hero slider, large decorative 3D Nobel `N`, or separate light verification column;
+- current structured Supabase content and WF-008 verification must remain authoritative during implementation.
 
 Catalogue:
 
@@ -310,7 +313,7 @@ Required:
 Public:
 
 - subtle premium transitions;
-- controlled hero slider;
+- no hero slider in the approved Home baseline;
 - no aggressive autoplay;
 - no distracting decorative motion.
 
@@ -328,6 +331,8 @@ Admin:
 - Programme pages support sales flow to Leeloo.
 - Verification UI follows privacy rules.
 - Mobile and desktop layouts are intentionally defined.
+- Home matches the owner-approved hierarchy in commit `24f728b` without restoring the rejected 3D-`N`/light-column composition.
+- Home remains connected to structured content, catalogue data, and WF-008 rather than static duplicate copy.
 - No News/Blog UI appears.
 - No visible programme filters appear in Release 1 catalogue.
 - No nested cards are introduced.
@@ -336,8 +341,6 @@ Admin:
 ## 12. Open Questions
 
 1. Final secondary CTA treatment for programme pages.
-2. Whether hero programme slider is approved for implementation or remains prototype direction.
-3. Final visual treatment for programme-specific imagery.
-4. Whether `lucide-react` should be added for icons or icons should wait until a component ticket.
-5. Which partner/accreditation logos are approved and available as SVG.
-
+2. Final visual treatment for programme-specific imagery outside the approved Home first viewport.
+3. Whether `lucide-react` should be added for icons or icons should wait until a component ticket.
+4. Which partner/accreditation logos are approved and available as SVG.

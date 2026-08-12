@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   alternates: { canonical: '/verify', languages: { en: '/verify', uk: '/ua/verify', cs: '/cz/verify' } },
 };
 
-export default function VerifyPage() {
-  return <PublicVerification locale="en" />;
+type Props = { searchParams: Promise<{ documentNumber?: string | string[] }> };
+
+export default async function VerifyPage({ searchParams }: Props) {
+  const value = (await searchParams).documentNumber;
+  return <PublicVerification locale="en" initialDocumentNumber={Array.isArray(value) ? value[0] : value} />;
 }

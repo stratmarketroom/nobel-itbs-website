@@ -1,6 +1,6 @@
 # Nobel ITBS Release 1 — Project Master Checklist
 
-Last reviewed: 2026-08-10
+Last reviewed: 2026-08-11
 Baseline: v2 product, technical, security, sitemap, and implementation documents
 Purpose: keep implementation aligned with Release 1 and make the next non-design step unambiguous.
 
@@ -70,7 +70,9 @@ Stage status: **complete and accepted at the current dev level**.
 
 - [x] CNT-001 EN/UA/CZ language model and fallback.
 - [x] CNT-002 structured content pages, translations, permissions, audit, admin API/editor.
-- [x] CNT-003 Home, About, Partnerships, For Organisations, public shell/navigation.
+- [x] CNT-003 data/public foundation: Home, About, Partnerships, For Organisations, localized routes, public shell, and navigation.
+- [x] CNT-003 approved Home visual baseline preserved in branch `codex/cnt-003-approved-home-visual-baseline` at commit `24f728b`; see `docs/design/HOME_VISUAL_BASELINE.md`.
+- [-] CNT-003 Home visual integration: code integration, production Home content correction, local EN/UA/CZ responsive QA, and WF-008 handoff are complete; Owner Vercel Preview acceptance remains open. See `docs/qa/CNT_003_HOME_VISUAL_INTEGRATION_QA_2026-08-11.md` and `docs/qa/CNT_003_HOME_CONTENT_CORRECTION_QA_2026-08-11.md`.
 - [x] CNT-004 protected Site Settings and For Organisations URL override.
 - [x] CNT-005 full Privacy Policy, Terms of Use, Refund Policy in three languages.
 - [x] localized cookie consent with accept/decline; no optional trackers load before consent because none are installed.
@@ -78,7 +80,7 @@ Stage status: **complete and accepted at the current dev level**.
 - [x] Authenticated Content Manager and Super Admin content-edit smoke, including controlled-field persistence and MFA enforcement.
 - `BLOCKED`: final For Organisations application URL.
 
-Stage status: **implementation and manager QA complete; final production CTA value remains externally blocked**.
+Stage status: **Home visual code integration and production content correction are complete; Owner Preview acceptance and the final production CTA value remain open**.
 
 ## Stage 4 — Programme Catalogue and Sales Pages
 
@@ -263,6 +265,7 @@ The credential workflow stage is now open; external production integrations rema
 25. [x] **QA-003 MFA Tests** — the four-role/AAL matrix, server guards, private RLS policies, credential/PDF functions, fresh Owner AAL1 state, verified TOTP enrollment, and 11 sensitive-route denials passed on 2026-08-10. See `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.
 26. [x] **QA-002 / QA-004 first approved credential lifecycle** — Owner-approved `NITBS-C-2027-123450` completed learner → credential → private PDF → activation → valid verification → irreversible revoke → status-only revoked verification by number and QR on 2026-08-10. The activation-manifest exact-key correction was applied to dev. See `docs/qa/QA_002_004_FIRST_CREDENTIAL_LIFECYCLE_2026-08-10.md`.
 27. [x] **Irreversible revoked half** — the retained test credential is permanently revoked; its number remains issued and linked, and public lookup exposes no document details or private reason.
-28. **Proceed with QA-005 Launch Checklist** — Supabase production foundation is accepted; next configure Vercel production secrets/deployment, Auth/Owner/MFA, selected external integrations, canonical-domain verification, backups, analytics/consent, responsive/accessibility/browser acceptance, and the final release decision.
+28. [-] **CNT-003 Home visual integration** — code integration, production EN/UA/CZ Home correction, responsive QA, dynamic programme delivery, and WF-008 handoff passed; next obtain EN/UA/CZ desktop/mobile Vercel Preview acceptance.
+29. **Proceed with the remaining QA-005 Launch Checklist** — Supabase production foundation is accepted; after Home integration, continue Auth/Owner/MFA, selected external integrations, canonical-domain verification, backups, analytics/consent, responsive/accessibility/browser acceptance, and the final release decision.
 
-This sequence is primarily backend, permissions, workflows, and operational administration. It does not depend on final visual design.
+The backend, permissions, workflow, and operational layers remain accepted at their documented level. Production launch now also depends on integrating and approving the preserved Home visual baseline.

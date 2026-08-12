@@ -34,6 +34,7 @@ Read these before implementation work:
 - `docs/planning/AGENT_PROMPT_TEMPLATE.md`
 - `docs/planning/AGENT_EXECUTION_SEQUENCE.md`
 - `docs/design/DESIGN_GUIDELINES.md`
+- `docs/design/HOME_VISUAL_BASELINE.md`
 - `docs/security/SECURITY_IMPLEMENTATION_RULES.md`
 
 ## 3. Work Method

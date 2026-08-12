@@ -15,7 +15,7 @@ type ViewState =
   | { kind: 'result'; value: PublicCredentialVerification }
   | { kind: 'error'; code: Exclude<PublicVerificationErrorCode, 'invalid_request'> | 'connection_error' };
 
-type PublicVerificationProps = { locale: ContentLocale; token?: string };
+type PublicVerificationProps = { locale: ContentLocale; token?: string; initialDocumentNumber?: string };
 
 const localeLabels: Record<ContentLocale, string> = { en: 'EN', ua: 'UA', cz: 'CZ' };
 const numberFormat = /^NITBS-[CD]-\d{4}-\d{6}$/;
@@ -43,12 +43,13 @@ function formatIssueDate(value: string, locale: ContentLocale) {
   }).format(date);
 }
 
-export function PublicVerification({ locale, token }: PublicVerificationProps) {
+export function PublicVerification({ locale, token, initialDocumentNumber = '' }: PublicVerificationProps) {
   const copy = verificationCopy[locale];
   const shellCopy = homeCopy[locale];
   const inputId = useId();
   const errorId = useId();
-  const [documentNumber, setDocumentNumber] = useState('');
+  const initialNumber = initialDocumentNumber.trim().toUpperCase();
+  const [documentNumber, setDocumentNumber] = useState(initialNumber);
   const [fieldError, setFieldError] = useState('');
   const [state, setState] = useState<ViewState>(token ? { kind: 'loading' } : { kind: 'idle' });
 
@@ -60,6 +61,13 @@ export function PublicVerification({ locale, token }: PublicVerificationProps) {
   useEffect(() => {
     if (token) void requestVerification(`/api/v1/public/verify/${encodeURIComponent(token)}`).then(setState);
   }, [token]);
+
+  useEffect(() => {
+    if (token || !numberFormat.test(initialNumber)) return;
+    void requestVerification('/api/v1/public/verify', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ documentNumber: initialNumber }),
+    }).then(setState);
+  }, [initialNumber, token]);
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
