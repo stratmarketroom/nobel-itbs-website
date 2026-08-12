@@ -6312,11 +6312,23 @@ h1 span {
 
 @media (max-width: 720px) {
   .content-home-header { align-items: flex-start; gap: .7rem; padding-inline: 1rem; }
+  .content-home-brand { min-height: 2.75rem; align-items: center; }
   .content-home-brand img { width: 8.6rem; }
-  .content-home-mobile-menu summary { width: 2.2rem; height: 2.2rem; gap: .22rem; }
+  .content-home-mobile-menu summary { width: 2.75rem; height: 2.75rem; gap: .22rem; }
   .content-home-mobile-menu summary span { width: 1rem; }
   .content-home-mobile-menu[open] summary span:first-child { transform: translateY(.345rem) rotate(45deg); }
   .content-home-mobile-menu[open] summary span:last-child { transform: translateY(-.345rem) rotate(-45deg); }
+  .content-home-mobile-panel > nav:first-child a,
+  .content-home-mobile-verify,
+  .content-home-mobile-locales a,
+  .content-home-text-link,
+  .content-home-section-link,
+  .content-home-footer a { min-height: 2.75rem; }
+  .content-home-mobile-panel > nav:first-child a,
+  .content-home-text-link,
+  .content-home-section-link,
+  .content-home-footer a { display: inline-flex; align-items: center; }
+  .content-home-mobile-locales a { min-width: 2.75rem; }
   .content-home-hero-layout { width: min(100% - 2rem, var(--home-max)); overflow: hidden; }
   .content-home-hero h1 { font-size: clamp(2.5rem, 13vw, 3.5rem); line-height: .92; }
   .content-home-lead { font-size: 1rem; }

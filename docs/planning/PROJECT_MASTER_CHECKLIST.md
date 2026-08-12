@@ -219,7 +219,7 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
   - [ ] Configure production Auth URLs, bootstrap the single Owner, enroll MFA, and repeat protected-route QA.
   - [ ] Align the approved VEDOS SMTP decision with the v2 documents and WF-003 implementation, then acceptance-test real credential delivery.
   - [ ] Configure final CTA destinations, Telegram alert, analytics/consent, database plus private-PDF backups, canonical domain, and final responsive/accessibility/browser acceptance.
-- [ ] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA.
+- [-] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA. Home touch targets now pass the local production build at 320 px and 390 px; Vercel Production, accessibility, error-state, and cross-browser acceptance remain open. See `docs/qa/QA_005_MOBILE_TOUCH_TARGETS_2026-08-12.md`.
 
 Stage status: **QA-001..004 are accepted at the current dev level; QA-005 production/launch readiness, full pgTAP execution, and cross-browser/accessibility acceptance remain open**.
 
