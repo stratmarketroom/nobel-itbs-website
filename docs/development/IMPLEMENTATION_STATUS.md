@@ -1,13 +1,13 @@
 # Implementation Status
 
-Last updated: 2026-08-11
+Last updated: 2026-08-13
 
 This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
 ## Current Branch
 
 - The stabilization branch was merged into `main` through PR #1.
-- Current focused branch: `codex/qa-005-production-grants`.
+- Current focused branch: `codex/lrn-005-production-acceptance`.
 - No direct push to `main` is used.
 
 ## Supabase Dev Project
@@ -18,7 +18,7 @@ This is the current implementation record. The v2 product and technical specific
 - Local secrets remain in ignored environment files and must never be committed.
 - A pre-integration backup is available under the ignored `backups/supabase/2026-08-05-pre-content/` directory.
 
-All 47 local SQL migrations through `20260811120000_qa_005_restore_partnership_service_grants.sql` are applied to the remote dev and production databases. Both local/remote migration histories match. The separate `nobel-itbs-prod` project is in Frankfurt; its secrets remain outside Git.
+All 50 local SQL migrations through `20260812110000_lrn_005_learner_import.sql` are applied to the remote dev and production databases. Both local/remote migration histories match. The separate `nobel-itbs-prod` project is in Frankfurt; its secrets remain outside Git.
 
 ## Implemented Foundation
 
@@ -40,6 +40,7 @@ All 47 local SQL migrations through `20260811120000_qa_005_restore_partnership_s
 - Private learner emails with case-insensitive global uniqueness, at most one primary address per learner, immutable learner ownership, controlled grants, forced RLS, and MFA-protected management.
 - Private learner phones with canonical global uniqueness, at most one primary number per learner, Telegram/Viber/WhatsApp flags, immutable learner ownership, controlled grants, forced RLS, and MFA-protected management.
 - Protected learner API and responsive manager UI for profile creation/editing, archive/restore, contact search and management, primary contacts, messenger flags, protected duplicate navigation, and real linked credential summaries.
+- Controlled `.xlsx`/`.csv` learner-list import with a managed template, no-write preview, valid/invalid separation, error CSV, duplicate/no-overwrite protection, explicit confirmation, atomic Owner/Super Admin/Credential Manager AAL2 persistence, and count-only audit.
 - Credential type reference data for Certificate and Diploma, localized EN/UA/CZ labels, stable machine codes and document letters, deactivation support, forced RLS, MFA-protected reference access, and Owner/Super Admin-only configuration changes.
 - Private status-free Credential Sets with exact learner/programme/run/completion-context matching, programme-run consistency, idempotent automatic find/create, creation audit, forced RLS, MFA, and no authenticated context mutation or hard delete.
 - Permanent Document Number Log with `reserved`/`issued`/`voided` states, a shared non-cycling sequence starting at `000001`, automatic and rare audited manual reservation, controlled voiding, immutable identity/no-delete enforcement, forced RLS, and MFA-protected reads.
@@ -77,7 +78,7 @@ All 47 local SQL migrations through `20260811120000_qa_005_restore_partnership_s
 - Pending Credential live QA passed: Content Manager/AAL1/anonymous denied, manual override restricted, AAL2 Super Admin creation and exact Set reuse work, reserved numbers link correctly, History/Audit exclude protected token material, all QA records rolled back, and automatic `000001` remains unused; local unauthenticated API smoke returns `401`.
 - Credential PDF Workflow live QA passed: 16 database role/lifecycle/primary/reason/privacy checks and 6 private Storage upload/signed URL/replacement/MIME checks passed; rollback/cleanup completed and automatic `000001` remains unused.
 - Credential Admin Workspace QA passed in an authenticated Owner/AAL2 browser session: empty real registries, five programme/two document-type references, pending-form guards, Sets/Number Log navigation, clean console, responsive 390 px layout without horizontal overflow, and `401` on all new list APIs without a Bearer token. No test record was created, so the automatic number remains unused.
-- WF-003 and WF-005..008 static verifiers, ADM-CRD-001/PCE-004 regressions, TypeScript, ESLint, and production build pass. Additive migration pushes succeeded, and dev/production histories match all 47 local migrations.
+- WF-003 and WF-005..008 static verifiers, ADM-CRD-001/PCE-004 regressions, TypeScript, ESLint, and production build pass. Additive migration pushes succeeded, and dev/production histories match all 50 local migrations.
 - WF-003 authenticated Owner/AAL2 browser smoke passed after migration: the real credential workspace loads without alerts, exposes the protected registry and guarded pending form, and creates no test record. The activation mutation was intentionally not exercised because no approved credential/PDF exists and document numbers are permanent; unauthenticated activation returns `401`.
 - All nine legal routes render full localized documents; their metadata is `noindex, follow`.
 - WF-008 real dev smoke passed for unknown number/token parity, no-store/noindex headers, anonymous direct-access denial, the 30-per-15-minute database limit, EN/UA/CZ routing, localized manual UI, 390 px responsive layout without horizontal overflow, and clean browser console. The dev registry is empty, so valid/revoked rendering awaits the first approved lifecycle E2E rather than consuming a fake permanent number.
@@ -103,5 +104,6 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
 - Telegram contact-alert delivery remains a deferred pre-launch check. Credential PDF delivery will move from the current Google Workspace implementation to the Owner-approved VEDOS SMTP path in a separate scoped alignment ticket. CAPTCHA provider setup is deferred by product decision and is not a blocker.
 - Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001..003, WF-005..008, and ADM-CRD-001 accepted at the documented dev level. WF-004 resend remains deferred to pre-launch because managers can correct an address and resend manually.
-- QA-001..004 are accepted at the documented dev level. QA-005 production foundation now has a separate Supabase project, 47/47 migration parity, approved seed data, anonymous RLS smoke, required server-table access, the single active production Owner, mandatory MFA, and non-mutating browser acceptance of all 11 protected admin modules. See `docs/qa/QA_005_PRODUCTION_OWNER_MFA_ADMIN_2026-08-12.md`.
+- QA-001..004 are accepted at the documented dev level. QA-005 production foundation now has a separate Supabase project, 50/50 migration parity, approved seed data, anonymous RLS smoke, required server-table access, the single active production Owner, mandatory MFA, and non-mutating browser acceptance of all 11 protected admin modules. See `docs/qa/QA_005_PRODUCTION_OWNER_MFA_ADMIN_2026-08-12.md`.
+- LRN-005 is accepted in production: 50/50 migration parity, real Owner/AAL2 preview and one-row atomic import, invalid-row exclusion, duplicate rejection by identity/email/phone, exact cleanup, and a final zero-learner state passed on 2026-08-13. See `docs/qa/LRN_005_PRODUCTION_ACCEPTANCE_2026-08-13.md`.
 - Remaining pre-launch work is operational: VEDOS credential-delivery alignment and acceptance, Telegram PCE-005, final CTA destinations, analytics/consent, database and private-PDF backup coverage, canonical-domain verification, and final physical-device/accessibility/cross-browser acceptance. Conditional CAPTCHA remains disabled unless abuse signals justify it.
