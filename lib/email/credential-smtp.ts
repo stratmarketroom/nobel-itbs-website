@@ -72,7 +72,7 @@ function smtpConfig(): CredentialSmtpConfig | null {
   if (!hostnamePattern.test(values.host as string) || !(values.host as string).endsWith('.wedos.net')) {
     throw new Error('Credential SMTP hostname is invalid.');
   }
-  if ((values.password as string).length < 12 || /[\r\n]/.test(values.password as string)) {
+  if (!(values.password as string).length || (values.password as string).length > 1_024 || /[\r\n]/.test(values.password as string)) {
     throw new Error('Credential SMTP password configuration is invalid.');
   }
 
