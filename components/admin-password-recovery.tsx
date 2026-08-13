@@ -2,12 +2,19 @@
 
 import Link from 'next/link';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { createClient } from '@supabase/supabase-js';
 
 type Phase = 'loading' | 'request' | 'update' | 'complete';
 
+function createRecoveryClient() {
+  const url = process.env.NEXT_PUBLIC_RECOVERY_SUPABASE_URL;
+  const publishableKey = process.env.NEXT_PUBLIC_RECOVERY_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !publishableKey) throw new Error('Production recovery configuration is missing.');
+  return createClient(url, publishableKey);
+}
+
 export function AdminPasswordRecovery() {
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const supabase = useMemo(() => createRecoveryClient(), []);
   const [phase, setPhase] = useState<Phase>('loading');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
