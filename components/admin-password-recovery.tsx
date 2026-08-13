@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-type Phase = 'loading' | 'request' | 'update' | 'complete';
+type Phase = 'loading' | 'request' | 'mfa' | 'update' | 'complete';
 
 function createRecoveryClient() {
   const url = process.env.NEXT_PUBLIC_RECOVERY_SUPABASE_URL;
@@ -17,17 +17,40 @@ export function AdminPasswordRecovery() {
   const supabase = useMemo(() => createRecoveryClient(), []);
   const [phase, setPhase] = useState<Phase>('loading');
   const [email, setEmail] = useState('');
+  const [factorId, setFactorId] = useState('');
+  const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  const routeRecoverySession = useCallback(async () => {
+    const assurance = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (assurance.error) throw assurance.error;
+    if (assurance.data.currentLevel === 'aal2') {
+      setPhase('update');
+      return;
+    }
+
+    const factors = await supabase.auth.mfa.listFactors();
+    if (factors.error) throw factors.error;
+    const verifiedFactor = factors.data.totp.find((candidate) => candidate.status === 'verified');
+    if (!verifiedFactor) throw new Error('No verified Authenticator factor is available for this account.');
+    setFactorId(verifiedFactor.id);
+    setPhase('mfa');
+  }, [supabase]);
+
   useEffect(() => {
     let active = true;
     const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!active) return;
-      if (event === 'PASSWORD_RECOVERY' || session) setPhase('update');
+      if (event === 'PASSWORD_RECOVERY' || session) {
+        void routeRecoverySession().catch((caughtError) => {
+          if (!active) return;
+          setError(caughtError instanceof Error ? caughtError.message : 'MFA could not be prepared.');
+        });
+      }
     });
     void supabase.auth.getSession().then(({ data, error: sessionError }) => {
       if (!active) return;
@@ -36,13 +59,44 @@ export function AdminPasswordRecovery() {
         setPhase('request');
         return;
       }
-      setPhase(data.session ? 'update' : 'request');
+      if (!data.session) {
+        setPhase('request');
+        return;
+      }
+      void routeRecoverySession().catch((caughtError) => {
+        if (!active) return;
+        setError(caughtError instanceof Error ? caughtError.message : 'MFA could not be prepared.');
+      });
     });
     return () => {
       active = false;
       listener.subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, [routeRecoverySession, supabase]);
+
+  async function verifyMfa(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      if (!factorId) throw new Error('MFA factor is not ready. Open a new recovery link.');
+      const verification = await supabase.auth.mfa.challengeAndVerify({
+        factorId,
+        code: code.trim(),
+      });
+      if (verification.error) throw verification.error;
+      const assurance = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (assurance.error) throw assurance.error;
+      if (assurance.data.currentLevel !== 'aal2') throw new Error('The recovery session is not AAL2 yet.');
+      setCode('');
+      setPhase('update');
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : 'MFA verification failed.');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function requestRecovery(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -107,6 +161,18 @@ export function AdminPasswordRecovery() {
           <input autoComplete="email" inputMode="email" onChange={(event) => setEmail(event.target.value)} required type="email" value={email} />
         </label>
         <button className="auth-submit" disabled={busy} type="submit">{busy ? 'Sending…' : 'Send new recovery link'}</button>
+      </form> : null}
+
+      {phase === 'mfa' ? <form className="auth-form" onSubmit={verifyMfa}>
+        <div className="auth-state">
+          <strong>Authenticator code required</strong>
+          <p>Enter the current 6-digit code from the Authenticator app already linked to this Owner account.</p>
+        </div>
+        <label>
+          <span>6-digit code</span>
+          <input autoComplete="one-time-code" inputMode="numeric" maxLength={6} minLength={6} onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))} pattern="[0-9]{6}" required value={code} />
+        </label>
+        <button className="auth-submit" disabled={busy} type="submit">{busy ? 'Verifying…' : 'Verify MFA'}</button>
       </form> : null}
 
       {phase === 'update' ? <form className="auth-form" onSubmit={updatePassword}>
