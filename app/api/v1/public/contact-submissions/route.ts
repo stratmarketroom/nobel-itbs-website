@@ -119,12 +119,9 @@ export async function POST(request: Request) {
     after(async () => {
       await sendContactSubmissionNotification({
         type: parsed.kind === 'programme' ? 'programme_question' : parsed.input.type,
-        name: input.name.trim(),
-        email: input.email.trim().toLowerCase(),
-        phone: input.phone.trim(),
-        message: input.message.trim(),
         locale: input.locale,
         programmeSlug: parsed.kind === 'programme' ? parsed.input.programmeSlug : undefined,
+        submittedAt: new Date().toISOString(),
       });
     });
 

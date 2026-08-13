@@ -8,7 +8,6 @@ const paths = {
   types: 'lib/contact/types.ts',
   adminModel: 'lib/contact/admin.ts',
   notification: 'lib/contact/notification.ts',
-  googleWorkspace: 'lib/email/google-workspace.ts',
   publicApi: 'app/api/v1/public/contact-submissions/route.ts',
   publicModel: 'lib/contact/public-enquiry.ts',
   publicForm: 'components/public-enquiry-form.tsx',
@@ -72,18 +71,10 @@ if (existsSync(paths.adminDetailApi)) {
 
 if (existsSync(paths.notification)) {
   const notification = readFileSync(paths.notification, 'utf8');
-  for (const snippet of ['CONTACT_NOTIFICATION_EMAIL', 'sendGoogleWorkspaceMessage', "return 'failed'"]) {
+  for (const snippet of ['TELEGRAM_BOT_TOKEN', 'api.telegram.org', "return 'failed'"]) {
     if (!notification.includes(snippet)) errors.push(`Contact notification missing required behavior: ${snippet}`);
   }
   if (/console\.(log|error)/.test(notification)) errors.push('Notification workflow must not log contact PII or provider errors.');
-}
-
-if (existsSync(paths.googleWorkspace)) {
-  const email = readFileSync(paths.googleWorkspace, 'utf8');
-  for (const snippet of ['GOOGLE_WORKSPACE_SERVICE_ACCOUNT_EMAIL', 'GOOGLE_WORKSPACE_PRIVATE_KEY', 'GOOGLE_WORKSPACE_DELEGATED_USER', 'gmail.send', 'AbortSignal.timeout']) {
-    if (!email.includes(snippet)) errors.push(`Google Workspace adapter missing required behavior: ${snippet}`);
-  }
-  if (/NEXT_PUBLIC_|console\.(log|error)/.test(email)) errors.push('Google Workspace configuration must remain server-only and must not be logged.');
 }
 
 if (existsSync(paths.publicApi)) {
@@ -138,8 +129,8 @@ if (existsSync(paths.publicEntryTest)) {
 
 if (existsSync('.env.example')) {
   const env = readFileSync('.env.example', 'utf8');
-  for (const name of ['CONTACT_NOTIFICATION_EMAIL=', 'GOOGLE_WORKSPACE_SERVICE_ACCOUNT_EMAIL=', 'GOOGLE_WORKSPACE_PRIVATE_KEY=', 'GOOGLE_WORKSPACE_DELEGATED_USER=']) {
-    if (!env.includes(name)) errors.push(`.env.example missing server email configuration: ${name}`);
+  for (const name of ['TELEGRAM_BOT_TOKEN=', 'TELEGRAM_CONTACT_CHAT_ID=', 'ADMIN_BASE_URL=']) {
+    if (!env.includes(name)) errors.push(`.env.example missing server notification configuration: ${name}`);
   }
 }
 
