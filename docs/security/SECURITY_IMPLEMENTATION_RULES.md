@@ -126,7 +126,7 @@ Private PDFs:
 - never public;
 - never downloadable by public verification users;
 - accessed by admins only through controlled routes;
-- sent to learners server-side through Gmail/Google Workspace.
+- sent to learners server-side through VEDOS SMTP.
 
 Old PDF versions are not retained by Release 1 requirement.
 
@@ -258,10 +258,9 @@ Audit must not store:
 
 Approved Release 1 integrations:
 
-- Gmail / Google Workspace;
+- VEDOS SMTP for credential delivery;
 - Leeloo outbound URLs;
 - CAPTCHA provider, implementation should be provider-replaceable;
 - analytics, without PII.
 
 Do not add new vendors without approval.
-

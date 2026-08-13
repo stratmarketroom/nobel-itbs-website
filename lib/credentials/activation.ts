@@ -8,7 +8,7 @@ import {
   type AdminContext,
 } from '@/lib/supabase/server';
 import { decryptCredentialVerificationUrl } from '@/lib/credentials/token';
-import { isGoogleWorkspaceConfigured, sendGoogleWorkspaceMessage } from '@/lib/email/google-workspace';
+import { isCredentialSmtpConfigured, sendCredentialSmtpMessage } from '@/lib/email/credential-smtp';
 import type {
   ActivateCredentialInput,
   ActivateCredentialResult,
@@ -131,9 +131,9 @@ export async function getCredentialActivationDraft(
 
 function deliveryFailure(error: unknown): string {
   const message = error instanceof Error ? error.message : '';
-  if (message.includes('configuration')) return 'Google Workspace configuration is incomplete.';
+  if (message.includes('configuration') || message.includes('configured')) return 'Credential email configuration is incomplete.';
   if (message.includes('PDF')) return 'One or more private PDF files could not be loaded for delivery.';
-  return 'Google Workspace delivery failed.';
+  return 'VEDOS SMTP delivery failed.';
 }
 
 async function finalize(
@@ -180,9 +180,9 @@ export async function activateCredential(
   let deliveryStatus: 'sent' | 'failed' | 'not_configured' = 'failed';
   let technicalError: string | null = null;
   try {
-    if (!isGoogleWorkspaceConfigured()) {
+    if (!isCredentialSmtpConfigured()) {
       deliveryStatus = 'not_configured';
-      technicalError = 'Google Workspace is not configured.';
+      technicalError = 'Credential SMTP is not configured.';
     } else {
       const storage = getSupabaseAdminClient().storage.from('private-credentials');
       const attachments = await Promise.all(files.map(async ({ file, manifest }) => {
@@ -194,14 +194,14 @@ export async function activateCredential(
           content: Buffer.from(await downloaded.data.arrayBuffer()),
         };
       }));
-      const sendResult = await sendGoogleWorkspaceMessage({
+      const sendResult = await sendCredentialSmtpMessage({
         to: input.recipientEmail as string,
         subject: input.subject,
         text: input.body,
         attachments,
       });
       deliveryStatus = sendResult === 'sent' ? 'sent' : 'not_configured';
-      technicalError = sendResult === 'sent' ? null : 'Google Workspace is not configured.';
+      technicalError = sendResult === 'sent' ? null : 'Credential SMTP is not configured.';
     }
   } catch (caughtError) {
     deliveryStatus = 'failed';

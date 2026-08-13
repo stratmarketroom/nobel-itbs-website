@@ -66,7 +66,7 @@ Expected stack:
 - Supabase;
 - PostgreSQL;
 - Supabase Storage;
-- Gmail / Google Workspace for credential email sending.
+- VEDOS SMTP for credential email sending.
 
 Use migrations for database changes.
 

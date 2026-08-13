@@ -13,8 +13,8 @@ Managers will receive optional one-way Telegram notifications instead of email
 copies. Telegram is intentionally not connected now and does not block LRN/CRD
 implementation.
 
-Google Workspace remains a separate future integration for sending credential
-PDFs to learners. It is not required for contact-submission notifications.
+VEDOS SMTP is the separate approved integration for sending credential PDFs to
+learners. It is not used for contact-submission notifications.
 
 ## Planned Runtime Configuration
 

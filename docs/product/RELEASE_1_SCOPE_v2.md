@@ -12,7 +12,7 @@ Release 1 must launch a professional, content-managed education platform that:
 - promotes programmes and drives applications/payments through Leeloo or approved partner websites;
 - manages programmes, content, learners, and credentials from an admin panel;
 - issues verifiable credentials with QR/document-number verification;
-- sends private credential PDFs to learners through Gmail/Google Workspace.
+- sends private credential PDFs to learners through the approved VEDOS SMTP mailbox.
 
 ## 2. In Scope
 
@@ -119,7 +119,7 @@ Release 1 must launch a professional, content-managed education platform that:
 ### Integrations
 
 - Leeloo outbound funnels and approved programme partner websites;
-- Gmail/Google Workspace sending;
+- VEDOS SMTP sending;
 - analytics events for CTA/contact/verification basics;
 - private Supabase Storage for credential PDFs.
 

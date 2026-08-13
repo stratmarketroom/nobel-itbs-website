@@ -646,7 +646,7 @@ Buckets:
 
 Public cannot access `private-credentials`.
 
-Credential PDFs are accessed through controlled server routes/signed URLs for admins and Gmail sending.
+Credential PDFs are accessed through controlled server routes/signed URLs for admins and server-side VEDOS SMTP sending.
 
 ## 14. Removed/Replaced From v1
 
