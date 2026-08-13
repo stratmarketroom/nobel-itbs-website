@@ -1,6 +1,40 @@
 import { jsonError, jsonOk } from '@/lib/api/responses';
 import { sendCredentialSmtpMessage } from '@/lib/email/credential-smtp';
-import { ApiError, assertCanManageUsers, getAdminContext } from '@/lib/supabase/server';
+import { ApiError } from '@/lib/supabase/server';
+import { createClient } from '@supabase/supabase-js';
+
+const ownerEmail = 'nobelitbs@gmail.com';
+
+function bearerToken(request: Request): string {
+  const authorization = request.headers.get('authorization') ?? '';
+  if (!authorization.startsWith('Bearer ')) throw new ApiError('unauthorized', 401, 'Authentication required.');
+  return authorization.slice(7).trim();
+}
+
+async function assertProductionOwnerAal2(request: Request): Promise<string> {
+  const url = process.env.NEXT_PUBLIC_RECOVERY_SUPABASE_URL;
+  const publishableKey = process.env.NEXT_PUBLIC_RECOVERY_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !publishableKey) throw new ApiError('server_error', 500, 'Production smoke authentication is not configured.');
+
+  const token = bearerToken(request);
+  const client = createClient(url, publishableKey, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
+  const verified = await client.auth.getUser(token);
+  const email = verified.data.user?.email?.trim().toLowerCase();
+  if (verified.error || email !== ownerEmail) throw new ApiError('forbidden', 403, 'Production Owner authentication required.');
+
+  const segments = token.split('.');
+  if (segments.length !== 3) throw new ApiError('unauthorized', 401, 'Invalid authentication token.');
+  let claims: { aal?: string };
+  try {
+    claims = JSON.parse(Buffer.from(segments[1], 'base64url').toString('utf8')) as { aal?: string };
+  } catch {
+    throw new ApiError('unauthorized', 401, 'Invalid authentication token.');
+  }
+  if (claims.aal !== 'aal2') throw new ApiError('forbidden', 403, 'AAL2 authentication required.');
+  return email;
+}
 
 function smokePdf(): Buffer {
   const content = 'BT /F1 18 Tf 72 720 Td (Nobel ITBS VEDOS SMTP transport smoke) Tj ET';
@@ -35,12 +69,7 @@ export async function POST(request: Request) {
       throw new ApiError('not_found', 404, 'Not found.');
     }
 
-    const context = await getAdminContext(request);
-    assertCanManageUsers(context);
-    const recipient = context.user.email?.trim().toLowerCase();
-    if (!recipient) {
-      throw new ApiError('bad_request', 400, 'The authenticated Owner account has no email address.');
-    }
+    const recipient = await assertProductionOwnerAal2(request);
 
     const sentAt = new Date().toISOString();
     const result = await sendCredentialSmtpMessage({
