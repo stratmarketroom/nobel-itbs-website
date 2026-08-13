@@ -192,7 +192,7 @@ Goal: complete issuance and verification workflow.
 Scope:
 
 - activation flow;
-- Gmail/Google Workspace sending;
+- VEDOS SMTP sending from the approved Nobel ITBS mailbox;
 - recipient email override;
 - empty recipient handling;
 - resend flow;

@@ -1,6 +1,6 @@
 # Nobel ITBS Release 1 — Project Master Checklist
 
-Last reviewed: 2026-08-12
+Last reviewed: 2026-08-13
 Baseline: v2 product, technical, security, sitemap, and implementation documents
 Purpose: keep implementation aligned with Release 1 and make the next non-design step unambiguous.
 
@@ -185,14 +185,14 @@ Stage status: **complete at the database/security-foundation level; CRD-001..006
 - [x] WF-001 actor-scoped pending credential creation: exact Set reuse, permanent automatic/manual number reservation, 256-bit token, HMAC lookup, AES-256-GCM encryption, safe QR URL response, History/Audit, MFA/RLS, and live rollback QA.
 - [x] WF-002 controlled private PDF list/upload/replace/metadata/primary/delete/signed URL workflow, valid-change reasons, lifecycle guards, compensating Storage rollback, History/Audit, and live DB/Storage QA.
 - [x] ADM-CRD-001 manager workspace over the accepted CRD/WF foundation: protected credential list/detail and creation form, private PDF operations, Credential Sets, permanent Number Log, History/Notes, real learner credential summaries, role navigation, authenticated Owner/MFA browser smoke, mobile QA, and unauthenticated `401` checks. No database migration and no later lifecycle action were added.
-- [x] WF-003 pending-only activation with primary-PDF/all-current-file guards, permanent number issuance, EN/UA editable delivery draft, private send history, Google Workspace PDF attachments, and failure-independent activation. Dev code/migration/UI QA passed; real provider acceptance remains operational until credentials are supplied.
+- [x] WF-003 pending-only activation with primary-PDF/all-current-file guards, permanent number issuance, EN/UA editable delivery draft, private send history, VEDOS SMTP PDF attachments, and failure-independent activation. Dev code/migration/UI QA and a Vercel Preview transport smoke passed; Production configuration and one approved real credential delivery remain operational acceptance work.
 - [ ] WF-004 resend with recipient override and history — intentionally deferred until after WF-008 or pre-launch. Interim workflow: update the learner email if needed and resend manually from the manager mailbox; the missing system resend-history entry is accepted for this interim period.
 - [x] WF-005 valid-only irreversible revoke with a mandatory private reason, actor/time fields, unchanged issued number, protected API/UI, History/Audit, MFA, and dev migration acceptance.
 - [x] WF-006 pending-only irreversible void with mandatory private reason, atomic reserved-number voiding, protected API/UI, History/Audit, MFA, and dev migration acceptance.
 - [x] WF-007 valid-only current public-data correction with complete bounded fields, mandatory private reason, no-op rejection, protected API/UI, detailed History, PII-minimal Audit, MFA, and dev migration acceptance.
 - [x] WF-008 server-mediated verification by QR token or document number only, with HMAC lookup, database-backed rate limiting, EN/UA/CZ UI, QR noindex, valid-only details, revoked status only, and pending/voided/absent not found.
 
-Stage status: **implemented at the current dev level except Owner-deferred WF-004 resend and the real Google Workspace delivery acceptance; WF-001..003, WF-005..008, and the manager workspace are complete**.
+Stage status: **implemented at the current dev level except Owner-deferred WF-004 resend and the real VEDOS SMTP production-delivery acceptance; WF-001..003, WF-005..008, and the manager workspace are complete**.
 
 ## Stage 8 — Contact Operations
 
@@ -200,7 +200,7 @@ Stage status: **implemented at the current dev level except Owner-deferred WF-00
 - [x] General, partnership, and organisation public entry points are implemented in EN/UA/CZ.
 - [x] Authenticated status processing, MFA/RLS boundaries, privacy-safe audit, validation, honeypot, and cleanup passed live dev QA.
 - [x] Database-backed five-per-15-minute rate limiting and CAPTCHA fail-closed server contract passed live dev QA.
-- [x] Notification-channel decision: contact alerts use Telegram, while Google Workspace is reserved for the later credential-delivery workflow.
+- [x] Notification-channel decision: contact alerts use Telegram, while VEDOS SMTP is reserved for credential delivery.
 - [ ] PCE-005: configure/test the one-way Telegram manager notification before launch; no webhook or inbound bot workflow is required.
 - [x] CAPTCHA remains an optional conditional control and is intentionally not connected now; configure/test it only if later enabled because of abuse signals.
 
@@ -219,7 +219,7 @@ Stage status: **core implementation and dev QA complete; Telegram notification i
   - [x] Add production-only secrets to Vercel, deploy, and run public Production smoke before connecting the domain; protected admin smoke remains in the next Auth/Owner/MFA item.
   - [x] Configure production Auth URLs, bootstrap the single Owner, enroll MFA, and repeat protected-route QA; the MFA-verified Owner session and all 11 protected admin modules passed non-mutating Production acceptance on 2026-08-12. See `docs/qa/QA_005_PRODUCTION_OWNER_MFA_ADMIN_2026-08-12.md`.
   - [x] Promote and acceptance-test LRN-005 in production; migration parity, Owner/AAL2 two-row preview, one-row atomic import, duplicate rejection, and exact cleanup passed on 2026-08-13. See `docs/qa/LRN_005_PRODUCTION_ACCEPTANCE_2026-08-13.md`.
-  - [ ] Align the approved VEDOS SMTP decision with the v2 documents and WF-003 implementation, then acceptance-test real credential delivery.
+  - [-] Align the approved VEDOS SMTP decision with the v2 documents and WF-003 implementation, then acceptance-test real credential delivery. Active documentation, code, provider mailbox, aliases, bidirectional Webmail delivery, and Vercel Preview transport are accepted; the Preview message reached Gmail in two seconds with its PDF, TLS, and SPF/DKIM/DMARC `PASS`. Production secret promotion and one explicitly approved real credential delivery remain.
   - [ ] Configure final CTA destinations, Telegram alert, analytics/consent, database plus private-PDF backups, canonical domain, and final responsive/accessibility/browser acceptance.
 - [-] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA. Vercel Production Chromium acceptance passed across the 27-route EN/UA/CZ mobile matrix and the 18-route desktop matrix, including `44 x 44` touch targets, localized shell, metadata, not-found handling, verification privacy, and no horizontal overflow. Physical-device, full accessibility, and cross-browser acceptance remain open. See `docs/qa/QA_005_MOBILE_TOUCH_TARGETS_2026-08-12.md` and `docs/qa/QA_005_PRODUCTION_PUBLIC_ACCEPTANCE_2026-08-12.md`.
 
@@ -256,13 +256,13 @@ The credential workflow stage is now open; external production integrations rema
 13. [x] **WF-001 Create Pending Credential** — actor-scoped API, exact Set reuse, permanent automatic/manual reservation, HMAC/AES-GCM token protection, safe QR URL response, History/Audit, MFA/RLS, and rollback-only live QA completed on 2026-08-09; see `docs/qa/WF_001_CREATE_PENDING_CREDENTIAL_QA_2026-08-09.md`.
 14. [x] **WF-002 Upload and Manage PDFs** — actor-scoped private upload/list/signed URL, replacement-in-place with compensating restore, metadata/primary workflow, lifecycle/reason rules, History/Audit, and live DB/Storage QA completed on 2026-08-09; see `docs/qa/WF_002_MANAGE_CREDENTIAL_FILES_QA_2026-08-09.md`.
 15. [x] **ADM-CRD-001 Credential Admin Workspace** — protected operational list/detail, pending creation form, private PDF controls, Sets, Number Log, History/Notes, real learner credential links, desktop/mobile browser QA, and `401` checks completed on 2026-08-09; see `docs/qa/ADM_CRD_001_CREDENTIAL_ADMIN_WORKSPACE_QA_2026-08-09.md`.
-16. [x] **WF-003 Activate and Email** — atomic pending-to-valid activation and number issuance, primary/all-current-PDF guards, editable EN/UA delivery draft, private outcome/file history, Google Workspace attachments, and failure-independent result handling completed at the current dev level on 2026-08-09; see `docs/qa/WF_003_ACTIVATE_AND_EMAIL_QA_2026-08-09.md`.
+16. [x] **WF-003 Activate and Email** — atomic pending-to-valid activation and number issuance, primary/all-current-PDF guards, editable EN/UA delivery draft, private outcome/file history, failure-independent result handling, and the later VEDOS SMTP provider alignment are complete at the current code level; see `docs/qa/WF_003_ACTIVATE_AND_EMAIL_QA_2026-08-09.md` and `docs/qa/QA_005_VEDOS_SMTP_ALIGNMENT_2026-08-13.md`.
 17. [x] **WF-005 Revoke** — protected valid-only irreversible transition with a mandatory private reason, actor/time fields, unchanged issued number, History/Audit, UI confirmation, and synced dev migration completed on 2026-08-10; see `docs/qa/WF_005_REVOKE_CREDENTIAL_QA_2026-08-10.md`.
 18. [x] **WF-006 Void Pending** — protected pending-only irreversible transition, atomic permanent voiding of its reserved number, mandatory private reason, History/Audit, progressive UI confirmation, and synced dev migration completed on 2026-08-10; see `docs/qa/WF_006_VOID_PENDING_CREDENTIAL_QA_2026-08-10.md`.
 19. [x] **WF-007 Update Valid Public Data** — protected valid-only correction of holder name, programme title, and document type, with no-op rejection, mandatory private reason, detailed History, PII-minimal Audit, responsive manager UI, and synced dev migration completed on 2026-08-10; see `docs/qa/WF_007_UPDATE_VALID_PUBLIC_DATA_QA_2026-08-10.md`.
 20. [x] **WF-008 Public Verification** — server-mediated QR/document-number API, HMAC token lookup, persistent rate limiting, approved privacy projection, localized UI, QR noindex, and dev smoke completed on 2026-08-10; see `docs/qa/WF_008_PUBLIC_VERIFICATION_QA_2026-08-10.md`.
 21. **Return to WF-004 Resend Credential after WF-008 or during pre-launch hardening** — until then, managers may correct the learner email and resend manually from their mailbox; a previous send-history row remains immutable.
-22. Before launch, complete PCE-005 Telegram manager notifications; configure and acceptance-test Google Workspace separately only for credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
+22. Before launch, complete PCE-005 Telegram manager notifications; promote the accepted encrypted VEDOS SMTP configuration to Production and acceptance-test one approved real credential PDF delivery; revisit conditional CAPTCHA only if abuse signals justify enabling it.
 23. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, CRD-001..006, WF-001..003, WF-005..008, and ADM-CRD-001 layers.
 24. [x] **QA-001 RLS Tests** — aggregate coverage now protects all 36 public tables, four roles, MFA/service boundaries, private Storage, and controlled RPCs; non-mutating live anonymous QA passed on 2026-08-10. See `docs/qa/QA_001_RLS_MATRIX_2026-08-10.md`; execute its complete pgTAP file when a compatible database runner is available.
 25. [x] **QA-003 MFA Tests** — the four-role/AAL matrix, server guards, private RLS policies, credential/PDF functions, fresh Owner AAL1 state, verified TOTP enrollment, and 11 sensitive-route denials passed on 2026-08-10. See `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.

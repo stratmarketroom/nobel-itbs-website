@@ -638,7 +638,7 @@ For UA documents use Ukrainian full name.
 
 ## 13. Email Sending
 
-Gmail / Google Workspace is used for sending credential PDFs.
+VEDOS SMTP is used for sending credential PDFs from the approved Nobel ITBS mailbox.
 
 Emails are sent from one general Nobel ITBS address, not from the individual admin address.
 
@@ -766,7 +766,7 @@ The following original v1 assumptions must be updated:
 8. Pending/voided public result behaves as not found.
 9. Private PDF files are required in Release 1, but public PDF download is not.
 10. Activation includes email send attempt but is not blocked by email failure.
-11. Gmail/Google Workspace integration is required.
+11. VEDOS SMTP integration for credential delivery is required.
 12. Learner emails and phones become multi-value unique contact entities.
 13. Roles become multi-role with separate Owner role/flag.
 14. Site language prefixes become `/ua` and `/cz`, English without prefix.

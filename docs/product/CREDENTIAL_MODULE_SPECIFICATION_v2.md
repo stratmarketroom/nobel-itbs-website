@@ -21,7 +21,7 @@ Included:
 - QR token generation;
 - private PDF upload;
 - activation;
-- Gmail/Google Workspace email sending;
+- VEDOS SMTP email sending;
 - resend;
 - public verification;
 - revoke;
@@ -368,7 +368,7 @@ If recipient email is empty, send history records that no email was sent because
 
 Provider:
 
-- Gmail / Google Workspace.
+- VEDOS SMTP through the approved Nobel ITBS mailbox.
 
 Sender:
 

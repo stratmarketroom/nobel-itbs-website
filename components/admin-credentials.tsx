@@ -269,9 +269,9 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
         }),
       });
       const copy = {
-        sent: 'Credential activated and all current PDFs sent.',
+        sent: 'Credential activated and the mail server accepted all current PDFs for delivery.',
         failed: `Credential activated. Delivery failed: ${payload.activation.delivery.technicalError ?? 'provider error'}`,
-        not_configured: 'Credential activated. Google Workspace is not configured, so no email was sent.',
+        not_configured: 'Credential activated. Credential email is not configured, so no email was sent.',
         skipped_empty_recipient: 'Credential activated without email because the recipient was empty.',
         pending: 'Credential activated, but the delivery result could not be finalized. Do not activate again.',
       }[payload.activation.delivery.status];
@@ -378,7 +378,7 @@ function ActivationForm({ credential, saving, onActivate }: {
     <label><span>Recipient email <small>optional</small></span><input name="recipientEmail" type="email" defaultValue={draft.recipientEmail} placeholder="Leave empty to activate without email" /></label>
     <label><span>Email subject</span><input name="subject" required maxLength={180} defaultValue={draft.subject} /></label>
     <label><span>Email body <small>{draft.templateLanguage.toUpperCase()} template, editable for this send</small></span><textarea name="body" required maxLength={20000} defaultValue={draft.body} /></label>
-    <footer><span>Activation succeeds even when the recipient is empty or Google Workspace fails.</span><button type="submit" disabled={saving || !draft.hasPrimaryPdf}>{saving ? 'Activating…' : 'Activate credential'}</button></footer>
+    <footer><span>Activation succeeds even when the recipient is empty or email delivery fails.</span><button type="submit" disabled={saving || !draft.hasPrimaryPdf}>{saving ? 'Activating…' : 'Activate credential'}</button></footer>
   </form>;
 }
 

@@ -107,6 +107,7 @@ function AccessState({
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isPublicAuthPath = pathname === '/admin/login';
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [state, setState] = useState<ShellState>('loading');
   const [admin, setAdmin] = useState<AdminContext | null>(null);
@@ -153,17 +154,17 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }, [pathname, supabase]);
 
   useEffect(() => {
-    if (pathname === '/admin/login') return;
+    if (isPublicAuthPath) return;
     const task = window.setTimeout(() => void load(), 0);
     return () => window.clearTimeout(task);
-  }, [load, pathname]);
+  }, [isPublicAuthPath, load]);
 
   async function signOut() {
     await supabase.auth.signOut();
     window.location.assign('/admin/login');
   }
 
-  if (pathname === '/admin/login') return children;
+  if (isPublicAuthPath) return children;
 
   if (state === 'loading') {
     return (

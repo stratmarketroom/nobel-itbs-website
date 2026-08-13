@@ -202,7 +202,7 @@ Bucket `private-credentials`:
 - no Content Manager access;
 - Owner/Super Admin/Credential Manager through controlled routes;
 - signed URLs only when needed;
-- Gmail sending is server-side.
+- VEDOS SMTP sending is server-side.
 
 Old PDF versions are not retained by product requirement.
 

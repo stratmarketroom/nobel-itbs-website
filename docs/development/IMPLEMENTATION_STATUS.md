@@ -7,7 +7,7 @@ This is the current implementation record. The v2 product and technical specific
 ## Current Branch
 
 - The stabilization branch was merged into `main` through PR #1.
-- Current focused branch: `codex/lrn-005-production-acceptance`.
+- Current focused branch: `codex/qa-005-vedos-smtp`.
 - No direct push to `main` is used.
 
 ## Supabase Dev Project
@@ -53,7 +53,7 @@ All 50 local SQL migrations through `20260812110000_lrn_005_learner_import.sql` 
 - Lifecycle-aware PDF rules: valid changes require History/Audit reason and retain a primary PDF; revoked/voided mutations and valid deletion are denied.
 - Protected Credential Admin Workspace with role-aware navigation, actor-scoped list/detail/reference APIs, pending creation form, current private PDF controls, read-only Credential Sets and permanent Number Log, append-only History, controlled Notes, and no premature activation/revoke/void/resend/public-verification actions.
 - Atomic pending-to-valid credential activation with primary-PDF and complete-current-file guards, permanent number issuance, editable EN/UA delivery drafts, and permanent private delivery outcome/file manifests.
-- Server-only AES-256-GCM verification-token decryption for the email verification URL and Google Workspace MIME delivery of all current private PDFs. Missing recipient, missing provider configuration, or provider failure never rolls back an already successful activation.
+- Server-only AES-256-GCM verification-token decryption for the email verification URL and VEDOS SMTP delivery of all current private PDFs. Missing recipient, missing provider configuration, or provider failure never rolls back an already successful activation.
 - Pending-only activation, irreversible valid revocation, irreversible pending void, controlled valid public-data correction, and private email-delivery history are integrated into the protected Credential Admin Workspace. Resend remains intentionally deferred.
 - Server-mediated public verification by document number or QR token with HMAC lookup, persistent rate limiting, strict valid/revoked/not-found privacy projection, localized EN/UA/CZ pages, and noindex QR/results.
 
@@ -92,8 +92,8 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 - Leeloo URLs are still required for General Psychology, Child Psychology, and Space Business.
 - The AI Production partner URL is intentionally pending; its CTA currently uses the question fallback.
 - The For Organisations application URL remains an Owner/Super Admin setting and needs its final destination.
-- Contact notifications will use a one-way Telegram bot and private manager chat under deferred pre-launch ticket PCE-005; Google Workspace is not required for contact alerts.
-- The Owner approved VEDOS SMTP for credential delivery instead of Google Workspace. Current v2 documents and WF-003 code still use Google Workspace; align them in a separate scoped ticket before the first real delivery acceptance test. Until then, WF-003 records `not_configured` without undoing activation.
+- Contact notifications will use a one-way Telegram bot and private manager chat under deferred pre-launch ticket PCE-005; VEDOS SMTP is reserved for credential delivery and is not used for contact alerts.
+- `QA-005-EMAIL-001` aligns the active v2 documents and WF-003 code with the Owner-approved VEDOS SMTP mailbox `documents@nobel-itbs.eu`. Provider-side bidirectional Webmail delivery, aliases, and authentication passed. A Vercel Preview credential-transport smoke with a non-sensitive PDF reached Gmail in two seconds with SPF/DKIM/DMARC `PASS` and TLS on 2026-08-13. Production secret promotion and the first explicitly approved real credential delivery remain operational acceptance dependencies.
 - Production forms require a strong rate-limit secret. CAPTCHA is intentionally conditional and remains unconfigured until abuse signals justify enabling it.
 - Production verification should use an independent `CREDENTIAL_VERIFICATION_RATE_LIMIT_SECRET`; local development has an ignored dev-only value and the server supports the existing contact secret only as a backward-compatible fallback.
 - Czech native-language review remains an external editorial check where noted in the approved source files.
@@ -102,8 +102,8 @@ The SQL migrations are applied and smoke-tested against dev, but the complete lo
 
 - The Owner-approved Home visual layer is integrated into the structured Supabase-backed Home. Forward-only migration `20260811130000_cnt_003_correct_home_content.sql` corrected the production EN/UA/CZ Home payloads and browser QA confirmed three areas, four trust items, four process steps, and localized verification fields. Owner Vercel Preview acceptance remains required; rejected PR #3 must not be merged.
 - Programme, partner, expert, content, settings, user/role, and contact manager operations have passed authenticated role and mutation QA.
-- Telegram contact-alert delivery remains a deferred pre-launch check. Credential PDF delivery will move from the current Google Workspace implementation to the Owner-approved VEDOS SMTP path in a separate scoped alignment ticket. CAPTCHA provider setup is deferred by product decision and is not a blocker.
+- Telegram contact-alert delivery remains a deferred pre-launch check. Credential PDF delivery is aligned in code and active documentation with the Owner-approved VEDOS SMTP path, and Vercel Preview transport acceptance passed; Production secret promotion and real delivery acceptance remain. CAPTCHA provider setup is deferred by product decision and is not a blocker.
 - Stage 5 Learner Foundation and Stage 6 Credential Core are complete. Stage 7 has WF-001..003, WF-005..008, and ADM-CRD-001 accepted at the documented dev level. WF-004 resend remains deferred to pre-launch because managers can correct an address and resend manually.
 - QA-001..004 are accepted at the documented dev level. QA-005 production foundation now has a separate Supabase project, 50/50 migration parity, approved seed data, anonymous RLS smoke, required server-table access, the single active production Owner, mandatory MFA, and non-mutating browser acceptance of all 11 protected admin modules. See `docs/qa/QA_005_PRODUCTION_OWNER_MFA_ADMIN_2026-08-12.md`.
 - LRN-005 is accepted in production: 50/50 migration parity, real Owner/AAL2 preview and one-row atomic import, invalid-row exclusion, duplicate rejection by identity/email/phone, exact cleanup, and a final zero-learner state passed on 2026-08-13. See `docs/qa/LRN_005_PRODUCTION_ACCEPTANCE_2026-08-13.md`.
-- Remaining pre-launch work is operational: VEDOS credential-delivery alignment and acceptance, Telegram PCE-005, final CTA destinations, analytics/consent, database and private-PDF backup coverage, canonical-domain verification, and final physical-device/accessibility/cross-browser acceptance. Conditional CAPTCHA remains disabled unless abuse signals justify it.
+- Remaining pre-launch work is operational: VEDOS Production configuration plus real credential-delivery acceptance, Telegram PCE-005, final CTA destinations, analytics/consent, database and private-PDF backup coverage, canonical-domain verification, and final physical-device/accessibility/cross-browser acceptance. Conditional CAPTCHA remains disabled unless abuse signals justify it.

@@ -92,7 +92,7 @@ Owns:
 - Supabase data access layer;
 - public verification routes;
 - credential workflows;
-- Gmail/Google Workspace integration;
+- VEDOS SMTP integration for credential delivery;
 - Leeloo and partner-site CTA support.
 
 Starts after relevant database schema exists.
@@ -215,7 +215,7 @@ Allowed parallelism:
 Blocked:
 
 - credential registry workflows;
-- Gmail integration.
+- credential-email provider integration.
 
 Owner checkpoint:
 
@@ -358,7 +358,7 @@ Parallel work:
 
 Owner checkpoint:
 
-- provide/confirm Gmail or Google Workspace integration path;
+- provide/confirm the VEDOS mailbox and server-only SMTP integration path;
 - review public verification result UI.
 
 Orchestrator checks:
@@ -486,8 +486,8 @@ Parallel agents:
 
 Owner action needed:
 
-- provide or approve production-only service configuration when its checklist item is reached; do not add Google Workspace, Telegram, analytics, or CAPTCHA credentials before the corresponding launch decision;
+- provide or approve production-only service configuration when its checklist item is reached; do not add VEDOS SMTP, Telegram, analytics, or CAPTCHA credentials before the corresponding launch decision;
 - QA-001 and QA-003 implementation/current dev acceptance are complete; their full pgTAP execution remains queued for a compatible database runner;
 - QA-002 and QA-004 are complete at the current dev level: the retained credential passed valid verification, irreversible revocation, and status-only revoked verification by number and QR;
 - WF-004 resend is intentionally deferred because managers can correct the learner email and resend manually during the interim period;
-- Google Workspace credentials remain required only if real credential-email delivery is enabled and acceptance-tested under QA-005.
+- VEDOS SMTP credentials remain required only in encrypted deployment settings for real credential-email delivery and QA-005 acceptance.

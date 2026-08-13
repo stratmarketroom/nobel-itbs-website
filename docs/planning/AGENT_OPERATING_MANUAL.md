@@ -193,7 +193,7 @@ Depending on ticket phase, agents may need:
 - database test tooling;
 - ESLint/Prettier;
 - Playwright;
-- Gmail/Google Workspace credentials for integration stage;
+- VEDOS mailbox/SMTP credentials for the credential-delivery integration stage;
 - Leeloo test URLs for CTA validation;
 - CAPTCHA provider configuration only if the conditional anti-spam control is explicitly enabled; it is otherwise not a launch blocker.
 

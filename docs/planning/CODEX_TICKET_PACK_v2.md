@@ -297,7 +297,7 @@ WF-002 Upload and Manage PDFs
 WF-003 Activate and Email
 
 - activation;
-- Gmail/Google Workspace send;
+- VEDOS SMTP send from the approved Nobel ITBS mailbox;
 - success independent of email result.
 
 WF-004 Resend Credential
@@ -362,7 +362,7 @@ QA-004 End-to-End Admin Flows
 QA-005 Launch Checklist
 
 - env vars;
-- Gmail;
+- VEDOS SMTP credential delivery;
 - Leeloo;
 - CAPTCHA/rate limits;
 - analytics;

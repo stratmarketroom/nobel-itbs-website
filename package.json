@@ -72,6 +72,7 @@
     "verify:qa-005:production-grants": "node scripts/verify-qa-005-production-grants.mjs",
     "verify:qa-005:production-grants:live": "node scripts/verify-qa-005-production-grants-live.mjs",
     "verify:qa-005:html-language": "node scripts/verify-html-language.mjs",
+    "verify:qa-005:vedos-smtp": "node scripts/verify-qa-005-vedos-smtp.mjs",
     "verify:adm-crd-001": "node scripts/verify-adm-crd-001.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
@@ -81,6 +82,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.5",
@@ -92,6 +94,7 @@
     "@supabase/supabase-js": "^2.110.9",
     "exceljs": "^4.4.0",
     "next": "^16.2.12",
+    "nodemailer": "^9.0.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

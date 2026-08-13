@@ -8,7 +8,7 @@ const files = {
   input: 'lib/credentials/activation-input.ts',
   types: 'lib/credentials/activation-types.ts',
   token: 'lib/credentials/token.ts',
-  email: 'lib/email/google-workspace.ts',
+  email: 'lib/email/credential-smtp.ts',
   workspace: 'lib/credentials/workspace.ts',
   workspaceTypes: 'lib/credentials/workspace-types.ts',
   component: 'components/admin-credentials.tsx',
@@ -70,10 +70,10 @@ if (!errors.length) {
     'getSupabaseRequestClient',
     "db.rpc('activate_credential'",
     "row.email_status === 'skipped_empty_recipient'",
-    'isGoogleWorkspaceConfigured()',
+    'isCredentialSmtpConfigured()',
     "getSupabaseAdminClient().storage.from('private-credentials')",
     'Promise.all(files.map',
-    'sendGoogleWorkspaceMessage({',
+    'sendCredentialSmtpMessage({',
     'attachments,',
     "db.rpc('complete_credential_email_send'",
     "status: resultRecorded ? deliveryStatus : 'pending'",
@@ -83,7 +83,7 @@ if (!errors.length) {
   const authorizationIndex = source.service.indexOf('assertCanManageCredentials');
   const activationIndex = source.service.indexOf("db.rpc('activate_credential'");
   const storageIndex = source.service.indexOf("getSupabaseAdminClient().storage.from('private-credentials')");
-  const providerIndex = source.service.indexOf('sendGoogleWorkspaceMessage({');
+  const providerIndex = source.service.indexOf('sendCredentialSmtpMessage({');
   if (authorizationIndex < 0 || activationIndex < 0 || storageIndex < 0 || providerIndex < 0
     || authorizationIndex > activationIndex || activationIndex > storageIndex || storageIndex > providerIndex) {
     errors.push('Actor authorization and atomic activation must happen before private Storage and provider access.');
@@ -95,8 +95,23 @@ if (!errors.length) {
   for (const snippet of ['createDecipheriv', 'aes-256-gcm', 'storedKeyVersion !== keyVersion', '/verify/', 'encodeURIComponent(token)']) {
     if (!source.token.includes(snippet)) errors.push(`WF-003 secure verification-link rendering missing: ${snippet}`);
   }
-  for (const snippet of ['attachments?: Array', 'multipart/mixed', 'Content-Disposition: attachment', "contentType: 'application/pdf'", 'isGoogleWorkspaceConfigured', 'gmail.googleapis.com/gmail/v1/users/me/messages/send']) {
-    if (!source.email.includes(snippet)) errors.push(`WF-003 Google Workspace adapter missing: ${snippet}`);
+  for (const snippet of [
+    "import nodemailer from 'nodemailer'",
+    "contentType: 'application/pdf'",
+    'isCredentialSmtpConfigured',
+    'sendCredentialSmtpMessage',
+    'requireTLS: !config.secure',
+    "minVersion: 'TLSv1.2'",
+    'rejectUnauthorized: true',
+    'connectionTimeout: 5_000',
+    'await smtp.sendMail',
+    'result.accepted',
+    'result.rejected',
+  ]) {
+    if (!source.email.includes(snippet)) errors.push(`WF-003 VEDOS SMTP adapter missing: ${snippet}`);
+  }
+  if (/NEXT_PUBLIC_|console\.(?:log|info|warn|error)|rejectUnauthorized:\s*false/.test(source.email)) {
+    errors.push('Credential SMTP secrets must remain server-only, unlogged, and certificate verification must stay enabled.');
   }
 
   for (const snippet of [
@@ -126,7 +141,17 @@ if (!errors.length) {
   for (const snippet of ['select plan(40);', 'credential manager', 'mfa', 'pending-only', 'primary pdf', 'every current file', 'permanent document number', 'empty recipient', 'history', 'audit', 'anonymous', 'immutable', 'select * from finish();']) {
     if (!test.includes(snippet)) errors.push(`WF-003 database test missing coverage: ${snippet}`);
   }
-  for (const name of ['GOOGLE_WORKSPACE_SERVICE_ACCOUNT_EMAIL=', 'GOOGLE_WORKSPACE_PRIVATE_KEY=', 'GOOGLE_WORKSPACE_DELEGATED_USER=', 'PUBLIC_SITE_URL=']) {
+  for (const name of [
+    'CREDENTIAL_SMTP_HOST=',
+    'CREDENTIAL_SMTP_PORT=',
+    'CREDENTIAL_SMTP_SECURE=',
+    'CREDENTIAL_SMTP_USERNAME=',
+    'CREDENTIAL_SMTP_PASSWORD=',
+    'CREDENTIAL_EMAIL_FROM=',
+    'CREDENTIAL_EMAIL_FROM_NAME=',
+    'CREDENTIAL_EMAIL_REPLY_TO=',
+    'PUBLIC_SITE_URL=',
+  ]) {
     if (!source.env.includes(name)) errors.push(`.env.example missing server configuration: ${name}`);
   }
 }
