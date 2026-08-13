@@ -40,7 +40,7 @@ function bytes(value: number): string {
   return `${(value / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function AdminCredentials({ smtpSmokeEnabled = false }: { smtpSmokeEnabled?: boolean }) {
+export function AdminCredentials() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [tab, setTab] = useState<WorkspaceTab>('credentials');
   const [detailTab, setDetailTab] = useState<DetailTab>('summary');
@@ -175,20 +175,6 @@ export function AdminCredentials({ smtpSmokeEnabled = false }: { smtpSmokeEnable
     if (success) setNotice({ kind: 'success', message: success });
   }
 
-  async function sendSmtpSmoke() {
-    if (!window.confirm('Send one VEDOS SMTP transport-smoke message with a non-sensitive test PDF to your authenticated Owner email?')) return;
-    setSaving(true);
-    setNotice(null);
-    try {
-      const payload = await request<{ smoke: { recipient: string; sentAt: string } }>('/api/v1/admin/credential-email-smoke', { method: 'POST' });
-      setNotice({ kind: 'success', message: `VEDOS SMTP accepted the Preview smoke message for ${payload.smoke.recipient} at ${payload.smoke.sentAt}.` });
-    } catch (error) {
-      setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'VEDOS SMTP transport smoke failed.' });
-    } finally {
-      setSaving(false);
-    }
-  }
-
   return <main className="credential-admin-shell">
     <header className="admin-module-header"><div><p className="admin-kicker">Credential registry</p><h1>Credentials</h1><p>Create pending documents, manage private PDFs, review permanent numbers, sets, history, and internal notes.</p></div></header>
     <nav className="credential-workspace-tabs" aria-label="Credential registry sections">
@@ -201,7 +187,6 @@ export function AdminCredentials({ smtpSmokeEnabled = false }: { smtpSmokeEnable
       <div className="credential-toolbar">
         <label><span>Search</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Number, learner, programme" /></label>
         <label><span>Status</span><select value={status} onChange={(event) => setStatus(event.target.value as typeof status)}><option value="all">All statuses</option>{Object.entries(statusLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
-        {smtpSmokeEnabled ? <button type="button" disabled={saving} onClick={() => void sendSmtpSmoke()}>{saving ? 'Sending smoke…' : 'Send SMTP smoke'}</button> : null}
         <button type="button" onClick={() => { setCreating(true); setSelectedId(null); setNotice(null); }}>Create pending credential</button>
         <span>{loading ? 'Loading…' : `${filtered.length} shown`}</span>
       </div>

@@ -107,7 +107,7 @@ function AccessState({
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isPublicAuthPath = pathname === '/admin/login' || pathname === '/admin/reset-password' || pathname === '/admin/smtp-smoke';
+  const isPublicAuthPath = pathname === '/admin/login';
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [state, setState] = useState<ShellState>('loading');
   const [admin, setAdmin] = useState<AdminContext | null>(null);

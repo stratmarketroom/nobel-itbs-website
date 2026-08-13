@@ -15,10 +15,13 @@ The Owner created and verified `documents@nobel-itbs.eu` with the display name
 acceptance evidence confirmed outbound delivery to Gmail, an inbound reply,
 alias delivery, inbox placement, and `PASS` results for SPF, DKIM, and DMARC.
 
-Code-level alignment is complete. Encrypted Vercel configuration, a
-Vercel-origin transport smoke, and the first approved real credential delivery
-remain operational acceptance steps; no real credential or permanent document
-number was created for this alignment ticket.
+Code-level alignment and Vercel Preview transport acceptance are complete. A
+controlled Preview send from the credential SMTP adapter reached the
+Owner-controlled Gmail inbox with the test PDF in two seconds; Gmail reported
+SPF, DKIM, and DMARC `PASS` and TLS transport. The first explicitly approved
+real credential delivery remains the final production acceptance step. No real
+credential, permanent document number, or database record was created or
+changed by the transport smoke.
 
 ## Files Changed
 
@@ -54,6 +57,8 @@ not require a migration.
   configuration, and invalid sender/recipient headers are rejected;
 - TLS requires at least TLS 1.2 with certificate verification enabled;
 - connection, greeting, and socket timeouts are bounded;
+- provider-valid non-empty SMTP passwords are accepted without imposing an
+  application-specific minimum length; CR/LF and oversized values are rejected;
 - sender is `Nobel ITBS <documents@nobel-itbs.eu>` and replies return to the
   same mailbox;
 - all current private PDFs remain server-loaded and attached;
@@ -85,10 +90,20 @@ Provider-side Owner acceptance passed:
 - Gmail original-message authentication summary: SPF `PASS`, DKIM `PASS`,
   DMARC `PASS`.
 
+Vercel Preview transport acceptance passed:
+
+- encrypted Preview-only SMTP configuration was read by the deployed server;
+- the credential SMTP adapter authenticated to `wes1-smtp.wedos.net:587` with
+  STARTTLS and submitted the controlled message;
+- Gmail received `Nobel ITBS <documents@nobel-itbs.eu>` with
+  `nobel-itbs-vedos-smtp-smoke.pdf` in two seconds;
+- Gmail reported SPF `PASS` for `46.28.106.15`, DKIM `PASS` for
+  `shared.dkim-wes1.wedos.net`, DMARC `PASS`, and standard TLS;
+- the test route was Preview-only, required the production Owner plus AAL2,
+  performed no database operation, and was removed after acceptance.
+
 Not yet run:
 
-- SMTP authentication/connectivity from a Vercel Function;
-- a Vercel-origin smoke message with a non-sensitive test PDF;
 - real WF-003 credential activation/delivery using the approved mailbox.
 
 ## Security Notes
@@ -103,6 +118,9 @@ Not yet run:
 - Private PDFs remain unavailable to public/browser clients.
 - History/Audit still store only bounded outcome metadata and file counts, not
   recipient/message text or private file content.
+- Temporary Preview password-recovery and transport-smoke routes were removed
+  after the accepted send; temporary recovery configuration is not part of the
+  application baseline.
 
 ## Deviations / Open Questions
 
@@ -114,8 +132,7 @@ Not yet run:
 
 ## Next Dependency
 
-Add the approved `CREDENTIAL_SMTP_*` and `CREDENTIAL_EMAIL_*` values to the
-Vercel Preview environment, with the mailbox password entered directly by the
-Owner. Run one Vercel-origin transport smoke to the approved Owner-controlled
-recipient. Only after that passes, promote the same encrypted configuration to
-Production and perform one explicitly approved real credential delivery.
+After Owner approval, promote the accepted encrypted `CREDENTIAL_SMTP_*` and
+`CREDENTIAL_EMAIL_*` configuration from Vercel Preview to Production, deploy
+the reviewed branch, and perform one explicitly approved real WF-003 credential
+delivery. Do not create a test credential solely for this purpose.
