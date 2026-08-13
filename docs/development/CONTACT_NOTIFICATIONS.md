@@ -2,23 +2,25 @@
 
 Decision date: 2026-08-07
 
-Current ticket: PCE-004 (admin storage and processing complete)
+Current ticket: PCE-005 (Telegram manager notifications)
 
-Deferred ticket: PCE-005 (Telegram manager notifications before launch)
+Implementation status: code complete; deployment configuration and real
+transport acceptance pending
 
 ## Channel Decision
 
 The protected admin area is the source of truth for every contact submission.
 Managers will receive optional one-way Telegram notifications instead of email
-copies. Telegram is intentionally not connected now and does not block LRN/CRD
-implementation.
+copies. The server-only adapter is implemented and remains inert when all three
+Telegram variables are absent. Telegram delivery does not block or undo an
+accepted contact submission.
 
 VEDOS SMTP is the separate approved integration for sending credential PDFs to
 learners. It is not used for contact-submission notifications.
 
-## Planned Runtime Configuration
+## Runtime Configuration
 
-PCE-005 will require server-only deployment secrets:
+PCE-005 requires server-only deployment values:
 
 - `TELEGRAM_BOT_TOKEN`: token for a dedicated Nobel ITBS notification bot;
 - `TELEGRAM_CONTACT_CHAT_ID`: private manager chat that receives notifications;
@@ -38,6 +40,10 @@ values. The bot must be limited to the approved private manager chat.
 5. Missing configuration or a Telegram error never deletes or rejects an
    accepted submission and never exposes provider errors publicly.
 6. Release 1 needs no Telegram webhook or inbound bot commands.
+
+The previous dormant Google Workspace contact-email adapter and its environment
+contract were removed. This does not affect VEDOS credential delivery, which is
+a separate integration.
 
 ## Pre-launch Acceptance
 
