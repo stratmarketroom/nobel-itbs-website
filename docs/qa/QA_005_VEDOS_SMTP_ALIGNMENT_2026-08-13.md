@@ -15,13 +15,16 @@ The Owner created and verified `documents@nobel-itbs.eu` with the display name
 acceptance evidence confirmed outbound delivery to Gmail, an inbound reply,
 alias delivery, inbox placement, and `PASS` results for SPF, DKIM, and DMARC.
 
-Code-level alignment and Vercel Preview transport acceptance are complete. A
+Code-level alignment, Vercel Preview transport acceptance, encrypted Production
+configuration, merge, and Production deployment acceptance are complete. A
 controlled Preview send from the credential SMTP adapter reached the
 Owner-controlled Gmail inbox with the test PDF in two seconds; Gmail reported
-SPF, DKIM, and DMARC `PASS` and TLS transport. The first explicitly approved
-real credential delivery remains the final production acceptance step. No real
-credential, permanent document number, or database record was created or
-changed by the transport smoke.
+SPF, DKIM, and DMARC `PASS` and TLS transport. PR #12 was merged and Vercel
+Production deployment `1dcd168` reached `Ready`; the public site loaded and the
+removed QA routes returned `404`. The first explicitly approved real credential
+delivery remains the final mail acceptance step. No real credential, permanent
+document number, or database record was created or changed by the transport
+smoke.
 
 ## Files Changed
 
@@ -102,6 +105,15 @@ Vercel Preview transport acceptance passed:
 - the test route was Preview-only, required the production Owner plus AAL2,
   performed no database operation, and was removed after acceptance.
 
+Production promotion acceptance passed:
+
+- all eight approved `CREDENTIAL_SMTP_*` and `CREDENTIAL_EMAIL_*` values are
+  encrypted Vercel variables scoped to both Production and Preview;
+- PR #12 passed its GitHub/Vercel checks and was merged into `main`;
+- Vercel Production deployment `1dcd168` reached `Ready`;
+- the Production Home loaded at the Vercel production hostname;
+- `/admin/reset-password` and `/admin/smtp-smoke` returned `404` in Production.
+
 Not yet run:
 
 - real WF-003 credential activation/delivery using the approved mailbox.
@@ -132,7 +144,6 @@ Not yet run:
 
 ## Next Dependency
 
-After Owner approval, promote the accepted encrypted `CREDENTIAL_SMTP_*` and
-`CREDENTIAL_EMAIL_*` configuration from Vercel Preview to Production, deploy
-the reviewed branch, and perform one explicitly approved real WF-003 credential
-delivery. Do not create a test credential solely for this purpose.
+Perform one explicitly approved real WF-003 credential delivery when an
+approved credential with its private PDF and recipient is available. Do not
+create a test credential solely for this purpose.
