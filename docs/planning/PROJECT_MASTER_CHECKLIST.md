@@ -129,11 +129,11 @@ Stage status: **implementation and manager/RLS QA complete; production acceptanc
 - [x] Manager CRUD UI for partners, experts, order, publication states, and approved logo/photo paths.
 - [x] Authenticated Content Manager/Super Admin/Owner partner/expert CRUD smoke, including translations, asset-path validation, and cleanup.
 - [x] General, organisation, and partnership public forms in EN/UA/CZ with validation, privacy acknowledgement, and honeypot handling.
-- [x] Contact notification channel decision: protected admin is the source of truth; email is replaced by a deferred one-way Telegram manager notification.
-- [-] PCE-005 Telegram manager notification — privacy-minimised server adapter implemented; encrypted deployment values and real transport/failure-path acceptance remain.
+- [x] Contact notification channel decision: protected admin is the source of truth; email is replaced by a one-way Telegram manager notification.
+- [x] PCE-005 Telegram manager notification — privacy-minimised server adapter, encrypted Production/Preview configuration, all enquiry types, all five programmes, EN/UA/CZ, and non-blocking failure handling accepted in Production.
 - [x] Product decision: CAPTCHA is conditional, is not connected now, and is not a Release 1 blocker; honeypot and database-backed rate limiting remain active.
 
-Module status: **implementation and static QA complete, including the Telegram adapter; Telegram deployment/transport acceptance and the production rate-limit secret remain operational dependencies, while CAPTCHA is intentionally deferred**.
+Module status: **implementation, static QA, and Telegram Production acceptance complete; the production rate-limit secret remains configured, while CAPTCHA is intentionally deferred**.
 
 ## Admin Module Coverage
 
@@ -150,7 +150,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Pricing Options | Protected CRUD API plus 1–3 option UI, localized copy, activation guard, and visible URL hierarchy | Authenticated 1–3 options, translation, fourth-option guard, and cleanup smoke passed |
 | Partners | Protected CRUD API plus responsive record, EN/UA/CZ copy, classification, URL, order, and logo-path UI | Authenticated CRUD/translation/asset-path validation/cleanup smoke passed |
 | Experts | Protected CRUD API plus responsive record, EN/UA/CZ copy, order, and optional photo-path UI | Authenticated CRUD/translation/cleanup smoke passed |
-| Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, optional CAPTCHA fail-closed contract, audit, and cleanup smoke passed; privacy-minimised Telegram notification is deferred to PCE-005 |
+| Contact Submissions | Public programme/general/partner/organisation entry points plus protected API and processing UI implemented | Role/RLS, MFA, status mutation, rate-limit, optional CAPTCHA fail-closed contract, audit, cleanup, and privacy-minimised Telegram Production acceptance passed |
 | Learners | Private identity, globally unique contacts, protected API, responsive manager UI, archive workflow, real linked credential summaries, and controlled list import implemented | LRN-001..005 accepted in dev; LRN-005 migration and Owner/MFA workflow accepted in production on 2026-08-13 |
 | Credential Types / Sets / Credentials / Number Log | Core schema plus protected manager workspace for pending creation, list/detail, private PDFs, activation, irreversible valid revocation, irreversible pending void with permanent number voiding, controlled valid public-data correction, server-mediated public verification, delivery history, Sets, Number Log, History, and Notes | ADM-CRD-001, WF-003, and WF-005..008 passed at the current dev level; WF-004 is deferred |
 | Email Templates | Private seeded EN/UA credential-delivery templates are implemented and used by activation | Protected editing UI/API and audit smoke remain |
@@ -201,10 +201,10 @@ Stage status: **implemented at the current dev level except Owner-deferred WF-00
 - [x] Authenticated status processing, MFA/RLS boundaries, privacy-safe audit, validation, honeypot, and cleanup passed live dev QA.
 - [x] Database-backed five-per-15-minute rate limiting and CAPTCHA fail-closed server contract passed live dev QA.
 - [x] Notification-channel decision: contact alerts use Telegram, while VEDOS SMTP is reserved for credential delivery.
-- [-] PCE-005: one-way Telegram manager adapter implemented without visitor PII; configure encrypted values and test real delivery/failure handling before launch. No webhook or inbound bot workflow is required.
+- [x] PCE-005: one-way Telegram manager notifications accepted in Production without visitor PII; all enquiry types, programmes, locales, protected-admin link, and non-blocking failure handling passed. No webhook or inbound bot workflow is required.
 - [x] CAPTCHA remains an optional conditional control and is intentionally not connected now; configure/test it only if later enabled because of abuse signals.
 
-Stage status: **core implementation and dev/static QA complete; Telegram deployment configuration and transport acceptance remain before launch**.
+Stage status: **complete, including Telegram Production acceptance**.
 
 ## Stage 9 — Security, QA, and Launch Hardening
 
@@ -213,14 +213,14 @@ Stage status: **core implementation and dev/static QA complete; Telegram deploym
 - [x] QA-002 valid and revoked verification privacy passed with the first approved retained credential by both document number and QR token; revoked output contains status only.
 - [x] QA-003 aggregate 27-assertion MFA matrix and fresh Owner AAL1 live test passed: verified TOTP enrollment was detected and all 11 sensitive admin routes returned explicit MFA/AAL2 denials without mutation. Existing AAL2 role/module evidence was reconciled; see `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.
 - [x] QA-004 learner → credential → private PDF → activation → valid verification → irreversible revoke → status-only revoked verification passed with `NITBS-C-2027-123450`.
-- [ ] QA-005 production environment, approved credential delivery provider, Leeloo, Telegram contact alert, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it.
+- [ ] QA-005 production environment, approved credential delivery provider, Leeloo, analytics, backup, launch checklist, and confirmation that conditional CAPTCHA remains disabled unless abuse signals require it. Telegram contact alerts are complete.
   - [x] Separate `nobel-itbs-prod` Supabase project created in Frankfurt; all 50 migrations, approved seed data, anonymous RLS boundary, and required server reads passed.
   - [x] Production Supabase secrets are prepared in an ignored local environment file; none are committed.
   - [x] Add production-only secrets to Vercel, deploy, and run public Production smoke before connecting the domain; protected admin smoke remains in the next Auth/Owner/MFA item.
   - [x] Configure production Auth URLs, bootstrap the single Owner, enroll MFA, and repeat protected-route QA; the MFA-verified Owner session and all 11 protected admin modules passed non-mutating Production acceptance on 2026-08-12. See `docs/qa/QA_005_PRODUCTION_OWNER_MFA_ADMIN_2026-08-12.md`.
   - [x] Promote and acceptance-test LRN-005 in production; migration parity, Owner/AAL2 two-row preview, one-row atomic import, duplicate rejection, and exact cleanup passed on 2026-08-13. See `docs/qa/LRN_005_PRODUCTION_ACCEPTANCE_2026-08-13.md`.
   - [-] Align the approved VEDOS SMTP decision with the v2 documents and WF-003 implementation, then acceptance-test real credential delivery. Active documentation, code, provider mailbox, aliases, bidirectional Webmail delivery, Vercel Preview transport, encrypted Production configuration, PR #12 merge, and Production deployment `1dcd168` are accepted. The Preview message reached Gmail in two seconds with its PDF, TLS, and SPF/DKIM/DMARC `PASS`; one explicitly approved real credential delivery remains.
-  - [-] Configure and test the Telegram contact alert. The PCE-005 server adapter is complete; encrypted Preview/Production values and live transport/failure-path acceptance remain.
+  - [x] Configure and test the Telegram contact alert. Encrypted Preview/Production values, live delivery, all enquiry types, all five programmes, EN/UA/CZ, privacy projection, and non-blocking failure handling passed on 2026-08-13.
   - [ ] Configure final CTA destinations, analytics/consent, database plus private-PDF backups, canonical domain, and final responsive/accessibility/browser acceptance.
 - [-] Responsive/mobile, accessibility, metadata, error-state, and production-browser QA. Vercel Production Chromium acceptance passed across the 27-route EN/UA/CZ mobile matrix and the 18-route desktop matrix, including `44 x 44` touch targets, localized shell, metadata, not-found handling, verification privacy, and no horizontal overflow. Physical-device, full accessibility, and cross-browser acceptance remain open. See `docs/qa/QA_005_MOBILE_TOUCH_TARGETS_2026-08-12.md` and `docs/qa/QA_005_PRODUCTION_PUBLIC_ACCEPTANCE_2026-08-12.md`.
 
@@ -263,7 +263,7 @@ The credential workflow stage is now open; external production integrations rema
 19. [x] **WF-007 Update Valid Public Data** — protected valid-only correction of holder name, programme title, and document type, with no-op rejection, mandatory private reason, detailed History, PII-minimal Audit, responsive manager UI, and synced dev migration completed on 2026-08-10; see `docs/qa/WF_007_UPDATE_VALID_PUBLIC_DATA_QA_2026-08-10.md`.
 20. [x] **WF-008 Public Verification** — server-mediated QR/document-number API, HMAC token lookup, persistent rate limiting, approved privacy projection, localized UI, QR noindex, and dev smoke completed on 2026-08-10; see `docs/qa/WF_008_PUBLIC_VERIFICATION_QA_2026-08-10.md`.
 21. **Return to WF-004 Resend Credential after WF-008 or during pre-launch hardening** — until then, managers may correct the learner email and resend manually from their mailbox; a previous send-history row remains immutable.
-22. Before launch, configure and transport-test the implemented PCE-005 Telegram manager notifications and acceptance-test one approved real VEDOS credential PDF delivery; encrypted VEDOS Production configuration and deployment are complete. Revisit conditional CAPTCHA only if abuse signals justify enabling it.
+22. [x] PCE-005 Telegram manager notifications are configured and transport-tested in Production. One approved real VEDOS credential PDF delivery remains; encrypted VEDOS Production configuration and deployment are complete. Revisit conditional CAPTCHA only if abuse signals justify enabling it.
 23. Run the full automated pgTAP suite when Docker or another compatible runner is available; this remains an infrastructure check, not a blocker for the accepted manager, contact, learner, CRD-001..006, WF-001..003, WF-005..008, and ADM-CRD-001 layers.
 24. [x] **QA-001 RLS Tests** — aggregate coverage now protects all 36 public tables, four roles, MFA/service boundaries, private Storage, and controlled RPCs; non-mutating live anonymous QA passed on 2026-08-10. See `docs/qa/QA_001_RLS_MATRIX_2026-08-10.md`; execute its complete pgTAP file when a compatible database runner is available.
 25. [x] **QA-003 MFA Tests** — the four-role/AAL matrix, server guards, private RLS policies, credential/PDF functions, fresh Owner AAL1 state, verified TOTP enrollment, and 11 sensitive-route denials passed on 2026-08-10. See `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.
@@ -272,6 +272,6 @@ The credential workflow stage is now open; external production integrations rema
 28. [x] **CNT-003 Home visual integration and public Production acceptance** — the approved Home, EN/UA/CZ managed content, localized shell, Czech metadata, and mobile touch targets are merged, deployed, and accepted in Vercel Production on 2026-08-12.
 29. [x] **Production Auth/Owner/MFA and protected admin acceptance** — production Auth URLs, the single active Owner, mandatory MFA, and all 11 protected admin modules passed non-mutating Production acceptance on 2026-08-12. See `docs/qa/QA_005_PRODUCTION_OWNER_MFA_ADMIN_2026-08-12.md`.
 30. [x] **LRN-005 Learner List Import** — controlled XLSX round trip, CSV preview, role/MFA denials, atomic valid-row import, stale/duplicate rejection, count-only audit, cleanup, and authenticated desktop/mobile acceptance passed in dev on 2026-08-12; the migration and real Owner/AAL2 import/duplicate/cleanup workflow were accepted in production on 2026-08-13. See `docs/qa/LRN_005_LEARNER_LIST_IMPORT_QA_2026-08-12.md` and `docs/qa/LRN_005_PRODUCTION_ACCEPTANCE_2026-08-13.md`.
-31. **Continue operational launch readiness** — align and acceptance-test VEDOS credential delivery, configure final CTA destinations and Telegram contact alerts, define database/private-PDF backups, attach and verify the canonical domain, configure analytics/consent, complete physical-device/accessibility/cross-browser acceptance, and make the final release decision.
+31. **Continue operational launch readiness** — acceptance-test one approved real VEDOS credential delivery, configure final CTA destinations, define database/private-PDF backups, attach and verify the canonical domain, configure analytics/consent, complete physical-device/accessibility/cross-browser acceptance, and make the final release decision. Telegram contact alerts are accepted.
 
 The backend, permissions, workflow, public visual baseline, public Production layer, and production Owner/MFA-protected admin are accepted at their documented level. Production launch now depends on the remaining operational integrations, backup/domain setup, and final acceptance items.
