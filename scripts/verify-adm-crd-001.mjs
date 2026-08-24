@@ -61,8 +61,8 @@ if (!errors.length) {
     '/api/v1/admin/document-numbers',
   ]) if (!source.component.includes(snippet)) errors.push(`Credential UI missing: ${snippet}`);
 
-  // Revoke and void are allowed after WF-005/WF-006; resend remains deferred.
-  for (const forbidden of ['Resend credential', 'SUPABASE_SERVICE_ROLE_KEY']) {
+  // Later credential workflows may coexist; server secrets must never enter the client workspace.
+  for (const forbidden of ['SUPABASE_SERVICE_ROLE_KEY']) {
     if (source.component.includes(forbidden)) errors.push(`ADM-CRD-001 must not expose later workflow action: ${forbidden}`);
   }
 

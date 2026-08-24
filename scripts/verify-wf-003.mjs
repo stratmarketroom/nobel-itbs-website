@@ -125,10 +125,7 @@ if (!errors.length) {
     'Email delivery',
     'credential.emailSends',
   ]) if (!source.component.includes(snippet)) errors.push(`WF-003 admin UI missing: ${snippet}`);
-  // Revoke and void are allowed after WF-005/WF-006; resend remains deferred.
-  for (const forbidden of ['Resend credential']) {
-    if (source.component.includes(forbidden)) errors.push(`WF-003 must not expose later action: ${forbidden}`);
-  }
+  // Later credential workflows may coexist after their own tickets are implemented.
 
   for (const snippet of [".from('email_templates')", 'decryptCredentialVerificationUrl(', "templateLanguage = credential.language_code === 'ua' ? 'ua' : 'en'", "PUBLIC_SITE_URL", ".from('credential_email_sends')"]) {
     if (!(source.service + source.workspace).includes(snippet)) errors.push(`WF-003 draft/history integration missing: ${snippet}`);

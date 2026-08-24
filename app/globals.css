@@ -3299,7 +3299,6 @@ h1 span {
 .credential-summary code { font-size: 0.65rem; }
 .credential-public-snapshot { border-left: 3px solid oklch(55% 0.1 250); padding: 0.75rem 0.9rem; background: oklch(97% 0.009 250); }
 .credential-public-snapshot p { margin: 0.22rem 0; font-size: 0.75rem; }
-.credential-workflow-note { margin: 0; border: 1px dashed oklch(78% 0.035 250); padding: 0.72rem; color: oklch(48% 0.025 250); font-size: 0.68rem; line-height: 1.5; }
 .credential-activation-form { display: grid; gap: 0.7rem; border: 1px solid oklch(77% 0.055 250); border-radius: 7px; padding: 0.85rem; background: oklch(97% 0.01 250); }
 .credential-activation-form > header,
 .credential-activation-form > footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
@@ -3312,6 +3311,22 @@ h1 span {
 .credential-activation-form textarea { min-height: 9rem; resize: vertical; line-height: 1.45; }
 .credential-activation-form button { min-height: 2.4rem; border: 1px solid oklch(40% 0.13 250); border-radius: 7px; padding: 0.52rem 0.78rem; background: oklch(40% 0.13 250); color: oklch(99% 0.004 250); font: inherit; font-size: 0.7rem; font-weight: 760; cursor: pointer; }
 .credential-activation-form .activation-blocked { margin: 0; border: 1px solid oklch(76% 0.08 35); border-radius: 6px; padding: 0.55rem 0.65rem; background: oklch(95% 0.03 35); color: oklch(42% 0.09 35); font-size: 0.68rem; }
+.credential-resend-panel { border: 1px solid oklch(76% 0.055 155); border-radius: 7px; background: oklch(97% 0.012 155); }
+.credential-resend-panel > summary { display: flex; min-height: 3.2rem; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.72rem 0.85rem; color: oklch(31% 0.065 155); cursor: pointer; }
+.credential-resend-panel > summary > span { display: grid; gap: 0.12rem; }
+.credential-resend-panel > summary small { color: oklch(48% 0.04 155); font-size: 0.61rem; font-weight: 600; }
+.credential-resend-panel > summary strong { font-size: 0.8rem; }
+.credential-resend-panel > summary em { font-size: 0.62rem; font-style: normal; font-weight: 760; text-transform: uppercase; }
+.credential-resend-panel > form { display: grid; gap: 0.7rem; border-top: 1px solid oklch(84% 0.035 155); padding: 0.85rem; }
+.credential-resend-panel > form > p { margin: 0; color: oklch(40% 0.04 155); font-size: 0.69rem; line-height: 1.5; }
+.credential-resend-panel > form > p.resend-blocked { border: 1px solid oklch(76% 0.08 35); border-radius: 6px; padding: 0.55rem 0.65rem; background: oklch(95% 0.03 35); color: oklch(42% 0.09 35); }
+.credential-resend-panel label { display: grid; gap: 0.3rem; color: oklch(36% 0.04 155); font-size: 0.7rem; font-weight: 680; }
+.credential-resend-panel :is(input, textarea) { width: 100%; min-height: 2.4rem; border: 1px solid oklch(81% 0.03 155); border-radius: 7px; padding: 0.55rem 0.65rem; background: oklch(99% 0.004 155); color: oklch(24% 0.025 250); font: inherit; font-size: 0.77rem; }
+.credential-resend-panel textarea { min-height: 9rem; resize: vertical; line-height: 1.45; }
+.credential-resend-panel footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.credential-resend-panel footer span { max-width: 58ch; color: oklch(47% 0.04 155); font-size: 0.63rem; line-height: 1.45; }
+.credential-resend-panel button { min-height: 2.4rem; border: 1px solid oklch(39% 0.105 155); border-radius: 7px; padding: 0.52rem 0.78rem; background: oklch(39% 0.105 155); color: oklch(99% 0.004 155); font: inherit; font-size: 0.7rem; font-weight: 760; cursor: pointer; }
+.credential-resend-panel :is(button, input, textarea):disabled { cursor: not-allowed; opacity: 0.58; }
 .credential-revoke-form { display: grid; gap: 0.7rem; border: 1px solid oklch(76% 0.055 25); border-radius: 7px; padding: 0.85rem; background: oklch(97% 0.012 25); }
 .credential-revoke-form > header,
 .credential-revoke-form > footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
@@ -3444,6 +3459,7 @@ h1 span {
   .credential-create-form > header,
   .credential-activation-form > header,
   .credential-activation-form > footer,
+  .credential-resend-panel footer,
   .credential-revoke-form > header,
   .credential-revoke-form > footer,
   .credential-void-panel footer,

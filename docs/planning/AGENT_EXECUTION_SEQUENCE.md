@@ -350,7 +350,7 @@ Tickets:
 - WF-006 Void Pending;
 - WF-007 Update Valid Public Data;
 - WF-008 Public Verification;
-- WF-004 Resend Credential, deferred by Owner decision until after WF-008 or pre-launch hardening.
+- WF-004 Resend Credential, implemented during pre-launch hardening, migrated in dev and Production, and pending application merge/deployment acceptance.
 
 Parallel work:
 
@@ -489,5 +489,5 @@ Owner action needed:
 - provide or approve production-only service configuration when its checklist item is reached; do not add VEDOS SMTP, Telegram, analytics, or CAPTCHA credentials before the corresponding launch decision;
 - QA-001 and QA-003 implementation/current dev acceptance are complete; their full pgTAP execution remains queued for a compatible database runner;
 - QA-002 and QA-004 are complete at the current dev level: the retained credential passed valid verification, irreversible revocation, and status-only revoked verification by number and QR;
-- WF-004 resend is intentionally deferred because managers can correct the learner email and resend manually during the interim period;
+- WF-004 resend is implemented, migrated in dev and Production, and passed signed-out Preview protection; application merge/deployment remains, while authenticated valid-record smoke and one Owner-approved delivery are deferred until a valid credential exists;
 - VEDOS SMTP credentials remain required only in encrypted deployment settings for real credential-email delivery and QA-005 acceptance.

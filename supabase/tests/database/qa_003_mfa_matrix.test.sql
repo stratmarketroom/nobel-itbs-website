@@ -185,13 +185,13 @@ select results_eq(
         'reserve_document_number', 'reserve_manual_document_number',
         'void_reserved_document_number', 'move_credential_to_set',
         'add_credential_note', 'update_credential_note', 'delete_credential_note',
-        'create_pending_credential', 'activate_credential',
+        'create_pending_credential', 'activate_credential', 'resend_credential',
         'complete_credential_email_send', 'revoke_credential',
         'void_pending_credential', 'update_valid_credential_public_data'
       )
       and p.prosrc like '%is_mfa_requirement_satisfied%'
   $$,
-  $$ values (13::bigint) $$,
+  $$ values (14::bigint) $$,
   'credential lifecycle functions should enforce MFA inside the database function'
 );
 
@@ -246,7 +246,7 @@ select results_eq(
         'delete_credential_note', 'create_pending_credential',
         'attach_credential_file', 'replace_credential_file',
         'update_credential_file', 'delete_credential_file',
-        'activate_credential', 'complete_credential_email_send',
+        'activate_credential', 'resend_credential', 'complete_credential_email_send',
         'revoke_credential', 'void_pending_credential',
         'update_valid_credential_public_data'
       )
@@ -271,13 +271,13 @@ select results_eq(
         'delete_credential_note', 'create_pending_credential',
         'attach_credential_file', 'replace_credential_file',
         'update_credential_file', 'delete_credential_file',
-        'activate_credential', 'complete_credential_email_send',
+        'activate_credential', 'resend_credential', 'complete_credential_email_send',
         'revoke_credential', 'void_pending_credential',
         'update_valid_credential_public_data'
       )
       and has_function_privilege('authenticated', p.oid, 'execute')
   $$,
-  $$ values (22::bigint) $$,
+  $$ values (23::bigint) $$,
   'authenticated admin functions should remain callable only behind their role/MFA checks'
 );
 
