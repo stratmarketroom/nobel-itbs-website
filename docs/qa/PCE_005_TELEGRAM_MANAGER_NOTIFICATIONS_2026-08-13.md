@@ -93,6 +93,7 @@ Bot token and chat ID must remain encrypted deployment values. The bot is
 restricted operationally to the approved private manager group. Telegram is an
 alert channel only; the protected admin area remains the source of truth.
 
-The private-group invitation link used during setup should be revoked and
-replaced because it was shared outside Telegram during acceptance. This does
-not affect the bot token, chat ID, or accepted transport path.
+The Owner revoked the private-group invitation link used during setup after
+Production acceptance. The link is no longer an open security dependency. This
+action did not change the bot token, chat ID, encrypted deployment values,
+notification payload, or accepted transport path.

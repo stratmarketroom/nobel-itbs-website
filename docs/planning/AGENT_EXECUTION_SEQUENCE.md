@@ -474,7 +474,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- `QA-005-TELEGRAM-INVITE-001 Setup-time Telegram group invitation-link rotation`, unless the Owner explicitly resumes the deferred real VEDOS credential-delivery acceptance first;
+- `QA-005-BACKUP-002 Live backup activation and restore drill`, after the Owner approves the required Supabase Pro upgrade and encrypted independent private-PDF backup destination, unless the Owner explicitly resumes the deferred real VEDOS credential-delivery acceptance first;
 
 Agent:
 
@@ -487,7 +487,8 @@ Parallel agents:
 Owner action needed:
 
 - QA-005-A11Y-FIX-001 is merged, deployed, and accepted at its focused scope through PR #25 and Production merge `083b045`; no real credentials were submitted during browser acceptance;
-- revoke or replace the setup-time Telegram group invitation link for the next focused security ticket; this must not change the accepted bot/chat configuration or Telegram notification payload;
+- QA-005-TELEGRAM-INVITE-001 is complete: the Owner revoked the setup-time Telegram group invitation link, and no change to the accepted bot/chat configuration or Telegram notification payload is required;
+- approve the Supabase Pro upgrade and an encrypted independent private-PDF backup destination before `QA-005-BACKUP-002` can execute the live backup and restore drill;
 - provide or approve production-only service configuration when its checklist item is reached; do not add VEDOS SMTP, Telegram, analytics, or CAPTCHA credentials before the corresponding launch decision;
 - QA-001 and QA-003 implementation/current dev acceptance are complete; their full pgTAP execution remains queued for a compatible database runner;
 - QA-002 and QA-004 are complete at the current dev level: the retained credential passed valid verification, irreversible revocation, and status-only revoked verification by number and QR;
