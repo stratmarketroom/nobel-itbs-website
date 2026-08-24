@@ -4,8 +4,7 @@ Decision date: 2026-08-07
 
 Current ticket: PCE-005 (Telegram manager notifications)
 
-Implementation status: code complete; deployment configuration and real
-transport acceptance pending
+Implementation status: accepted in Production on 2026-08-13
 
 ## Channel Decision
 
@@ -29,7 +28,7 @@ PCE-005 requires server-only deployment values:
 Never expose these values through `NEXT_PUBLIC_*` variables or commit real
 values. The bot must be limited to the approved private manager chat.
 
-## Planned Delivery Behaviour
+## Delivery Behaviour
 
 1. The public route validates, rate-limits, and stores the submission.
 2. Only after storage succeeds, a background task may call Telegram Bot API
@@ -45,13 +44,19 @@ The previous dormant Google Workspace contact-email adapter and its environment
 contract were removed. This does not affect VEDOS credential delivery, which is
 a separate integration.
 
-## Pre-launch Acceptance
+## Production Acceptance
 
-- create a dedicated bot and private manager chat;
-- add the bot token and chat ID to private deployment settings;
-- submit each public enquiry type and confirm the record appears in admin first;
-- confirm one minimal Telegram notification arrives with a working admin link;
-- confirm no visitor message, email, or phone appears in Telegram;
-- simulate Telegram failure and confirm the form still returns success and the
-  stored submission remains available;
-- confirm status changes remain audit-logged without copying contact details.
+- [x] dedicated bot and private manager supergroup created;
+- [x] token, supergroup chat ID, and admin base URL stored as sensitive Vercel
+  variables for Production and Preview;
+- [x] general, partnership, organisation, and programme-question submissions
+  returned `201` and delivered minimal notifications;
+- [x] all five programmes and EN/UA/CZ were covered;
+- [x] observed Telegram output contains no visitor name, email, phone, or
+  message;
+- [x] invalid pre-upgrade group ID produced no Telegram message while the public
+  submission still returned `201`, confirming non-blocking failure handling;
+- [x] corrected Production deployment reached `Ready` and delivery resumed.
+
+Detailed evidence is recorded in
+`docs/qa/PCE_005_TELEGRAM_MANAGER_NOTIFICATIONS_2026-08-13.md`.

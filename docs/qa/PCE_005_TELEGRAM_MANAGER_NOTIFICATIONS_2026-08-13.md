@@ -2,8 +2,11 @@
 
 Date: 2026-08-13
 
-Status: code and static verification complete; external configuration and live
-transport acceptance pending
+Status: accepted in Production
+
+Documentation reconciled on 2026-08-24 from the original acceptance commit
+`bf0af8c` after that documentation-only branch was found not to have been merged
+into `main`.
 
 ## Scope
 
@@ -51,22 +54,45 @@ endpoint and timeout, the protected-admin link, non-blocking result paths, the
 absence of visitor PII in the notification call, removal of legacy Google
 Workspace configuration, and the documented environment contract.
 
-## External Acceptance Still Required
+## Production Acceptance
 
-1. Create a dedicated bot through BotFather and add it to the approved private
-   manager group.
-2. Obtain the numeric group `chat_id` without exposing it or the token in Git or
-   chat history.
-3. Configure all three encrypted variables in Vercel Preview and Production.
-4. Send one approved test for each enquiry type and confirm storage precedes the
-   minimal Telegram message.
-5. Confirm the admin link opens the protected contact-submission list and that
-   no visitor PII appears in Telegram.
-6. Temporarily test an invalid destination and confirm the public submission
-   still succeeds and remains available in admin, then restore the valid value.
+The Owner created the dedicated notification bot and private manager group.
+`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CONTACT_CHAT_ID`, and `ADMIN_BASE_URL` were
+stored as sensitive Vercel variables for Production and Preview. No real value
+was committed or retained in a workspace file.
+
+The original group ID became invalid when Telegram automatically upgraded the
+group to a supergroup. A public test submission still returned `201` and was
+stored while Telegram delivery failed, confirming the required non-blocking
+failure path. Telegram reported the replacement supergroup ID; the encrypted
+Vercel value was corrected and Production deployment
+`BGedqcRd7YCPw5uXnmEkWcYQ526N` reached `Ready` from merged commit `36ad7ed`.
+
+The following Production matrix returned `201` for every submission and the
+Owner confirmed every corresponding Telegram notification arrived:
+
+| Submission | Locale | Programme |
+| --- | --- | --- |
+| General enquiry | EN | not applicable |
+| Partnership enquiry | EN | not applicable |
+| Organisation enquiry | EN | not applicable |
+| Programme question | EN | `general-psychology` |
+| Programme question | UA | `ai-production` |
+| Programme question | CZ | `child-psychology` |
+| Programme question | UA | `neuroplastic-reconstruction` |
+| Programme question | EN | `space-business` |
+
+The observed message contains only type, website locale, programme context,
+UTC timestamp, and the protected-admin URL. It contains no visitor name, email,
+phone, or message. All five programmes and all three public locales are covered.
+The protected admin area remains the stored source of truth.
 
 ## Security Notes
 
 Bot token and chat ID must remain encrypted deployment values. The bot is
 restricted operationally to the approved private manager group. Telegram is an
 alert channel only; the protected admin area remains the source of truth.
+
+The private-group invitation link used during setup should be revoked and
+replaced because it was shared outside Telegram during acceptance. This does
+not affect the bot token, chat ID, or accepted transport path.
