@@ -337,7 +337,7 @@ export function AdminMfaLogin() {
           </form>
         ) : null}
 
-        {error ? <p className="auth-error">{error}</p> : null}
+        {error ? <p className="auth-error" role="alert">{error}</p> : null}
 
         {admin ? (
           <div className="auth-session">
