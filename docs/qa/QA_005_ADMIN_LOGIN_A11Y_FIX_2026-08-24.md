@@ -17,11 +17,12 @@ The existing Supabase password, TOTP enrollment/challenge, AAL2 check, admin
 context load, sign-out, and redirect workflow was preserved. The only component
 semantic change is an alert role on the existing error message.
 
-Code-level acceptance is complete. Public HTTPS Preview and post-merge
-Production browser acceptance remain required before the deployed defect is
-marked closed. Local in-app browser navigation to the placeholder-backed dev
-server was blocked by the Browser URL policy, so no visual result is inferred
-from that attempt.
+Code-level acceptance and the PR #25 Vercel Preview deployment check are
+complete. The Preview URL is protected by Vercel SSO and redirected the
+available signed-out browser to Vercel Login, so visual acceptance is deferred
+to the public post-merge Production deployment. Local in-app browser navigation
+to the placeholder-backed dev server was separately blocked by the Browser URL
+policy; no visual result is inferred from either unavailable path.
 
 ## Files Changed
 
@@ -54,6 +55,15 @@ Passed locally:
   pages;
 - `git diff --check`.
 
+Deployment evidence:
+
+- PR #25 is open and reported clean/mergeable before the documentation update;
+- the Vercel commit status completed with `success` for commit `67f72ae`;
+- the Preview deployment completed with `success`;
+- unauthenticated Preview navigation redirected to Vercel Login because the
+  deployment is protected by Vercel SSO, so it is not represented as visual
+  page acceptance.
+
 The focused guard confirms that the password sign-in, authenticator assurance
 level, TOTP challenge/verification, and `/admin/users` redirect contracts remain
 present. It also guards the scoped CSS selectors, 48-pixel input/button minimums,
@@ -81,16 +91,16 @@ the local server was stopped. No form was submitted.
 
 - the Browser URL policy prevented local visual/reflow inspection; this is
   recorded as unavailable evidence, not a pass;
-- Preview and Production Chromium measurements at desktop, 390-pixel, and
-  320-pixel widths are still required after deployment;
+- Production Chromium measurements at desktop, 390-pixel, and 320-pixel widths
+  are still required after merge; the SSO-protected Preview cannot provide the
+  anonymous visual evidence;
 - Safari, physical-device, full manual keyboard, and assistive-technology
   acceptance remain part of the broader QA-005 launch checklist and were not
   expanded into this focused correction ticket.
 
 ## Next Dependency
 
-Push the ticket branch, create and merge its pull request after Vercel Preview
-passes, then repeat the focused `/admin/login` browser acceptance on Preview and
-Production without submitting credentials. Broader Safari, physical-device,
-keyboard, and assistive-technology acceptance remains a later launch-readiness
-dependency.
+Update and merge PR #25 after its repeated Vercel check passes, then repeat the
+focused `/admin/login` browser acceptance on the public Production deployment
+without submitting credentials. Broader Safari, physical-device, keyboard, and
+assistive-technology acceptance remains a later launch-readiness dependency.

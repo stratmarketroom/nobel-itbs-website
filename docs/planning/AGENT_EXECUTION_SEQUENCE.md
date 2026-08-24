@@ -474,7 +474,7 @@ The orchestrator controls:
 
 Next ticket:
 
-- deploy and acceptance-test `QA-005-A11Y-FIX-001 Admin Login accessibility/presentation correction` on Vercel Preview and Production;
+- merge PR #25 and acceptance-test `QA-005-A11Y-FIX-001 Admin Login accessibility/presentation correction` on the public Production deployment; its Vercel Preview deployment passed but is protected by SSO;
 
 Agent:
 
@@ -486,7 +486,7 @@ Parallel agents:
 
 Owner action needed:
 
-- no Owner decision is required for the scoped Admin Login correction; its code-level implementation and local static/build verification are complete, while Preview/Production browser acceptance remains. Preserve the existing authentication/MFA workflow and do not submit real credentials during visual acceptance;
+- no Owner decision is required for the scoped Admin Login correction; its code-level implementation, local static/build verification, and Vercel Preview deployment check are complete. Preview is SSO-protected, so public Production browser acceptance remains after merge. Preserve the existing authentication/MFA workflow and do not submit real credentials during visual acceptance;
 - provide or approve production-only service configuration when its checklist item is reached; do not add VEDOS SMTP, Telegram, analytics, or CAPTCHA credentials before the corresponding launch decision;
 - QA-001 and QA-003 implementation/current dev acceptance are complete; their full pgTAP execution remains queued for a compatible database runner;
 - QA-002 and QA-004 are complete at the current dev level: the retained credential passed valid verification, irreversible revocation, and status-only revoked verification by number and QR;
