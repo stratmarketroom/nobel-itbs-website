@@ -5,6 +5,7 @@ import { isContentLocale } from '@/lib/content/localization';
 import { isPrefixedLocale } from '@/lib/i18n';
 import { getProgrammeCatalogue } from '@/lib/programmes/catalogue';
 import { programmeCatalogueCopy } from '@/lib/programmes/catalogue-copy';
+import { languageAlternates, localizedAbsoluteUrl } from '@/lib/seo/urls';
 
 type LocaleProgrammesPageProps = {
   params: Promise<{ locale: string }>;
@@ -21,12 +22,8 @@ export async function generateMetadata({ params }: LocaleProgrammesPageProps): P
     title: copy.seo.title,
     description: copy.seo.description,
     alternates: {
-      canonical: `/${locale}/programmes`,
-      languages: {
-        en: '/programmes',
-        uk: '/ua/programmes',
-        cs: '/cz/programmes',
-      },
+      canonical: localizedAbsoluteUrl(locale, '/programmes'),
+      languages: languageAlternates('/programmes'),
     },
   };
 }

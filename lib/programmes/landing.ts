@@ -93,6 +93,12 @@ function localized<T extends DbTranslationBase>(translations: T[], locale: Conte
   );
 }
 
+function publishedTranslationLocales(translations: DbTranslationBase[]): ContentLocale[] {
+  return (['en', 'ua', 'cz'] as ContentLocale[]).filter((locale) => translations.some((translation) => (
+    translation.language_code === locale && translation.translation_status === 'published'
+  )));
+}
+
 function currentRun(runs: DbRun[]): DbRun | null {
   const today = new Date().toISOString().slice(0, 10);
   const active = runs.filter((run) => run.status !== 'closed' && (run.ends_at === null || run.ends_at >= today));
@@ -132,6 +138,7 @@ function projectProgramme(row: DbProgramme, locale: ContentLocale, catalogue: Pr
     kind: 'programme',
     slug: row.slug,
     renderedLocale: translation.languageCode,
+    publishedLocales: publishedTranslationLocales(row.programme_translations),
     title: translation.title,
     summary: translation.summary,
     heroCopy: translation.hero_copy,
@@ -183,6 +190,7 @@ function projectTaxonomy(row: DbTaxonomy, kind: 'area' | 'type', locale: Content
     kind,
     slug: row.slug,
     renderedLocale: translation.languageCode,
+    publishedLocales: publishedTranslationLocales(rows ?? []),
     title: kind === 'type' ? (translation.landing_title ?? translation.title) : translation.title,
     eyebrow: stringValue(sections.eyebrow) || (kind === 'area' ? 'Programme Area' : 'Programme Type'),
     lead: translation.short_description,

@@ -4,6 +4,7 @@ import { PublicVerification } from '@/components/public-verification';
 import { isContentLocale } from '@/lib/content/localization';
 import { verificationCopy } from '@/lib/credentials/verification-copy';
 import { isPrefixedLocale } from '@/lib/i18n';
+import { languageAlternates, localizedAbsoluteUrl } from '@/lib/seo/urls';
 
 type Props = { params: Promise<{ locale: string }>; searchParams: Promise<{ documentNumber?: string | string[] }> };
 
@@ -14,8 +15,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: copy.seo.title,
     description: copy.seo.description,
-    openGraph: { title: copy.seo.ogTitle, description: copy.seo.ogDescription },
-    alternates: { canonical: `/${locale}/verify`, languages: { en: '/verify', uk: '/ua/verify', cs: '/cz/verify' } },
+    openGraph: { title: copy.seo.ogTitle, description: copy.seo.ogDescription, url: localizedAbsoluteUrl(locale, '/verify') },
+    alternates: { canonical: localizedAbsoluteUrl(locale, '/verify'), languages: languageAlternates('/verify') },
   };
 }
 

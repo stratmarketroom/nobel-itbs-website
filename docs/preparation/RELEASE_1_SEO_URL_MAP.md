@@ -1,7 +1,7 @@
 # Release 1 SEO URL Map
 
-Status: UA/EN/CZ copy and metadata complete; technical SEO decisions complete; implementation QA pending  
-Updated: 2026-07-31
+Status: UA/EN/CZ copy and metadata complete; QA-005 SEO publication implementation accepted locally; production domain acceptance pending
+Updated: 2026-08-24
 Scope: Release 1 public website  
 Languages: EN, UA, CZ
 
@@ -57,9 +57,9 @@ Legal URL policy:
 
 | Document | EN | UA | CZ | Indexing |
 | --- | --- | --- | --- | --- |
-| Terms of Use (Public Contract) | `/terms` | `/ua/terms` | `/cz/terms` | `noindex, follow` |
+| Terms of Use (Public Contract) | `/terms-of-use` | `/ua/terms-of-use` | `/cz/terms-of-use` | `noindex, follow` |
 | Refund Policy | `/refund-policy` | `/ua/refund-policy` | `/cz/refund-policy` | `noindex, follow` |
-| Privacy Policy | `/privacy` | `/ua/privacy` | `/cz/privacy` | `noindex, follow` |
+| Privacy Policy | `/privacy-policy` | `/ua/privacy-policy` | `/cz/privacy-policy` | `noindex, follow` |
 
 Legal pages are excluded from the XML sitemap and use only minimal technical
 titles/descriptions where needed. Admin, API, verification result, error,

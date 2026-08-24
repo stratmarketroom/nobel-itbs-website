@@ -3,8 +3,16 @@
 Product: Nobel ITBS Website and Credential Registry  
 Scope: canonical, hreflang, sitemap, robots, and redirects for Release 1  
 Canonical origin: `https://nobel-itbs.eu`  
-Status: content/SEO decision complete; implementation pending  
-Updated: 2026-07-31
+Status: implementation complete at code/local-smoke level; production domain acceptance pending
+Updated: 2026-08-24
+
+Implementation note: `QA-005-SEO-001` completed the publication layer on
+2026-08-24. The implemented legal routes are `/terms-of-use` and
+`/privacy-policy`, matching the current Release 1 application, rather than the
+older working destinations `/terms` and `/privacy` below. Legacy sources now
+redirect directly to those current routes. `/contacts-en/` redirects to
+`/about` because the current About page has no stable `#contact` anchor. See
+`docs/qa/QA_005_SEO_PUBLICATION_2026-08-24.md`.
 
 ## 1. Canonical Host And URL Normalisation
 
@@ -225,12 +233,12 @@ new-site cutover.
 | `/about-us-en/` | `/about` | 301 | older WordPress About URL |
 | `/course-en/` | `/programmes/space-business` | 301 | older Space Business page |
 | `/contacts-en/` | `/about#contact` | 301 | no standalone Contact page in Release 1 |
-| `/termsofservice` | `/terms` | 301 | current Tilda legal URL |
-| `/terms/` | `/terms` | 301 | older WordPress legal URL |
+| `/termsofservice` | `/terms-of-use` | 301 | current Tilda legal URL; aligned with the implemented Release 1 route |
+| `/terms/` | `/terms-of-use` | 301 | older WordPress legal URL; aligned with the implemented Release 1 route |
 | `/refund` | `/refund-policy` | 301 | current Tilda legal URL |
 | `/refund/` | `/refund-policy` | 301 | older WordPress legal URL |
-| `/privacypolicy` | `/privacy` | 301 | current Tilda legal URL |
-| `/privacy/` | `/privacy` | 301 | older WordPress legal URL |
+| `/privacypolicy` | `/privacy-policy` | 301 | current Tilda legal URL; aligned with the implemented Release 1 route |
+| `/privacy/` | `/privacy-policy` | 301 | older WordPress legal URL; aligned with the implemented Release 1 route |
 | `/home-page-2/` | `/` | 301 | older WordPress home URL |
 | `/blog-en/` | none | 410 | News/Blog is intentionally out of Release 1 |
 

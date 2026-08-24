@@ -29,6 +29,7 @@ export type ProgrammeLandingEntity = {
   kind: 'programme';
   slug: string;
   renderedLocale: ContentLocale;
+  publishedLocales: ContentLocale[];
   title: string;
   summary: string;
   heroCopy: string;
@@ -66,6 +67,7 @@ export type TaxonomyLandingEntity = {
   kind: 'area' | 'type';
   slug: string;
   renderedLocale: ContentLocale;
+  publishedLocales: ContentLocale[];
   title: string;
   eyebrow: string;
   lead: string;

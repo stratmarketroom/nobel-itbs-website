@@ -13,7 +13,7 @@ async function data(props: Props) {
   const [page, catalogue] = await Promise.all([getStructuredContentPage('home', locale), getProgrammeCatalogue(locale)]);
   return { locale, page, programmes: catalogue.items };
 }
-export async function generateMetadata(props: Props) { const { page } = await data(props); return page ? managedPageMetadata(page) : {}; }
+export async function generateMetadata(props: Props) { const { locale, page } = await data(props); return page ? managedPageMetadata(page, locale) : {}; }
 export default async function LocaleHomePage(props: Props) {
   const { locale, page, programmes } = await data(props);
   if (!page) notFound();

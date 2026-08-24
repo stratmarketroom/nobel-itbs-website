@@ -1,7 +1,7 @@
 import 'server-only';
 import { createClient } from '@supabase/supabase-js';
 import type { ContentLocale, TranslationStatus } from './localization';
-import { selectPublishedTranslation } from './localization';
+import { contentLocales, selectPublishedTranslation } from './localization';
 import { contentDataSource, requireSupabaseContent } from './data-source';
 
 export type ContentPageKey = 'home' | 'about' | 'partnerships' | 'for_organisations' | 'privacy_policy' | 'terms_of_use' | 'refund_policy';
@@ -10,6 +10,7 @@ export type StructuredContentPage = {
   pageKey: ContentPageKey;
   pageType: string;
   renderedLocale: ContentLocale;
+  publishedLocales: ContentLocale[];
   seoTitle: string;
   seoDescription: string;
   h1: string;
@@ -58,10 +59,18 @@ export async function getStructuredContentPage(pageKey: ContentPageKey, locale: 
     translationStatus: item.translation_status,
   })), locale);
   if (!translation?.seo_title || !translation.seo_description || !translation.h1) return null;
+  const publishedLocales = contentLocales.filter((locale) => page.content_page_translations.some((item) => (
+    item.language_code === locale
+    && item.translation_status === 'published'
+    && item.seo_title
+    && item.seo_description
+    && item.h1
+  )));
   return {
     pageKey,
     pageType: page.page_type,
     renderedLocale: translation.languageCode,
+    publishedLocales,
     seoTitle: translation.seo_title,
     seoDescription: translation.seo_description,
     h1: translation.h1,

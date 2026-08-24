@@ -6,7 +6,7 @@ import { getPublicExperts } from '@/lib/experts/public';
 import { getPublicPartners } from '@/lib/partners/public';
 
 export const dynamic = 'force-dynamic';
-export async function generateMetadata() { const page = await getStructuredContentPage('partnerships', 'en'); return page ? managedPageMetadata(page) : {}; }
+export async function generateMetadata() { const page = await getStructuredContentPage('partnerships', 'en'); return page ? managedPageMetadata(page, 'en') : {}; }
 export default async function PartnershipsPage() {
   const [page, partners, experts] = await Promise.all([getStructuredContentPage('partnerships', 'en'), getPublicPartners('en'), getPublicExperts('en')]);
   if (!page) notFound();
