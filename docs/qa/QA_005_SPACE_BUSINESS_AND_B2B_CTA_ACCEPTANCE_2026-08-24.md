@@ -78,8 +78,13 @@ that a fresh deployment reads the migrated values across EN/UA/CZ:
   and one `organisation_enquiry` form per locale;
 - For Organisations renders no `event.duan.edu.ua` link.
 
-No external CTA was clicked, and no form was submitted. Post-merge Production
-browser acceptance remains before closure.
+PR #19 was merged into `main` as `d6b889e`, and the corresponding Vercel
+Production deployment reached `Ready`. Post-merge Production browser acceptance
+repeated the same six-route matrix with the same results: two exact safe Space
+Business application links plus two question links per locale, and one on-site
+For Organisations form path with no external event link per locale. No external
+CTA was clicked, and no form was submitted. The ticket is accepted at this
+scope.
 
 ## Security Notes
 
