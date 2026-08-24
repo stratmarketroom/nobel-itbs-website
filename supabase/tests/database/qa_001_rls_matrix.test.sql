@@ -423,7 +423,7 @@ select results_eq(
     where n.nspname = 'public'
       and p.proname in (
         'create_pending_credential', 'attach_credential_file', 'replace_credential_file',
-        'update_credential_file', 'delete_credential_file', 'activate_credential',
+        'update_credential_file', 'delete_credential_file', 'activate_credential', 'resend_credential',
         'revoke_credential', 'void_pending_credential', 'update_valid_credential_public_data'
       )
       and has_function_privilege('anon', p.oid, 'execute')
@@ -440,12 +440,12 @@ select results_eq(
     where n.nspname = 'public'
       and p.proname in (
         'create_pending_credential', 'attach_credential_file', 'replace_credential_file',
-        'update_credential_file', 'delete_credential_file', 'activate_credential',
+        'update_credential_file', 'delete_credential_file', 'activate_credential', 'resend_credential',
         'revoke_credential', 'void_pending_credential', 'update_valid_credential_public_data'
       )
       and has_function_privilege('authenticated', p.oid, 'execute')
   $$,
-  $$ values (9::bigint) $$,
+  $$ values (10::bigint) $$,
   'credential workflows should be callable by authenticated users and enforce role/MFA inside the function'
 );
 

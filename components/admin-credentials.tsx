@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { PendingCredentialAdminItem } from '@/lib/credentials/types';
 import type { ActivateCredentialResult } from '@/lib/credentials/activation-types';
+import type { ResendCredentialResult } from '@/lib/credentials/resend-types';
 import type { UpdateValidPublicDataInput } from '@/lib/credentials/public-data-types';
 import type {
   CredentialAdminDetail,
@@ -281,6 +282,31 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
     } finally { setSaving(false); }
   }
 
+  async function resend(input: { recipientEmail: string | null; subject: string; body: string }) {
+    setSaving(true);
+    setNotice(null);
+    try {
+      const payload = await request<{ resend: ResendCredentialResult }>(`/api/v1/admin/credentials/${credential.id}/resend`, {
+        method: 'POST',
+        body: JSON.stringify({
+          recipientEmail: input.recipientEmail,
+          emailSubject: input.subject,
+          emailBody: input.body,
+        }),
+      });
+      const copy = {
+        sent: 'All current credential PDFs were accepted by the mail server. The credential remains valid.',
+        failed: `Delivery failed, but the credential remains valid: ${payload.resend.delivery.technicalError ?? 'provider error'}`,
+        not_configured: 'No email was sent because credential SMTP is not configured. The credential remains valid.',
+        skipped_empty_recipient: 'No email was sent because the recipient was empty. The credential remains valid.',
+        pending: 'The credential remains valid, but the delivery result could not be finalized. Check delivery history before retrying.',
+      }[payload.resend.delivery.status];
+      await reload(copy);
+    } catch (error) {
+      setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Credential could not be resent.' });
+    } finally { setSaving(false); }
+  }
+
   async function revoke(reason: string) {
     await action(
       () => request(`/api/v1/admin/credentials/${credential.id}/revoke`, {
@@ -328,10 +354,10 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
       {credential.status === 'pending' && credential.activationDraft ? <ActivationForm credential={credential} saving={saving} onActivate={activate} /> : null}
       {credential.status === 'pending' ? <VoidPendingForm saving={saving} onVoid={voidPending} /> : null}
       {credential.status === 'valid' ? <PublicDataForm key={credential.updatedAt} credential={credential} saving={saving} onSave={updatePublicData} /> : null}
+      {credential.status === 'valid' && credential.resendDraft ? <ResendForm key={`${credential.id}-${credential.updatedAt}`} credential={credential} saving={saving} onResend={resend} /> : null}
       {credential.status === 'valid' ? <RevokeForm saving={saving} onRevoke={revoke} /> : null}
       {credential.status === 'revoked' ? <section className="credential-revocation-record" aria-label="Revocation record"><header><small>Private lifecycle record</small><h3>Revoked permanently</h3></header><dl><div><dt>Revoked on</dt><dd>{date(credential.revokedAt)}</dd></div><div><dt>Reason</dt><dd>{credential.revocationReason}</dd></div></dl></section> : null}
       {credential.status === 'voided' ? <section className="credential-void-record" aria-label="Void record"><header><small>Private lifecycle record</small><h3>Voided permanently</h3></header><dl><div><dt>Voided on</dt><dd>{date(credential.voidedAt)}</dd></div><div><dt>Reason</dt><dd>{credential.voidReason}</dd></div></dl></section> : null}
-      <p className="credential-workflow-note">Resend is deferred. Public verification remains a separate WF ticket.</p>
     </section> : null}
     {tab === 'files' ? <section className="credential-files">
       <form className="credential-file-upload" onSubmit={upload}><header><div><small>Private storage</small><h3>Upload PDF</h3></div><span>PDF only · max 20 MB</span></header><div>
@@ -380,6 +406,36 @@ function ActivationForm({ credential, saving, onActivate }: {
     <label><span>Email body <small>{draft.templateLanguage.toUpperCase()} template, editable for this send</small></span><textarea name="body" required maxLength={20000} defaultValue={draft.body} /></label>
     <footer><span>Activation succeeds even when the recipient is empty or email delivery fails.</span><button type="submit" disabled={saving || !draft.hasPrimaryPdf}>{saving ? 'Activating…' : 'Activate credential'}</button></footer>
   </form>;
+}
+
+function ResendForm({ credential, saving, onResend }: {
+  credential: CredentialAdminDetail;
+  saving: boolean;
+  onResend: (input: { recipientEmail: string | null; subject: string; body: string }) => Promise<void>;
+}) {
+  const draft = credential.resendDraft!;
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!window.confirm(`Send all ${draft.fileCount} current PDF${draft.fileCount === 1 ? '' : 's'} now? This creates a permanent delivery-history entry.`)) return;
+    const form = new FormData(event.currentTarget);
+    await onResend({
+      recipientEmail: String(form.get('recipientEmail') ?? '').trim() || null,
+      subject: String(form.get('subject') ?? ''),
+      body: String(form.get('body') ?? ''),
+    });
+  }
+
+  return <details className="credential-resend-panel">
+    <summary><span><small>WF-004 · delivery action</small><strong>Resend credential PDFs</strong></span><em>{draft.fileCount} current PDF{draft.fileCount === 1 ? '' : 's'}</em></summary>
+    <form onSubmit={(event) => void submit(event)}>
+      {!draft.hasFiles ? <p className="resend-blocked">Attach a current private PDF before resending.</p> : null}
+      <p>This sends every current PDF and creates an immutable delivery record. It does not change the learner profile or the valid credential status.</p>
+      <label><span>Recipient email <small>optional</small></span><input name="recipientEmail" type="email" defaultValue={draft.recipientEmail} placeholder="Leave empty to record a skipped delivery" disabled={saving} /></label>
+      <label><span>Email subject</span><input name="subject" required maxLength={180} defaultValue={draft.subject} disabled={saving} /></label>
+      <label><span>Email body <small>{draft.templateLanguage.toUpperCase()} template, editable for this send</small></span><textarea name="body" required maxLength={20000} defaultValue={draft.body} disabled={saving} /></label>
+      <footer><span>Delivery failure never revokes or otherwise changes this credential.</span><button type="submit" disabled={saving || !draft.hasFiles}>{saving ? 'Sending…' : 'Resend all current PDFs'}</button></footer>
+    </form>
+  </details>;
 }
 
 function RevokeForm({ saving, onRevoke }: {

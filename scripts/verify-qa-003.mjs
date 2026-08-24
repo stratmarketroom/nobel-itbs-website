@@ -97,7 +97,7 @@ if (!errors.length) {
   for (const required of [
     'owner', 'super_admin', 'content_manager', 'credential_manager',
     'aal1', 'aal2', 'site_settings', 'email_templates', 'create_pending_credential',
-    'activate_credential', 'revoke_credential', 'void_pending_credential',
+    'activate_credential', 'resend_credential', 'revoke_credential', 'void_pending_credential',
     'update_valid_credential_public_data', 'require_credential_file_mutation',
   ]) {
     if (!source.test.includes(required)) errors.push(`QA-003 matrix missing coverage: ${required}`);
