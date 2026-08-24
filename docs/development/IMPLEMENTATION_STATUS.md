@@ -8,7 +8,7 @@ This is the current implementation record. The v2 product and technical specific
 
 - The stabilization branch was merged into `main` through PR #1.
 - PCE-005 was merged into `main` through PR #14.
-- Current focused branch: `codex/pce-005-doc-001`, reconciling the previously recorded Telegram Production acceptance with the active documentation.
+- PCE-005 Production-acceptance documentation reconciliation is tracked by ticket `PCE-005-DOC-001` from branch `codex/pce-005-doc-001`.
 - No direct push to `main` is used.
 
 ## Supabase Dev Project
