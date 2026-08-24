@@ -66,8 +66,20 @@ Repository verification passed:
 - `CONTENT_DATA_SOURCE=seed npm run build` (46/46 static pages generated).
 
 The existing Production deployment still serves the pre-migration static page
-payload for Space Business. Preview and post-merge Production browser acceptance
-remain before closure.
+payload for Space Business. The Vercel Preview created from PR #19 then proved
+that a fresh deployment reads the migrated values across EN/UA/CZ:
+
+- Space Business renders two exact external CTA links per locale to
+  `https://event.duan.edu.ua/et6naw`;
+- every external Space Business CTA has `target="_blank"` and
+  `rel="noreferrer"`;
+- Space Business retains two on-site question links per locale;
+- For Organisations renders one primary `#contact` link, one `#contact` section,
+  and one `organisation_enquiry` form per locale;
+- For Organisations renders no `event.duan.edu.ua` link.
+
+No external CTA was clicked, and no form was submitted. Post-merge Production
+browser acceptance remains before closure.
 
 ## Security Notes
 
