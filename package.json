@@ -77,6 +77,7 @@
     "verify:qa-005:security-headers": "node scripts/verify-qa-005-security-headers.mjs",
     "verify:qa-005:backup-readiness": "node scripts/verify-qa-005-backup-readiness.mjs",
     "verify:qa-005:cta": "node scripts/verify-qa-005-cta.mjs",
+    "verify:qa-005:cta-002": "node scripts/verify-qa-005-cta-002.mjs",
     "verify:qa-005:vedos-smtp": "node scripts/verify-qa-005-vedos-smtp.mjs",
     "verify:adm-crd-001": "node scripts/verify-adm-crd-001.mjs",
     "supabase:start": "supabase start",

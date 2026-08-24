@@ -79,9 +79,9 @@ Stage status: **complete and accepted at the current dev level**.
 - [x] localized cookie consent with accept/decline; no optional trackers load before consent because none are installed.
 - [x] Manager-friendly structured fields/forms replace raw JSON editing across fixed page sections and legal documents.
 - [x] Authenticated Content Manager and Super Admin content-edit smoke, including controlled-field persistence and MFA enforcement.
-- `BLOCKED`: final For Organisations application URL.
+- [x] Owner decision: For Organisations uses the existing on-site `organisation_enquiry` form; the controlled public application setting remains `NULL`.
 
-Stage status: **Home visual integration and public Production acceptance are complete; the final production CTA value remains open**.
+Stage status: **Home visual integration, public Production acceptance, and the For Organisations on-site form decision are complete**.
 
 ## Stage 4 — Programme Catalogue and Sales Pages
 
@@ -113,7 +113,7 @@ These checks confirm the database and public-site implementation. They do not cl
 - [x] Manager UI for Programme Areas and Programme Types, including EN/UA/CZ landing copy, controlled sections, SEO, order, and publication state.
 - [x] Authenticated Content Manager/Super Admin/Owner CRUD smoke, including draft taxonomy, programme, translation, run, 1–3 pricing options, validation, and cleanup.
 - [x] Credential Manager read-only published programme/run reference smoke; mutation is denied by API and RLS.
-- `BLOCKED`: Leeloo destinations for General Psychology, Child Psychology, and Space Business.
+- [x] Owner-approved Leeloo destinations exist for General Psychology, Child Psychology, and Space Business; Space Business live deployment acceptance is tracked under `QA-005-CTA-002`.
 - `BLOCKED`: partner-site destination for AI Production, expected later.
 
 Stage status: **implementation and manager/RLS QA complete; production acceptance still depends on the blocked application destinations**.
@@ -225,7 +225,7 @@ Stage status: **core implementation and dev/static QA complete; Telegram deploym
   - [x] Promote and acceptance-test LRN-005 in production; migration parity, Owner/AAL2 two-row preview, one-row atomic import, duplicate rejection, and exact cleanup passed on 2026-08-13. See `docs/qa/LRN_005_PRODUCTION_ACCEPTANCE_2026-08-13.md`.
   - [-] Align the approved VEDOS SMTP decision with the v2 documents and WF-003 implementation, then acceptance-test real credential delivery. Active documentation, code, provider mailbox, aliases, bidirectional Webmail delivery, Vercel Preview transport, encrypted Production configuration, PR #12 merge, and Production deployment `1dcd168` are accepted. The Preview message reached Gmail in two seconds with its PDF, TLS, and SPF/DKIM/DMARC `PASS`; one explicitly approved real credential delivery remains.
   - [-] Configure and test the Telegram contact alert. The PCE-005 server adapter is complete; encrypted Preview/Production values and live transport/failure-path acceptance remain.
-  - [ ] Configure final CTA destinations, analytics/consent, database plus private-PDF backups, canonical domain, and final responsive/accessibility/browser acceptance. The backup runbook/static guard is complete; live backup and restore evidence is still required.
+  - [-] Configure final CTA decisions, analytics/consent, database plus private-PDF backups, canonical domain, and final responsive/accessibility/browser acceptance. The approved CTA values/fallbacks are applied at database level, and `QA-005-CTA-002` Preview acceptance passed; post-merge Production acceptance remains. The backup runbook/static guard is complete; live backup and restore evidence is still required.
 - [-] Responsive/mobile, accessibility, localized error-state, and production-browser QA. Vercel Production Chromium acceptance passed across the 27-route EN/UA/CZ mobile matrix and the 18-route desktop matrix, including `44 x 44` touch targets, localized shell, the then-current metadata, not-found handling, verification privacy, and no horizontal overflow. Physical-device, full accessibility, cross-browser, and post-SEO-deploy Production acceptance remain open. See `docs/qa/QA_005_MOBILE_TOUCH_TARGETS_2026-08-12.md`, `docs/qa/QA_005_PRODUCTION_PUBLIC_ACCEPTANCE_2026-08-12.md`, and `docs/qa/QA_005_SEO_PUBLICATION_2026-08-24.md`.
 
 Stage status: **QA-001..004 are accepted at the current dev level; QA-005 production/launch readiness, full pgTAP execution, and cross-browser/accessibility acceptance remain open**.
@@ -280,7 +280,8 @@ The credential workflow stage is now open; external production integrations rema
 32. [x] **QA-005 SEO publication** — implemented and locally accepted robots, dynamic sitemap, canonical/hreflang/x-default metadata, URL normalization, locale aliases, verified legacy redirects, and removed-Blog `410` on 2026-08-24. See `docs/qa/QA_005_SEO_PUBLICATION_2026-08-24.md`.
 33. [x] **QA-005 browser security headers** — implemented and locally accepted CSP, framing protection, MIME-sniffing prevention, referrer control, and browser capability restrictions on all application routes on 2026-08-24. See `docs/qa/QA_005_SECURITY_HEADERS_2026-08-24.md`.
 34. [-] **QA-005 backup and restore readiness** — the runbook and static guard are complete, and the live read-only audit confirmed the current Free/no-backup blocker plus an empty private PDF bucket. Upgrade to Pro, approve encrypted independent PDF retention, and complete the non-production restore drill before marking accepted. See `docs/qa/QA_005_BACKUP_READINESS_2026-08-24.md`.
-35. [x] **QA-005 final programme CTA destinations** — General Psychology and Child Psychology URLs are approved and applied to dev and Production through a guarded migration; AI Production intentionally remains on question fallback. PR #17 was merged as `f8b6267`, and Preview plus post-merge Production acceptance passed across EN/UA/CZ without opening an external form. See `docs/qa/QA_005_PROGRAMME_CTA_ACCEPTANCE_2026-08-24.md`.
-36. **Continue operational launch readiness** — align and acceptance-test VEDOS credential delivery, configure the remaining final CTA destinations and Telegram contact alerts, activate and drill database/private-PDF backups, attach and verify the canonical domain, configure analytics/consent, complete physical-device/accessibility/cross-browser acceptance, and make the final release decision.
+35. [x] **QA-005 psychology programme CTA destinations** — General Psychology and Child Psychology URLs are approved and applied to dev and Production through a guarded migration; AI Production intentionally remains on question fallback. PR #17 was merged as `f8b6267`, and Preview plus post-merge Production acceptance passed across EN/UA/CZ without opening an external form. See `docs/qa/QA_005_PROGRAMME_CTA_ACCEPTANCE_2026-08-24.md`.
+36. [-] **QA-005 Space Business and For Organisations CTA decision** — the Space Business Leeloo URL is approved and applied to dev and Production through a guarded migration; For Organisations intentionally retains the on-site organisation enquiry form. PR #19 Preview acceptance passed across EN/UA/CZ without opening or submitting an external form. Complete post-merge Production acceptance. See `docs/qa/QA_005_SPACE_BUSINESS_AND_B2B_CTA_ACCEPTANCE_2026-08-24.md`.
+37. **Continue operational launch readiness** — align and acceptance-test VEDOS credential delivery and Telegram contact alerts, activate and drill database/private-PDF backups, attach and verify the canonical domain, configure analytics/consent, complete physical-device/accessibility/cross-browser acceptance, and make the final release decision.
 
 The backend, permissions, workflow, public visual baseline, public Production layer, and production Owner/MFA-protected admin are accepted at their documented level. Production launch now depends on the remaining operational integrations, backup/domain setup, and final acceptance items.
