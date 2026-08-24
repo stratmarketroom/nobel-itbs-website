@@ -82,8 +82,12 @@ the migrated values across the complete EN/UA/CZ matrix:
 - AI Production has no `event.duan.edu.ua` link and retains two on-site question
   links per locale.
 
-No external CTA was clicked. Post-merge Production browser acceptance remains
-required before the ticket is marked complete.
+PR #17 was merged into `main` as `f8b6267`, and the corresponding Vercel
+Production deployment reached `Ready`. Post-merge Production browser acceptance
+repeated the same nine-route matrix with the same results: two exact safe
+external links plus two question links per psychology programme and locale, and
+two question links with no external event URL for AI Production. No external CTA
+was clicked. The ticket is accepted at this scope.
 
 ## Security Notes
 
