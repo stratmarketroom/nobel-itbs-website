@@ -90,6 +90,13 @@ Passed in PR #22 Preview:
 - `/admin/credentials` rendered the protected signed-out state and exposed no credential data;
 - the authenticated valid-record UI and application-level endpoint mutation were not exercised because Preview has no active Nobel ITBS admin session or approved valid credential.
 
+Passed in Production after PR #22 was merged as `849bd91`:
+
+- the merge commit's Vercel check completed successfully;
+- the deployed `/admin/credentials` route loaded the authenticated Owner/MFA workspace and confirmed the real registry contains zero credentials;
+- an unauthenticated non-mutating POST smoke reached `/api/v1/admin/credentials/[id]/resend`, matched the new route, and returned the expected application-level `401 unauthorized` response;
+- no delivery-history, credential, document-number, Storage, or email mutation was attempted.
+
 The focused pgTAP file has 24 planned assertions covering function security, grants, MFA, valid-only behavior, custom recipient validation, complete current-file binding, manifest privacy, empty-recipient history, Audit/History, lifecycle/number immutability, and the existing permanence/finalization controls.
 
 The focused pgTAP file was attempted in the dev SQL Editor with an explicit `public, extensions` search path, but dev does not expose the pgTAP `plan(integer)` function. The transaction did not proceed past planning. A Docker-compatible local runner is also unavailable, so the full pgTAP suite remains pending rather than recorded as passed.
@@ -116,4 +123,4 @@ The migration is forward-only and has been applied to dev and Production, so it 
 
 ## Next Dependency
 
-Review and merge PR #22, then confirm the post-merge Production deployment and protected signed-out admin state. Authenticated valid-record UI/non-valid rejection and one real VEDOS resend remain deferred until the Owner has an approved existing valid credential and recipient; no permanent credential is created only to exercise this ticket.
+WF-004 is closed at the currently available operational level. Authenticated valid-record UI/non-valid rejection, the focused pgTAP suite, and one real VEDOS resend remain explicit deferred acceptance checks until a compatible pgTAP runner and an Owner-approved existing valid credential/recipient are available; no permanent credential is created only to exercise this ticket.
