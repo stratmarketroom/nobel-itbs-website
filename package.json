@@ -75,6 +75,7 @@
     "verify:qa-005:html-language": "node scripts/verify-html-language.mjs",
     "verify:qa-005:seo": "node scripts/verify-qa-005-seo.mjs",
     "verify:qa-005:security-headers": "node scripts/verify-qa-005-security-headers.mjs",
+    "verify:qa-005:backup-readiness": "node scripts/verify-qa-005-backup-readiness.mjs",
     "verify:qa-005:vedos-smtp": "node scripts/verify-qa-005-vedos-smtp.mjs",
     "verify:adm-crd-001": "node scripts/verify-adm-crd-001.mjs",
     "supabase:start": "supabase start",
