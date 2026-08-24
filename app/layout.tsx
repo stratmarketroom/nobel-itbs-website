@@ -3,8 +3,10 @@ import { headers } from 'next/headers';
 import './globals.css';
 import { CookieConsent } from '@/components/cookie-consent';
 import { htmlLanguageHeader, resolveHtmlLanguage } from '@/lib/content/html-language';
+import { canonicalOrigin } from '@/lib/seo/urls';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(canonicalOrigin),
   title: 'Nobel ITBS',
   description: 'International business school website and credential registry.',
 };

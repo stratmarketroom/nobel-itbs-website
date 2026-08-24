@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import { PublicVerification } from '@/components/public-verification';
 import { verificationCopy } from '@/lib/credentials/verification-copy';
+import { languageAlternates, localizedAbsoluteUrl } from '@/lib/seo/urls';
 
 const copy = verificationCopy.en;
 export const metadata: Metadata = {
   title: copy.seo.title,
   description: copy.seo.description,
-  openGraph: { title: copy.seo.ogTitle, description: copy.seo.ogDescription },
-  alternates: { canonical: '/verify', languages: { en: '/verify', uk: '/ua/verify', cs: '/cz/verify' } },
+  openGraph: { title: copy.seo.ogTitle, description: copy.seo.ogDescription, url: localizedAbsoluteUrl('en', '/verify') },
+  alternates: { canonical: localizedAbsoluteUrl('en', '/verify'), languages: languageAlternates('/verify') },
 };
 
 type Props = { searchParams: Promise<{ documentNumber?: string | string[] }> };

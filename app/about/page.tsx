@@ -5,7 +5,7 @@ import { managedPageMetadata } from '@/lib/content/page-metadata';
 
 export async function generateMetadata() {
   const page = await getStructuredContentPage('about', 'en');
-  return page ? managedPageMetadata(page) : {};
+  return page ? managedPageMetadata(page, 'en') : {};
 }
 export default async function AboutPage() {
   const page = await getStructuredContentPage('about', 'en');

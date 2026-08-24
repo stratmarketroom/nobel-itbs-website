@@ -1,20 +1,22 @@
 import type { Metadata } from 'next';
 import type { ContentLocale } from './localization';
-import { contentLocalePrefixes } from './localization';
 import type { ContentPageKey, StructuredContentPage } from './pages';
+import { languageAlternates, localizedAbsoluteUrl } from '@/lib/seo/urls';
 
 const paths: Record<ContentPageKey, string> = {
   home: '', about: '/about', partnerships: '/partnerships', for_organisations: '/for-organisations',
   privacy_policy: '/privacy-policy', terms_of_use: '/terms-of-use', refund_policy: '/refund-policy',
 };
 
-export function managedPageMetadata(page: StructuredContentPage): Metadata {
+export function managedPageMetadata(page: StructuredContentPage, requestedLocale: ContentLocale): Metadata {
   const path = paths[page.pageKey];
-  const hreflang: Record<ContentLocale, string> = { en: 'en', ua: 'uk', cz: 'cs' };
-  const languageUrls = Object.fromEntries((['en', 'ua', 'cz'] as ContentLocale[]).map((locale) => [hreflang[locale], `${contentLocalePrefixes[locale]}${path}` || '/']));
+  const locales = page.publishedLocales.filter((locale) => locale !== requestedLocale || page.renderedLocale === requestedLocale);
   return {
     title: page.seoTitle,
     description: page.seoDescription,
-    alternates: { canonical: `${contentLocalePrefixes[page.renderedLocale]}${path}` || '/', languages: languageUrls },
+    alternates: {
+      canonical: localizedAbsoluteUrl(page.renderedLocale, path || '/'),
+      languages: languageAlternates(path || '/', locales),
+    },
   };
 }

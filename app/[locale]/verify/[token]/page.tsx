@@ -4,6 +4,7 @@ import { PublicVerification } from '@/components/public-verification';
 import { isContentLocale } from '@/lib/content/localization';
 import { verificationCopy } from '@/lib/credentials/verification-copy';
 import { isPrefixedLocale } from '@/lib/i18n';
+import { localizedAbsoluteUrl } from '@/lib/seo/urls';
 
 type Props = { params: Promise<{ locale: string; token: string }> };
 
@@ -13,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: verificationCopy[locale].seo.title,
     robots: { index: false, follow: false },
-    alternates: { canonical: `/${locale}/verify` },
+    alternates: { canonical: localizedAbsoluteUrl(locale, '/verify') },
   };
 }
 

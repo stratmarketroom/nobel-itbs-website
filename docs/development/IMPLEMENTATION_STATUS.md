@@ -8,7 +8,7 @@ This is the current implementation record. The v2 product and technical specific
 
 - The stabilization branch was merged into `main` through PR #1.
 - PCE-005 was merged into `main` through PR #14.
-- Current focused branch: `codex/qa-005-automation-001`, created from `origin/main` at `36ad7ed`.
+- Current focused branch: `codex/qa-005-seo-001`, stacked on the accepted QA-005 automation baseline.
 - No direct push to `main` is used.
 
 ## Supabase Dev Project
@@ -60,6 +60,7 @@ All 50 local SQL migrations through `20260812110000_lrn_005_learner_import.sql` 
 
 ## Verified in Dev
 
+- On 2026-08-24, QA-005 SEO publication implemented the canonical origin/metadata base, publication-aware canonical and hreflang clusters, dynamic sitemap, robots policy, locale aliases, one-hop host/protocol/trailing-slash and verified legacy redirects, and `410 Gone` for the removed legacy Blog root. All 64 non-live static verifiers, lint, TypeScript, and production build pass. Local seed-mode HTTP acceptance produced 51 unique sitemap URLs and 204 reciprocal alternate links with no admin, API, legal, token-result, or duplicate URLs. See `docs/qa/QA_005_SEO_PUBLICATION_2026-08-24.md`.
 - On 2026-08-24, QA-005 automation-baseline verification passed all 63 non-live static verifier scripts, ESLint, `tsc --noEmit`, and the Next.js production build. The stale CNT-003 verifier now checks the current Home navigation plus the shared EN/UA/CZ managed-page navigation instead of expecting route strings in the wrapper component. See `docs/qa/QA_005_AUTOMATION_BASELINE_2026-08-24.md`.
 - Remote database contains 3 languages, 3 programme areas, 3 programme types, 5 programmes, 5 runs, 5 partners, 3 experts, 7 structured page records, and 21 published page translations.
 - Public application reads real Supabase content by default and does not silently replace database failures with seed content.
