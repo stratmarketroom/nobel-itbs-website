@@ -63,6 +63,7 @@ Current implementation notes:
 - `docs/qa/QA_005_SEO_PUBLICATION_2026-08-24.md`
 - `docs/qa/QA_005_SECURITY_HEADERS_2026-08-24.md`
 - `docs/qa/QA_005_BACKUP_READINESS_2026-08-24.md`
+- `docs/qa/QA_005_PROGRAMME_CTA_ACCEPTANCE_2026-08-24.md`
 - `docs/qa/CNT_003_HOME_VISUAL_BASELINE_AUDIT_2026-08-11.md`
 - `docs/development/DESIGN_SKILLS_SETUP.md`
 - `docs/development/DOCUMENTATION_MAINTENANCE.md`
