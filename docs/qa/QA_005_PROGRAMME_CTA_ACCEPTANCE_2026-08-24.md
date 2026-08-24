@@ -70,8 +70,20 @@ Repository verification passed:
 
 The pre-deployment Production browser still served the previous cached page
 payload and therefore showed the question fallback for all three programmes.
-Preview and post-merge Production browser acceptance remain required to prove
-that the new deployment reads the migrated values.
+The Vercel Preview created from PR #17 then proved that a fresh deployment reads
+the migrated values across the complete EN/UA/CZ matrix:
+
+- General Psychology: two exact external CTA links per locale to
+  `https://event.duan.edu.ua/ie80iq`;
+- Child Psychology: two exact external CTA links per locale to
+  `https://event.duan.edu.ua/830uga`;
+- every approved external CTA has `target="_blank"` and `rel="noreferrer"`;
+- both psychology programmes retain two on-site question links per locale;
+- AI Production has no `event.duan.edu.ua` link and retains two on-site question
+  links per locale.
+
+No external CTA was clicked. Post-merge Production browser acceptance remains
+required before the ticket is marked complete.
 
 ## Security Notes
 
