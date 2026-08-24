@@ -75,6 +75,12 @@ Passed against `nobel-itbs-dev`:
 - anonymous execution is false and authenticated execution is true;
 - the installed function contains the valid-only guard and no `update public.credentials` statement.
 
+Passed in PR #22 Preview:
+
+- Vercel deployment/check completed successfully;
+- `/admin/credentials` rendered the protected signed-out state and exposed no credential data;
+- the authenticated valid-record UI and application-level endpoint mutation were not exercised because Preview has no active Nobel ITBS admin session or approved valid credential.
+
 The focused pgTAP file has 24 planned assertions covering function security, grants, MFA, valid-only behavior, custom recipient validation, complete current-file binding, manifest privacy, empty-recipient history, Audit/History, lifecycle/number immutability, and the existing permanence/finalization controls.
 
 The focused pgTAP file was attempted in the dev SQL Editor with an explicit `public, extensions` search path, but dev does not expose the pgTAP `plan(integer)` function. The transaction did not proceed past planning. A Docker-compatible local runner is also unavailable, so the full pgTAP suite remains pending rather than recorded as passed.
@@ -101,4 +107,4 @@ The migration is forward-only and has been shared with dev, so it must not be de
 
 ## Next Dependency
 
-Review and merge the branch, deploy a Preview with the dev database, then verify the protected valid-only UI and negative unauthenticated/non-valid cases. Run one real VEDOS resend only when the Owner approves an existing valid credential and recipient. Production migration and application deployment follow successful Preview/dev acceptance.
+Review the ready PR #22, then verify the authenticated valid-only UI and non-valid rejection using an approved admin session/record. Run one real VEDOS resend only when the Owner approves an existing valid credential and recipient. Production migration and application deployment follow successful authenticated Preview/dev acceptance.
