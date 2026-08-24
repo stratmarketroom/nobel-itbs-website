@@ -1,23 +1,61 @@
 import { existsSync, readFileSync } from 'node:fs';
-const files = [
-  'supabase/migrations/20260805120000_cnt_003_public_layout_navigation.sql',
-  'supabase/migrations/20260811130000_cnt_003_correct_home_content.sql',
-  'supabase/migrations/20260812100000_cnt_003_restore_production_home_sections.sql',
-  'supabase/tests/database/cnt_003_public_layout_navigation.test.sql',
-  'supabase/tests/database/cnt_003_home_content_correction.test.sql',
-  'components/managed-content-page.tsx',
+const filePaths = {
+  layoutMigration: 'supabase/migrations/20260805120000_cnt_003_public_layout_navigation.sql',
+  homeCorrectionMigration: 'supabase/migrations/20260811130000_cnt_003_correct_home_content.sql',
+  productionRepairMigration: 'supabase/migrations/20260812100000_cnt_003_restore_production_home_sections.sql',
+  layoutTest: 'supabase/tests/database/cnt_003_public_layout_navigation.test.sql',
+  homeCorrectionTest: 'supabase/tests/database/cnt_003_home_content_correction.test.sql',
+  managedPage: 'components/managed-content-page.tsx',
+  managedHome: 'components/content-managed-home.tsx',
+  sharedCopy: 'lib/i18n.ts',
+};
+const routeFiles = [
   'app/about/page.tsx', 'app/[locale]/about/page.tsx',
   'app/for-organisations/page.tsx', 'app/[locale]/for-organisations/page.tsx',
   'app/partnerships/page.tsx', 'app/[locale]/partnerships/page.tsx',
 ];
-const errors = files.filter((file) => !existsSync(file)).map((file) => `Missing ${file}`);
-const component = existsSync(files[5]) ? readFileSync(files[5], 'utf8') : '';
-for (const href of ['/programmes', '/for-organisations', '/partnerships', '/about', '/verify']) if (!component.includes(href)) errors.push(`Navigation missing ${href}`);
-if (/news/i.test(component)) errors.push('News must not appear in Release 1 navigation.');
-const migration = existsSync(files[0]) ? readFileSync(files[0], 'utf8') : '';
+const requiredFiles = [...Object.values(filePaths), ...routeFiles];
+const errors = requiredFiles.filter((file) => !existsSync(file)).map((file) => `Missing ${file}`);
+const readRequiredFile = (file) => existsSync(file) ? readFileSync(file, 'utf8') : '';
+
+const managedPage = readRequiredFile(filePaths.managedPage);
+if (!managedPage.includes("import { homeCopy } from '@/lib/i18n';") || !managedPage.includes('shell.nav.map')) {
+  errors.push('Managed public pages must render the shared localized navigation.');
+}
+
+const sharedCopy = readRequiredFile(filePaths.sharedCopy);
+const sharedNavStart = sharedCopy.indexOf('const englishNav');
+const sharedNavEnd = sharedCopy.indexOf('const englishFooterColumns');
+const sharedNav = sharedNavStart >= 0 && sharedNavEnd > sharedNavStart
+  ? sharedCopy.slice(sharedNavStart, sharedNavEnd)
+  : '';
+const navPaths = ['/programmes', '/for-organisations', '/partnerships', '/verify', '/about'];
+const localePrefixes = { en: '', ua: '/ua', cz: '/cz' };
+for (const [locale, prefix] of Object.entries(localePrefixes)) {
+  for (const path of navPaths) {
+    if (!sharedNav.includes(`href: '${prefix}${path}'`)) errors.push(`${locale.toUpperCase()} shared navigation missing ${path}`);
+  }
+}
+
+const managedHome = readRequiredFile(filePaths.managedHome);
+const homeNavStart = managedHome.indexOf('const uiCopy');
+const homeNavEnd = managedHome.indexOf('const localeLabels');
+const homeNav = homeNavStart >= 0 && homeNavEnd > homeNavStart
+  ? managedHome.slice(homeNavStart, homeNavEnd)
+  : '';
+for (const path of navPaths.filter((path) => path !== '/verify')) {
+  const localizedEntries = homeNav.split(`path: '${path}'`).length - 1;
+  if (localizedEntries !== 3) errors.push(`Home navigation must include ${path} for EN, UA, and CZ.`);
+}
+if (!managedHome.includes("targetFor(locale, verification?.fields?.link_target, '/verify')") || !managedHome.includes('content-home-verify-nav')) {
+  errors.push('Home navigation missing the Verify utility action.');
+}
+if (/news/i.test(sharedNav) || /news/i.test(homeNav)) errors.push('News must not appear in Release 1 navigation.');
+
+const migration = readRequiredFile(filePaths.layoutMigration);
 for (const key of ['home', 'about', 'partnerships', 'for_organisations']) if (!migration.includes(`'${key}'`)) errors.push(`Migration missing ${key}`);
 
-const homeCorrection = existsSync(files[1]) ? readFileSync(files[1], 'utf8') : '';
+const homeCorrection = readRequiredFile(filePaths.homeCorrectionMigration);
 const approvedSections = [...homeCorrection.matchAll(/\$json\$([\s\S]*?)\$json\$/g)].map((match) => {
   try { return JSON.parse(match[1]); } catch { errors.push('Home correction contains invalid JSON.'); return null; }
 }).filter(Boolean);
@@ -29,7 +67,7 @@ for (const sections of approvedSections) {
   const model = sections.blocks?.find((block) => block.key === 'how_the_model_works');
   if (!model?.fields?.step_4_title || !model?.fields?.step_4_body) errors.push('Every corrected Home translation must contain four model steps.');
 }
-const productionRepair = existsSync(files[2]) ? readFileSync(files[2], 'utf8') : '';
+const productionRepair = readRequiredFile(filePaths.productionRepairMigration);
 if (!productionRepair.includes("when 'programme_areas'")) errors.push('Production repair must target programme areas.');
 if (!productionRepair.includes("when 'why_nobel_itbs'")) errors.push('Production repair must target trust cards.');
 if ((productionRepair.match(/\$json\$/g) ?? []).length !== 12) errors.push('Production repair must contain six approved JSON arrays.');

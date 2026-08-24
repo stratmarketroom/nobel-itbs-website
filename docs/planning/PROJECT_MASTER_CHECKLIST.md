@@ -208,7 +208,7 @@ Stage status: **core implementation and dev/static QA complete; Telegram deploym
 
 ## Stage 9 — Security, QA, and Launch Hardening
 
-- [-] Ticket-level migration/static verifiers, lint, TypeScript, builds, browser smoke, and selected RLS/API smoke checks pass.
+- [x] QA-005-AUTOMATION-001 restored the current automation baseline on 2026-08-24: the stale CNT-003 navigation check now follows the actual Home and shared EN/UA/CZ navigation sources, and all 63 non-live static verifiers, ESLint, TypeScript, and the production build pass. Historical browser/live evidence remains recorded in its ticket-specific QA reports.
 - [-] QA-001 aggregate 38-assertion RLS matrix is implemented for all 36 public tables, four roles, service-only RPCs, and private Storage; the live anonymous boundary passed 18 public reads, 18 private denials, and two RPC denials. Earlier authenticated role evidence was reconciled; only execution of the Docker-dependent full pgTAP file remains.
 - [x] QA-002 valid and revoked verification privacy passed with the first approved retained credential by both document number and QR token; revoked output contains status only.
 - [x] QA-003 aggregate 27-assertion MFA matrix and fresh Owner AAL1 live test passed: verified TOTP enrollment was detected and all 11 sensitive admin routes returned explicit MFA/AAL2 denials without mutation. Existing AAL2 role/module evidence was reconciled; see `docs/qa/QA_003_MFA_TESTS_2026-08-10.md`.
@@ -236,7 +236,7 @@ Stage status: **QA-001..004 are accepted at the current dev level; QA-005 produc
 - [x] Nine localized legal routes render complete page bodies.
 - [x] Anonymous content writes and anonymous protected-contact reads are denied.
 - [x] Unauthenticated admin APIs return `401`.
-- [x] Current production build and lint pass.
+- [x] As of 2026-08-24, all 63 non-live static verifiers, ESLint, `tsc --noEmit`, and the current production build pass.
 
 ## Next Implementation Sequence
 
@@ -272,6 +272,7 @@ The credential workflow stage is now open; external production integrations rema
 28. [x] **CNT-003 Home visual integration and public Production acceptance** — the approved Home, EN/UA/CZ managed content, localized shell, Czech metadata, and mobile touch targets are merged, deployed, and accepted in Vercel Production on 2026-08-12.
 29. [x] **Production Auth/Owner/MFA and protected admin acceptance** — production Auth URLs, the single active Owner, mandatory MFA, and all 11 protected admin modules passed non-mutating Production acceptance on 2026-08-12. See `docs/qa/QA_005_PRODUCTION_OWNER_MFA_ADMIN_2026-08-12.md`.
 30. [x] **LRN-005 Learner List Import** — controlled XLSX round trip, CSV preview, role/MFA denials, atomic valid-row import, stale/duplicate rejection, count-only audit, cleanup, and authenticated desktop/mobile acceptance passed in dev on 2026-08-12; the migration and real Owner/AAL2 import/duplicate/cleanup workflow were accepted in production on 2026-08-13. See `docs/qa/LRN_005_LEARNER_LIST_IMPORT_QA_2026-08-12.md` and `docs/qa/LRN_005_PRODUCTION_ACCEPTANCE_2026-08-13.md`.
-31. **Continue operational launch readiness** — align and acceptance-test VEDOS credential delivery, configure final CTA destinations and Telegram contact alerts, define database/private-PDF backups, attach and verify the canonical domain, configure analytics/consent, complete physical-device/accessibility/cross-browser acceptance, and make the final release decision.
+31. [x] **QA-005 automation baseline** — corrected the stale CNT-003 navigation verifier, synchronized current branch/status records, and passed all 63 non-live static verifiers, ESLint, TypeScript, and the production build on 2026-08-24. See `docs/qa/QA_005_AUTOMATION_BASELINE_2026-08-24.md`.
+32. **Continue operational launch readiness** — align and acceptance-test VEDOS credential delivery, configure final CTA destinations and Telegram contact alerts, define database/private-PDF backups, attach and verify the canonical domain, configure analytics/consent, complete physical-device/accessibility/cross-browser acceptance, and make the final release decision.
 
 The backend, permissions, workflow, public visual baseline, public Production layer, and production Owner/MFA-protected admin are accepted at their documented level. Production launch now depends on the remaining operational integrations, backup/domain setup, and final acceptance items.

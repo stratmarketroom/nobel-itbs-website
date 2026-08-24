@@ -1,13 +1,14 @@
 # Implementation Status
 
-Last updated: 2026-08-13
+Last updated: 2026-08-24
 
 This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
 ## Current Branch
 
 - The stabilization branch was merged into `main` through PR #1.
-- Current focused branch: `codex/pce-005-telegram-notifications`.
+- PCE-005 was merged into `main` through PR #14.
+- Current focused branch: `codex/qa-005-automation-001`, created from `origin/main` at `36ad7ed`.
 - No direct push to `main` is used.
 
 ## Supabase Dev Project
@@ -59,6 +60,7 @@ All 50 local SQL migrations through `20260812110000_lrn_005_learner_import.sql` 
 
 ## Verified in Dev
 
+- On 2026-08-24, QA-005 automation-baseline verification passed all 63 non-live static verifier scripts, ESLint, `tsc --noEmit`, and the Next.js production build. The stale CNT-003 verifier now checks the current Home navigation plus the shared EN/UA/CZ managed-page navigation instead of expecting route strings in the wrapper component. See `docs/qa/QA_005_AUTOMATION_BASELINE_2026-08-24.md`.
 - Remote database contains 3 languages, 3 programme areas, 3 programme types, 5 programmes, 5 runs, 5 partners, 3 experts, 7 structured page records, and 21 published page translations.
 - Public application reads real Supabase content by default and does not silently replace database failures with seed content.
 - Anonymous write attempts and unauthorized contact reads are denied; protected admin APIs reject unauthenticated requests.
