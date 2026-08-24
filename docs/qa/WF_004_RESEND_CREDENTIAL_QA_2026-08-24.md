@@ -5,9 +5,9 @@ Branch: `codex/wf-004-resend-credential`
 
 ## Summary
 
-WF-004 is implemented at the code and dev-database QA level. An Owner, Super Admin, or Credential Manager with MFA can resend every current private PDF of a `valid` credential to an editable recipient using an editable rendered EN/UA subject and body. Every request first creates a permanent private delivery-history row. Provider or finalization failure does not change credential status or the permanent document-number ledger.
+WF-004 is implemented at the code and dev/Production database QA level. An Owner, Super Admin, or Credential Manager with MFA can resend every current private PDF of a `valid` credential to an editable recipient using an editable rendered EN/UA subject and body. Every request first creates a permanent private delivery-history row. Provider or finalization failure does not change credential status or the permanent document-number ledger.
 
-The migration compiled and was applied to `nobel-itbs-dev` through the authenticated Supabase SQL Editor because this worktree has no Supabase CLI access token. Version `20260824130000` is present in the dev migration ledger. Production was not changed. No real resend was attempted because the retained dev credential is revoked and Production has no approved valid credential suitable for this action.
+The migration compiled and was applied to `nobel-itbs-dev` and `nobel-itbs-prod` through the authenticated Supabase SQL Editor because this worktree has no Supabase CLI access token. Version `20260824130000` is present in both migration ledgers. Read-only Production checks confirmed the installed function, grants, valid-only guard, fixed search path, and unchanged credential lifecycle. No real resend was attempted because the retained dev credential is revoked and Production contains zero valid credentials.
 
 ## Files Changed
 
@@ -75,6 +75,15 @@ Passed against `nobel-itbs-dev`:
 - anonymous execution is false and authenticated execution is true;
 - the installed function contains the valid-only guard and no `update public.credentials` statement.
 
+Passed against `nobel-itbs-prod`:
+
+- migration execution and migration-ledger registration returned success;
+- the ledger contains `20260824130000 / wf_004_resend_credential` with one stored migration statement;
+- the installed function is `security definer` with `search_path=public, internal, pg_temp`;
+- anonymous execution is false and authenticated execution is true;
+- the installed function contains the valid-only guard and no `update public.credentials` statement;
+- the valid-credential count is zero, so no delivery mutation was attempted.
+
 Passed in PR #22 Preview:
 
 - Vercel deployment/check completed successfully;
@@ -103,8 +112,8 @@ The focused pgTAP file was attempted in the dev SQL Editor with an explicit `pub
 
 ## Rollback / Remediation
 
-The migration is forward-only and has been shared with dev, so it must not be deleted or rewritten after merge. It only adds/replaces one otherwise-unused controlled function. If a defect is found before Production, add a later corrective migration that `create or replace`s or revokes `public.resend_credential`; do not mutate credential, delivery-history, or document-number data to simulate rollback.
+The migration is forward-only and has been applied to dev and Production, so it must not be deleted or rewritten after merge. It only adds/replaces one otherwise-unused controlled function. If a defect is found, add a later corrective migration that `create or replace`s or revokes `public.resend_credential`; do not mutate credential, delivery-history, or document-number data to simulate rollback.
 
 ## Next Dependency
 
-Review the ready PR #22, then verify the authenticated valid-only UI and non-valid rejection using an approved admin session/record. Run one real VEDOS resend only when the Owner approves an existing valid credential and recipient. Production migration and application deployment follow successful authenticated Preview/dev acceptance.
+Review and merge PR #22, then confirm the post-merge Production deployment and protected signed-out admin state. Authenticated valid-record UI/non-valid rejection and one real VEDOS resend remain deferred until the Owner has an approved existing valid credential and recipient; no permanent credential is created only to exercise this ticket.
