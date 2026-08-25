@@ -499,7 +499,7 @@ Parallel agents:
 
 Owner action needed:
 
-- PDFGEN-001 is implemented and applied in dev: the private schema, forced RLS, role/MFA boundary, immutable versioning, multi-document/multi-page publication, unbounded-cohort batch foundation, provenance, and forward-only trigger correction passed the available checks; full pgTAP execution remains queued for a compatible runner;
+- PDFGEN-001 is implemented, merged through PR #29 as `1b2d224`, and applied in dev and Production: the private schema, forced RLS, role/MFA boundary, immutable versioning, multi-document/multi-page publication, unbounded-cohort batch foundation, provenance, and forward-only trigger correction passed the available checks; Production contains zero PDFGEN fixture rows, while full pgTAP execution remains queued for a compatible runner;
 - CRD-PDFGEN-001 scope alignment is approved: Release 1 must generate one or more private, potentially multi-page PDFs per credential from a reusable programme/type/language/variant Template Package and must support controlled batches;
 - QA-005-A11Y-FIX-001 is merged, deployed, and accepted at its focused scope through PR #25 and Production merge `083b045`; no real credentials were submitted during browser acceptance;
 - QA-005-TELEGRAM-INVITE-001 is complete: the Owner revoked the setup-time Telegram group invitation link, and no change to the accepted bot/chat configuration or Telegram notification payload is required;
