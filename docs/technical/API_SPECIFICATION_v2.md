@@ -457,6 +457,17 @@ attachments, launch/remote actions, page annotations, and unsupported external
 content. The per-document limit is 20 MB; page count and dimensions are derived
 from the parsed PDF rather than accepted from the browser.
 
+PDFGEN-003 editor routes:
+
+- `GET|POST /api/v1/admin/credential-templates` — load the private workspace or create a package with draft v1;
+- `POST /api/v1/admin/credential-templates/{packageId}/versions` — create the next draft when no draft exists;
+- `PATCH /api/v1/admin/credential-templates/versions/{versionId}/documents/{documentId}` — update safe draft document metadata;
+- `PUT /api/v1/admin/credential-templates/versions/{versionId}/placements` — atomically replace one document's constrained placements;
+- `POST /api/v1/admin/credential-templates/versions/{versionId}/{validate|publish|retire|preview}` — validate or perform the guarded lifecycle/audit action;
+- `GET /api/v1/admin/credential-templates/versions/{versionId}/documents/{documentId}/pages/{pageNumber}` — return an authenticated no-store PNG rendering for the fictional sample editor.
+
+All PDFGEN-003 routes require Owner or Super Admin plus MFA. Page rendering never returns a Storage path or signed URL and does not create a generated credential file.
+
 Batch processing must automatically divide the cohort into bounded,
 configurable technical chunks while preserving one aggregate batch view. It
 must be resumable and idempotent. Every learner gets

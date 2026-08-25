@@ -485,9 +485,9 @@ The orchestrator controls:
 
 ## 7. Current Next Step
 
-Next ticket:
+Current ticket:
 
-- `PDFGEN-003 Template Package Admin and Field Placement Editor`;
+- `PDFGEN-003 Template Package Admin and Field Placement Editor` — dev acceptance is complete: the third Owner-reported preview displacement was corrected with the observed `8 pt` visible-row offset, source-marker geometry, non-displacing overlays, bounded wrapping, exact label offsets, and a non-clipping QR sample; the baked `_NUMBER]` fragment was removed from the vector source; the cleaned A4 PDF passed the actual PDFGEN-002 upload validator and validates with all five restored placements; the Owner approved the final preview and explicitly authorized immutable publication; v1 is published, post-publication validation passes, mutation controls are absent, and all placement controls are disabled. Merge/deploy plus Production migration/read-only acceptance remain before PDFGEN-004;
 
 Agent:
 

@@ -43,8 +43,70 @@ function decodePdfName(value: string): string {
   ));
 }
 
+function pdfSyntaxOutsideStreamsAndStrings(source: string): string {
+  let result = '';
+  let index = 0;
+
+  while (index < source.length) {
+    const character = source[index];
+
+    if (character === '%') {
+      while (index < source.length && source[index] !== '\n' && source[index] !== '\r') index += 1;
+      result += '\n';
+      continue;
+    }
+
+    if (character === '(') {
+      let depth = 1;
+      index += 1;
+      while (index < source.length && depth > 0) {
+        if (source[index] === '\\') {
+          index += 2;
+          continue;
+        }
+        if (source[index] === '(') depth += 1;
+        if (source[index] === ')') depth -= 1;
+        index += 1;
+      }
+      result += ' ';
+      continue;
+    }
+
+    if (source.startsWith('<<', index) || source.startsWith('>>', index)) {
+      result += source.slice(index, index + 2);
+      index += 2;
+      continue;
+    }
+
+    if (character === '<') {
+      index = source.indexOf('>', index + 1);
+      if (index === -1) break;
+      index += 1;
+      result += ' ';
+      continue;
+    }
+
+    if (
+      source.startsWith('stream', index)
+      && /[\s\r\n]/.test(source[index - 1] ?? ' ')
+      && /[\r\n]/.test(source[index + 6] ?? '')
+    ) {
+      const endStream = source.indexOf('endstream', index + 6);
+      if (endStream === -1) break;
+      index = endStream + 'endstream'.length;
+      result += ' ';
+      continue;
+    }
+
+    result += character;
+    index += 1;
+  }
+
+  return result;
+}
+
 function assertNoForbiddenPdfNames(bytes: Buffer): void {
-  const source = bytes.toString('latin1');
+  const source = pdfSyntaxOutsideStreamsAndStrings(bytes.toString('latin1'));
   const names = source.matchAll(/\/([A-Za-z0-9#]+)/g);
 
   for (const match of names) {
