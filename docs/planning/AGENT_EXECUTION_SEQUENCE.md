@@ -487,11 +487,11 @@ The orchestrator controls:
 
 Completed ticket:
 
-- `PDFGEN-003 Template Package Admin and Field Placement Editor` — complete in dev and Production: the cleaned real-source v1 is immutably published/read-only in dev; PR #33 merged as `6450fb6`; Preview and Production deployments passed; migration `20260825140000` is applied/recorded in both environments; and Production passed the independent function/RLS/grant/zero-fixture audit, Owner/AAL2 empty-workspace acceptance, and unauthenticated API `401` smoke.
+- `PDFGEN-004 Server-Side Multi-Document PDF Generation` — implemented and accepted locally: the server renderer produces exactly one primary plus optional additional multi-page PDFs, embeds Noto Sans for mixed EN/UA/CZ values, applies constrained text/date/QR placements, preserves normal and rotated page geometry, rejects malformed/unsafe input and visible overflow, and passes exact QR decoding on normal and `/Rotate 90` pages. It changes no database object and still requires the normal PR/Preview/merge path.
 
 Next ticket:
 
-- `PDFGEN-004 Single Credential Package Generation` — not started;
+- `PDFGEN-005 Single Credential Generation and Regeneration` — not started;
 
 Agent:
 
