@@ -15,6 +15,9 @@ The ticket intentionally does not create the `credential-templates` Storage
 bucket, validate/render PDF bytes, add admin UI/API generation workflows, or
 activate/send credentials. Those remain PDFGEN-002..007.
 
+PR #29 was merged into `main` as `1b2d224`. Both PDFGEN-001 migrations are
+applied and recorded in `nobel-itbs-dev` and `nobel-itbs-prod`.
+
 During transactional dev runtime testing, the initial shared draft-content
 trigger exposed a PostgreSQL record-shape defect on page rows. No fixture data
 persisted. The applied foundation history was preserved and a forward-only
@@ -104,6 +107,26 @@ Passed against `nobel-itbs-dev`:
 - an Owner/AAL2 transaction created a primary one-page document plus a
   three-page supplement, published the version, rejected post-publication
   mutation, created draft version 2, and rolled every fixture back.
+
+Passed against `nobel-itbs-prod` through read-only acceptance after the atomic
+migration apply:
+
+- versions `20260825090000` and `20260825100000` are recorded with the expected
+  names and one stored statement each;
+- all 8 new tables exist and force RLS; the aggregate public-table inventory is
+  44;
+- all 18 scoped policies exist, with zero Content Manager policy references;
+- anonymous table reads, forbidden direct authenticated mutation grants, and
+  direct service-role mutation grants are zero;
+- the expected draft-content grants are limited to document/page/placement
+  editing, and package updates are limited to the six approved identity/display
+  columns;
+- all four lifecycle functions are denied to anonymous users and executable by
+  authenticated users subject to their internal role/MFA guards;
+- the `credential-templates` bucket is absent and credential statuses remain
+  exactly `pending`, `valid`, `revoked`, `voided`;
+- all eight PDFGEN-001 tables contain zero Production rows; no acceptance
+  fixture was created.
 
 The 65-assertion focused pgTAP file and updated 39-assertion QA-001 aggregate
 file are committed, but the complete pgTAP runner was not executed: local
