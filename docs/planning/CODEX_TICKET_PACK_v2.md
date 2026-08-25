@@ -280,6 +280,67 @@ CRD-006 Credential History and Notes
 - notes/comments;
 - edit/delete rules.
 
+### Group G2 - Automatic Credential Document Generation
+
+PDFGEN-001 Template and Generation Database Foundation
+
+- private template package/version/document/placement model;
+- private generation batch/item/provenance model;
+- one-primary, context, immutable-version, idempotency, RLS, and audit foundation.
+
+PDFGEN-002 Private Template Storage and Validation
+
+- private `credential-templates` bucket;
+- source PDF validation/sanitization boundary;
+- published object immutability;
+- multi-page metadata and private preview access.
+
+PDFGEN-003 Template Package Admin and Field Placement Editor
+
+- programme/run/type/language/variant context;
+- multiple Template Documents per package;
+- constrained field placement on any page;
+- sample preview, validation, publish, and retire workflow;
+- Owner/Super Admin mutation only.
+
+PDFGEN-004 Server-Side Multi-Document PDF Generation
+
+- embedded EN/UA/CZ-capable fonts;
+- text/date/QR overlay;
+- one primary plus optional additional multi-page output PDFs;
+- overflow, malformed PDF, and QR scan safety.
+
+PDFGEN-005 Single Credential Generation and Regeneration
+
+- published-template context enforcement;
+- server-only QR/token use;
+- pending generation/regeneration;
+- private review;
+- valid correction remains reason/history controlled.
+
+PDFGEN-006 Batch Generation and Review
+
+- the complete explicitly selected cohort without a fixed product-facing cap;
+- automatic bounded/configurable technical chunks under one aggregate batch/progress view;
+- conflict preview and explicit confirmation;
+- bounded resumable/idempotent processing;
+- per-item retry with permanent-number preservation;
+- private batch review.
+
+PDFGEN-007 Batch Activation and VEDOS Delivery
+
+- explicit reviewed-item selection;
+- independent per-credential activation and delivery outcome;
+- all current package PDFs sent together;
+- email failure never rolls back activation or blocks other items.
+
+PDFGEN-008 Generation Security and End-to-End Acceptance
+
+- RLS/MFA/role matrix;
+- private template/generated-file boundary;
+- audit/history privacy;
+- multi-document, multi-page, multilingual, long-name, QR, retry, batch, activation, and delivery tests.
+
 ### Group H - Credential Workflows
 
 WF-001 Create Pending Credential

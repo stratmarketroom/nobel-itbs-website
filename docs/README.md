@@ -21,6 +21,7 @@ Current planning baseline:
 - `docs/product/RELEASE_1_SCOPE_v2.md`
 - `docs/product/SITEMAP_AND_USER_FLOWS_v2.md`
 - `docs/product/CREDENTIAL_MODULE_SPECIFICATION_v2.md`
+- `docs/product/CREDENTIAL_DOCUMENT_GENERATION_SPECIFICATION_v2.md`
 - `docs/technical/DATABASE_SCHEMA_v2.md`
 - `docs/technical/API_SPECIFICATION_v2.md`
 - `docs/technical/RLS_AND_PERMISSIONS_SPECIFICATION_v2.md`
@@ -68,6 +69,7 @@ Current implementation notes:
 - `docs/qa/QA_005_SPACE_BUSINESS_AND_B2B_CTA_ACCEPTANCE_2026-08-24.md`
 - `docs/qa/QA_005_ACCESSIBILITY_CROSS_BROWSER_2026-08-24.md`
 - `docs/qa/QA_005_ADMIN_LOGIN_A11Y_FIX_2026-08-24.md`
+- `docs/qa/CRD_PDFGEN_001_SCOPE_ALIGNMENT_2026-08-25.md`
 - `docs/qa/CNT_003_HOME_VISUAL_BASELINE_AUDIT_2026-08-11.md`
 - `docs/development/DESIGN_SKILLS_SETUP.md`
 - `docs/development/DOCUMENTATION_MAINTENANCE.md`

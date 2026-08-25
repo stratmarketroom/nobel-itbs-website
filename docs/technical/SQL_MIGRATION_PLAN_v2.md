@@ -164,14 +164,34 @@ All sensitive functions:
 - validate MFA/AAL where required;
 - write history/audit.
 
+### Phase 7A - Credential Template and Generation Foundation
+
+Forward-only migrations/functions:
+
+1. Credential Template Packages.
+2. Immutable Template Package Versions.
+3. Multi-document/multi-page Template Documents.
+4. Constrained Field Placements.
+5. Generation Batches and Batch Items.
+6. Generated-file provenance.
+7. Template context, version, one-primary, page, and placement constraints.
+8. Controlled draft/publish/retire functions.
+9. Retry-safe, idempotent batch state transitions.
+10. Audit/history events without tokens, file bytes, private paths, or unnecessary PII.
+
+The phase must not add credential lifecycle statuses or make template/generated
+files public.
+
 ## 10. Phase 8 - Storage
 
 Migrations/config:
 
 1. Create `public-media` bucket.
-2. Create `private-credentials` bucket.
-3. Public media policies.
-4. Private credential policies.
+2. Create private `credential-templates` bucket.
+3. Create `private-credentials` bucket.
+4. Public media policies.
+5. Private template policies and published-object immutability controls.
+6. Private credential policies.
 
 Private credential files:
 
@@ -197,9 +217,11 @@ Apply RLS by module:
 4. Contact submissions.
 5. Learners.
 6. Credential sets/credentials/files.
-7. Document number log.
-8. Email templates/sends.
-9. Audit/history.
+7. Template packages/versions/documents/placements.
+8. Generation batches/items/provenance.
+9. Document number log.
+10. Email templates/sends.
+11. Audit/history.
 
 ## 13. Phase 11 - Tests
 
@@ -217,6 +239,8 @@ Database tests:
 - credential status transitions;
 - public verification privacy;
 - private Storage policies;
+- template publication immutability and role boundaries;
+- single/multi-document generation, multi-page output, idempotent batch retry, and permanent-number failure handling;
 - Content Manager denial;
 - Credential Manager programme read-only;
 - MFA-required functions.
@@ -230,4 +254,6 @@ Migration plan is complete when:
 - v2 credential model works;
 - public verification follows v2 privacy rules;
 - private PDFs are protected;
+- private templates and batch-generation records are protected;
+- a published package can generate one primary plus optional additional multi-page PDFs;
 - tests cover critical security and lifecycle flows.
