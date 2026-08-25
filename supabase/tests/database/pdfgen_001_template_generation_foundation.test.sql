@@ -1,6 +1,6 @@
 begin;
 
-select plan(65);
+select plan(66);
 
 select results_eq(
   $$ select enumlabel::text from pg_enum where enumtypid = 'public.credential_template_version_status'::regtype order by enumsortorder $$,
@@ -129,8 +129,17 @@ select results_eq(
     'credential_template_document_pages', 'credential_template_field_placements',
     'credential_generation_batches', 'credential_generation_batch_items', 'credential_file_generations'
   ]) table_name where has_table_privilege('authenticated', 'public.' || table_name, 'select') $$,
-  $$ values (8::bigint) $$,
-  'authenticated admins should receive private reads subject to RLS'
+  $$ values (7::bigint) $$,
+  'authenticated admins should receive table-level private reads subject to RLS except sensitive template source metadata'
+);
+select results_eq(
+  $$
+    select count(*)::bigint
+    from unnest(array['source_storage_bucket', 'source_storage_path', 'source_sha256']) column_name
+    where has_column_privilege('authenticated', 'public.credential_template_documents', column_name, 'select')
+  $$,
+  $$ values (0::bigint) $$,
+  'authenticated clients should not read private template source paths or hashes'
 );
 select results_eq(
   $$ select count(*)::bigint from unnest(array[

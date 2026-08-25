@@ -695,6 +695,15 @@ server routes. Generated credential PDFs use short-lived admin URLs where
 needed and server-side VEDOS SMTP sending. Published template objects are
 immutable; source and generated paths are never exposed publicly.
 
+`credential-templates` is private, accepts `application/pdf` only, and limits
+each source object to 20 MB. Template source identity is canonical
+`{template_version_id}/{template_document_id}.pdf`. Browser roles receive no
+`storage.objects` policy. Owner/Super Admin plus MFA source routes validate the
+PDF server-side, store SHA-256 and parsed page dimensions privately, and proxy
+previews without returning a direct Storage URL. Published/retired objects are
+immutable, and a version cannot publish if any referenced source object is
+missing.
+
 ## 14. Removed/Replaced From v1
 
 Remove or replace:

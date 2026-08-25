@@ -1,6 +1,6 @@
 begin;
 
-select plan(39);
+select plan(40);
 
 -- QA-001 is the aggregate Release 1 authorization contract. Focused ticket tests
 -- continue to verify row shapes and workflows; this suite guards the complete
@@ -152,7 +152,7 @@ select results_eq(
         'contact_submissions', 'credential_email_sends', 'credential_file_types',
         'credential_file_generations', 'credential_files', 'credential_generation_batch_items',
         'credential_generation_batches', 'credential_history', 'credential_notes', 'credential_sets',
-        'credential_template_document_pages', 'credential_template_documents',
+        'credential_template_document_pages',
         'credential_template_field_placements', 'credential_template_packages',
         'credential_template_versions',
         'credential_type_translations', 'credential_types', 'credentials',
@@ -173,7 +173,6 @@ select results_eq(
     ('credential_notes'),
     ('credential_sets'),
     ('credential_template_document_pages'),
-    ('credential_template_documents'),
     ('credential_template_field_placements'),
     ('credential_template_packages'),
     ('credential_template_versions'),
@@ -187,6 +186,16 @@ select results_eq(
     ('learners')
   $$,
   'authenticated operational reads should be granted only through RLS-protected tables'
+);
+
+select results_eq(
+  $$
+    select count(*)::bigint
+    from unnest(array['source_storage_bucket', 'source_storage_path', 'source_sha256']) column_name
+    where has_column_privilege('authenticated', 'public.credential_template_documents', column_name, 'select')
+  $$,
+  $$ values (0::bigint) $$,
+  'authenticated clients should not read template source paths or hashes'
 );
 
 select results_eq(
@@ -470,7 +479,8 @@ select results_eq(
         'update_credential_file', 'delete_credential_file', 'activate_credential', 'resend_credential',
         'revoke_credential', 'void_pending_credential', 'update_valid_credential_public_data',
         'create_credential_template_package', 'create_credential_template_version',
-        'publish_credential_template_version', 'retire_credential_template_version'
+        'publish_credential_template_version', 'retire_credential_template_version',
+        'attach_credential_template_document', 'delete_credential_template_document'
       )
       and has_function_privilege('anon', p.oid, 'execute')
   $$,
@@ -489,11 +499,12 @@ select results_eq(
         'update_credential_file', 'delete_credential_file', 'activate_credential', 'resend_credential',
         'revoke_credential', 'void_pending_credential', 'update_valid_credential_public_data',
         'create_credential_template_package', 'create_credential_template_version',
-        'publish_credential_template_version', 'retire_credential_template_version'
+        'publish_credential_template_version', 'retire_credential_template_version',
+        'attach_credential_template_document', 'delete_credential_template_document'
       )
       and has_function_privilege('authenticated', p.oid, 'execute')
   $$,
-  $$ values (14::bigint) $$,
+  $$ values (16::bigint) $$,
   'credential workflows should be callable by authenticated users and enforce role/MFA inside the function'
 );
 
@@ -515,9 +526,9 @@ select results_eq(
 );
 
 select results_eq(
-  $$ select public from storage.buckets where id = 'private-credentials' $$,
-  $$ values (false) $$,
-  'credential Storage should remain private'
+  $$ select id::text, public from storage.buckets where id in ('credential-templates', 'private-credentials') order by id $$,
+  $$ values ('credential-templates'::text, false), ('private-credentials'::text, false) $$,
+  'credential output and template source Storage should remain private'
 );
 
 select results_eq(
@@ -526,7 +537,7 @@ select results_eq(
     from pg_policies
     where schemaname = 'storage'
       and tablename = 'objects'
-      and (coalesce(qual, '') || coalesce(with_check, '')) like '%private-credentials%'
+      and (coalesce(qual, '') || coalesce(with_check, '')) similar to '%(credential-templates|private-credentials)%'
   $$,
   $$ values (0::bigint) $$,
   'browser JWTs should have no direct private credential object policy'
