@@ -569,8 +569,10 @@ generation requirement:
 - `credential_template_versions` — version records with draft/published/retired
   state and immutable published rendering content;
 - `credential_template_documents` — one or more source PDFs per version, with
-  file type, administrative label, output filename, sort order, page metadata,
-  and exactly one primary output per package;
+  file type, administrative label, output filename, sort order, private source
+  metadata, page count, and exactly one primary output per published version;
+- `credential_template_document_pages` — contiguous per-page dimensions for
+  multi-page documents and placement-bound enforcement;
 - `credential_template_field_placements` — constrained field/page geometry and
   text/QR rendering rules;
 - `credential_generation_batches` — private shared issuing context and
@@ -589,6 +591,11 @@ Published template versions are immutable. Batch processing is resumable and
 idempotent. A batch item that has reserved a number but failed generation keeps
 its pending credential and permanent reserved number for retry; the number is
 never reused.
+
+Template version states are `draft`, `published`, and `retired`. Generation
+batch/item states are private workflow states only. They do not alter the
+credential lifecycle, and internal `processing_chunk_size` is a bounded worker
+control rather than a cohort-size limit.
 
 No new credential lifecycle statuses are introduced. Exact fields, constraints,
 indexes, enum/check states, and grants are defined by the forward-only

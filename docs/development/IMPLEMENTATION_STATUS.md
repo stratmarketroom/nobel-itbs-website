@@ -1,6 +1,6 @@
 # Implementation Status
 
-Last updated: 2026-08-24
+Last updated: 2026-08-25
 
 This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
@@ -21,7 +21,7 @@ This is the current implementation record. The v2 product and technical specific
 - Local secrets remain in ignored environment files and must never be committed.
 - A pre-integration backup is available under the ignored `backups/supabase/2026-08-05-pre-content/` directory.
 
-The repository now contains 53 local SQL migrations. WF-004 migration `20260824130000_wf_004_resend_credential.sql` is applied and recorded in both dev and Production. The separate `nobel-itbs-prod` project is in Frankfurt; its secrets remain outside Git.
+The repository now contains 55 local SQL migrations. PDFGEN-001 migrations `20260825090000_pdfgen_001_template_generation_foundation.sql` and `20260825100000_pdfgen_001_template_content_trigger_fix.sql` are applied and recorded in dev. WF-004 migration `20260824130000_wf_004_resend_credential.sql` remains applied and recorded in both dev and Production. The separate `nobel-itbs-prod` project is in Frankfurt; its secrets remain outside Git.
 
 ## Implemented Foundation
 
@@ -50,6 +50,7 @@ The repository now contains 53 local SQL migrations. WF-004 migration `202608241
 - Private Credential identities with only `pending`/`valid`/`revoked`/`voided`, current curated public fields, HMAC lookup plus encrypted token storage, immutable identity/lifecycle checks, two-way deferred Number Log integrity, set/programme/run/type/year validation, controlled audited set moves, forced RLS, and no direct mutation grants.
 - Private `private-credentials` Storage bucket restricted to PDF and 20 MB, configurable seeded file types, canonical credential/file object paths, one-primary metadata rule, replacement-in-place/no-version model, file-change audit without paths/content, forced RLS, and no browser Storage policies or direct metadata mutations.
 - Private append-only credential history plus current-text internal notes with controlled author edit/soft-delete, Owner/Super Admin deletion of others' notes, privacy-minimal History/Audit events, forced RLS, MFA, and no direct note/history mutations.
+- Private automatic-document-generation foundation with programme/run/type/language/variant Template Packages, immutable published versions, one primary plus optional additional multi-page source documents, constrained field/page geometry, resumable/idempotent full-cohort batch state without a fixed product cap, append-only generated-file provenance, forced RLS, MFA, and privacy-minimal audit.
 - Actor-scoped pending-credential creation API and controlled database workflow for exact Credential Set reuse, automatic or Owner/Super Admin manual number reservation, pending identity creation, Number Log linkage, and privacy-safe History/Audit.
 - Server-only verification-token protection with 256-bit random tokens, HMAC-SHA-256 lookup, independent AES-256-GCM encryption, key versioning, and ready QR verification paths without separate token/hash/ciphertext response fields.
 - Actor-scoped credential PDF routes for private upload/list, replacement-in-place with compensating restore, metadata/primary management, pending-only deletion, and 60-second admin signed URLs.
@@ -62,6 +63,7 @@ The repository now contains 53 local SQL migrations. WF-004 migration `202608241
 
 ## Verified in Dev
 
+- On 2026-08-25, PDFGEN-001 added and applied the private template/version/document/page/placement and generation batch/item/provenance foundation. All 71 non-live verifiers, lint, TypeScript, the 46-page build, migration compilation, read-only live RLS/grant audit, and transactional multi-document/multi-page publication/immutability runtime checks pass. A record-shape defect found by the first runtime test was corrected through a forward-only migration; no fixture data persisted. The focused 65-assertion pgTAP and updated 39-assertion QA-001 files remain queued because local Docker and dev `plan(integer)` are unavailable. See `docs/qa/PDFGEN_001_TEMPLATE_GENERATION_DATABASE_FOUNDATION_2026-08-25.md`.
 - On 2026-08-24, `QA-005-A11Y-FIX-001` implemented and deployed the missing scoped Admin Login presentation layer: responsive operational layout, 48-pixel minimum input/button targets, mobile-safe input text, explicit focus, responsive MFA enrollment, reduced motion, and alert semantics. Auth/MFA/API/role logic was unchanged. All 70 non-live static verifiers, ESLint, TypeScript, the 46-page production build, and diff checks pass. PR #25 was merged as `083b045`; Preview and Production deployments succeeded. Public Production passed semantic, no-overflow, 48-pixel control, 16-pixel input, visible-focus, and console checks at desktop, 390-pixel, and 320-pixel widths without form submission. See `docs/qa/QA_005_ADMIN_LOGIN_A11Y_FIX_2026-08-24.md`.
 - On 2026-08-24, `QA-005-A11Y-001` completed an audit-only Production accessibility/reflow pass. The checked public EN/UA/CZ surface had correct landmarks, H1/language structure, accessible names, image alternatives, ARIA references, focus/reduced-motion coverage, verification-tab state, and no horizontal overflow at 1280, 390, or 320 CSS-pixel widths. The audit found the then-unstyled `/admin/login`; its code-level correction is now implemented under `QA-005-A11Y-FIX-001`, while deployment evidence plus Safari, physical-device, assistive-technology, and complete manual keyboard evidence remain outstanding. See `docs/qa/QA_005_ACCESSIBILITY_CROSS_BROWSER_2026-08-24.md`.
 - On 2026-08-24, WF-004 passed all 69 non-live static verifiers, ESLint, TypeScript, production build, and diff checks. Its migration compiled, was applied and recorded in dev and Production, and passed read-only function/grant/lifecycle checks in both environments. PR #22 Preview passed, PR #22 was merged as `849bd91`, the merge commit's Vercel check passed, the authenticated Owner/MFA Production workspace loaded with zero credentials, and the deployed resend endpoint returned the expected application-level `401` without a session. The 24-assertion focused pgTAP suite is present but dev lacks the pgTAP `plan(integer)` function; valid-record and real-delivery checks remain because Production contains zero valid credentials. See `docs/qa/WF_004_RESEND_CREDENTIAL_QA_2026-08-24.md`.
