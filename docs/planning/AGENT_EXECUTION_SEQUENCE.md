@@ -487,11 +487,11 @@ The orchestrator controls:
 
 Next ticket:
 
-- `PDFGEN-002 Private Template Storage and Validation`;
+- `PDFGEN-003 Template Package Admin and Field Placement Editor`;
 
 Agent:
 
-- Backend/API + Database / Security Agent
+- Full-Stack / Admin UI + PDF Placement Agent
 
 Parallel agents:
 
@@ -500,7 +500,7 @@ Parallel agents:
 Owner action needed:
 
 - PDFGEN-001 is implemented, merged through PR #29 as `1b2d224`, and applied in dev and Production: the private schema, forced RLS, role/MFA boundary, immutable versioning, multi-document/multi-page publication, unbounded-cohort batch foundation, provenance, and forward-only trigger correction passed the available checks; Production contains zero PDFGEN fixture rows, while full pgTAP execution remains queued for a compatible runner;
-- PDFGEN-002 is code-complete on `codex/pdfgen-002-private-template-storage`; its private bucket, strict PDF validation, controlled source routes, page metadata/hash extraction, rollback, safe metadata grants, publication source guard, and published-object immutability passed local code/build checks. Migration `20260825120000` is applied/recorded and read-only accepted in dev with zero template fixtures. Preview/Production integration and authenticated live acceptance are still required before the next ticket changes to PDFGEN-003;
+- PDFGEN-002 was merged through PR #31 as `970fd6c`; its private bucket, strict PDF validation, controlled source routes, page metadata/hash extraction, rollback, safe metadata grants, publication source guard, and published-object immutability passed local code/build checks. Preview and Production deployment checks passed, and migration `20260825120000` is applied/recorded and read-only accepted in dev and Production with zero template fixtures. Authenticated real-template workflow acceptance is assigned to PDFGEN-003 because that ticket provides the package UI;
 - CRD-PDFGEN-001 scope alignment is approved: Release 1 must generate one or more private, potentially multi-page PDFs per credential from a reusable programme/type/language/variant Template Package and must support controlled batches;
 - QA-005-A11Y-FIX-001 is merged, deployed, and accepted at its focused scope through PR #25 and Production merge `083b045`; no real credentials were submitted during browser acceptance;
 - QA-005-TELEGRAM-INVITE-001 is complete: the Owner revoked the setup-time Telegram group invitation link, and no change to the accepted bot/chat configuration or Telegram notification payload is required;
