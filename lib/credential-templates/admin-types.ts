@@ -1,0 +1,10 @@
+export const templateFieldKeys = ['holder_name','programme_title','credential_type','document_number','issue_date','completion_date','programme_run_label','verification_qr','verification_url','static_text'] as const;
+export type TemplateFieldKey = typeof templateFieldKeys[number];
+export type TemplatePlacement = { id?: string; pageNumber:number; fieldKey:TemplateFieldKey; occurrenceOrder:number; xPoints:number; yPoints:number; widthPoints:number; heightPoints:number; fontFamily:string|null; fontSizePoints:number|null; minFontSizePoints:number|null; fontWeight:number|null; fontColor:string|null; textAlignment:'left'|'center'|'right'; fitMode:'single_line'|'wrap'|'shrink_to_fit'|'fixed'; dateFormat:string|null; staticText:string|null; isRequired:boolean };
+export type TemplatePage = { pageNumber:number; widthPoints:number; heightPoints:number };
+export type TemplateDocument = { id:string; templateVersionId:string; fileTypeId:string; adminLabel:string; outputFilenamePattern:string; sortOrder:number; isPrimary:boolean; mimeType:'application/pdf'; sizeBytes:number; pageCount:number; createdAt:string; updatedAt:string; pages:TemplatePage[]; placements:TemplatePlacement[] };
+export type TemplateVersion = { id:string; packageId:string; versionNumber:number; status:'draft'|'published'|'retired'; publishedAt:string|null; retiredAt:string|null; createdAt:string; documents:TemplateDocument[] };
+export type TemplatePackage = { id:string; programmeId:string; programmeRunId:string|null; credentialTypeId:string; languageCode:string; variantCode:string; displayName:string; createdAt:string; versions:TemplateVersion[] };
+export type TemplateReferences = { programmes:{id:string;label:string}[]; programmeRuns:{id:string;programmeId:string;label:string}[]; credentialTypes:{id:string;label:string}[]; fileTypes:{id:string;code:string;label:string}[]; languages:{code:string;label:string}[] };
+export type TemplateWorkspace = { packages:TemplatePackage[]; references:TemplateReferences };
+export type TemplateValidation = { valid:boolean; issues:{code:string;fieldKey?:string;message:string}[] };

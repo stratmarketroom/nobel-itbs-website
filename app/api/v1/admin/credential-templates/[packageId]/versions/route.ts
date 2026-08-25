@@ -1,0 +1,2 @@
+import { jsonError, jsonOk } from '@/lib/api/responses';import { createVersion } from '@/lib/credential-templates/admin';import { assertUuid } from '@/lib/learners/admin-input';import { getAdminContext } from '@/lib/supabase/server';
+export async function POST(request:Request,{params}:{params:Promise<{packageId:string}>}){try{const {packageId}=await params;return jsonOk({versionId:await createVersion(await getAdminContext(request),assertUuid(packageId,'template package ID'))},{status:201});}catch(error){return jsonError(error);}}

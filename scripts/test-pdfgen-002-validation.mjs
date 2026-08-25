@@ -5,10 +5,10 @@ import {
   validateTemplatePdf,
 } from '../lib/credential-templates/pdf-validation.ts';
 
-function createPdf(pageSizes) {
+function createPdf(pageSizes, { catalogEntries = '', content = '' } = {}) {
   const pageObjectNumbers = pageSizes.map((_size, index) => 3 + index * 2);
   const objects = [
-    '<< /Type /Catalog /Pages 2 0 R >>',
+    `<< /Type /Catalog /Pages 2 0 R ${catalogEntries} >>`,
     `<< /Type /Pages /Kids [${pageObjectNumbers.map((number) => `${number} 0 R`).join(' ')}] /Count ${pageSizes.length} >>`,
   ];
 
@@ -16,7 +16,7 @@ function createPdf(pageSizes) {
     const [width, height] = pageSizes[index];
     const contentNumber = pageObjectNumbers[index] + 1;
     objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Contents ${contentNumber} 0 R >>`);
-    objects.push('<< /Length 0 >>\nstream\n\nendstream');
+    objects.push(`<< /Length ${Buffer.byteLength(content, 'latin1')} >>\nstream\n${content}\nendstream`);
   }
 
   const header = Buffer.from('%PDF-1.7\n%\xE2\xE3\xCF\xD3\n', 'latin1');
@@ -67,7 +67,11 @@ await expectRejected(Buffer.from('%PDF-1.7\nnot a real PDF'), 'malformed PDF sho
 await expectRejected(Buffer.from('plain text'), 'non-PDF should be rejected');
 
 for (const name of ['/Encrypt', '/JavaScript', '/J#53', '/EmbeddedFiles', '/Launch', '/URI', '/AcroForm']) {
-  await expectRejected(Buffer.concat([onePage, Buffer.from(`\n% ${name}\n`)]), `${name} should be rejected`);
+  await expectRejected(createPdf([[595, 842]], { catalogEntries: `${name} null` }), `${name} should be rejected`);
 }
+
+const harmlessStreamNames = createPdf([[595, 842]], { content: '% harmless image/content bytes: /JS /URI /Launch' });
+assert.equal((await validateTemplatePdf(harmlessStreamNames)).pageCount, 1);
+assert.equal((await validateTemplatePdf(Buffer.concat([onePage, Buffer.from('\n% harmless comment: /JS /URI\n')]))).pageCount, 1);
 
 console.log('PDFGEN-002 strict PDF validation tests passed.');

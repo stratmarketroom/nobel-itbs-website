@@ -96,6 +96,13 @@ if (existsSync('package.json')) {
   }
 }
 
+if (existsSync('next.config.mjs')) {
+  const nextConfig = readFileSync('next.config.mjs', 'utf8');
+  if (!nextConfig.includes("serverExternalPackages: ['@napi-rs/canvas', 'pdfjs-dist']")) {
+    errors.push('pdfjs-dist must remain external to the Next.js server bundle.');
+  }
+}
+
 if (errors.length) {
   console.error('PDFGEN-002 verification failed:');
   for (const error of errors) console.error(`- ${error}`);

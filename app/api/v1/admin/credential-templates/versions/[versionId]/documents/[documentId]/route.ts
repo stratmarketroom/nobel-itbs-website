@@ -3,6 +3,8 @@ import {
   deleteCredentialTemplateDocument,
   previewCredentialTemplateDocument,
 } from '@/lib/credential-templates/storage';
+import { saveDocument } from '@/lib/credential-templates/admin';
+import { documentInput, jsonBody } from '@/lib/credential-templates/admin-input';
 import { assertUuid } from '@/lib/learners/admin-input';
 import { getAdminContext } from '@/lib/supabase/server';
 
@@ -41,6 +43,16 @@ export async function DELETE(request: Request, props: RouteProps) {
     const { templateVersionId, documentId } = await ids(props);
     await deleteCredentialTemplateDocument(context, templateVersionId, documentId);
     return jsonOk({ deleted: true });
+  } catch (error) {
+    return jsonError(error);
+  }
+}
+
+export async function PATCH(request: Request, props: RouteProps) {
+  try {
+    const context = await getAdminContext(request);
+    const { templateVersionId, documentId } = await ids(props);
+    return jsonOk({ document: await saveDocument(context, templateVersionId, documentId, documentInput(await jsonBody(request))) });
   } catch (error) {
     return jsonError(error);
   }

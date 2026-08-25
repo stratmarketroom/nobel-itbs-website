@@ -33,6 +33,7 @@ const browserSecurityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  serverExternalPackages: ['@napi-rs/canvas', 'pdfjs-dist'],
   skipTrailingSlashRedirect: true,
   async headers() {
     return [{ source: '/:path*', headers: browserSecurityHeaders }];
