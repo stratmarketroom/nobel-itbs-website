@@ -1,6 +1,6 @@
 begin;
 
-select plan(38);
+select plan(39);
 
 -- QA-001 is the aggregate Release 1 authorization contract. Focused ticket tests
 -- continue to verify row shapes and workflows; this suite guards the complete
@@ -21,10 +21,18 @@ select results_eq(
     ('content_pages'),
     ('credential_email_sends'),
     ('credential_file_types'),
+    ('credential_file_generations'),
     ('credential_files'),
+    ('credential_generation_batch_items'),
+    ('credential_generation_batches'),
     ('credential_history'),
     ('credential_notes'),
     ('credential_sets'),
+    ('credential_template_document_pages'),
+    ('credential_template_documents'),
+    ('credential_template_field_placements'),
+    ('credential_template_packages'),
+    ('credential_template_versions'),
     ('credential_type_translations'),
     ('credential_types'),
     ('credentials'),
@@ -62,7 +70,7 @@ select results_eq(
     join pg_namespace n on n.oid = c.relnamespace
     where n.nspname = 'public' and c.relkind = 'r' and c.relrowsecurity
   $$,
-  $$ values (36::bigint) $$,
+  $$ values (44::bigint) $$,
   'every public table should enable RLS'
 );
 
@@ -73,7 +81,7 @@ select results_eq(
     join pg_namespace n on n.oid = c.relnamespace
     where n.nspname = 'public' and c.relkind = 'r' and c.relforcerowsecurity
   $$,
-  $$ values (36::bigint) $$,
+  $$ values (44::bigint) $$,
   'every public table should force RLS'
 );
 
@@ -142,7 +150,11 @@ select results_eq(
       and has_table_privilege('authenticated', c.oid, 'select')
       and c.relname in (
         'contact_submissions', 'credential_email_sends', 'credential_file_types',
-        'credential_files', 'credential_history', 'credential_notes', 'credential_sets',
+        'credential_file_generations', 'credential_files', 'credential_generation_batch_items',
+        'credential_generation_batches', 'credential_history', 'credential_notes', 'credential_sets',
+        'credential_template_document_pages', 'credential_template_documents',
+        'credential_template_field_placements', 'credential_template_packages',
+        'credential_template_versions',
         'credential_type_translations', 'credential_types', 'credentials',
         'document_number_log', 'email_templates', 'learner_emails', 'learner_phones',
         'learners'
@@ -153,10 +165,18 @@ select results_eq(
     ('contact_submissions'),
     ('credential_email_sends'),
     ('credential_file_types'),
+    ('credential_file_generations'),
     ('credential_files'),
+    ('credential_generation_batch_items'),
+    ('credential_generation_batches'),
     ('credential_history'),
     ('credential_notes'),
     ('credential_sets'),
+    ('credential_template_document_pages'),
+    ('credential_template_documents'),
+    ('credential_template_field_placements'),
+    ('credential_template_packages'),
+    ('credential_template_versions'),
     ('credential_type_translations'),
     ('credential_types'),
     ('credentials'),
@@ -175,7 +195,9 @@ select results_eq(
     from unnest(array[
       'audit_log', 'credentials', 'document_number_log', 'credential_files',
       'credential_history', 'credential_notes', 'email_templates',
-      'credential_email_sends'
+      'credential_email_sends', 'credential_template_versions',
+      'credential_generation_batches', 'credential_generation_batch_items',
+      'credential_file_generations'
     ]) as protected_table(name)
     where has_table_privilege('authenticated', format('public.%I', protected_table.name), 'insert')
       or has_table_privilege('authenticated', format('public.%I', protected_table.name), 'update')
@@ -205,7 +227,11 @@ select results_eq(
     where schemaname = 'public'
       and tablename in (
         'contact_submissions', 'credential_email_sends', 'credential_file_types',
-        'credential_files', 'credential_history', 'credential_notes', 'credential_sets',
+        'credential_file_generations', 'credential_files', 'credential_generation_batch_items',
+        'credential_generation_batches', 'credential_history', 'credential_notes', 'credential_sets',
+        'credential_template_document_pages', 'credential_template_documents',
+        'credential_template_field_placements', 'credential_template_packages',
+        'credential_template_versions',
         'credential_type_translations', 'credential_types', 'credentials',
         'document_number_log', 'email_templates', 'learner_emails', 'learner_phones',
         'learners'
@@ -214,6 +240,24 @@ select results_eq(
   $$,
   $$ values (0::bigint) $$,
   'Content Manager must not appear in learner/contact/credential policies'
+);
+
+select results_eq(
+  $$
+    select count(*)::bigint
+    from pg_policies
+    where schemaname = 'public'
+      and tablename in (
+        'credential_file_generations', 'credential_generation_batch_items',
+        'credential_generation_batches', 'credential_template_document_pages',
+        'credential_template_documents', 'credential_template_field_placements',
+        'credential_template_packages', 'credential_template_versions'
+      )
+      and (coalesce(qual, '') || coalesce(with_check, '')) not similar to
+        '%(can_manage_credential_templates|can_read_credential_template_package|can_read_credential_template_version|is_mfa_requirement_satisfied)%'
+  $$,
+  $$ values (0::bigint) $$,
+  'every template and generation policy should enforce MFA directly or through a scoped authorization helper'
 );
 
 select results_eq(
@@ -424,7 +468,9 @@ select results_eq(
       and p.proname in (
         'create_pending_credential', 'attach_credential_file', 'replace_credential_file',
         'update_credential_file', 'delete_credential_file', 'activate_credential', 'resend_credential',
-        'revoke_credential', 'void_pending_credential', 'update_valid_credential_public_data'
+        'revoke_credential', 'void_pending_credential', 'update_valid_credential_public_data',
+        'create_credential_template_package', 'create_credential_template_version',
+        'publish_credential_template_version', 'retire_credential_template_version'
       )
       and has_function_privilege('anon', p.oid, 'execute')
   $$,
@@ -441,11 +487,13 @@ select results_eq(
       and p.proname in (
         'create_pending_credential', 'attach_credential_file', 'replace_credential_file',
         'update_credential_file', 'delete_credential_file', 'activate_credential', 'resend_credential',
-        'revoke_credential', 'void_pending_credential', 'update_valid_credential_public_data'
+        'revoke_credential', 'void_pending_credential', 'update_valid_credential_public_data',
+        'create_credential_template_package', 'create_credential_template_version',
+        'publish_credential_template_version', 'retire_credential_template_version'
       )
       and has_function_privilege('authenticated', p.oid, 'execute')
   $$,
-  $$ values (10::bigint) $$,
+  $$ values (14::bigint) $$,
   'credential workflows should be callable by authenticated users and enforce role/MFA inside the function'
 );
 
