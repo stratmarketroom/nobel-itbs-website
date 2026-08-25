@@ -1,7 +1,7 @@
 # PDFGEN-002 Private Template Storage and Validation QA
 
 Date: 2026-08-25
-Status: code and dev database accepted; Preview/Production integration pending
+Status: accepted at the currently available code, Preview, dev, and Production level
 
 ## Scope
 
@@ -85,6 +85,14 @@ separate read-only audit:
 - credential statuses are unchanged;
 - no Template Document fixture rows exist.
 
+Passed in Preview and Production:
+
+- PR #31 Preview reached Ready with 2/2 checks passing;
+- PR #31 was merged as `970fd6cb7f1d929c33a1efb3686df716b9ae268c`, and the merge commit's Production check passed;
+- Production preflight confirmed 55 prior migrations, no PDFGEN-002 migration record, no `credential-templates` bucket, and zero Template Document rows;
+- migration `20260825120000` was applied and recorded transactionally in Production;
+- the independent Production audit confirmed 56 migrations and returned true for all ten controls: migration record, private PDF-only 20-MB bucket, zero browser Storage policies, both safety triggers, all four functions, no authenticated whole-row SELECT, hidden source bucket/path/hash columns, unchanged credential statuses, and zero Template Document rows.
+
 Committed pgTAP coverage:
 
 - `pdfgen_002_private_template_storage_validation.test.sql` with 20 assertions;
@@ -93,7 +101,7 @@ Committed pgTAP coverage:
 
 ## Verification Limitation
 
-The committed pgTAP files were not executed locally because this workstation has no Docker-compatible local Supabase runtime. This is an explicit QA item, not a claimed pass. The migration compiled and passed the dev read-only security audit, but authenticated application upload/preview/delete, rejected-file samples, rollback, published-object immutability, Preview deployment, and Production parity remain integration acceptance work.
+The committed pgTAP files were not executed locally because this workstation has no Docker-compatible local Supabase runtime. This is an explicit QA item, not a claimed pass. Authenticated browser upload/preview/delete acceptance with real template packages is deferred until PDFGEN-003 supplies the package UI and a real source template exists; the server routes, validator rejection samples, rollback contracts, deployment, and dev/Production database security boundaries passed the currently available automated and read-only checks.
 
 ## Security Notes
 
@@ -107,4 +115,4 @@ The committed pgTAP files were not executed locally because this workstation has
 
 ## Next Dependency
 
-After Preview/Production integration and live acceptance, the next ticket is `PDFGEN-003 Template Package Admin and Field Placement Editor`. PDFGEN-003 must consume these routes and must not add direct browser Storage access.
+The next ticket is `PDFGEN-003 Template Package Admin and Field Placement Editor`. PDFGEN-003 must consume these routes, provide the first authenticated end-to-end template workflow acceptance, and must not add direct browser Storage access.
