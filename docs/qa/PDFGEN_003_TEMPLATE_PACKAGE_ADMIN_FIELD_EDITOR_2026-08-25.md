@@ -1,7 +1,7 @@
 # PDFGEN-003 Template Package Admin and Field Placement Editor QA
 
 Date: 2026-08-25
-Status: dev acceptance complete; immutable v1 published and read-only verification passed; release promotion pending
+Status: complete in dev and Production
 
 ## Scope
 
@@ -56,13 +56,19 @@ Committed pgTAP: `pdfgen_003_template_package_editor.test.sql` with 16 assertion
 Applied and accepted in linked dev:
 
 - migration `20260825140000` was applied and recorded transactionally;
-- all four new editor/validation/audit functions exist;
+- all six editor/validation/audit functions exist;
 - anonymous validation execution is denied while authenticated execution reaches the database role/MFA guard;
 - one approved published Template Package v1 now exists with one private primary source document, one page, and five placements; no learner, credential, generated credential file, or permanent document number was created.
 
-Remaining before release promotion and final ticket closure:
+Production promotion and acceptance passed:
 
-- merge the accepted implementation, deploy it, apply migration `20260825140000` to Production, and run the documented Production read-only acceptance before starting PDFGEN-004.
+- PR #33 passed 2/2 Preview checks and merged into `main` as `6450fb68b3e13f81c220bd2745bd2f150bde7230`;
+- the merge commit's Vercel Production deployment `9qnrVCUnS3qenchqjjY7ujjPPnrG` completed successfully;
+- Production preflight found 56 prior migrations, no PDFGEN-003 record, one pre-existing matching function, and zero Template Package/Document rows;
+- migration `20260825140000` was applied and recorded transactionally in `nobel-itbs-prod`;
+- the independent Production audit confirmed 57 migrations, the exact migration name, all six security-definer functions with fixed search paths, authenticated-only public execution, no authenticated execution of the internal validator, 8/8 forced-RLS tables, zero anonymous table privileges, zero service-role direct mutation privileges, unchanged credential statuses, and zero package/document/generation-batch rows;
+- the deployed Owner/AAL2 `/admin/credential-templates` workspace loaded successfully with an empty-state package list and no mutation was performed;
+- the same deployed API returned `401` without an authenticated session.
 
 ## Security Notes
 
@@ -74,4 +80,4 @@ Remaining before release promotion and final ticket closure:
 
 ## Next Dependency
 
-Promote the accepted PDFGEN-003 implementation through merge/deploy and Production migration/read-only acceptance. After PDFGEN-003 is closed, continue with `PDFGEN-004 Single Credential Package Generation`.
+Continue with `PDFGEN-004 Single Credential Package Generation`; it has not been started in this ticket.
