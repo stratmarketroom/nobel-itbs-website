@@ -86,7 +86,7 @@ if (existsSync(migrationPath)) {
 if (existsSync(testPath)) {
   const test = readFileSync(testPath, 'utf8').toLowerCase();
   for (const snippet of [
-    'select plan(65);',
+    'select plan(66);',
     'credential_template_packages',
     'credential_template_document_pages',
     'credential_generation_batch_items',

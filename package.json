@@ -59,6 +59,8 @@
     "verify:crd-005": "node scripts/verify-crd-005.mjs",
     "verify:crd-006": "node scripts/verify-crd-006.mjs",
     "verify:pdfgen-001": "node scripts/verify-pdfgen-001.mjs",
+    "verify:pdfgen-002": "node scripts/verify-pdfgen-002.mjs",
+    "test:pdfgen-002:validation": "node scripts/test-pdfgen-002-validation.mjs",
     "verify:wf-001": "node scripts/verify-wf-001.mjs",
     "verify:wf-002": "node scripts/verify-wf-002.mjs",
     "verify:wf-003": "node scripts/verify-wf-003.mjs",
@@ -104,6 +106,7 @@
     "exceljs": "^4.4.0",
     "next": "^16.2.12",
     "nodemailer": "^9.0.5",
+    "pdfjs-dist": "^6.2.108",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

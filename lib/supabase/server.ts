@@ -240,6 +240,16 @@ export function assertCanManageCredentials(context: AdminContext): void {
   }
 }
 
+export function assertCanManageCredentialTemplates(context: AdminContext): void {
+  if (!context.roles.includes('owner') && !context.roles.includes('super_admin')) {
+    throw new ApiError('forbidden', 403, 'Owner or Super Admin role is required for credential templates.');
+  }
+
+  if (!context.mfaSatisfied) {
+    throw new ApiError('forbidden', 403, 'MFA/AAL2 is required for credential template management.');
+  }
+}
+
 export function assertCanManageContent(context: AdminContext): void {
   const allowed = context.roles.some((role) => (
     role === 'owner' || role === 'super_admin' || role === 'content_manager'

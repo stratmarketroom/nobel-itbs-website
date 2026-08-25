@@ -438,6 +438,25 @@ Credential Manager may read published template metadata and run generation,
 review, activation, and delivery workflows with MFA but cannot mutate template
 definitions.
 
+PDFGEN-002 source routes:
+
+- `POST /api/v1/admin/credential-templates/versions/{versionId}/documents` —
+  accept multipart PDF plus file type, admin label, output filename pattern,
+  sort order, and primary flag; validate the complete PDF server-side before
+  attaching private source and contiguous page metadata;
+- `GET /api/v1/admin/credential-templates/versions/{versionId}/documents/{documentId}` —
+  return a role/MFA-checked, server-proxied, inline private source preview with
+  `Cache-Control: private, no-store`; never return the Storage path or a direct
+  browser Storage URL;
+- `DELETE /api/v1/admin/credential-templates/versions/{versionId}/documents/{documentId}` —
+  delete one draft source through the compensating Storage/database workflow.
+
+These routes are Owner/Super Admin plus MFA only. Source upload rejects rather
+than sanitizes encrypted/malformed PDFs, forms/XFA, JavaScript/actions,
+attachments, launch/remote actions, page annotations, and unsupported external
+content. The per-document limit is 20 MB; page count and dimensions are derived
+from the parsed PDF rather than accepted from the browser.
+
 Batch processing must automatically divide the cohort into bounded,
 configurable technical chunks while preserving one aggregate batch view. It
 must be resumable and idempotent. Every learner gets
