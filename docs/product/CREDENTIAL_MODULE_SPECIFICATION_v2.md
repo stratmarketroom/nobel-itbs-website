@@ -19,6 +19,9 @@ Included:
 - credential creation;
 - document number reservation;
 - QR token generation;
+- reusable private template packages;
+- single and batch personalized PDF generation;
+- multi-document and multi-page output packages;
 - private PDF upload;
 - activation;
 - VEDOS SMTP email sending;
@@ -35,14 +38,13 @@ Included:
 
 Not included:
 
-- automatic PDF generation;
 - public PDF download;
 - student cabinet;
 - Moodle-triggered issuing;
 - expiration;
 - public reissue status;
 - name-based public search;
-- old PDF version retention.
+- old generated credential PDF version retention; published template versions are retained separately.
 
 ## 3. Entities
 
@@ -120,7 +122,7 @@ Rules:
 - all files must match credential language;
 - exactly one file can be primary/main;
 - at least one primary/main PDF is required for activation;
-- old file versions are not retained;
+- old generated credential file versions are not retained;
 - replacement is audited.
 
 ### Document Number Log
@@ -339,6 +341,17 @@ System:
 - creates pending credential;
 - creates Document Number Log entry.
 
+The pending credential may then generate its current private PDF package from a
+published programme/type/language/variant Template Package. One package may
+produce a primary Certificate or Diploma plus optional Supplement/Transcript
+PDFs, and each generated PDF may be multi-page. Single and controlled batch
+generation are required. Generated files must be privately reviewed before
+activation.
+
+Template management, generation, batch, versioning, placement, storage,
+permissions, and acceptance rules are defined in
+`docs/product/CREDENTIAL_DOCUMENT_GENERATION_SPECIFICATION_v2.md`.
+
 ## 10. Activation
 
 Preconditions:
@@ -425,7 +438,7 @@ Rules:
 
 - reason recommended or required by implementation policy;
 - replacement recorded in History/Audit;
-- old PDF file version not retained;
+- old generated credential PDF file version not retained;
 - no automatic resend.
 
 ## 14. Revoke
@@ -479,6 +492,8 @@ Content Manager:
 Credential Manager:
 
 - create pending credential;
+- use published Template Packages for single/batch generation;
+- review generated private PDF packages;
 - upload/replace PDFs;
 - activate;
 - resend;
@@ -490,11 +505,13 @@ Credential Manager:
 Super Admin:
 
 - same as Credential Manager;
+- manage, publish, and retire Template Packages;
 - broader admin/system rights.
 
 Owner:
 
 - all rights;
+- manage, publish, and retire Template Packages;
 - Owner-only user/Super Admin control.
 
 ## 18. Acceptance Criteria
@@ -502,6 +519,9 @@ Owner:
 Credential module is implemented when:
 
 - document number and QR are generated before activation;
+- reusable published templates generate a primary PDF plus optional additional multi-page PDFs;
+- controlled learner batches have no fixed product-facing cohort cap, process automatically in bounded resumable/idempotent chunks, and require review before activation;
+- configured templates remove per-learner manual PDF composition;
 - PDF primary requirement blocks activation when missing;
 - activation makes credential valid regardless of email send result;
 - email send history records success/failure/empty recipient;

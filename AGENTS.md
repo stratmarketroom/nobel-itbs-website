@@ -13,6 +13,7 @@ Implementation baseline is the v2 documentation:
 - `docs/product/RELEASE_1_SCOPE_v2.md`
 - `docs/product/SITEMAP_AND_USER_FLOWS_v2.md`
 - `docs/product/CREDENTIAL_MODULE_SPECIFICATION_v2.md`
+- `docs/product/CREDENTIAL_DOCUMENT_GENERATION_SPECIFICATION_v2.md`
 - `docs/technical/DATABASE_SCHEMA_v2.md`
 - `docs/technical/API_SPECIFICATION_v2.md`
 - `docs/technical/RLS_AND_PERMISSIONS_SPECIFICATION_v2.md`

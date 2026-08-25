@@ -444,9 +444,38 @@ After activation, PDF files may be changed only by:
 - Super Admin;
 - Credential Manager.
 
-Only the current PDF version is stored. Old PDF file versions are not retained. Audit/history records the replacement.
+Only the current generated credential PDF version is stored. Old generated file
+versions are not retained. Audit/history records the replacement. Immutable
+published Template Package versions are retained separately for issuing
+provenance and reproducibility.
 
 Replacing a PDF does not automatically resend the document. Resend is a separate admin action.
+
+### 8.4 Automatic Credential Document Generation
+
+The earlier manual-only PDF workflow is not operationally acceptable. Release 1
+must generate personalized credential document packages from reusable,
+programme-specific templates before operational credential issuance begins.
+
+One published template package is selected by programme, optional programme
+run, credential type, credential language, and explicit variant. A package may
+contain multiple output PDFs, including a primary Certificate or Diploma plus a
+multi-page Supplement or Transcript. Each output PDF may itself contain
+multiple pages.
+
+The platform must support both single-credential generation and controlled
+batch generation for explicitly selected learners. Every generated credential
+retains its own permanent number, QR/token, language, and lifecycle. Generated
+files remain private, require admin review before activation, and are sent
+together through the existing VEDOS workflow.
+
+Template sources are versioned and private. Published template versions are
+immutable for audit and reproducibility. Owner and Super Admin manage/publish
+templates; Credential Manager may use published templates for generation but
+cannot alter their definitions.
+
+The canonical detailed rules are defined in
+`docs/product/CREDENTIAL_DOCUMENT_GENERATION_SPECIFICATION_v2.md`.
 
 ## 9. Credential Statuses and Public Verification
 

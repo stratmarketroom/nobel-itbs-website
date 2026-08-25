@@ -172,7 +172,11 @@ Scope:
 - verification token generation;
 - Document Number Log;
 - credential file metadata;
-- private Storage bucket;
+- private generated-file and template-source Storage buckets;
+- versioned programme/type/language/variant Template Packages;
+- one primary plus optional additional multi-page Template Documents;
+- constrained text/date/QR field placements;
+- generation batch/provenance foundation;
 - credential History tab;
 - internal notes/comments.
 
@@ -184,6 +188,9 @@ Acceptance:
 - voided numbers are never reused;
 - void reason is mandatory;
 - at least one primary PDF is required for activation.
+- published Template Package versions are immutable and private;
+- template publishing is Owner/Super Admin only;
+- no template or generation object adds a credential lifecycle status.
 
 ## Stage 7 - Credential Activation, Email, and Public Verification
 
@@ -191,6 +198,10 @@ Goal: complete issuance and verification workflow.
 
 Scope:
 
+- single-credential PDF package generation and pending regeneration;
+- controlled full-cohort batch creation without a fixed product-facing cap, automatic bounded chunk processing, retry, and private review;
+- primary Certificate/Diploma plus optional multi-page Supplement/Transcript outputs;
+- explicit reviewed-item batch activation;
 - activation flow;
 - VEDOS SMTP sending from the approved Nobel ITBS mailbox;
 - recipient email override;
@@ -205,6 +216,10 @@ Scope:
 
 Acceptance:
 
+- configured templates remove per-learner manual PDF composition;
+- every generated credential keeps its own permanent number and QR;
+- generation is resumable/idempotent and never releases a reserved number after failure;
+- every generated package is privately reviewed before activation;
 - activation makes credential valid even if email fails;
 - email failure is recorded;
 - resend can use custom recipient email;
@@ -269,9 +284,8 @@ Candidates for after Release 1:
 - installments logic;
 - student cabinet;
 - LMS/Moodle integration;
-- automatic PDF generation;
 - public expert pages;
 - public partner pages;
 - public programme filters;
 - public name-based verification if legally and privacy-approved;
-- old PDF version retention if audit requirements grow.
+- old generated credential PDF version retention if audit requirements grow.

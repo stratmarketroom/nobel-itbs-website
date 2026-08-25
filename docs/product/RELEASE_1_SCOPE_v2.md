@@ -69,6 +69,12 @@ Release 1 must launch a professional, content-managed education platform that:
 - Credentials;
 - document number generation;
 - QR token generation;
+- reusable programme/type/language/variant credential template packages;
+- versioned private source PDF templates;
+- single and batch generation of personalized credential PDF packages;
+- a primary Certificate/Diploma plus optional multi-page Supplement/Transcript outputs;
+- private generated-file review before activation;
+- controlled batch activation and VEDOS delivery after review;
 - private PDF files;
 - activation;
 - email sending;
@@ -132,8 +138,7 @@ Release 1 must launch a professional, content-managed education platform that:
 - News/Blog;
 - public PDF download;
 - automatic Moodle completion integration;
-- automatic PDF document generation;
-- old PDF version retention;
+- old generated credential PDF version retention; published template versions are retained separately;
 - search by learner name/surname in public verification;
 - full page builder;
 - promotional pricing/discount system;
@@ -161,7 +166,9 @@ Release 1 is successful when:
 - configured Leeloo or partner-site CTAs work from programme pages and pricing options;
 - learners and credentials can be managed by authorized admins;
 - credential number and QR are generated before activation;
-- credential PDF files can be uploaded and emailed;
+- credential PDF packages can be generated from published templates, privately reviewed, and emailed;
+- one credential can contain a primary document plus optional additional multi-page PDFs;
+- controlled batch generation removes per-learner manual PDF composition;
 - valid credentials can be verified by QR and document number;
 - revoked/pending/voided documents do not leak document details;
 - Owner/Super Admin/Credential Manager MFA is enforced;

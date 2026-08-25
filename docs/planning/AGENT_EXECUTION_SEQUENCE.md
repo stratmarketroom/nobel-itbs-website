@@ -316,6 +316,9 @@ Tickets:
 - CRD-004 Credentials;
 - CRD-005 Credential Files;
 - CRD-006 Credential History and Notes.
+- PDFGEN-001 Template and Generation Database Foundation;
+- PDFGEN-002 Private Template Storage and Validation;
+- PDFGEN-003 Template Package Admin and Field Placement Editor.
 
 Parallel work:
 
@@ -331,6 +334,8 @@ Orchestrator checks:
 - no expired/cancelled/reissued lifecycle;
 - Credential Set has no public lifecycle;
 - number generated before activation;
+- one Template Package may contain a primary document plus optional additional multi-page documents;
+- published template versions are immutable/private and only Owner/Super Admin may manage them;
 - no partner in verification data.
 
 ### Phase 7 - Credential Workflows
@@ -343,6 +348,11 @@ Active agents:
 
 Tickets:
 
+- PDFGEN-004 Server-Side Multi-Document PDF Generation;
+- PDFGEN-005 Single Credential Generation and Regeneration;
+- PDFGEN-006 Batch Generation and Review;
+- PDFGEN-007 Batch Activation and VEDOS Delivery;
+- PDFGEN-008 Generation Security and End-to-End Acceptance;
 - WF-001 Create Pending Credential;
 - WF-002 Upload and Manage PDFs;
 - WF-003 Activate and Email;
@@ -365,6 +375,9 @@ Orchestrator checks:
 
 - activation succeeds even if email fails;
 - primary PDF required;
+- automatic generation removes manual per-learner PDF composition for configured packages;
+- generation supports a primary Certificate/Diploma plus optional multi-page Supplement/Transcript PDFs;
+- batches are review-gated, resumable/idempotent, and never reuse a reserved number after failure;
 - all current PDFs sent;
 - public PDF download absent;
 - revoked details hidden;
@@ -474,11 +487,11 @@ The orchestrator controls:
 
 Next ticket:
 
-- `QA-005-BACKUP-002 Live backup activation and restore drill`, after the Owner approves the required Supabase Pro upgrade and encrypted independent private-PDF backup destination, unless the Owner explicitly resumes the deferred real VEDOS credential-delivery acceptance first;
+- `PDFGEN-001 Template and Generation Database Foundation`;
 
 Agent:
 
-- QA / Security Review Agent
+- Database / Security Agent
 
 Parallel agents:
 
@@ -486,9 +499,10 @@ Parallel agents:
 
 Owner action needed:
 
+- CRD-PDFGEN-001 scope alignment is approved: Release 1 must generate one or more private, potentially multi-page PDFs per credential from a reusable programme/type/language/variant Template Package and must support controlled batches;
 - QA-005-A11Y-FIX-001 is merged, deployed, and accepted at its focused scope through PR #25 and Production merge `083b045`; no real credentials were submitted during browser acceptance;
 - QA-005-TELEGRAM-INVITE-001 is complete: the Owner revoked the setup-time Telegram group invitation link, and no change to the accepted bot/chat configuration or Telegram notification payload is required;
-- approve the Supabase Pro upgrade and an encrypted independent private-PDF backup destination before `QA-005-BACKUP-002` can execute the live backup and restore drill;
+- backup activation/restore remains Owner-deferred until real learners and credentials exist; before operational issuance it will still require Supabase Pro and an approved encrypted independent private-PDF destination;
 - provide or approve production-only service configuration when its checklist item is reached; do not add VEDOS SMTP, Telegram, analytics, or CAPTCHA credentials before the corresponding launch decision;
 - QA-001 and QA-003 implementation/current dev acceptance are complete; their full pgTAP execution remains queued for a compatible database runner;
 - QA-002 and QA-004 are complete at the current dev level: the retained credential passed valid verification, irreversible revocation, and status-only revoked verification by number and QR;

@@ -412,6 +412,45 @@ Rules:
 - primary file required for activation;
 - no public access.
 
+### Credential Template Packages and Generation
+
+Protected routes must cover:
+
+- list/create programme/type/language/variant Template Packages;
+- load/update a draft package version;
+- upload/delete draft source PDFs and configure primary/additional documents;
+- save constrained text/date/QR placements on any source PDF page;
+- render a private sample preview;
+- validate/publish an immutable template version;
+- retire a published version for future use;
+- generate/regenerate all files for one pending credential;
+- create, confirm, process, retry, and read a generation batch for the complete
+  selected cohort without a fixed product-facing cap;
+- privately preview every generated output;
+- activate explicitly selected reviewed batch items.
+
+One package may contain multiple output PDFs, and every output may be
+multi-page. Exactly one generated output is primary. All current outputs attach
+to the existing credential and are sent together by activation/resend.
+
+Template mutation/publication requires Owner or Super Admin with MFA.
+Credential Manager may read published template metadata and run generation,
+review, activation, and delivery workflows with MFA but cannot mutate template
+definitions.
+
+Batch processing must automatically divide the cohort into bounded,
+configurable technical chunks while preserving one aggregate batch view. It
+must be resumable and idempotent. Every learner gets
+an independent pending credential, permanent number, protected token, file
+package, activation result, and delivery result. Failure after number
+reservation leaves a retryable pending credential and never releases the
+number.
+
+Responses must not expose service-role credentials, raw tokens, token
+hash/ciphertext, encryption material, private storage paths, PDF bytes, or
+unnecessary learner/contact data. Detailed contracts are defined in
+`docs/product/CREDENTIAL_DOCUMENT_GENERATION_SPECIFICATION_v2.md`.
+
 ### Activate Credential
 
 `POST /api/v1/admin/credentials/{id}/activate`
@@ -521,6 +560,9 @@ API v2 is implemented when:
 - public verification follows v2 response model;
 - activation sends email attempt but does not depend on success;
 - credential PDFs remain private;
+- template sources, generation batches, and generated PDFs remain private;
+- published template packages generate one primary plus optional additional multi-page PDFs;
+- single/batch generation is review-gated, resumable, idempotent, and never reuses reserved numbers;
 - roles are multi-role;
 - Owner-only user actions are enforced;
 - Content Manager cannot access restricted modules;

@@ -176,6 +176,9 @@ The application preview uses the acting administrator's RLS-scoped request clien
 Owner, Super Admin, Credential Manager can:
 
 - create pending credentials;
+- use published Template Packages for single/batch generation;
+- read their authorized private generation batches and generated-file provenance;
+- privately review generated credential files;
 - upload/manage PDF files;
 - activate;
 - resend;
@@ -204,7 +207,25 @@ Bucket `private-credentials`:
 - signed URLs only when needed;
 - VEDOS SMTP sending is server-side.
 
-Old PDF versions are not retained by product requirement.
+Old generated credential PDF versions are not retained by product requirement.
+Immutable published template versions are retained separately.
+
+Bucket `credential-templates`:
+
+- private and deny-by-default;
+- no public, anonymous, or Content Manager access;
+- Owner/Super Admin may manage draft sources through controlled routes with MFA;
+- Credential Manager may read only published template material through the
+  controlled server generation workflow and receives no unrestricted bucket
+  access;
+- published version objects are immutable;
+- sample previews and generated credential outputs are never public.
+
+Template package/version/document/placement mutations and publication are
+Owner/Super Admin only. Credential Manager may use published packages for
+single/batch generation, private review, and activation. Generation-batch and
+item rows are private and readable only by Owner/Super Admin/Credential Manager
+with MFA through the approved scope.
 
 ## 10. Document Number Log
 
@@ -260,6 +281,8 @@ Sensitive actions requiring MFA:
 - credential activation;
 - credential public data changes;
 - PDF upload/replacement;
+- template source upload, field placement, publication, and retirement;
+- single/batch document generation, retry, review, and batch activation;
 - revoke;
 - void;
 - resend;
@@ -300,6 +323,9 @@ Audit or history required for:
 - activation;
 - email send/resend;
 - PDF replacement;
+- template creation/update/publication/retirement;
+- document generation/regeneration and batch processing outcomes;
+- batch activation request and per-credential result;
 - public data change;
 - revoke;
 - credential set move;
@@ -326,4 +352,6 @@ RLS/permissions are accepted when:
 - MFA blocks sensitive actions when missing;
 - public verification leaks no private data;
 - private Storage is not public;
+- private template sources and generation-batch records are inaccessible to public/Content Manager;
+- Credential Manager can generate from published templates but cannot mutate or publish them;
 - service role is server-only.

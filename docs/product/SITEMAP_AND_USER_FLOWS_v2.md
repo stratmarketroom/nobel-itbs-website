@@ -460,17 +460,30 @@ Application URL priority:
 ## 10. Credential Admin User Flow
 
 1. Admin creates/selects learner.
-2. Admin creates credential with learner, programme context, type, language, issue date.
+2. Admin selects programme context, type, language, issue date, and a published Template Package version.
 3. System creates/fetches Credential Set.
 4. System generates document number and QR token during pending preparation.
-5. Admin uploads one primary PDF and optional additional PDFs.
-6. Admin reviews recipient email and email text.
+5. System generates the complete private PDF package: exactly one primary document plus optional additional PDFs; every output may be multi-page.
+6. Admin privately reviews the generated files and recipient/email text.
 7. Admin activates credential.
 8. Credential becomes valid.
 9. System attempts to email all current PDFs.
 10. Send result is recorded in history.
 
 Activation succeeds even if email is missing or sending fails.
+
+### Batch Credential Generation
+
+1. Admin selects one shared programme/run, credential type, language, issue/completion dates, published Template Package version, and the complete intended learner cohort without a fixed product-facing cap.
+2. System shows conflicts and requires explicit confirmation.
+3. System creates one pending credential, permanent number, and QR/token per accepted learner.
+4. System automatically divides the cohort into bounded technical chunks and generates every Template Document for every accepted learner while presenting one aggregate batch/progress view.
+5. Failed items remain visible and retryable; reserved numbers are never reused.
+6. Admin reviews generated packages and explicitly selects eligible items for batch activation.
+7. Each credential activates and records delivery independently; one email failure does not block the others.
+
+Template setup and all generation rules are defined in
+`docs/product/CREDENTIAL_DOCUMENT_GENERATION_SPECIFICATION_v2.md`.
 
 ## 11. Credential Correction User Flow
 
