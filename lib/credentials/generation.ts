@@ -7,7 +7,7 @@ import {
   type GeneratedCredentialPdf,
 } from '@/lib/credential-templates/pdf-generation-types';
 import type { TemplatePlacement } from '@/lib/credential-templates/admin-types';
-import { decryptCredentialVerificationUrl } from '@/lib/credentials/token';
+import { createCredentialTokenRpcMaterial, decryptCredentialVerificationUrl } from '@/lib/credentials/token';
 import type {
   CredentialGenerationState,
   CredentialGenerationTemplateOption,
@@ -599,6 +599,156 @@ export async function generateSingleCredential(
     }
     if (error instanceof AmbiguousGenerationCompletionError) {
       throw new ApiError('server_error', 500, 'Generation completion could not be confirmed safely. Reload the credential before retrying.');
+    }
+    throw generationErrorForBrowser(error);
+  }
+}
+
+export type GenerateCredentialBatchItemResult = {
+  outcome: 'generated' | 'conflict';
+  credentialId: string | null;
+  generationAttempt: number;
+  fileCount: number;
+  pageCount: number;
+};
+
+export async function generateCredentialBatchItem(
+  context: AdminContext,
+  batchItemId: string,
+  requestOrigin: string,
+): Promise<GenerateCredentialBatchItemResult> {
+  const db = requestClient(context);
+  const leaseToken = randomUUID();
+  const begin = await db.rpc('begin_credential_generation_batch_item', {
+    p_batch_item_id: batchItemId,
+    p_lease_token: leaseToken,
+  });
+  const lease = (begin.data as Array<{
+    credential_id: string | null;
+    template_version_id: string;
+    generation_attempt: number;
+  }> | null)?.[0];
+  if (begin.error || !lease) throw databaseError(begin.error, 'Batch item generation could not start.');
+
+  let credentialId = lease.credential_id;
+  const persistedObjects: PersistedOutput[] = [];
+  let completionAmbiguous = false;
+  try {
+    if (!credentialId) {
+      const token = createCredentialTokenRpcMaterial();
+      const prepared = await db.rpc('prepare_credential_generation_batch_item', {
+        p_batch_item_id: batchItemId,
+        p_lease_token: leaseToken,
+        p_verification_token_lookup_hash: token.lookup_hash,
+        p_verification_token_encrypted: token.encrypted_token,
+        p_token_encryption_key_version: token.key_version,
+      });
+      if (prepared.error) throw databaseError(prepared.error, 'Batch credential could not be prepared.');
+      credentialId = typeof prepared.data === 'string' ? prepared.data : null;
+      if (!credentialId) {
+        return {
+          outcome: 'conflict', credentialId: null,
+          generationAttempt: Number(lease.generation_attempt), fileCount: 0, pageCount: 0,
+        };
+      }
+    }
+
+    const plan = await loadGenerationPlan(credentialId, lease.template_version_id, requestOrigin, false);
+    const generated = await generateCredentialPdfPackage(plan.renderInput);
+    const generatedByDocument = new Map(generated.map((item) => [item.templateDocumentId, item]));
+    const refresh = await db.rpc('refresh_credential_generation_batch_item', {
+      p_batch_item_id: batchItemId,
+      p_lease_token: leaseToken,
+    });
+    if (refresh.error) throw databaseError(refresh.error, 'Batch item lease expired before private file persistence.');
+
+    const storage = getSupabaseAdminClient().storage.from(credentialBucket);
+    for (const prepared of plan.preparedDocuments) {
+      const output = generatedByDocument.get(prepared.templateDocumentId);
+      if (!output) throw new ApiError('server_error', 500, 'Generated batch package output is incomplete.');
+      const path = credentialPath(credentialId, prepared.fileId);
+      const upload = await storage.upload(path, output.bytes, { contentType: 'application/pdf', upsert: false });
+      if (upload.error) throw new ApiError('server_error', 500, 'Generated batch PDF could not be stored privately.');
+      persistedObjects.push({ fileId: prepared.fileId, path, previousBytes: null });
+      const persistenceRefresh = await db.rpc('refresh_credential_generation_batch_item', {
+        p_batch_item_id: batchItemId,
+        p_lease_token: leaseToken,
+      });
+      if (persistenceRefresh.error) {
+        throw databaseError(persistenceRefresh.error, 'Batch item lease expired during private package persistence.');
+      }
+    }
+
+    const outputManifest = plan.preparedDocuments.map((prepared) => {
+      const output = generatedByDocument.get(prepared.templateDocumentId) as GeneratedCredentialPdf;
+      return {
+        file_id: prepared.fileId,
+        template_document_id: prepared.templateDocumentId,
+        file_type_id: output.fileTypeId,
+        admin_label: output.adminLabel,
+        size_bytes: output.sizeBytes,
+        page_count: output.pageCount,
+        is_primary: output.isPrimary,
+        input_sha256: prepared.inputSha256,
+        output_sha256: output.sha256,
+      };
+    });
+    const completion = await db.rpc('complete_credential_generation_batch_item', {
+      p_batch_item_id: batchItemId,
+      p_lease_token: leaseToken,
+      p_outputs: outputManifest,
+    });
+    let value = completion.data as Record<string, unknown> | null;
+    if (completion.error || !value) {
+      const probe = await db.from('credential_file_generations')
+        .select('credential_file_id')
+        .eq('generation_batch_item_id', batchItemId)
+        .eq('generation_attempt', lease.generation_attempt)
+        .in('credential_file_id', persistedObjects.map((item) => item.fileId));
+      if (!probe.error && (probe.data?.length ?? 0) === persistedObjects.length) {
+        value = {
+          credential_id: credentialId,
+          generation_attempt: lease.generation_attempt,
+          file_count: generated.length,
+          page_count: generated.reduce((sum, item) => sum + item.pageCount, 0),
+        };
+      } else if (probe.error) {
+        completionAmbiguous = true;
+        throw new AmbiguousGenerationCompletionError();
+      } else {
+        throw databaseError(completion.error, 'Generated batch PDF metadata and provenance could not be persisted.');
+      }
+    }
+    return {
+      outcome: 'generated',
+      credentialId,
+      generationAttempt: Number(value.generation_attempt),
+      fileCount: Number(value.file_count),
+      pageCount: Number(value.page_count),
+    };
+  } catch (error) {
+    let rollbackFailed = false;
+    let failureRecordFailed = false;
+    if (!completionAmbiguous) {
+      try { await rollbackObjects(persistedObjects, false); }
+      catch { rollbackFailed = true; }
+      try {
+        const failure = await db.rpc('fail_credential_generation_batch_item', {
+          p_batch_item_id: batchItemId,
+          p_lease_token: leaseToken,
+          p_error_code: safeFailureCode(error),
+        });
+        failureRecordFailed = Boolean(failure.error);
+      } catch { failureRecordFailed = true; }
+    }
+    if (rollbackFailed) {
+      throw new ApiError('server_error', 500, 'Batch generation failed and its private PDF objects could not be cleaned up safely. Stop and inspect this item.');
+    }
+    if (failureRecordFailed) {
+      throw new ApiError('server_error', 500, 'Batch generation failed and its retryable outcome could not be confirmed. Reload and inspect this item.');
+    }
+    if (error instanceof AmbiguousGenerationCompletionError) {
+      throw new ApiError('server_error', 500, 'Batch item completion could not be confirmed safely. Reload the batch before retrying.');
     }
     throw generationErrorForBrowser(error);
   }

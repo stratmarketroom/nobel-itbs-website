@@ -42,6 +42,12 @@ export type CredentialTokenMaterial = {
   verificationUrl: string;
 };
 
+export type CredentialTokenRpcMaterial = {
+  lookup_hash: string;
+  encrypted_token: string;
+  key_version: number;
+};
+
 export function createCredentialTokenMaterial(): CredentialTokenMaterial {
   const { hmacSecret, encryptionKey, keyVersion } = tokenConfiguration();
   const token = randomBytes(32).toString('base64url');
@@ -62,6 +68,15 @@ export function createCredentialTokenMaterial(): CredentialTokenMaterial {
     encryptedToken,
     keyVersion,
     verificationUrl: `/verify/${encodeURIComponent(token)}`,
+  };
+}
+
+export function createCredentialTokenRpcMaterial(): CredentialTokenRpcMaterial {
+  const material = createCredentialTokenMaterial();
+  return {
+    lookup_hash: material.lookupHash,
+    encrypted_token: material.encryptedToken,
+    key_version: material.keyVersion,
   };
 }
 
