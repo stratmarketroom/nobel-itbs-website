@@ -3504,10 +3504,12 @@ h1 span {
 .credential-toolbar { display: grid; grid-template-columns: minmax(15rem, 1fr) minmax(10rem, 12rem) auto auto; gap: 0.7rem; align-items: end; padding: 0.85rem 0; }
 .credential-toolbar label,
 .credential-create-form label,
-.credential-file-upload label { display: grid; gap: 0.32rem; color: oklch(39% 0.025 250); font-size: 0.71rem; font-weight: 670; }
+.credential-file-upload label,
+.credential-generation-panel label { display: grid; gap: 0.32rem; color: oklch(39% 0.025 250); font-size: 0.71rem; font-weight: 670; }
 .credential-toolbar :is(input, select),
 .credential-create-form :is(input, select),
 .credential-file-upload :is(input, select),
+.credential-generation-panel select,
 .credential-notes textarea,
 .credential-file-list form input { width: 100%; min-height: 2.4rem; border: 1px solid oklch(82% 0.018 250); border-radius: 7px; padding: 0.52rem 0.65rem; background: oklch(99% 0.004 250); color: oklch(24% 0.025 250); font: inherit; font-size: 0.79rem; }
 .credential-toolbar button,
@@ -3646,6 +3648,14 @@ h1 span {
 .credential-public-data-panel button { min-height: 2.4rem; border: 1px solid oklch(41% 0.12 250); border-radius: 7px; padding: 0.52rem 0.78rem; background: oklch(41% 0.12 250); color: oklch(99% 0.004 250); font: inherit; font-size: 0.7rem; font-weight: 760; cursor: pointer; }
 .credential-public-data-panel :is(button, input, textarea):disabled { cursor: not-allowed; opacity: 0.58; }
 .credential-files { display: grid; gap: 1rem; padding: 1rem; }
+.credential-generation-panel { display: grid; gap: 0.65rem; border: 1px solid oklch(78% 0.06 250); border-radius: 7px; padding: 0.85rem; background: oklch(97% 0.012 250); }
+.credential-generation-panel > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.credential-generation-panel > header > span { border-radius: 999px; padding: 0.2rem 0.45rem; background: oklch(90% 0.035 250); color: oklch(35% 0.08 250); font-size: 0.62rem; font-weight: 760; }
+.credential-generation-panel p { margin: 0; color: oklch(42% 0.035 250); font-size: 0.69rem; line-height: 1.5; }
+.credential-generation-panel code { font-size: 0.64rem; }
+.credential-generation-panel .generation-blocked { border: 1px solid oklch(78% 0.07 35); border-radius: 6px; padding: 0.55rem 0.65rem; background: oklch(96% 0.03 35); color: oklch(42% 0.09 35); }
+.credential-generation-panel footer { border-top: 1px solid oklch(87% 0.02 250); padding-top: 0.6rem; color: oklch(49% 0.025 250); font-size: 0.63rem; line-height: 1.45; }
+.credential-generation-panel > button { justify-self: start; }
 .credential-file-upload { display: grid; gap: 0.75rem; border-bottom: 1px solid oklch(87% 0.014 250); padding-bottom: 1rem; }
 .credential-file-upload > header > span { color: oklch(50% 0.02 250); font-size: 0.63rem; }
 .credential-file-upload > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; align-items: end; }
@@ -3727,6 +3737,7 @@ h1 span {
   .credential-revoke-form > footer,
   .credential-void-panel footer,
   .credential-public-data-panel footer { align-items: stretch; flex-direction: column; }
+  .credential-generation-panel > header { align-items: stretch; flex-direction: column; }
 }
 
 @media (max-width: 860px) {

@@ -487,11 +487,11 @@ The orchestrator controls:
 
 Completed ticket:
 
-- `PDFGEN-004 Server-Side Multi-Document PDF Generation` — complete: the server renderer produces exactly one primary plus optional additional multi-page PDFs, embeds Noto Sans for mixed EN/UA/CZ values, applies constrained text/date/QR placements, preserves normal and rotated page geometry, rejects malformed/unsafe input and visible overflow, and passes exact QR decoding on normal and `/Rotate 90` pages. PR #35 passed 2/2 checks and Vercel Preview acceptance, merged as `d777f6c`, and passed the merge commit's 1/1 Production deployment check plus focused public Production smoke. It changed no database object or Supabase data.
+- `PDFGEN-005 Single Credential Generation and Regeneration` — complete in dev: the protected workflow, local checks, PR #37 2/2 checks, Ready Vercel Preview, dev migration 58, independent RLS/grant/function audit, and authenticated Owner/AAL2 read-only workspace acceptance pass. No pending credential, permanent number, generated PDF, or provenance row was created. Merge and Production promotion remain pending.
 
 Next ticket:
 
-- `PDFGEN-005 Single Credential Generation and Regeneration` — not started;
+- `PDFGEN-006 Batch Generation and Review` — blocked until PDFGEN-005 is merged, applied/read-only accepted in Production, and its publication record is complete;
 
 Agent:
 

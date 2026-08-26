@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { PendingCredentialAdminItem } from '@/lib/credentials/types';
 import type { ActivateCredentialResult } from '@/lib/credentials/activation-types';
 import type { ResendCredentialResult } from '@/lib/credentials/resend-types';
+import type { GenerateCredentialResult } from '@/lib/credentials/generation-types';
 import type { UpdateValidPublicDataInput } from '@/lib/credentials/public-data-types';
 import type {
   CredentialAdminDetail,
@@ -216,7 +217,7 @@ function CreateForm({ references, saving, onSubmit, onCancel }: { references: Cr
   const programme = references.programmes.find(({ id }) => id === programmeId);
   const type = references.credentialTypes.find(({ id }) => id === typeId);
   return <form className="credential-create-form" onSubmit={onSubmit}>
-    <header><div><small>New record</small><h2>Create pending credential</h2><p>After creation, upload the approved primary PDF and review the delivery message before activation.</p></div><button className="secondary" type="button" onClick={onCancel}>Cancel</button></header>
+    <header><div><small>New record</small><h2>Create pending credential</h2><p>After creation, generate the configured private PDF package or use the controlled manual upload fallback, then review every document before activation.</p></div><button className="secondary" type="button" onClick={onCancel}>Cancel</button></header>
     <div className="credential-form-grid">
       <label><span>Learner</span><select name="learnerId" required value={learnerId} onChange={(event) => setLearnerId(event.target.value)}>{references.learners.map((item) => <option key={item.id} value={item.id}>{item.name}{item.archived ? ' (archived)' : ''}</option>)}</select></label>
       <label><span>Programme</span><select name="programmeId" required value={programmeId} onChange={(event) => setProgrammeId(event.target.value)}>{references.programmes.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
@@ -249,6 +250,28 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
   async function upload(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); const form = new FormData(event.currentTarget);
     await action(() => request(`/api/v1/admin/credentials/${credential.id}/files`, { method: 'POST', body: form }), 'Private PDF uploaded.');
+  }
+
+  async function generate(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const templateVersionId = credential.generation.current?.templateVersionId
+      ?? String(form.get('templateVersionId') ?? '');
+    if (!templateVersionId) return;
+    const verb = credential.generation.current ? 'Regenerate' : 'Generate';
+    if (!window.confirm(`${verb} the complete private PDF package now? The credential number and QR stay unchanged.`)) return;
+    setSaving(true);
+    setNotice(null);
+    try {
+      const payload = await request<{ generation: GenerateCredentialResult }>(`/api/v1/admin/credentials/${credential.id}/generate`, {
+        method: 'POST',
+        body: JSON.stringify({ templateVersionId }),
+      });
+      setTab('files');
+      await reload(`${payload.generation.isRegeneration ? 'Regenerated' : 'Generated'} ${payload.generation.fileCount} private PDF${payload.generation.fileCount === 1 ? '' : 's'} across ${payload.generation.pageCount} page${payload.generation.pageCount === 1 ? '' : 's'}. Review every file before activation.`);
+    } catch (error) {
+      setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Credential PDF package could not be generated.' });
+    } finally { setSaving(false); }
   }
 
   async function addNote(event: React.FormEvent<HTMLFormElement>) {
@@ -360,6 +383,7 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
       {credential.status === 'voided' ? <section className="credential-void-record" aria-label="Void record"><header><small>Private lifecycle record</small><h3>Voided permanently</h3></header><dl><div><dt>Voided on</dt><dd>{date(credential.voidedAt)}</dd></div><div><dt>Reason</dt><dd>{credential.voidReason}</dd></div></dl></section> : null}
     </section> : null}
     {tab === 'files' ? <section className="credential-files">
+      <GenerationPanel credential={credential} saving={saving} onGenerate={generate} />
       <form className="credential-file-upload" onSubmit={upload}><header><div><small>Private storage</small><h3>Upload PDF</h3></div><span>PDF only · max 20 MB</span></header><div>
         <label><span>PDF file</span><input name="file" type="file" accept="application/pdf" required /></label>
         <label><span>File type</span><select name="fileTypeId" required>{credential.fileTypes.map((type) => <option key={type.id} value={type.id}>{type.defaultLabel}</option>)}</select></label>
@@ -368,11 +392,12 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
         <label className="check"><input name="isPrimary" type="checkbox" value="true" defaultChecked={credential.files.length === 0} /><span>Primary PDF</span></label>
         <button disabled={saving} type="submit">{saving ? 'Saving…' : 'Upload PDF'}</button>
       </div></form>
-      <div className="credential-file-list">{credential.files.length === 0 ? <Empty title="No private PDFs" body="Upload the approved document before activation." /> : credential.files.map((file) => <article key={`${file.id}-${file.updatedAt}`}><div><strong>{file.adminLabel || credential.fileTypes.find(({ id }) => id === file.fileTypeId)?.defaultLabel || 'Credential PDF'}</strong><span>{bytes(file.sizeBytes)} · updated {date(file.updatedAt)}{file.isPrimary ? ' · Primary' : ''}</span></div><div>
+      <div className="credential-file-list">{credential.files.length === 0 ? <Empty title="No private PDFs" body="Generate a configured package or upload an approved document before activation." /> : credential.files.map((file) => { const generated = credential.generation.current?.files.find((item) => item.credentialFileId === file.id); return <article key={`${file.id}-${file.updatedAt}`}><div><strong>{file.adminLabel || credential.fileTypes.find(({ id }) => id === file.fileTypeId)?.defaultLabel || 'Credential PDF'}</strong><span>{bytes(file.sizeBytes)}{generated ? ` · ${generated.pageCount} page${generated.pageCount === 1 ? '' : 's'} · generated attempt ${credential.generation.current?.generationAttempt}` : ''} · updated {date(file.updatedAt)}{file.isPrimary ? ' · Primary' : ''}</span></div><div>
+        <button type="button" disabled={saving} onClick={() => void action(async () => { const result = await request<{ signedUrl: string }>(`/api/v1/admin/credentials/${credential.id}/files/${file.id}?disposition=inline`); window.open(result.signedUrl, '_blank', 'noopener,noreferrer'); }, 'Private review link created for 60 seconds.')}>Preview</button>
         <button type="button" disabled={saving} onClick={() => void action(async () => { const result = await request<{ signedUrl: string }>(`/api/v1/admin/credentials/${credential.id}/files/${file.id}`); window.open(result.signedUrl, '_blank', 'noopener,noreferrer'); }, 'Secure download link created.')}>Download</button>
         {!file.isPrimary && (credential.status === 'pending' || credential.status === 'valid') ? <button type="button" disabled={saving} onClick={() => void action(() => request(`/api/v1/admin/credentials/${credential.id}/files/${file.id}`, { method: 'PATCH', body: JSON.stringify({ isPrimary: true, reason: 'Set as primary in credential workspace' }) }), 'Primary PDF changed.')}>Make primary</button> : null}
         {credential.status === 'pending' ? <button className="danger" type="button" disabled={saving} onClick={() => { if (window.confirm('Delete this private PDF?')) void action(() => request(`/api/v1/admin/credentials/${credential.id}/files/${file.id}`, { method: 'DELETE' }), 'Private PDF deleted.'); }}>Delete</button> : null}
-      </div>{credential.status === 'pending' || credential.status === 'valid' ? <form onSubmit={(event) => { event.preventDefault(); const form = new FormData(event.currentTarget); void action(() => request(`/api/v1/admin/credentials/${credential.id}/files/${file.id}`, { method: 'PUT', body: form }), 'Private PDF replaced.'); }}><input name="file" type="file" accept="application/pdf" required /><input name="reason" required={credential.status === 'valid'} placeholder={credential.status === 'valid' ? 'Replacement reason (required)' : 'Replacement reason'} /><button disabled={saving} type="submit">Replace</button></form> : null}</article>)}</div>
+      </div>{credential.status === 'pending' || credential.status === 'valid' ? <form onSubmit={(event) => { event.preventDefault(); const form = new FormData(event.currentTarget); void action(() => request(`/api/v1/admin/credentials/${credential.id}/files/${file.id}`, { method: 'PUT', body: form }), 'Private PDF replaced.'); }}><input name="file" type="file" accept="application/pdf" required /><input name="reason" required={credential.status === 'valid'} placeholder={credential.status === 'valid' ? 'Replacement reason (required)' : 'Replacement reason'} /><button disabled={saving} type="submit">Replace</button></form> : null}</article>; })}</div>
     </section> : null}
     {tab === 'history' ? <section className="credential-history-notes">
       <div className="credential-notes"><header><small>Private internal comments</small><h3>Notes</h3></header><form onSubmit={addNote}><textarea name="body" required maxLength={4000} placeholder="Add context for other credential managers" /><button disabled={saving} type="submit">Add note</button></form>{credential.notes.filter(({ deletedAt }) => !deletedAt).map((note) => <article key={`${note.id}-${note.updatedAt}`}><p>{note.body}</p><span>{note.canEdit ? 'You' : 'Administrator'} · {date(note.updatedAt)}</span><div>{note.canEdit ? <button type="button" disabled={saving} onClick={() => { const next = window.prompt('Edit internal note', note.body); if (next?.trim()) void action(() => request(`/api/v1/admin/credentials/${credential.id}/notes/${note.id}`, { method: 'PATCH', body: JSON.stringify({ body: next }) }), 'Internal note updated.'); }}>Edit</button> : null}{note.canDelete ? <button className="danger" type="button" disabled={saving} onClick={() => { if (window.confirm('Delete this internal note?')) void action(() => request(`/api/v1/admin/credentials/${credential.id}/notes/${note.id}`, { method: 'DELETE' }), 'Internal note deleted.'); }}>Delete</button> : null}</div></article>)}</div>
@@ -380,6 +405,29 @@ function CredentialDetail({ credential, tab, saving, setTab, request, setSaving,
       <div className="credential-delivery-history"><header><small>Private delivery record</small><h3>Email delivery</h3></header>{credential.emailSends.length === 0 ? <p>No delivery attempts yet.</p> : credential.emailSends.map((send) => <details key={send.id}><summary><span><strong>{send.status.replaceAll('_', ' ')}</strong><small>{date(send.sentAt)} · {send.recipientEmail || 'No recipient'} · {send.files.length} PDF{send.files.length === 1 ? '' : 's'}</small></span></summary><div><p><strong>Subject:</strong> {send.subject}</p><pre>{send.body}</pre>{send.technicalError ? <p className="delivery-error">{send.technicalError}</p> : null}<ul>{send.files.map((file) => <li key={file.fileId}>{file.filename} · {file.fileType}{file.isPrimary ? ' · Primary' : ''}</li>)}</ul></div></details>)}</div>
     </section> : null}
   </>;
+}
+
+function GenerationPanel({ credential, saving, onGenerate }: {
+  credential: CredentialAdminDetail;
+  saving: boolean;
+  onGenerate: (event: React.FormEvent<HTMLFormElement>) => void;
+}) {
+  const generation = credential.generation;
+  const current = generation.current;
+  return <form className="credential-generation-panel" onSubmit={onGenerate}>
+    <header><div><small>PDFGEN-005 · private package</small><h3>{current ? 'Regenerate current package' : 'Generate from Template Package'}</h3></div>{current ? <span>Attempt {current.generationAttempt}</span> : null}</header>
+    {current ? <>
+      <p><strong>{current.templateDisplayName}</strong> · variant <code>{current.variantCode}</code> · v{current.versionNumber} {current.versionStatus}</p>
+      <p>{current.files.length} PDF{current.files.length === 1 ? '' : 's'} · {current.files.reduce((sum, item) => sum + item.pageCount, 0)} pages · generated {date(current.generatedAt)}. Regeneration replaces these current files in place and keeps the same permanent number and QR.</p>
+      {credential.status === 'pending' ? <button type="submit" disabled={saving || !generation.eligible}>{saving ? 'Generating…' : 'Regenerate same version'}</button> : null}
+    </> : <>
+      <p>Select an exact published package matching this credential. Every configured document and page is generated together.</p>
+      {generation.options.length ? <label><span>Published Template Package</span><select name="templateVersionId" required disabled={saving || !generation.eligible}>{generation.options.map((option) => <option key={option.templateVersionId} value={option.templateVersionId}>{option.displayName} · {option.variantCode} · v{option.versionNumber} · {option.documentCount} PDF{option.documentCount === 1 ? '' : 's'} / {option.pageCount} pages{option.programmeRunId ? ' · run-specific' : ''}</option>)}</select></label> : null}
+      {credential.status === 'pending' ? <button type="submit" disabled={saving || !generation.eligible || generation.options.length === 0}>{saving ? 'Generating…' : 'Generate complete package'}</button> : null}
+    </>}
+    {generation.blockedReason ? <p className="generation-blocked">{generation.blockedReason}</p> : null}
+    <footer>Generated files stay in private Storage. Open Preview for each PDF before activation.</footer>
+  </form>;
 }
 
 function ActivationForm({ credential, saving, onActivate }: {

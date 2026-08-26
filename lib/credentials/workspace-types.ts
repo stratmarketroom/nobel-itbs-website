@@ -1,6 +1,7 @@
 import type { CredentialFileAdminItem, CredentialFileTypeAdminItem } from '@/lib/credentials/file-types';
 import type { CredentialActivationDraft, CredentialEmailSendItem } from '@/lib/credentials/activation-types';
 import type { CredentialResendDraft } from '@/lib/credentials/resend-types';
+import type { CredentialGenerationState } from '@/lib/credentials/generation-types';
 
 export type CredentialStatus = 'pending' | 'valid' | 'revoked' | 'voided';
 
@@ -59,6 +60,7 @@ export type CredentialAdminDetail = CredentialAdminListItem & {
   emailSends: CredentialEmailSendItem[];
   activationDraft: CredentialActivationDraft | null;
   resendDraft: CredentialResendDraft | null;
+  generation: CredentialGenerationState;
 };
 
 export type CredentialReferenceData = {

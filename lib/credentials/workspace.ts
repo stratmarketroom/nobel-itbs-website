@@ -4,6 +4,7 @@ import { listCredentialFiles } from '@/lib/credentials/files';
 import { getCredentialActivationDraft } from '@/lib/credentials/activation';
 import type { CredentialEmailSendItem } from '@/lib/credentials/activation-types';
 import { getCredentialResendDraft } from '@/lib/credentials/resend';
+import { getCredentialGenerationState } from '@/lib/credentials/generation';
 import {
   ApiError,
   assertCanManageCredentials,
@@ -119,7 +120,7 @@ export async function listCredentials(context: AdminContext): Promise<Credential
 
 export async function getCredentialDetail(context: AdminContext, credentialId: string, requestOrigin: string): Promise<CredentialAdminDetail> {
   const db = client(context);
-  const [lookup, credentialResult, filesResult, historyResult, notesResult, sendsResult, activationDraft, resendDraft] = await Promise.all([
+  const [lookup, credentialResult, filesResult, historyResult, notesResult, sendsResult, activationDraft, resendDraft, generation] = await Promise.all([
     lookups(db),
     db.from('credentials').select(credentialSelect).eq('id', credentialId).maybeSingle(),
     listCredentialFiles(context, credentialId),
@@ -128,6 +129,7 @@ export async function getCredentialDetail(context: AdminContext, credentialId: s
     db.from('credential_email_sends').select('id, recipient_email, subject, body, status, technical_error, sent_by, sent_at, files').eq('credential_id', credentialId).order('sent_at', { ascending: false }).limit(100),
     getCredentialActivationDraft(context, credentialId, requestOrigin),
     getCredentialResendDraft(context, credentialId, requestOrigin),
+    getCredentialGenerationState(context, credentialId),
   ]);
   if (credentialResult.error) throw databaseError(credentialResult.error, 'Credential could not be loaded.');
   if (!credentialResult.data) throw new ApiError('not_found', 404, 'Credential was not found.');
@@ -171,6 +173,7 @@ export async function getCredentialDetail(context: AdminContext, credentialId: s
     })),
     activationDraft,
     resendDraft,
+    generation,
   };
 }
 
