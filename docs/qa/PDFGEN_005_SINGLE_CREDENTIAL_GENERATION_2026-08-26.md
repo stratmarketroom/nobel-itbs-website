@@ -2,7 +2,7 @@
 
 Date: 2026-08-26
 
-Status: complete locally; publication and Supabase migration application pending
+Status: complete in dev; Production promotion pending
 
 ## Summary
 
@@ -86,6 +86,30 @@ pending-only block, private Preview/Download controls, desktop and 390-pixel
 responsive layout, and zero application console errors. The package selector
 is disabled whenever generation is ineligible.
 
+## Dev and Preview Acceptance
+
+- implementation commit `fa34d6240e7003a5db3a65600f3ba088f4252b1c` was
+  pushed to `codex/pdfgen-005-single-generation`;
+- PR #37 was created and passed 2/2 GitHub checks with no merge conflict;
+- Vercel Preview deployment `FBqgT3eNTTctwDrvg8woXFpi35oN` reached `Ready`;
+- the Preview root loaded without an application console error and retained the
+  public programme and verification surface;
+- dev migration dry-run listed only
+  `20260826100000_pdfgen_005_single_generation.sql`; the migration then applied
+  and was recorded as the 58th dev migration;
+- an independent read-only dev audit confirmed forced RLS on the private lease,
+  zero lease policies, zero anon/authenticated/service-role table grants, four
+  guarded security-definer functions with fixed search paths, zero anonymous
+  and four authenticated function grants, unchanged credential statuses, zero
+  active leases, zero generated provenance rows, and zero private credential
+  Storage policies;
+- authenticated Owner/AAL2 dev acceptance loaded the retained revoked QA
+  credential and the PDFGEN-005 panel with the pending-only block, disabled
+  package selector, private Preview/Download controls, and no application
+  console errors;
+- no pending credential, permanent number, generated PDF, Storage object,
+  provenance row, or delivery was created during acceptance.
+
 A focused 20-assertion pgTAP suite is committed at
 `supabase/tests/database/pdfgen_005_single_generation.test.sql`. It was not
 executed because Docker or another compatible local PostgreSQL/pgTAP runner is
@@ -107,10 +131,11 @@ not available.
 
 ## Deviations / Open Questions
 
-- The migration has not been applied to dev or Production, and no real
-  credential PDF was generated. Live first-generation/regeneration, role/RLS,
-  rollback, and provenance acceptance must be performed after publication with
-  approved non-production data.
+- The migration is applied and accepted in dev but not Production. A true
+  first-generation/regeneration mutation would require creating a pending
+  credential and irreversibly consuming a permanent document number. That was
+  intentionally not done without an explicitly approved non-production
+  credential; complete mutation/rollback/provenance acceptance remains open.
 - The stale `.agents/context/PRODUCT.md` statement that automatic PDF
   generation is out of scope conflicts with the approved v2 generation
   specification dated 2026-08-25. Per `AGENTS.md`, the v2 specification was
@@ -118,6 +143,7 @@ not available.
 
 ## Next Dependency
 
-Continue only after PDFGEN-005 publication acceptance with `PDFGEN-006 Batch
-Generation and Review`. It must reuse this single-item generation boundary
-without adding a fixed cohort-size cap.
+Complete PR #37 merge, Production migration/read-only acceptance, and the
+publication record before starting `PDFGEN-006 Batch Generation and Review`.
+PDFGEN-006 must reuse this single-item generation boundary without adding a
+fixed cohort-size cap.
