@@ -137,6 +137,24 @@ Passed after the development apply:
   `credential_generation_batches`, `credential_generation_batch_items`, and
   `credential_file_generations`.
 
+Passed in the branch-scoped Vercel Preview after deployment configuration:
+
+- `SUPABASE_SERVICE_ROLE_KEY` was added as a secret for only
+  `codex/pdfgen-006-batch-generation`; the Production scope was explicitly
+  excluded;
+- the exact `ed4bab6` PDFGEN-006 Preview deployment was redeployed with the
+  updated environment and reached `Ready`;
+- the development Owner authenticated successfully and completed MFA/AAL2;
+- `/admin/credentials` loaded the PDFGEN-006 batch workspace with zero existing
+  generation batches, one published single-PDF package, and one active learner;
+- the read-only conflict preview classified the explicit one-learner cohort as
+  one accepted, zero conflicts, and zero archived;
+- the confirm action was not invoked, and browser logs contained no warnings or
+  errors;
+- a post-preview count-only database check again confirmed zero rows in
+  `credential_generation_batches`, `credential_generation_batch_items`, and
+  `credential_file_generations`.
+
 ## Security Notes
 
 - All batch mutations require the existing active role and MFA/AAL2 boundary.
@@ -155,6 +173,9 @@ Passed after the development apply:
   number log.
 - Generated PDFs remain private and continue to use the existing short-lived,
   MFA-protected preview route.
+- The service-role key added for hosted acceptance is a Vercel secret scoped to
+  the PDFGEN-006 Preview branch only. It is not browser-readable and did not
+  alter the existing Production environment variable.
 
 ## Deviations / Open Questions
 
