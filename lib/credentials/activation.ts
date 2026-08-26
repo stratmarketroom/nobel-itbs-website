@@ -141,42 +141,34 @@ async function finalize(
   emailSendId: string,
   status: 'sent' | 'failed' | 'not_configured',
   technicalError: string | null,
+  batchActivation?: { itemId: string; leaseToken: string },
 ): Promise<boolean> {
-  const { error } = await db.rpc('complete_credential_email_send', {
-    p_email_send_id: emailSendId,
-    p_status: status,
-    p_technical_error: technicalError,
-  });
+  const { error } = batchActivation
+    ? await db.rpc('complete_credential_generation_batch_email_send', {
+      p_activation_request_item_id: batchActivation.itemId,
+      p_lease_token: batchActivation.leaseToken,
+      p_status: status,
+      p_technical_error: technicalError,
+    })
+    : await db.rpc('complete_credential_email_send', {
+      p_email_send_id: emailSendId,
+      p_status: status,
+      p_technical_error: technicalError,
+    });
   return !error;
 }
 
-export async function activateCredential(
+export async function deliverCredentialEmailSend(
   context: AdminContext,
   credentialId: string,
-  input: ActivateCredentialInput,
-): Promise<ActivateCredentialResult> {
+  emailSendId: string,
+  recipientEmail: string,
+  subject: string,
+  body: string,
+  batchActivation?: { itemId: string; leaseToken: string },
+): Promise<ActivateCredentialResult['delivery']> {
   const db = client(context);
   const files = await currentFiles(db, credentialId);
-  const { data, error } = await db.rpc('activate_credential', {
-    p_credential_id: credentialId,
-    p_recipient_email: input.recipientEmail,
-    p_subject: input.subject,
-    p_body: input.body,
-    p_files: files.map(({ manifest }) => manifest),
-  });
-  const row = (data as ActivationRow[] | null)?.[0];
-  if (error || !row) throw databaseError(error, 'Credential could not be activated. Confirm that it is pending and has a primary PDF.');
-
-  if (row.email_status === 'skipped_empty_recipient') {
-    return {
-      credentialId: row.credential_id,
-      status: row.credential_status,
-      activatedAt: row.activated_at,
-      emailSendId: row.email_send_id,
-      delivery: { status: row.email_status, technicalError: 'Recipient email is empty; no delivery was attempted.', resultRecorded: true },
-    };
-  }
-
   let deliveryStatus: 'sent' | 'failed' | 'not_configured' = 'failed';
   let technicalError: string | null = null;
   try {
@@ -195,9 +187,9 @@ export async function activateCredential(
         };
       }));
       const sendResult = await sendCredentialSmtpMessage({
-        to: input.recipientEmail as string,
-        subject: input.subject,
-        text: input.body,
+        to: recipientEmail,
+        subject,
+        text: body,
         attachments,
       });
       deliveryStatus = sendResult === 'sent' ? 'sent' : 'not_configured';
@@ -208,16 +200,75 @@ export async function activateCredential(
     technicalError = deliveryFailure(caughtError);
   }
 
-  const resultRecorded = await finalize(db, row.email_send_id, deliveryStatus, technicalError);
+  const resultRecorded = await finalize(
+    db,
+    emailSendId,
+    deliveryStatus,
+    technicalError,
+    batchActivation,
+  );
+  return {
+    status: resultRecorded ? deliveryStatus : 'pending',
+    technicalError: resultRecorded
+      ? technicalError
+      : 'The credential is valid, but the delivery result could not be finalized. Do not retry activation.',
+    resultRecorded,
+  };
+}
+
+export async function activateCredential(
+  context: AdminContext,
+  credentialId: string,
+  input: ActivateCredentialInput,
+  batchActivation?: { itemId: string; leaseToken: string },
+): Promise<ActivateCredentialResult> {
+  const db = client(context);
+  const files = await currentFiles(db, credentialId);
+  const { data, error } = await db.rpc('activate_credential', {
+    p_credential_id: credentialId,
+    p_recipient_email: input.recipientEmail,
+    p_subject: input.subject,
+    p_body: input.body,
+    p_files: files.map(({ manifest }) => manifest),
+  });
+  const row = (data as ActivationRow[] | null)?.[0];
+  if (error || !row) throw databaseError(error, 'Credential could not be activated. Confirm that it is pending and has a primary PDF.');
+
+  if (batchActivation) {
+    const linked = await db.rpc('bind_credential_generation_batch_activation_email_send', {
+      p_activation_request_item_id: batchActivation.itemId,
+      p_lease_token: batchActivation.leaseToken,
+      p_email_send_id: row.email_send_id,
+    });
+    if (linked.error) {
+      throw databaseError(linked.error, 'Credential is valid, but its batch delivery record could not be linked for safe resume.');
+    }
+  }
+
+  if (row.email_status === 'skipped_empty_recipient') {
+    return {
+      credentialId: row.credential_id,
+      status: row.credential_status,
+      activatedAt: row.activated_at,
+      emailSendId: row.email_send_id,
+      delivery: { status: row.email_status, technicalError: 'Recipient email is empty; no delivery was attempted.', resultRecorded: true },
+    };
+  }
+
+  const delivery = await deliverCredentialEmailSend(
+    context,
+    credentialId,
+    row.email_send_id,
+    input.recipientEmail as string,
+    input.subject,
+    input.body,
+    batchActivation,
+  );
   return {
     credentialId: row.credential_id,
     status: row.credential_status,
     activatedAt: row.activated_at,
     emailSendId: row.email_send_id,
-    delivery: {
-      status: resultRecorded ? deliveryStatus : 'pending',
-      technicalError: resultRecorded ? technicalError : 'The credential is valid, but the delivery result could not be finalized. Do not retry activation.',
-      resultRecorded,
-    },
+    delivery,
   };
 }

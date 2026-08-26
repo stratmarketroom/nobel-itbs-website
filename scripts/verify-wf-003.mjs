@@ -80,12 +80,15 @@ if (!errors.length) {
     'Do not retry activation.',
   ]) if (!source.service.includes(snippet)) errors.push(`WF-003 server coordination missing: ${snippet}`);
 
-  const authorizationIndex = source.service.indexOf('assertCanManageCredentials');
-  const activationIndex = source.service.indexOf("db.rpc('activate_credential'");
+  const activationFunctionIndex = source.service.indexOf('export async function activateCredential(');
+  const authorizationIndex = source.service.indexOf('const db = client(context);', activationFunctionIndex);
+  const activationIndex = source.service.indexOf("db.rpc('activate_credential'", activationFunctionIndex);
+  const deliveryCallIndex = source.service.indexOf('const delivery = await deliverCredentialEmailSend(', activationFunctionIndex);
   const storageIndex = source.service.indexOf("getSupabaseAdminClient().storage.from('private-credentials')");
   const providerIndex = source.service.indexOf('sendCredentialSmtpMessage({');
-  if (authorizationIndex < 0 || activationIndex < 0 || storageIndex < 0 || providerIndex < 0
-    || authorizationIndex > activationIndex || activationIndex > storageIndex || storageIndex > providerIndex) {
+  if (activationFunctionIndex < 0 || authorizationIndex < 0 || activationIndex < 0 || deliveryCallIndex < 0
+    || storageIndex < 0 || providerIndex < 0 || authorizationIndex > activationIndex
+    || activationIndex > deliveryCallIndex || storageIndex > providerIndex) {
     errors.push('Actor authorization and atomic activation must happen before private Storage and provider access.');
   }
   if (/console\.(?:log|info|warn|error)/.test(source.service + source.token + source.email)) {

@@ -3770,7 +3770,8 @@ h1 span {
 .credential-batch-items article > header em { border-radius: 999px; padding: 0.17rem 0.42rem; background: oklch(92% 0.018 250); color: oklch(40% 0.035 250); font-size: 0.57rem; font-style: normal; font-weight: 760; text-transform: uppercase; }
 .credential-batch-preview-list em.accepted,
 .credential-batch-items em.generated,
-.credential-batch-items em.reviewed { background: oklch(94% 0.035 155); color: oklch(35% 0.085 155); }
+.credential-batch-items em.reviewed,
+.credential-batch-items em.activated { background: oklch(94% 0.035 155); color: oklch(35% 0.085 155); }
 .credential-batch-preview-list em.conflict,
 .credential-batch-preview-list em.archived,
 .credential-batch-items em.retryable,
@@ -3780,6 +3781,12 @@ h1 span {
 .credential-batch-error { margin: 0; border-left: 3px solid oklch(55% 0.12 35); padding: 0.45rem 0.6rem; background: oklch(96% 0.025 35); color: oklch(41% 0.08 35); font-size: 0.66rem; }
 .credential-batch-review > header { border-bottom: 1px solid oklch(87% 0.014 250); padding-bottom: 0.8rem; }
 .credential-batch-review-note { border-left: 3px solid oklch(55% 0.1 250); padding: 0.58rem 0.7rem; background: oklch(97% 0.009 250); }
+.credential-batch-activation-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; border: 1px solid oklch(77% 0.055 250); border-radius: 7px; padding: 0.65rem 0.72rem; background: oklch(96.5% 0.014 250); color: oklch(39% 0.04 250); font-size: 0.67rem; }
+.credential-batch-activation-toolbar > div { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; }
+.credential-batch-activation-toolbar strong { color: oklch(28% 0.07 250); font-size: 0.8rem; }
+.credential-batch-activation-toolbar button { min-height: 2rem; padding: 0.34rem 0.58rem; }
+.credential-batch-resume { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; border-left: 3px solid oklch(60% 0.11 70); padding: 0.55rem 0.7rem; background: oklch(97% 0.022 70); color: oklch(39% 0.07 70); font-size: 0.65rem; }
+.credential-batch-resume button { min-height: 2rem; flex: 0 0 auto; padding: 0.34rem 0.58rem; }
 .credential-batch-items { display: grid; gap: 0.65rem; }
 .credential-batch-items > article { display: grid; gap: 0.6rem; border: 1px solid oklch(86% 0.015 250); border-radius: 7px; padding: 0.72rem; }
 .credential-batch-items article > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
@@ -3790,6 +3797,13 @@ h1 span {
 .credential-batch-files > button { display: grid; min-width: 0; gap: 0.12rem; border-color: oklch(78% 0.045 250); background: oklch(97% 0.01 250); color: oklch(31% 0.055 250); text-align: left; }
 .credential-batch-files button span { overflow: hidden; color: oklch(49% 0.025 250); font-size: 0.59rem; text-overflow: ellipsis; white-space: nowrap; }
 .credential-batch-items article > footer { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; border-top: 1px solid oklch(89% 0.012 250); padding-top: 0.55rem; }
+.credential-batch-activation-choice { display: inline-flex; align-items: center; gap: 0.42rem; color: oklch(34% 0.065 250); font-size: 0.65rem; font-weight: 710; cursor: pointer; }
+.credential-batch-activation-choice input { width: 1rem; height: 1rem; margin: 0; accent-color: oklch(42% 0.12 250); }
+.credential-batch-activation-outcome { border-radius: 999px; padding: 0.25rem 0.48rem; background: oklch(92% 0.018 250); color: oklch(40% 0.035 250); font-size: 0.59rem; font-weight: 720; }
+.credential-batch-activation-outcome.activated_sent { background: oklch(94% 0.035 155); color: oklch(35% 0.085 155); }
+.credential-batch-activation-outcome.activated_not_sent,
+.credential-batch-activation-outcome.activation_failed,
+.credential-batch-activation-outcome.delivery_retryable { background: oklch(95% 0.03 35); color: oklch(41% 0.09 35); }
 .credential-batch-ready { color: oklch(35% 0.085 155); font-size: 0.65rem; font-weight: 720; }
 
 @media (max-width: 980px) {
@@ -3813,6 +3827,8 @@ h1 span {
   .credential-batch-create > footer,
   .credential-batch-preview > header,
   .credential-batch-review > header,
+  .credential-batch-activation-toolbar,
+  .credential-batch-resume,
   .credential-batch-learners > header { align-items: stretch; flex-direction: column; }
   .credential-batch-context-fields,
   .credential-batch-files { grid-template-columns: 1fr; }
