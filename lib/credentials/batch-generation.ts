@@ -222,12 +222,12 @@ export async function previewCredentialGenerationBatch(context: AdminContext, in
     language_code: input.languageCode, issue_date: input.issueDate, completion_date: input.completionDate,
   }, lookup);
   const learners = ((result.data ?? []) as Array<{
-    learner_id: string; learner_name: string; position: number; archived: boolean;
+    learner_id: string; learner_name: string; cohort_position: number; archived: boolean;
     conflicting_credential_id: string | null; conflicting_document_number: string | null;
   }>).map((row) => ({
     learnerId: row.learner_id,
     learnerName: row.learner_name,
-    position: Number(row.position),
+    position: Number(row.cohort_position),
     outcome: row.archived ? 'archived' as const : row.conflicting_credential_id ? 'conflict' as const : 'accepted' as const,
     conflictingCredentialId: row.conflicting_credential_id,
     conflictingDocumentNumber: row.conflicting_document_number,

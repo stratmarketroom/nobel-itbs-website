@@ -35,7 +35,7 @@ create or replace function public.preview_credential_generation_batch(
 returns table (
   learner_id uuid,
   learner_name text,
-  position bigint,
+  cohort_position bigint,
   archived boolean,
   conflicting_credential_id uuid,
   conflicting_document_number text
