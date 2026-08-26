@@ -69,7 +69,7 @@ for (const part of ['Generate complete package', 'Regenerate same version', 'Pre
 }
 
 const qa = existsSync(requiredPaths[7]) ? readFileSync(requiredPaths[7], 'utf8') : '';
-for (const part of ['Status: complete in dev', '58th dev migration', 'PDFGEN-006 Batch']) {
+for (const part of ['Status: complete in dev and Production', 'Production migration 58', 'PDFGEN-006 Batch']) {
   if (!qa.includes(part)) errors.push(`PDFGEN-005 QA record missing ${part}`);
 }
 
