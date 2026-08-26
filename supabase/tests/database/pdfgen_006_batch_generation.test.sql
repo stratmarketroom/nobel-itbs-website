@@ -1,5 +1,5 @@
 begin;
-select plan(27);
+select plan(28);
 
 select has_function('public','preview_credential_generation_batch',array['uuid','uuid','uuid','uuid','text','date','uuid[]'],'read-only batch preview should exist');
 select has_function('public','confirm_credential_generation_batch',array['uuid','uuid','uuid','uuid','uuid','text','date','date','uuid[]'],'idempotent batch confirmation should exist');
@@ -67,6 +67,11 @@ select results_eq(
   $$select count(*)::bigint from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname='confirm_credential_generation_batch' and pg_get_functiondef(p.oid) like '%archived learners cannot be included%' and pg_get_functiondef(p.oid) like '%existing_non_voided_credential%'$$,
   $$values(1::bigint)$$,
   'confirmation should reject archived learners and record exact-context conflicts'
+);
+select results_eq(
+  $$select count(*)::bigint from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname='confirm_credential_generation_batch' and pg_get_functiondef(p.oid) like '%''queued''::public.credential_generation_item_status%' and pg_get_functiondef(p.oid) like '%''conflict''::public.credential_generation_item_status%'$$,
+  $$values(1::bigint)$$,
+  'confirmation should resolve queued and conflict states as the batch item enum'
 );
 select results_eq(
   $$select count(*)::bigint from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname='confirm_credential_generation_batch' and pg_get_functiondef(p.oid) like '%idempotency_key%' and pg_get_functiondef(p.oid) like '%array_agg(learner_id order by position)%'$$,
