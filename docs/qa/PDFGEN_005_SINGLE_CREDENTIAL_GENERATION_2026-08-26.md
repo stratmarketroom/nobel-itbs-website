@@ -2,7 +2,7 @@
 
 Date: 2026-08-26
 
-Status: complete in dev; Production promotion pending
+Status: complete in dev and Production
 
 ## Summary
 
@@ -86,7 +86,7 @@ pending-only block, private Preview/Download controls, desktop and 390-pixel
 responsive layout, and zero application console errors. The package selector
 is disabled whenever generation is ineligible.
 
-## Dev and Preview Acceptance
+## Publication and Environment Acceptance
 
 - implementation commit `fa34d6240e7003a5db3a65600f3ba088f4252b1c` was
   pushed to `codex/pdfgen-005-single-generation`;
@@ -110,6 +110,30 @@ is disabled whenever generation is ineligible.
 - no pending credential, permanent number, generated PDF, Storage object,
   provenance row, or delivery was created during acceptance.
 
+Production publication then completed without fixture data:
+
+- PR #37 was merged into `main` as
+  `159916c4f8bb26e22f39707967cfd66897a0cc83`;
+- the merge commit's 1/1 Vercel check passed and Production deployment
+  `2FXVz7Xrz5jegFXnMrRvTwiv3Y5D` reached `Ready` as the latest `main`
+  deployment;
+- the canonical Production root at `https://nobel-itbs-website.vercel.app/`
+  loaded to `document.readyState = complete` with the expected programme and
+  verification surfaces;
+- migration `20260826100000_pdfgen_005_single_generation.sql` applied and was
+  recorded as Production migration 58;
+- an independent read-only Production audit confirmed forced RLS on the lease
+  table, zero lease policies and browser/service-role table grants, all four
+  guarded functions with fixed search paths, zero anonymous and four
+  authenticated function grants, unchanged `pending`/`valid`/`revoked`/`voided`
+  statuses, and zero active leases, packages, credentials, generated
+  provenance rows, generation batches, or direct private-credential Storage
+  policies;
+- the deployed generation endpoint returned application-level `401` with no
+  Bearer session;
+- no Production credential, permanent number, template package, PDF, Storage
+  object, provenance row, batch, or delivery was created.
+
 A focused 20-assertion pgTAP suite is committed at
 `supabase/tests/database/pdfgen_005_single_generation.test.sql`. It was not
 executed because Docker or another compatible local PostgreSQL/pgTAP runner is
@@ -131,8 +155,8 @@ not available.
 
 ## Deviations / Open Questions
 
-- The migration is applied and accepted in dev but not Production. A true
-  first-generation/regeneration mutation would require creating a pending
+- The migration is applied and read-only accepted in dev and Production. A
+  true first-generation/regeneration mutation would require creating a pending
   credential and irreversibly consuming a permanent document number. That was
   intentionally not done without an explicitly approved non-production
   credential; complete mutation/rollback/provenance acceptance remains open.
@@ -143,7 +167,6 @@ not available.
 
 ## Next Dependency
 
-Complete PR #37 merge, Production migration/read-only acceptance, and the
-publication record before starting `PDFGEN-006 Batch Generation and Review`.
-PDFGEN-006 must reuse this single-item generation boundary without adding a
+`PDFGEN-006 Batch Generation and Review` is now unblocked but has not started.
+It must reuse this accepted single-item generation boundary without adding a
 fixed cohort-size cap.

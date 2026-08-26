@@ -487,11 +487,11 @@ The orchestrator controls:
 
 Completed ticket:
 
-- `PDFGEN-005 Single Credential Generation and Regeneration` — complete in dev: the protected workflow, local checks, PR #37 2/2 checks, Ready Vercel Preview, dev migration 58, independent RLS/grant/function audit, and authenticated Owner/AAL2 read-only workspace acceptance pass. No pending credential, permanent number, generated PDF, or provenance row was created. Merge and Production promotion remain pending.
+- `PDFGEN-005 Single Credential Generation and Regeneration` — merged through PR #37 as `159916c`, deployed through Production deployment `2FXVz7Xrz5jegFXnMrRvTwiv3Y5D`, and read-only accepted with migration 58 plus independent security audits in dev and Production. No pending credential, permanent number, template, generated PDF, batch, or provenance row was created.
 
 Next ticket:
 
-- `PDFGEN-006 Batch Generation and Review` — blocked until PDFGEN-005 is merged, applied/read-only accepted in Production, and its publication record is complete;
+- `PDFGEN-006 Batch Generation and Review` — unblocked by the completed PDFGEN-005 publication record but not started;
 
 Agent:
 
