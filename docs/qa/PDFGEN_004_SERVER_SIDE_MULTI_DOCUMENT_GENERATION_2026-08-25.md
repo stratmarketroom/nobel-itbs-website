@@ -2,7 +2,7 @@
 
 Date: 2026-08-25
 
-Status: implemented and accepted locally; not yet merged or deployed
+Status: complete; merged and accepted in Production on 2026-08-26
 
 ## Summary
 
@@ -82,6 +82,21 @@ Poppler PNG review covered all three generated pages. It initially exposed an
 incorrect rotated-page overlay transform; the transform was corrected and the
 complete automated and visual checks were repeated successfully.
 
+## Publication Acceptance
+
+- implementation commit `c9801746af80115dd227d0f021b399f235863060` was
+  published through PR #35;
+- the PR passed 2/2 GitHub checks and its Vercel Preview reached `Ready`;
+- PR #35 merged into `main` as
+  `d777f6c995fe3a59f74e94873c291c8d6a4fc220`;
+- the merge commit's Vercel Production deployment
+  `8xEz3Kmie1CDAUvWpZCRpfhVbTGa` completed successfully through its 1/1
+  status check;
+- focused public Production smoke loaded the canonical Vercel application
+  without a runtime error and retained the programme and verification paths;
+- no database object, Supabase data, real learner, credential, token, template,
+  or PDF was changed during publication acceptance.
+
 ## Security Notes
 
 - The renderer imports Node filesystem primitives and is not browser-capable.
@@ -98,8 +113,8 @@ None.
 
 ## Deviations / Open Questions
 
-- No database migration, route, admin UI, Supabase mutation, or Production
-  deployment belongs to PDFGEN-004.
+- No database migration, route, admin UI, or Supabase mutation belongs to
+  PDFGEN-004.
 - The test artifacts were fictional local files under `tmp/pdfs/`; they were
   removed after visual and automated acceptance and were never product data.
 
