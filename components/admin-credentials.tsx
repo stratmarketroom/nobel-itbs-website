@@ -16,8 +16,9 @@ import type {
   DocumentNumberAdminItem,
 } from '@/lib/credentials/workspace-types';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { AdminCredentialBatches } from '@/components/admin-credential-batches';
 
-type WorkspaceTab = 'credentials' | 'sets' | 'numbers';
+type WorkspaceTab = 'credentials' | 'batches' | 'sets' | 'numbers';
 type DetailTab = 'summary' | 'files' | 'history';
 type Notice = { kind: 'success' | 'error'; message: string; verificationUrl?: string } | null;
 
@@ -181,6 +182,7 @@ export function AdminCredentials() {
     <header className="admin-module-header"><div><p className="admin-kicker">Credential registry</p><h1>Credentials</h1><p>Create pending documents, manage private PDFs, review permanent numbers, sets, history, and internal notes.</p></div></header>
     <nav className="credential-workspace-tabs" aria-label="Credential registry sections">
       <button type="button" aria-current={tab === 'credentials' ? 'page' : undefined} onClick={() => void openTab('credentials')}>Credentials <span>{credentials.length}</span></button>
+      <button type="button" aria-current={tab === 'batches' ? 'page' : undefined} onClick={() => void openTab('batches')}>Batch generation</button>
       <button type="button" aria-current={tab === 'sets' ? 'page' : undefined} onClick={() => void openTab('sets')}>Credential sets <span>{sets.length}</span></button>
       <button type="button" aria-current={tab === 'numbers' ? 'page' : undefined} onClick={() => void openTab('numbers')}>Number log <span>{numbers.length}</span></button>
     </nav>
@@ -204,6 +206,7 @@ export function AdminCredentials() {
         </section>
       </section>
     </> : null}
+    {tab === 'batches' ? <AdminCredentialBatches request={request} /> : null}
     {tab === 'sets' ? <RegistryTable headers={['Learner', 'Programme', 'Run / completion', 'Documents', 'Created']} rows={sets.map((item) => [item.learnerName, item.programmeTitle, [item.programmeRunLabel, item.completionDate].filter(Boolean).join(' · ') || '—', String(item.credentialCount), date(item.createdAt)])} empty="No credential sets yet." /> : null}
     {tab === 'numbers' ? <RegistryTable headers={['Document number', 'Type', 'Status', 'Origin', 'Credential', 'Created']} rows={numbers.map((item) => [item.documentNumber, item.credentialType, item.status, item.isManual ? 'Manual' : 'Automatic', item.credentialId ? 'Linked' : 'Unlinked', date(item.createdAt)])} empty="No document numbers reserved yet." /> : null}
   </main>;
