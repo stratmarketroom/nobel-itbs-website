@@ -2,9 +2,10 @@
 
 Date: 2026-08-26
 
-Status: implemented, locally verified, published in PR #41, migrated to
-development, and accepted read-only in the authenticated Preview environment;
-mutation acceptance remains deferred pending an approved non-production cohort
+Status: implemented, locally verified, merged through PR #41 as `26d35f2`,
+migrated to development, and accepted read-only in the authenticated Preview
+environment; mutation acceptance remains deferred pending an approved
+non-production cohort
 
 ## Summary
 
@@ -170,8 +171,7 @@ PostgreSQL/pgTAP runner is unavailable.
 
 ## Next Dependency
 
-PR #41 publishes the implementation; its development migration and read-only
-authenticated environment acceptance are complete. Next, merge PR #41 when
-approved. Mutation acceptance remains gated on an approved non-production
-cohort. `PDFGEN-008 Generation Security and End-to-End Acceptance` is the next
-implementation ticket after PDFGEN-007 is merged.
+PR #41 was merged as `26d35f2`; its development migration and read-only
+authenticated environment acceptance are complete. Mutation acceptance remains
+gated on an approved non-production cohort. `PDFGEN-008 Generation Security and
+End-to-End Acceptance` is the next implementation ticket.
