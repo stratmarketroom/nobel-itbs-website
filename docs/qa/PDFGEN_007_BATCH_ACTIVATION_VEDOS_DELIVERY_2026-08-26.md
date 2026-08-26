@@ -2,8 +2,9 @@
 
 Date: 2026-08-26
 
-Status: implemented, locally verified, and published in PR #41; development
-migration and environment acceptance pending
+Status: implemented, locally verified, published in PR #41, migrated to
+development, and accepted read-only in the authenticated Preview environment;
+mutation acceptance remains deferred pending an approved non-production cohort
 
 ## Summary
 
@@ -90,14 +91,45 @@ Passed locally during implementation:
 - `git diff --check`;
 - `npx supabase db push --dry-run --linked` connected to development and
   reported exactly one pending migration,
-  `20260826140000_pdfgen_007_batch_activation_delivery.sql`, without applying
-  it.
+  `20260826140000_pdfgen_007_batch_activation_delivery.sql`.
+
+After publication approval, the migration was applied to the linked
+`nobel-itbs-dev` project (`flswzhgjbpagohbwehcz`). A second linked dry-run
+reported the remote database up to date. The two PostgreSQL identifier
+truncation notices were limited to generated long index/trigger names and did
+not prevent application.
+
+The post-migration read-only database audit confirmed:
+
+- both new ledger tables exist with forced RLS;
+- both guarded read policies exist;
+- authenticated browser roles have no direct `INSERT`, `UPDATE`, or `DELETE`
+  grants on the ledgers;
+- all seven controlled functions are `SECURITY DEFINER`, use fixed
+  `search_path`, share the role/MFA guard, deny anonymous execution, and expose
+  authenticated execution only through that guard;
+- the credential lifecycle remains exactly `pending`, `valid`, `revoked`, and
+  `voided`;
+- no browser policy exposes the `private-credentials` Storage bucket.
+
+The Vercel Preview was redeployed after adding the development service-role
+secret only for `codex/pdfgen-007-batch-activation`; Production configuration
+was not changed. Authenticated Owner/AAL2 browser acceptance then confirmed
+that `/admin/credentials` loads, the batch-generation workspace reaches its
+expected empty state, and the browser console has no warnings or errors. No
+batch was created because the environment has no approved PDFGEN-006 review
+cohort.
+
+The exact post-acceptance development counts remained:
+
+- activation requests: `0`;
+- activation items: `0`;
+- credentials: `1`;
+- credential email sends: `1`;
+- browser policies for `private-credentials`: `0`.
 
 No credential was activated, no permanent number was consumed, no PDF was
-generated, and no email was sent during local QA. Focused authenticated browser
-acceptance remains pending because the development migration is intentionally
-not applied before publication approval and the environment has no approved
-generated/reviewed non-production cohort.
+generated, and no email was sent during local or hosted read-only acceptance.
 
 A focused 30-assertion pgTAP suite is committed at
 `supabase/tests/database/pdfgen_007_batch_activation_delivery.test.sql`. It
@@ -126,8 +158,6 @@ PostgreSQL/pgTAP runner is unavailable.
 
 - Full pgTAP execution remains pending because Docker or another compatible
   PostgreSQL/pgTAP runner is unavailable.
-- Development migration application and authenticated environment acceptance
-  are not part of the current un-published local state.
 - Full mutation acceptance requires an explicitly approved non-production
   cohort that has completed PDFGEN-006 generation and private review. Until
   then, environment acceptance must remain read-only and must not activate a
@@ -140,9 +170,8 @@ PostgreSQL/pgTAP runner is unavailable.
 
 ## Next Dependency
 
-PR #41 publishes the implementation and its Vercel Preview deployment is
-available. Next, apply the migration in development and perform read-only
-environment acceptance. Mutation acceptance remains gated on an approved
-non-production cohort. `PDFGEN-008 Generation Security and End-to-End
-Acceptance` is the next implementation ticket after PDFGEN-007 is merged and
-accepted at the available environment level.
+PR #41 publishes the implementation; its development migration and read-only
+authenticated environment acceptance are complete. Next, merge PR #41 when
+approved. Mutation acceptance remains gated on an approved non-production
+cohort. `PDFGEN-008 Generation Security and End-to-End Acceptance` is the next
+implementation ticket after PDFGEN-007 is merged.
