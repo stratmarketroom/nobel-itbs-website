@@ -2,7 +2,7 @@
 
 Date: 2026-08-26
 
-Status: implementation and read-only environment acceptance complete in dev;
+Status: merged, deployed, and read-only accepted in dev and Production;
 mutation acceptance intentionally deferred
 
 ## Summary
@@ -155,6 +155,32 @@ Passed in the branch-scoped Vercel Preview after deployment configuration:
   `credential_generation_batches`, `credential_generation_batch_items`, and
   `credential_file_generations`.
 
+Passed during the Production rollout:
+
+- the complete migrations 59 and 60 were verified in the authenticated
+  Production SQL Editor as one 891-line `BEGIN`/`COMMIT` transaction before
+  execution; both migration-ledger records were inserted atomically;
+- the Production ledger contains `20260826120000` and `20260826123000` in the
+  reviewed order;
+- an independent read-only audit found all 9 public PDFGEN-006 functions, all
+  9 as `SECURITY DEFINER`, all 9 with fixed `search_path`, all 9 using the
+  shared actor guard, no anonymous execute permission, and execute permission
+  for all 9 functions for `authenticated`;
+- all three batch/provenance tables retain RLS and FORCE RLS, with zero direct
+  authenticated DML grants and zero browser Storage policies referencing
+  `private-credentials`;
+- the credential lifecycle remains exactly `pending`, `valid`, `revoked`, and
+  `voided`, and the corrective confirm function contains explicit
+  `queued`/`conflict` batch-item enum casts;
+- PR #39 merged as `f59c4a0`; Vercel Production deployment
+  `A6twmGaa7SoCmRko1oWxqzZYytLi` reached `Ready`;
+- the canonical Production Home and MFA-verified Owner
+  `/admin/credentials` workspace loaded without browser-console errors, and the
+  PDFGEN-006 Batch Generation tab rendered successfully;
+- no create, confirm, process, retry, or review action was invoked. A final
+  count-only Production check returned zero batches, zero batch items, and
+  zero file-generation provenance rows.
+
 ## Security Notes
 
 - All batch mutations require the existing active role and MFA/AAL2 boundary.
@@ -176,12 +202,16 @@ Passed in the branch-scoped Vercel Preview after deployment configuration:
 - The service-role key added for hosted acceptance is a Vercel secret scoped to
   the PDFGEN-006 Preview branch only. It is not browser-readable and did not
   alter the existing Production environment variable.
+- The Production rollout reused the existing encrypted Production service-role
+  configuration; no secret value was exposed, copied into documentation, or
+  added to browser code.
 
 ## Deviations / Open Questions
 
 - Full pgTAP execution remains pending because Docker or another compatible
-  PostgreSQL/pgTAP runner is unavailable. The development migration apply and
-  remote database lint are complete. Production has not been changed.
+  PostgreSQL/pgTAP runner is unavailable. Development and Production migration
+  application, the focused remote lint, and independent read-only Production
+  security audits are complete.
 - Remote database lint still reports two pre-existing errors outside this
   ticket: `public.import_learners` references the missing temporary relation
   `lrn_005_import_rows`, and `public.begin_single_credential_generation` selects
