@@ -18,6 +18,16 @@ export type CredentialGenerationItemStatus =
   | 'activated'
   | 'failed';
 
+export type CredentialBatchActivationRequestStatus = 'processing' | 'completed' | 'partial';
+
+export type CredentialBatchActivationItemStatus =
+  | 'queued'
+  | 'processing'
+  | 'activation_failed'
+  | 'delivery_retryable'
+  | 'activated_sent'
+  | 'activated_not_sent';
+
 export type BatchIssuingContextInput = {
   idempotencyKey: string;
   templateVersionId: string;
@@ -75,6 +85,7 @@ export type BatchListItem = {
   conflictCount: number;
   retryableCount: number;
   pendingCount: number;
+  activatedCount: number;
   createdAt: string;
   confirmedAt: string | null;
 };
@@ -101,6 +112,16 @@ export type BatchReviewItem = {
   reviewedAt: string | null;
   files: BatchReviewFile[];
   activationEligible: boolean;
+  activation: null | {
+    id: string;
+    requestId: string;
+    requestStatus: CredentialBatchActivationRequestStatus;
+    status: CredentialBatchActivationItemStatus;
+    attemptCount: number;
+    lastErrorCode: string | null;
+    emailSendId: string | null;
+    deliveryStatus: CredentialEmailSendStatus | null;
+  };
 };
 
 export type BatchDetail = BatchListItem & {
@@ -108,6 +129,10 @@ export type BatchDetail = BatchListItem & {
   startedAt: string | null;
   finishedAt: string | null;
   items: BatchReviewItem[];
+  activationSentCount: number;
+  activationNotSentCount: number;
+  activationFailedCount: number;
+  activationPendingCount: number;
 };
 
 export type BatchReferenceData = {
@@ -136,3 +161,21 @@ export type BatchChunkResult = {
   hasMore: boolean;
   batch: BatchDetail;
 };
+
+export type BatchActivationInput = {
+  idempotencyKey: string;
+  itemIds: string[];
+};
+
+export type BatchActivationChunkResult = {
+  activationRequestId: string;
+  processedCount: number;
+  activatedSentCount: number;
+  activatedNotSentCount: number;
+  failedCount: number;
+  retryableDeliveryCount: number;
+  skippedCount: number;
+  hasMore: boolean;
+  batch: BatchDetail;
+};
+import type { CredentialEmailSendStatus } from '@/lib/credentials/activation-types';

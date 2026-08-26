@@ -1,7 +1,14 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { generateCredentialBatchItem } from '@/lib/credentials/generation';
+import {
+  activateCredential,
+  deliverCredentialEmailSend,
+  getCredentialActivationDraft,
+} from '@/lib/credentials/activation';
 import type {
+  BatchActivationChunkResult,
+  BatchActivationInput,
   BatchChunkResult,
   BatchContextSummary,
   BatchDetail,
@@ -30,6 +37,17 @@ type ItemRow = {
   id: string; batch_id: string; learner_id: string; position: number; credential_id: string | null;
   conflicting_credential_id: string | null; status: CredentialGenerationItemStatus; attempt_count: number;
   last_error_code: string | null; generated_at: string | null; reviewed_at: string | null;
+};
+type ActivationRequestRow = {
+  id: string; status: 'processing' | 'completed' | 'partial';
+};
+type ActivationItemRow = {
+  id: string; activation_request_id: string; batch_item_id: string; position: number;
+  status: 'queued' | 'processing' | 'activation_failed' | 'delivery_retryable' | 'activated_sent' | 'activated_not_sent';
+  attempt_count: number; last_error_code: string | null; email_send_id: string | null;
+};
+type ActivationClaimRow = {
+  activation_request_id: string; batch_item_id: string; credential_id: string; email_send_id: string | null;
 };
 type TemplateMeta = {
   packageId: string; versionId: string; versionNumber: number; displayName: string;
@@ -152,6 +170,7 @@ function counts(items: ItemRow[]) {
     conflictCount: items.filter((item) => item.status === 'conflict').length,
     retryableCount: items.filter((item) => ['retryable', 'failed'].includes(item.status)).length,
     pendingCount: items.filter((item) => ['queued', 'processing'].includes(item.status)).length,
+    activatedCount: items.filter((item) => item.status === 'activated').length,
   };
 }
 
@@ -297,10 +316,33 @@ export async function getCredentialGenerationBatch(context: AdminContext, batchI
   for (const result of [credentialsResult, filesResult, provenanceResult, documentsResult]) {
     if (result.error) throw databaseError(result.error, 'Credential batch review data could not be loaded.');
   }
+  const activationItemsResult = items.length
+    ? await db.from('credential_generation_batch_activation_items')
+      .select('id, activation_request_id, batch_item_id, position, status, attempt_count, last_error_code, email_send_id')
+      .in('batch_item_id', items.map((item) => item.id))
+    : { data: [], error: null };
+  if (activationItemsResult.error) throw databaseError(activationItemsResult.error, 'Batch activation outcomes could not be loaded.');
+  const activationItems = (activationItemsResult.data ?? []) as ActivationItemRow[];
+  const activationRequestIds = [...new Set(activationItems.map((item) => item.activation_request_id))];
+  const emailSendIds = activationItems.map((item) => item.email_send_id).filter((id): id is string => Boolean(id));
+  const [activationRequestsResult, emailSendsResult] = await Promise.all([
+    activationRequestIds.length
+      ? db.from('credential_generation_batch_activation_requests').select('id, status').in('id', activationRequestIds)
+      : Promise.resolve({ data: [], error: null }),
+    emailSendIds.length
+      ? db.from('credential_email_sends').select('id, status').in('id', emailSendIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+  if (activationRequestsResult.error || emailSendsResult.error) {
+    throw databaseError(activationRequestsResult.error ?? emailSendsResult.error, 'Batch delivery outcomes could not be loaded.');
+  }
   const credentialById = new Map((credentialsResult.data ?? []).map((row) => [row.id, row]));
   const fileById = new Map((filesResult.data ?? []).map((row) => [row.id, row]));
   const documentPages = new Map((documentsResult.data ?? []).map((row) => [row.id, Number(row.page_count)]));
   const expectedDocumentCount = lookup.templates.get(batch.template_version_id)?.documentCount ?? 0;
+  const activationRequestById = new Map(((activationRequestsResult.data ?? []) as ActivationRequestRow[]).map((row) => [row.id, row]));
+  const emailSendById = new Map((emailSendsResult.data ?? []).map((row) => [row.id, row]));
+  const activationByBatchItem = new Map(activationItems.map((row) => [row.batch_item_id, row]));
   const reviewItems: BatchReviewItem[] = items.map((item) => {
     const credential = item.credential_id ? credentialById.get(item.credential_id) : null;
     const files = (provenanceResult.data ?? []).filter((row) => row.generation_batch_item_id === item.id).map((row) => {
@@ -312,6 +354,9 @@ export async function getCredentialGenerationBatch(context: AdminContext, batchI
         isPrimary: file.is_primary,
       } : null;
     }).filter((file): file is NonNullable<typeof file> => Boolean(file));
+    const activationItem = activationByBatchItem.get(item.id);
+    const activationRequest = activationItem ? activationRequestById.get(activationItem.activation_request_id) : null;
+    const emailSend = activationItem?.email_send_id ? emailSendById.get(activationItem.email_send_id) : null;
     return {
       id: item.id,
       learnerId: item.learner_id,
@@ -326,8 +371,18 @@ export async function getCredentialGenerationBatch(context: AdminContext, batchI
       generatedAt: item.generated_at,
       reviewedAt: item.reviewed_at,
       files,
-      activationEligible: item.status === 'reviewed' && credential?.status === 'pending'
+      activationEligible: !activationItem && item.status === 'reviewed' && credential?.status === 'pending'
         && files.length === expectedDocumentCount,
+      activation: activationItem && activationRequest ? {
+        id: activationItem.id,
+        requestId: activationItem.activation_request_id,
+        requestStatus: activationRequest.status,
+        status: activationItem.status,
+        attemptCount: Number(activationItem.attempt_count),
+        lastErrorCode: activationItem.last_error_code,
+        emailSendId: activationItem.email_send_id,
+        deliveryStatus: emailSend?.status ?? null,
+      } : null,
     };
   });
   const base = listItem(batch, items, lookup);
@@ -337,6 +392,10 @@ export async function getCredentialGenerationBatch(context: AdminContext, batchI
     startedAt: batch.started_at,
     finishedAt: batch.finished_at,
     items: reviewItems,
+    activationSentCount: reviewItems.filter((item) => item.activation?.status === 'activated_sent').length,
+    activationNotSentCount: reviewItems.filter((item) => item.activation?.status === 'activated_not_sent').length,
+    activationFailedCount: reviewItems.filter((item) => item.activation?.status === 'activation_failed').length,
+    activationPendingCount: reviewItems.filter((item) => ['queued', 'processing', 'delivery_retryable'].includes(item.activation?.status ?? '')).length,
   };
 }
 
@@ -406,4 +465,252 @@ export async function reviewCredentialGenerationBatchItem(
   const reviewed = await db.rpc('review_credential_generation_batch_item', { p_batch_item_id: itemId });
   if (reviewed.error) throw databaseError(reviewed.error, 'Batch item could not be marked reviewed.');
   return getCredentialGenerationBatch(context, batchId);
+}
+
+function activationErrorCode(error: unknown): string {
+  if (error instanceof ApiError) {
+    if (error.code === 'conflict') return 'activation_state_conflict';
+    if (error.code === 'bad_request') return 'activation_validation_failed';
+    if (error.code === 'forbidden') return 'activation_forbidden';
+  }
+  return 'activation_failed_safely';
+}
+
+async function firstActivationSend(db: SupabaseClient, credentialId: string) {
+  const result = await db.from('credential_email_sends')
+    .select('id, recipient_email, subject, body, status')
+    .eq('credential_id', credentialId)
+    .order('sent_at', { ascending: true })
+    .order('id', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (result.error) throw databaseError(result.error, 'Credential activation delivery record could not be loaded.');
+  return result.data;
+}
+
+async function completeBatchActivationTracking(
+  db: SupabaseClient,
+  activationItemId: string,
+  leaseToken: string,
+  emailSendId: string,
+) {
+  const result = await db.rpc('complete_credential_generation_batch_activation_item', {
+    p_activation_request_item_id: activationItemId,
+    p_lease_token: leaseToken,
+    p_email_send_id: emailSendId,
+  });
+  if (result.error) throw databaseError(result.error, 'Batch activation outcome could not be recorded.');
+  return result.data as 'delivery_retryable' | 'activated_sent' | 'activated_not_sent';
+}
+
+async function bindBatchActivationSend(
+  db: SupabaseClient,
+  activationItemId: string,
+  leaseToken: string,
+  emailSendId: string,
+) {
+  const result = await db.rpc('bind_credential_generation_batch_activation_email_send', {
+    p_activation_request_item_id: activationItemId,
+    p_lease_token: leaseToken,
+    p_email_send_id: emailSendId,
+  });
+  if (result.error) throw databaseError(result.error, 'Batch activation delivery record could not be linked.');
+}
+
+async function processBatchActivationItem(
+  context: AdminContext,
+  db: SupabaseClient,
+  activationItemId: string,
+  requestOrigin: string,
+) {
+  const leaseToken = crypto.randomUUID();
+  const claimed = await db.rpc('claim_credential_generation_batch_activation_item', {
+    p_activation_request_item_id: activationItemId,
+    p_lease_token: leaseToken,
+  });
+  const claim = ((claimed.data ?? []) as ActivationClaimRow[])[0];
+  if (claimed.error || !claim?.credential_id) {
+    throw databaseError(claimed.error, 'Batch activation item could not be claimed.');
+  }
+
+  try {
+    const credentialResult = await db.from('credentials').select('id, status').eq('id', claim.credential_id).maybeSingle();
+    if (credentialResult.error || !credentialResult.data) {
+      throw databaseError(credentialResult.error, 'Batch credential could not be loaded for activation.');
+    }
+
+    let emailSendId = claim.email_send_id;
+    if (credentialResult.data.status === 'pending') {
+      const draft = await getCredentialActivationDraft(context, claim.credential_id, requestOrigin);
+      if (!draft?.hasPrimaryPdf) throw new ApiError('conflict', 409, 'Reviewed package no longer has a primary PDF.');
+      const activation = await activateCredential(context, claim.credential_id, {
+        recipientEmail: draft.recipientEmail || null,
+        subject: draft.subject,
+        body: draft.body,
+      }, { itemId: activationItemId, leaseToken });
+      emailSendId = activation.emailSendId;
+    } else if (credentialResult.data.status === 'valid') {
+      const send = emailSendId
+        ? await db.from('credential_email_sends').select('id, recipient_email, subject, body, status').eq('id', emailSendId).maybeSingle()
+        : { data: await firstActivationSend(db, claim.credential_id), error: null };
+      if (send.error || !send.data) throw databaseError(send.error, 'Valid batch credential has no activation delivery record.');
+      emailSendId = send.data.id;
+      if (!claim.email_send_id) {
+        await bindBatchActivationSend(db, activationItemId, leaseToken, send.data.id);
+      }
+      if (send.data.status === 'pending' && send.data.recipient_email) {
+        await deliverCredentialEmailSend(
+          context,
+          claim.credential_id,
+          send.data.id,
+          send.data.recipient_email,
+          send.data.subject,
+          send.data.body,
+          { itemId: activationItemId, leaseToken },
+        );
+      }
+    } else {
+      throw new ApiError('conflict', 409, 'Only a pending or already-valid selected credential can resume batch activation.');
+    }
+
+    if (!emailSendId) throw new ApiError('server_error', 500, 'Activation delivery record is missing.');
+    return await completeBatchActivationTracking(db, activationItemId, leaseToken, emailSendId);
+  } catch (error) {
+    const credential = await db.from('credentials').select('status').eq('id', claim.credential_id).maybeSingle();
+    if (!credential.error && credential.data?.status === 'valid') {
+      const send = claim.email_send_id
+        ? { id: claim.email_send_id }
+        : await firstActivationSend(db, claim.credential_id);
+      if (send?.id) {
+        if (!claim.email_send_id) await bindBatchActivationSend(db, activationItemId, leaseToken, send.id);
+        return await completeBatchActivationTracking(db, activationItemId, leaseToken, send.id);
+      }
+    }
+    const failed = await db.rpc('fail_credential_generation_batch_activation_item', {
+      p_activation_request_item_id: activationItemId,
+      p_lease_token: leaseToken,
+      p_error_code: activationErrorCode(error),
+    });
+    if (failed.error) throw databaseError(failed.error, 'Batch activation failure could not be recorded safely.');
+    return 'activation_failed' as const;
+  }
+}
+
+async function processBatchActivationRequestChunk(
+  context: AdminContext,
+  batchId: string,
+  activationRequestId: string,
+  requestOrigin: string,
+): Promise<BatchActivationChunkResult> {
+  const db = client(context);
+  const requestResult = await db.from('credential_generation_batch_activation_requests')
+    .select('id, batch_id').eq('id', activationRequestId).eq('batch_id', batchId).maybeSingle();
+  if (requestResult.error) throw databaseError(requestResult.error, 'Batch activation request could not be loaded.');
+  if (!requestResult.data) throw new ApiError('not_found', 404, 'Batch activation request was not found.');
+  const batchResult = await db.from('credential_generation_batches')
+    .select('processing_chunk_size').eq('id', batchId).maybeSingle();
+  if (batchResult.error || !batchResult.data) throw databaseError(batchResult.error, 'Generation batch could not be loaded.');
+  const chunkSize = Math.max(1, Math.min(250, Number(batchResult.data.processing_chunk_size)));
+  const queued = await db.from('credential_generation_batch_activation_items')
+    .select('id, position').eq('activation_request_id', activationRequestId).eq('status', 'queued')
+    .order('position').limit(chunkSize);
+  if (queued.error) throw databaseError(queued.error, 'Queued batch activations could not be loaded.');
+  const expired = (queued.data ?? []).length < chunkSize
+    ? await db.from('credential_generation_batch_activation_items')
+      .select('id, position').eq('activation_request_id', activationRequestId).eq('status', 'processing')
+      .lte('lease_expires_at', new Date().toISOString()).order('position')
+      .limit(chunkSize - (queued.data ?? []).length)
+    : { data: [], error: null };
+  if (expired.error) throw databaseError(expired.error, 'Expired batch activation leases could not be loaded.');
+  const candidates = [...(queued.data ?? []), ...(expired.data ?? [])]
+    .sort((left, right) => Number(left.position) - Number(right.position))
+    .slice(0, chunkSize);
+
+  let activatedSentCount = 0;
+  let activatedNotSentCount = 0;
+  let failedCount = 0;
+  let retryableDeliveryCount = 0;
+  let skippedCount = 0;
+  for (const candidate of candidates) {
+    try {
+      const outcome = await processBatchActivationItem(context, db, candidate.id, requestOrigin);
+      if (outcome === 'activated_sent') activatedSentCount += 1;
+      else if (outcome === 'activated_not_sent') activatedNotSentCount += 1;
+      else if (outcome === 'delivery_retryable') retryableDeliveryCount += 1;
+      else failedCount += 1;
+    } catch (error) {
+      if (error instanceof ApiError && error.code === 'conflict') skippedCount += 1;
+      else failedCount += 1;
+    }
+  }
+
+  const [remainingQueued, remainingExpired] = await Promise.all([
+    db.from('credential_generation_batch_activation_items').select('id', { count: 'exact', head: true })
+      .eq('activation_request_id', activationRequestId).eq('status', 'queued'),
+    db.from('credential_generation_batch_activation_items').select('id', { count: 'exact', head: true })
+      .eq('activation_request_id', activationRequestId).eq('status', 'processing')
+      .lte('lease_expires_at', new Date().toISOString()),
+  ]);
+  if (remainingQueued.error || remainingExpired.error) {
+    throw databaseError(remainingQueued.error ?? remainingExpired.error, 'Remaining batch activations could not be counted.');
+  }
+  return {
+    activationRequestId,
+    processedCount: candidates.length,
+    activatedSentCount,
+    activatedNotSentCount,
+    failedCount,
+    retryableDeliveryCount,
+    skippedCount,
+    hasMore: (remainingQueued.count ?? 0) + (remainingExpired.count ?? 0) > 0,
+    batch: await getCredentialGenerationBatch(context, batchId),
+  };
+}
+
+export async function resumeCredentialGenerationBatchActivationRequest(
+  context: AdminContext,
+  batchId: string,
+  activationRequestId: string,
+  requestOrigin: string,
+): Promise<BatchActivationChunkResult> {
+  return processBatchActivationRequestChunk(context, batchId, activationRequestId, requestOrigin);
+}
+
+export async function activateCredentialGenerationBatchChunk(
+  context: AdminContext,
+  batchId: string,
+  input: BatchActivationInput,
+  requestOrigin: string,
+): Promise<BatchActivationChunkResult> {
+  const db = client(context);
+  const prepared = await db.rpc('prepare_credential_generation_batch_activation', {
+    p_batch_id: batchId,
+    p_idempotency_key: input.idempotencyKey,
+    p_batch_item_ids: input.itemIds,
+  });
+  if (prepared.error || typeof prepared.data !== 'string') {
+    throw databaseError(prepared.error, 'Reviewed batch items could not be prepared for activation.');
+  }
+  return processBatchActivationRequestChunk(context, batchId, prepared.data, requestOrigin);
+}
+
+export async function retryCredentialGenerationBatchActivationItem(
+  context: AdminContext,
+  batchId: string,
+  activationItemId: string,
+  requestOrigin: string,
+): Promise<BatchActivationChunkResult> {
+  const db = client(context);
+  const item = await db.from('credential_generation_batch_activation_items')
+    .select('id, activation_request_id').eq('id', activationItemId).maybeSingle();
+  if (item.error) throw databaseError(item.error, 'Batch activation item could not be loaded.');
+  if (!item.data) throw new ApiError('not_found', 404, 'Batch activation item was not found.');
+  const request = await db.from('credential_generation_batch_activation_requests')
+    .select('id').eq('id', item.data.activation_request_id).eq('batch_id', batchId).maybeSingle();
+  if (request.error || !request.data) throw databaseError(request.error, 'Batch activation request does not match this batch.');
+  const queued = await db.rpc('requeue_credential_generation_batch_activation_item', {
+    p_activation_request_item_id: activationItemId,
+  });
+  if (queued.error) throw databaseError(queued.error, 'Batch activation or delivery retry could not be queued.');
+  return processBatchActivationRequestChunk(context, batchId, item.data.activation_request_id, requestOrigin);
 }

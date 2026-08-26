@@ -485,13 +485,13 @@ The orchestrator controls:
 
 ## 7. Current Next Step
 
-Completed ticket:
+Current ticket:
 
-- `PDFGEN-006 Batch Generation and Review` — merged through PR #39 as `f59c4a0`, deployed through Production deployment `A6twmGaa7SoCmRko1oWxqzZYytLi`, and read-only accepted with migrations 59 and 60 plus independent security audits in dev and Production. No batch, batch item, pending credential, permanent number, generated PDF, or provenance row was created.
+- `PDFGEN-007 Batch Activation and VEDOS Delivery` — implemented on `codex/pdfgen-007-batch-activation` and published in PR #41 with explicit reviewed-item selection, exact idempotency, bounded resumable leases, independent activation/delivery outcomes, complete-package VEDOS delivery, forced-RLS private ledgers, safe per-item retry, and protected admin controls. Focused static verification, PDFGEN-006 regression, TypeScript, lint, production build, diff checks, Vercel Preview deployment, and the initial GitHub check pass. Development migration and read-only environment acceptance remain pending; no credential or email was mutated during local QA.
 
 Next ticket:
 
-- `PDFGEN-007 Batch Activation and VEDOS Delivery` — implementation is next, but environment acceptance depends on an explicitly approved non-production cohort completing PDFGEN-006 generation and review without consuming real Production numbers during a smoke test;
+- `PDFGEN-008 Generation Security and End-to-End Acceptance` — starts only after PDFGEN-007 is published, migrated, and accepted at the currently available read-only environment level. Full PDFGEN-006/007 mutation acceptance still depends on an explicitly approved non-production cohort and permanent-number allocation;
 
 Agent:
 
@@ -506,6 +506,7 @@ Owner action needed:
 - PDFGEN-001 is implemented, merged through PR #29 as `1b2d224`, and applied in dev and Production: the private schema, forced RLS, role/MFA boundary, immutable versioning, multi-document/multi-page publication, unbounded-cohort batch foundation, provenance, and forward-only trigger correction passed the available checks; Production contains zero PDFGEN fixture rows, while full pgTAP execution remains queued for a compatible runner;
 - PDFGEN-002 was merged through PR #31 as `970fd6c`; its private bucket, strict PDF validation, controlled source routes, page metadata/hash extraction, rollback, safe metadata grants, publication source guard, and published-object immutability passed local code/build checks. Preview and Production deployment checks passed, and migration `20260825120000` is applied/recorded and read-only accepted in dev and Production with zero template fixtures. Authenticated real-template workflow acceptance is assigned to PDFGEN-003 because that ticket provides the package UI;
 - PDFGEN-006 is merged, deployed, and read-only accepted in dev and Production. Full mutation acceptance remains Owner-gated until an explicitly approved non-production cohort and permanent-number allocation are available;
+- PDFGEN-007 implementation is published in PR #41 and its Preview deployment is available. Development migration and hosted read-only acceptance remain next; real activation/delivery remains gated on an approved non-production cohort;
 - CRD-PDFGEN-001 scope alignment is approved: Release 1 must generate one or more private, potentially multi-page PDFs per credential from a reusable programme/type/language/variant Template Package and must support controlled batches;
 - QA-005-A11Y-FIX-001 is merged, deployed, and accepted at its focused scope through PR #25 and Production merge `083b045`; no real credentials were submitted during browser acceptance;
 - QA-005-TELEGRAM-INVITE-001 is complete: the Owner revoked the setup-time Telegram group invitation link, and no change to the accepted bot/chat configuration or Telegram notification payload is required;
