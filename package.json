@@ -62,6 +62,7 @@
     "verify:pdfgen-002": "node scripts/verify-pdfgen-002.mjs",
     "verify:pdfgen-003": "node scripts/verify-pdfgen-003.mjs",
     "verify:pdfgen-004": "node scripts/verify-pdfgen-004.mjs",
+    "verify:pdfgen-005": "node scripts/verify-pdfgen-005.mjs",
     "test:pdfgen-004:generation": "node scripts/test-pdfgen-004-generation.mjs",
     "test:pdfgen-002:validation": "node scripts/test-pdfgen-002-validation.mjs",
     "verify:wf-001": "node scripts/verify-wf-001.mjs",

@@ -468,6 +468,24 @@ PDFGEN-003 editor routes:
 
 All PDFGEN-003 routes require Owner or Super Admin plus MFA. Page rendering never returns a Storage path or signed URL and does not create a generated credential file.
 
+PDFGEN-005 single-credential routes:
+
+- `GET /api/v1/admin/credentials/{id}/generate` — return matching published
+  Template Package options plus privacy-safe current generation provenance;
+- `POST /api/v1/admin/credentials/{id}/generate` — generate the complete
+  private package for one pending credential or regenerate its same immutable
+  provenance version in place;
+- `GET /api/v1/admin/credentials/{id}/files/{fileId}?disposition=inline` —
+  return a short-lived controlled inline review URL through the existing
+  credential-file boundary; the default disposition remains attachment.
+
+Generation and review require Owner, Super Admin, or Credential Manager plus
+MFA. The POST body accepts only `templateVersionId`. Regeneration never changes
+the credential number, verification token/QR, template version, or lifecycle
+status. The response contains identifiers, attempt number, and file/page counts
+only; it never returns PDF bytes, private paths, signed source URLs, or token
+material.
+
 Batch processing must automatically divide the cohort into bounded,
 configurable technical chunks while preserving one aggregate batch view. It
 must be resumable and idempotent. Every learner gets

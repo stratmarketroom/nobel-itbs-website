@@ -244,13 +244,15 @@ export async function createCredentialFileSignedUrl(
   context: AdminContext,
   credentialId: string,
   fileId: string,
+  disposition: 'inline' | 'download' = 'download',
 ): Promise<{ signedUrl: string; expiresIn: number }> {
   const db = requestClient(context);
   await credentialStatus(db, credentialId);
   const current = await fileRow(db, credentialId, fileId);
+  const options = disposition === 'download' ? { download: downloadName(current) } : undefined;
   const { data, error } = await getSupabaseAdminClient().storage
     .from(bucket)
-    .createSignedUrl(filePath(credentialId, fileId), signedUrlLifetimeSeconds, { download: downloadName(current) });
+    .createSignedUrl(filePath(credentialId, fileId), signedUrlLifetimeSeconds, options);
   if (error || !data?.signedUrl) throw new ApiError('server_error', 500, 'Private PDF access link could not be created.');
   return { signedUrl: data.signedUrl, expiresIn: signedUrlLifetimeSeconds };
 }

@@ -23,7 +23,8 @@ export async function GET(request: Request, props: RouteProps) {
   try {
     const context = await getAdminContext(request);
     const { credentialId, fileId } = await ids(props);
-    return jsonOk(await createCredentialFileSignedUrl(context, credentialId, fileId));
+    const disposition = new URL(request.url).searchParams.get('disposition') === 'inline' ? 'inline' : 'download';
+    return jsonOk(await createCredentialFileSignedUrl(context, credentialId, fileId, disposition));
   } catch (error) {
     return jsonError(error);
   }
