@@ -2,8 +2,8 @@
 
 Date: 2026-08-26
 
-Status: implemented and locally verified; development migration and environment
-acceptance pending explicit publication approval
+Status: implemented, locally verified, and published in PR #41; development
+migration and environment acceptance pending
 
 ## Summary
 
@@ -140,8 +140,9 @@ PostgreSQL/pgTAP runner is unavailable.
 
 ## Next Dependency
 
-After explicit publication approval, apply the migration in development and
-perform read-only environment acceptance. Mutation acceptance remains gated on
-an approved non-production cohort. `PDFGEN-008 Generation Security and
-End-to-End Acceptance` is the next implementation ticket after PDFGEN-007 is
-merged and accepted at the available environment level.
+PR #41 publishes the implementation and its Vercel Preview deployment is
+available. Next, apply the migration in development and perform read-only
+environment acceptance. Mutation acceptance remains gated on an approved
+non-production cohort. `PDFGEN-008 Generation Security and End-to-End
+Acceptance` is the next implementation ticket after PDFGEN-007 is merged and
+accepted at the available environment level.
