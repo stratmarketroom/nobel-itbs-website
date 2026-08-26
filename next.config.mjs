@@ -34,6 +34,19 @@ const browserSecurityHeaders = [
 const nextConfig = {
   poweredByHeader: false,
   serverExternalPackages: ['@napi-rs/canvas', 'pdfjs-dist'],
+  outputFileTracingIncludes: {
+    '/api/v1/admin/credentials/**': [
+      './node_modules/notosans-fontface/fonts/NotoSans-Thin.ttf',
+      './node_modules/notosans-fontface/fonts/NotoSans-ExtraLight.ttf',
+      './node_modules/notosans-fontface/fonts/NotoSans-Light.ttf',
+      './node_modules/notosans-fontface/fonts/NotoSans-Regular.ttf',
+      './node_modules/notosans-fontface/fonts/NotoSans-Medium.ttf',
+      './node_modules/notosans-fontface/fonts/NotoSans-SemiBold.ttf',
+      './node_modules/notosans-fontface/fonts/NotoSans-Bold.ttf',
+      './node_modules/notosans-fontface/fonts/NotoSans-ExtraBold.ttf',
+      './node_modules/notosans-fontface/fonts/NotoSans-Black.ttf',
+    ],
+  },
   skipTrailingSlashRedirect: true,
   async headers() {
     return [{ source: '/:path*', headers: browserSecurityHeaders }];
