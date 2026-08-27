@@ -110,12 +110,12 @@ select results_eq(
 );
 
 select results_eq(
-  $$ select enumlabel::text from pg_enum where enumtypid = 'public.credential_template_version_status'::regtype order by enumsortorder $$,
+  $$ select enumlabel::text collate "default" from pg_enum where enumtypid = 'public.credential_template_version_status'::regtype order by enumsortorder $$,
   $$ values ('draft'::text), ('published'::text), ('retired'::text) $$,
   'template source storage should preserve the approved version lifecycle'
 );
 select results_eq(
-  $$ select enumlabel::text from pg_enum where enumtypid = 'public.credential_status'::regtype order by enumsortorder $$,
+  $$ select enumlabel::text collate "default" from pg_enum where enumtypid = 'public.credential_status'::regtype order by enumsortorder $$,
   $$ values ('pending'::text), ('valid'::text), ('revoked'::text), ('voided'::text) $$,
   'template source storage should not change credential lifecycle statuses'
 );

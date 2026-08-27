@@ -58,6 +58,11 @@ policies. The controlled functions require the existing MFA/AAL2 helper and
 the Owner, Super Admin, or Credential Manager role. No Storage policy or new
 credential lifecycle status is added.
 
+Forward-only migration
+`20260827120000_pdfgen_lint_001_single_generation_package_assignment.sql`
+corrects the Template Package composite assignment in the begin function while
+preserving this object, security, lifecycle, lease, and return contract.
+
 ## Tests / Verification
 
 Passed locally:
@@ -134,10 +139,11 @@ Production publication then completed without fixture data:
 - no Production credential, permanent number, template package, PDF, Storage
   object, provenance row, batch, or delivery was created.
 
-A focused 20-assertion pgTAP suite is committed at
-`supabase/tests/database/pdfgen_005_single_generation.test.sql`. It was not
-executed because Docker or another compatible local PostgreSQL/pgTAP runner is
-not available.
+A focused 21-assertion pgTAP suite is committed at
+`supabase/tests/database/pdfgen_005_single_generation.test.sql`. On 2026-08-27,
+after the forward-only assignment correction, it passed 21/21 against a clean
+63-migration local PostgreSQL chain. The new 6-assertion correction suite and
+the full selected PDFGEN/QA regression also passed, for 293/293 combined.
 
 ## Security Notes
 
@@ -160,6 +166,9 @@ not available.
   credential and irreversibly consuming a permanent document number. That was
   intentionally not done without an explicitly approved non-production
   credential; complete mutation/rollback/provenance acceptance remains open.
+- The original function version has a composite-assignment lint error. Migration
+  63 corrects it locally and in hosted Development; Production still requires
+  separately authorized promotion.
 - The stale `.agents/context/PRODUCT.md` statement that automatic PDF
   generation is out of scope conflicts with the approved v2 generation
   specification dated 2026-08-25. Per `AGENTS.md`, the v2 specification was

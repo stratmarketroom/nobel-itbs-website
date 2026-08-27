@@ -1,6 +1,6 @@
 begin;
 
-select plan(40);
+select plan(42);
 
 -- QA-001 is the aggregate Release 1 authorization contract. Focused ticket tests
 -- continue to verify row shapes and workflows; this suite guards the complete
@@ -8,7 +8,7 @@ select plan(40);
 
 select results_eq(
   $$
-    select c.relname::text
+    select c.relname::text collate "default"
     from pg_class c
     join pg_namespace n on n.oid = c.relnamespace
     where n.nspname = 'public' and c.relkind = 'r'
@@ -20,9 +20,11 @@ select results_eq(
     ('content_page_translations'),
     ('content_pages'),
     ('credential_email_sends'),
-    ('credential_file_types'),
     ('credential_file_generations'),
+    ('credential_file_types'),
     ('credential_files'),
+    ('credential_generation_batch_activation_items'),
+    ('credential_generation_batch_activation_requests'),
     ('credential_generation_batch_items'),
     ('credential_generation_batches'),
     ('credential_history'),
@@ -70,7 +72,7 @@ select results_eq(
     join pg_namespace n on n.oid = c.relnamespace
     where n.nspname = 'public' and c.relkind = 'r' and c.relrowsecurity
   $$,
-  $$ values (44::bigint) $$,
+  $$ values (46::bigint) $$,
   'every public table should enable RLS'
 );
 
@@ -81,13 +83,13 @@ select results_eq(
     join pg_namespace n on n.oid = c.relnamespace
     where n.nspname = 'public' and c.relkind = 'r' and c.relforcerowsecurity
   $$,
-  $$ values (44::bigint) $$,
+  $$ values (46::bigint) $$,
   'every public table should force RLS'
 );
 
 select results_eq(
   $$
-    select c.relname::text
+    select c.relname::text collate "default"
     from pg_class c
     join pg_namespace n on n.oid = c.relnamespace
     where n.nspname = 'public'
@@ -142,7 +144,7 @@ select results_eq(
 
 select results_eq(
   $$
-    select c.relname::text
+    select c.relname::text collate "default"
     from pg_class c
     join pg_namespace n on n.oid = c.relnamespace
     where n.nspname = 'public'
@@ -150,7 +152,10 @@ select results_eq(
       and has_table_privilege('authenticated', c.oid, 'select')
       and c.relname in (
         'contact_submissions', 'credential_email_sends', 'credential_file_types',
-        'credential_file_generations', 'credential_files', 'credential_generation_batch_items',
+        'credential_file_generations', 'credential_files',
+        'credential_generation_batch_activation_items',
+        'credential_generation_batch_activation_requests',
+        'credential_generation_batch_items',
         'credential_generation_batches', 'credential_history', 'credential_notes', 'credential_sets',
         'credential_template_document_pages',
         'credential_template_field_placements', 'credential_template_packages',
@@ -164,9 +169,11 @@ select results_eq(
   $$ values
     ('contact_submissions'),
     ('credential_email_sends'),
-    ('credential_file_types'),
     ('credential_file_generations'),
+    ('credential_file_types'),
     ('credential_files'),
+    ('credential_generation_batch_activation_items'),
+    ('credential_generation_batch_activation_requests'),
     ('credential_generation_batch_items'),
     ('credential_generation_batches'),
     ('credential_history'),
@@ -205,6 +212,8 @@ select results_eq(
       'audit_log', 'credentials', 'document_number_log', 'credential_files',
       'credential_history', 'credential_notes', 'email_templates',
       'credential_email_sends', 'credential_template_versions',
+      'credential_generation_batch_activation_items',
+      'credential_generation_batch_activation_requests',
       'credential_generation_batches', 'credential_generation_batch_items',
       'credential_file_generations'
     ]) as protected_table(name)
@@ -236,7 +245,10 @@ select results_eq(
     where schemaname = 'public'
       and tablename in (
         'contact_submissions', 'credential_email_sends', 'credential_file_types',
-        'credential_file_generations', 'credential_files', 'credential_generation_batch_items',
+        'credential_file_generations', 'credential_files',
+        'credential_generation_batch_activation_items',
+        'credential_generation_batch_activation_requests',
+        'credential_generation_batch_items',
         'credential_generation_batches', 'credential_history', 'credential_notes', 'credential_sets',
         'credential_template_document_pages', 'credential_template_documents',
         'credential_template_field_placements', 'credential_template_packages',
@@ -257,7 +269,10 @@ select results_eq(
     from pg_policies
     where schemaname = 'public'
       and tablename in (
-        'credential_file_generations', 'credential_generation_batch_items',
+        'credential_file_generations',
+        'credential_generation_batch_activation_items',
+        'credential_generation_batch_activation_requests',
+        'credential_generation_batch_items',
         'credential_generation_batches', 'credential_template_document_pages',
         'credential_template_documents', 'credential_template_field_placements',
         'credential_template_packages', 'credential_template_versions'
@@ -393,11 +408,11 @@ select results_eq(
 
 select results_eq(
   $$
-    select tablename::text
+    select tablename::text collate "default"
     from pg_policies
     where schemaname = 'public' and policyname like '%reference_read'
       and tablename like 'programme%'
-    order by tablename
+    order by tablename::text collate "C"
   $$,
   $$ values
     ('programme_area_translations'),
@@ -510,6 +525,74 @@ select results_eq(
 
 select results_eq(
   $$
+    select count(distinct p.proname)::bigint
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in (
+        'attach_credential_template_document',
+        'begin_credential_generation_batch_item', 'begin_single_credential_generation',
+        'bind_credential_generation_batch_activation_email_send',
+        'claim_credential_generation_batch_activation_item',
+        'complete_credential_generation_batch_activation_item',
+        'complete_credential_generation_batch_email_send',
+        'complete_credential_generation_batch_item', 'complete_single_credential_generation',
+        'confirm_credential_generation_batch', 'create_credential_template_package',
+        'create_credential_template_version', 'delete_credential_template_document',
+        'fail_credential_generation_batch_activation_item',
+        'fail_credential_generation_batch_item', 'fail_single_credential_generation',
+        'prepare_credential_generation_batch_activation',
+        'prepare_credential_generation_batch_item', 'preview_credential_generation_batch',
+        'publish_credential_template_version', 'queue_credential_generation_batch_item',
+        'record_credential_template_preview', 'refresh_credential_generation_batch_item',
+        'refresh_single_credential_generation',
+        'replace_credential_template_document_placements',
+        'requeue_credential_generation_batch_activation_item',
+        'retire_credential_template_version', 'review_credential_generation_batch_item',
+        'update_credential_template_document', 'validate_credential_template_version'
+      )
+      and has_function_privilege('anon', p.oid, 'execute')
+  $$,
+  $$ values (0::bigint) $$,
+  'all 30 PDFGEN functions should deny anonymous execution'
+);
+
+select results_eq(
+  $$
+    select count(distinct p.proname)::bigint
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in (
+        'attach_credential_template_document',
+        'begin_credential_generation_batch_item', 'begin_single_credential_generation',
+        'bind_credential_generation_batch_activation_email_send',
+        'claim_credential_generation_batch_activation_item',
+        'complete_credential_generation_batch_activation_item',
+        'complete_credential_generation_batch_email_send',
+        'complete_credential_generation_batch_item', 'complete_single_credential_generation',
+        'confirm_credential_generation_batch', 'create_credential_template_package',
+        'create_credential_template_version', 'delete_credential_template_document',
+        'fail_credential_generation_batch_activation_item',
+        'fail_credential_generation_batch_item', 'fail_single_credential_generation',
+        'prepare_credential_generation_batch_activation',
+        'prepare_credential_generation_batch_item', 'preview_credential_generation_batch',
+        'publish_credential_template_version', 'queue_credential_generation_batch_item',
+        'record_credential_template_preview', 'refresh_credential_generation_batch_item',
+        'refresh_single_credential_generation',
+        'replace_credential_template_document_placements',
+        'requeue_credential_generation_batch_activation_item',
+        'retire_credential_template_version', 'review_credential_generation_batch_item',
+        'update_credential_template_document', 'validate_credential_template_version'
+      )
+      and has_function_privilege('authenticated', p.oid, 'execute')
+  $$,
+  $$ values (30::bigint) $$,
+  'all 30 PDFGEN functions should expose authenticated execution only through their internal role and MFA guards'
+);
+
+select results_eq(
+  $$
     select count(*)::bigint
     from pg_proc p
     join pg_namespace n on n.oid = p.pronamespace
@@ -548,7 +631,7 @@ select has_index('public', 'user_profiles', 'user_profiles_one_active_owner_idx'
 
 select results_eq(
   $$
-    select a.attname::text
+    select a.attname::text collate "default"
     from pg_index i
     join pg_attribute a on a.attrelid = i.indrelid and a.attnum = any(i.indkey)
     where i.indrelid = 'public.user_roles'::regclass and i.indisprimary
@@ -559,7 +642,7 @@ select results_eq(
 );
 
 select results_eq(
-  $$ select enumlabel::text from pg_enum where enumtypid = 'public.app_role'::regtype order by enumsortorder $$,
+  $$ select enumlabel::text collate "default" from pg_enum where enumtypid = 'public.app_role'::regtype order by enumsortorder $$,
   $$ values ('owner'), ('super_admin'), ('content_manager'), ('credential_manager') $$,
   'the Release 1 role model should contain exactly four roles'
 );

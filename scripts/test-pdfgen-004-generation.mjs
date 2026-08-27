@@ -1,6 +1,4 @@
 import assert from 'node:assert/strict';
-import { mkdir, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
 import { createCanvas } from '@napi-rs/canvas';
 import jsQR from 'jsqr';
 import { PDFDocument, StandardFonts, degrees, rgb } from 'pdf-lib';
@@ -12,8 +10,9 @@ import {
   CredentialPdfGenerationError,
 } from '../lib/credential-templates/pdf-generation-types.ts';
 
-const outputDirectory = join(process.cwd(), 'tmp', 'pdfs');
 const verificationUrl = 'https://nobel-itbs.eu/verify/pdfgen-004-fictional-qr-token';
+const longHolderName = 'Oleksandra Mariia Šťastná-Kovalenko de la Cruz';
+const longProgrammeTitle = 'Advanced International Leadership, Neuroplasticity and Responsible Innovation Programme';
 
 function placement(overrides) {
   return {
@@ -85,7 +84,6 @@ function expectGenerationError(code) {
   return (error) => error instanceof CredentialPdfGenerationError && error.code === code;
 }
 
-await mkdir(outputDirectory, { recursive: true });
 const primarySource = await sourcePdf([[842, 595]]);
 const supplementSource = await sourcePdf([[595, 842], [842, 595]], [0, 90]);
 
@@ -146,7 +144,6 @@ assert.equal(outputs.filter((item) => item.isPrimary).length, 1);
 for (const output of outputs) {
   assert.match(output.sha256, /^[0-9a-f]{64}$/);
   assert.equal(output.sizeBytes, output.bytes.length);
-  await writeFile(join(outputDirectory, `pdfgen-004-${output.outputFilename}`), output.bytes);
 }
 
 const primaryText = await extractedText(outputs[0].bytes);
@@ -164,6 +161,67 @@ assert.equal(decoded?.data, verificationUrl);
 const rotatedRaster = await rasterPage(outputs[1].bytes, 2);
 const rotatedDecoded = jsQR(rotatedRaster.data, rotatedRaster.width, rotatedRaster.height, { inversionAttempts: 'dontInvert' });
 assert.equal(rotatedDecoded?.data, verificationUrl);
+
+const localeCases = [
+  {
+    locale: 'en',
+    holderName: longHolderName,
+    programmeTitle: longProgrammeTitle,
+    expectedDate: /25 August 2026/u,
+  },
+  {
+    locale: 'ua',
+    holderName: 'Олександра-Марія Коваленко-Щаслива',
+    programmeTitle: 'Міжнародне лідерство, нейропластичність та відповідальні інновації',
+    expectedDate: /25 серпня 2026/u,
+  },
+  {
+    locale: 'cz',
+    holderName: 'Žaneta Šťastná-Řehořová Kovalenko',
+    programmeTitle: 'Řízení mezinárodních změn, neuroplasticita a odpovědné inovace',
+    expectedDate: /25 srpna 2026/u,
+  },
+];
+
+for (const localeCase of localeCases) {
+  const localized = await generateCredentialPdfPackage({
+    ...input,
+    locale: localeCase.locale,
+    values: {
+      ...input.values,
+      holderName: localeCase.holderName,
+      programmeTitle: localeCase.programmeTitle,
+    },
+    documents: [{
+      ...input.documents[0],
+      placements: [
+        placement({ fieldKey: 'holder_name', yPoints: 108, fontSizePoints: 24, minFontSizePoints: 10 }),
+        placement({
+          fieldKey: 'programme_title', yPoints: 172, heightPoints: 72,
+          fontSizePoints: 18, minFontSizePoints: 10, fontWeight: 500, fitMode: 'wrap',
+        }),
+        placement({
+          fieldKey: 'issue_date', xPoints: 60, yPoints: 312, widthPoints: 340,
+          heightPoints: 30, fontSizePoints: 13, minFontSizePoints: 9,
+          fontWeight: 400, textAlignment: 'left', dateFormat: 'D MMMM YYYY',
+        }),
+        placement({
+          fieldKey: 'verification_qr', xPoints: 690, yPoints: 390,
+          widthPoints: 96, heightPoints: 96, fontFamily: null, fontSizePoints: null,
+          minFontSizePoints: null, fontWeight: null, fontColor: null,
+          textAlignment: 'left', fitMode: 'fixed',
+        }),
+      ],
+    }],
+  });
+  const localizedText = await extractedText(localized[0].bytes);
+  const normalizedLocalizedText = localizedText.replace(/\s+/gu, ' ').trim();
+  assert.ok(normalizedLocalizedText.includes(localeCase.holderName));
+  assert.ok(normalizedLocalizedText.includes(localeCase.programmeTitle));
+  assert.match(localizedText, localeCase.expectedDate);
+  const localizedQr = await rasterPage(localized[0].bytes, 1);
+  assert.equal(jsQR(localizedQr.data, localizedQr.width, localizedQr.height, { inversionAttempts: 'dontInvert' })?.data, verificationUrl);
+}
 
 await assert.rejects(
   () => generateCredentialPdfPackage({ ...input, documents: input.documents.map((item) => ({ ...item, isPrimary: false })) }),
@@ -183,6 +241,20 @@ await assert.rejects(
     documents: [{
       ...input.documents[0],
       placements: [placement({ fieldKey: 'holder_name', widthPoints: 30, heightPoints: 10, fontSizePoints: 20, minFontSizePoints: 18 })],
+    }],
+  }),
+  expectGenerationError('text_overflow'),
+);
+await assert.rejects(
+  () => generateCredentialPdfPackage({
+    ...input,
+    values: { ...input.values, programmeTitle: 'X'.repeat(600) },
+    documents: [{
+      ...input.documents[0],
+      placements: [placement({
+        fieldKey: 'programme_title', widthPoints: 300, heightPoints: 60,
+        fontSizePoints: 16, minFontSizePoints: 10, fitMode: 'wrap',
+      })],
     }],
   }),
   expectGenerationError('text_overflow'),

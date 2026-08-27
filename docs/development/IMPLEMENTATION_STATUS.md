@@ -1,6 +1,6 @@
 # Implementation Status
 
-Last updated: 2026-08-26
+Last updated: 2026-08-27
 
 This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
@@ -16,6 +16,8 @@ This is the current implementation record. The v2 product and technical specific
 - PDFGEN-003 Template Package Admin/placement editor was merged through PR #33 as `6450fb6`; Preview and Production deployments passed, migration `20260825140000` is applied/recorded in dev and Production, the real clean-source v1 is published/read-only in dev, and Production passed the zero-fixture Owner/AAL2 workspace plus independent database security audit.
 - PDFGEN-004 server-side multi-document PDF generation was merged through PR #35 as `d777f6c`; all local checks, the 2/2 PR checks, Vercel Preview, the merge commit's 1/1 Production check, and focused public Production smoke passed. No database object or Supabase data was changed.
 - PDFGEN-005 single pending-credential generation/regeneration was merged through PR #37 as `159916c`; Preview and Production deployment `2FXVz7Xrz5jegFXnMrRvTwiv3Y5D` passed, migration `20260826100000` is applied/recorded as migration 58 in dev and Production, and independent security/read-only acceptance passed in both environments without creating a pending credential, number, template, PDF, batch, or provenance row.
+- PDFGEN-006 batch generation/review was merged through PR #39 as `f59c4a0`; migrations `20260826120000` and `20260826123000` are applied and read-only accepted in dev and Production as migrations 59 and 60.
+- PDFGEN-007 batch activation/VEDOS delivery was merged through PR #41 as `26d35f2`; migration `20260826140000` is applied and read-only accepted in development as migration 61. Production database promotion and mutation acceptance remain intentionally pending.
 - No direct push to `main` is used.
 
 ## Supabase Dev Project
@@ -26,7 +28,15 @@ This is the current implementation record. The v2 product and technical specific
 - Local secrets remain in ignored environment files and must never be committed.
 - A pre-integration backup is available under the ignored `backups/supabase/2026-08-05-pre-content/` directory.
 
-Dev and Production each contain 58 applied SQL migrations. PDFGEN-005 migration `20260826100000_pdfgen_005_single_generation.sql` is applied/recorded and read-only accepted in both environments. PDFGEN-001 migrations `20260825090000_pdfgen_001_template_generation_foundation.sql` and `20260825100000_pdfgen_001_template_content_trigger_fix.sql` are applied and recorded in dev and Production. PDFGEN-002 migration `20260825120000_pdfgen_002_private_template_storage_validation.sql` and PDFGEN-003 migration `20260825140000_pdfgen_003_template_package_editor.sql` are also applied/recorded and read-only accepted in both environments. WF-004 migration `20260824130000_wf_004_resend_credential.sql` remains applied and recorded in both dev and Production. The separate `nobel-itbs-prod` project is in Frankfurt; its secrets remain outside Git.
+The repository, clean local chain, and hosted Development contain 63 SQL
+migrations. Production contains 60
+documented applied migrations: PDFGEN-006 migrations 59 and 60 are applied
+there, PDFGEN-007 migration 61 remains Development-only, and the
+QA-003-MFA-RLS-001 policy-hardening migration 62 and PDFGEN-LINT-001 migration
+63 are locally and Development accepted but not promoted to Production.
+PDFGEN-001 through PDFGEN-005 and WF-004
+remain applied and recorded in both hosted environments. The separate
+`nobel-itbs-prod` project is in Frankfurt; its secrets remain outside Git.
 
 ## Implemented Foundation
 
@@ -72,6 +82,9 @@ Dev and Production each contain 58 applied SQL migrations. PDFGEN-005 migration 
 
 ## Verified in Dev
 
+- On 2026-08-27, QA-003-MFA-RLS-001 closed the defence-in-depth gap across 45 editorial content mutation policies. Forward-only migration 62 adds the shared profile-aware MFA helper without changing Content Manager's MFA-optional role contract, editorial role membership, read policies, grants, or data. A clean local rebuild passed 286/286 combined assertions. The confirmed hosted Development target listed only migration 62, applied it successfully, passed focused QA-003 10/10, aggregate QA-003 31/31, QA-001 42/42, and reported full post-push migration parity. Production remains at 60; no hosted data row was changed. Hosted lint separately reports pre-existing issues in `import_learners` and `begin_single_credential_generation`, neither modified by this ticket. See `docs/qa/QA_003_CONTENT_POLICY_MFA_HARDENING_2026-08-27.md`.
+- On 2026-08-27, PDFGEN-LINT-001 corrected the composite Template Package assignment in `begin_single_credential_generation` through forward-only migration 63. A clean local 63-migration rebuild, focused correction 6/6, PDFGEN-005 21/21, all selected PDFGEN 204/204, QA-003 41/41, QA-001 42/42, and the combined 293/293 regression pass. The confirmed hosted Development target listed only migration 63, applied it successfully, passed the focused/PDFGEN-005 gate 27/27, removed the single-generation error from hosted lint, and reported clean 63/63 parity. Only the separate pre-existing `import_learners` temporary-table finding remains. Production stays at 60. See `docs/qa/PDFGEN_LINT_001_SINGLE_GENERATION_PACKAGE_ASSIGNMENT_2026-08-27.md`.
+- On 2026-08-27, PDFGEN-008 points 1–4 and the focused runtime database gate passed: all seven PDFGEN database suites passed 203/203 assertions; aggregate QA-001 passed 42/42; aggregate QA-003 now passes 31/31 after the separately scoped local policy hardening. The PDFGEN template/single/batch/activation boundaries pass, including helper-delegated MFA. Unsafe-PDF validation, in-memory multi-document/multi-page EN/UA/CZ long-content and normal/rotated QR tests, all static verifiers, ESLint, TypeScript, production build, and diff checks pass. No hosted data, private PDF, permanent number, activation record, or email was created or changed; the local Supabase stack was stopped. See `docs/qa/PDFGEN_008_GENERATION_SECURITY_ACCEPTANCE_2026-08-27.md`.
 - On 2026-08-26, PDFGEN-004 publication acceptance passed. The implementation commit `c980174` passed lint, TypeScript, PDFGEN-001..004 verification, fictional multi-document generation with exact normal/rotated QR decoding, production build, and diff checks. PR #35 passed 2/2 checks and a Ready Vercel Preview, merged as `d777f6c`, and its Production deployment `8xEz3Kmie1CDAUvWpZCRpfhVbTGa` completed through the merge commit's 1/1 Vercel check. The public Production root loaded without a runtime error and retained programme and verification paths. No database object, Supabase data, real learner, credential, token, template, or PDF was changed.
 - On 2026-08-25, PDFGEN-002 passed its local code-level acceptance: strict one-/two-page PDF parsing, page dimensions and SHA-256, malformed/non-PDF plus encryption/JavaScript/attachment/launch/URI/form rejection, all 72 non-live verifiers, ESLint, TypeScript, and the 46-page production build. Migration `20260825120000` compiled, was transactionally applied/recorded in dev and Production, and passed separate all-true read-only audits for 56-history parity, bucket limits/privacy, zero browser policies, functions/triggers, safe column grants, unchanged statuses, and zero template fixtures. PR #31 Preview passed 2/2 checks, PR #31 was merged as `970fd6c`, and its Production deployment check passed. The 20-assertion focused pgTAP plus updated 66-assertion PDFGEN-001 and 40-assertion QA-001 files are committed but not locally executed because Docker is unavailable. Authenticated browser acceptance with a real template is deferred to PDFGEN-003, which supplies the package UI. See `docs/qa/PDFGEN_002_PRIVATE_TEMPLATE_STORAGE_VALIDATION_2026-08-25.md`.
 - On 2026-08-25, PDFGEN-001 added and applied the private template/version/document/page/placement and generation batch/item/provenance foundation. All 71 non-live verifiers, lint, TypeScript, the 46-page build, migration compilation, read-only live RLS/grant audit, and transactional multi-document/multi-page publication/immutability runtime checks pass. A record-shape defect found by the first runtime test was corrected through a forward-only migration; no fixture data persisted. The focused 65-assertion pgTAP and updated 39-assertion QA-001 files remain queued because local Docker and dev `plan(integer)` are unavailable. See `docs/qa/PDFGEN_001_TEMPLATE_GENERATION_DATABASE_FOUNDATION_2026-08-25.md`.
@@ -109,7 +122,12 @@ Dev and Production each contain 58 applied SQL migrations. PDFGEN-005 migration 
 
 ## Verification Limitation
 
-WF-004, PDFGEN-001, and PDFGEN-002 are applied and recorded in dev and Production. The complete local pgTAP suite was not executed because the Supabase CLI database test command requires Docker and no Docker-compatible runtime is available; dev also lacks the pgTAP `plan(integer)` function. This remains an explicit QA item, not a hidden pass.
+Docker Desktop and a local PostgreSQL/pgTAP runner are now available. The
+PDFGEN-008 selected database gate executed 276 planned assertions and all 276
+passed after the separately scoped local content-policy MFA correction. With
+the focused 10-assertion hardening suite, the combined regression is 286/286.
+The full repository-wide historical pgTAP suite and PDFGEN mutation E2E have
+not been claimed as passed.
 
 ## Operational Dependencies
 
