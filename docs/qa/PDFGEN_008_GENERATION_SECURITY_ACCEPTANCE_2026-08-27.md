@@ -1,7 +1,7 @@
 # PDFGEN-008 Generation Security and End-to-End Acceptance
 
 Date: 2026-08-27
-Status: PDFGEN runtime security gate passed; hosted Development single-item
+Status: PDFGEN runtime security gate passed; hosted Development 11-item bounded
 generation and private review passed; full cohort and activation acceptance remain open
 
 ## Scope For This Stage
@@ -15,8 +15,9 @@ The initial stage implemented the first four approved PDFGEN-008 work items:
 
 The approved hosted Development stage then created synthetic 200/540/1000
 cohorts, confirmed a 200-item Batch A, and completed one deliberately bounded
-generation/review path. It did not process the remaining cohort, activate a
-credential, send email, or mutate Production.
+generation/review path followed by an approved ten-item retry/review slice. It
+did not process the remaining cohort, activate a credential, send email, or
+mutate Production.
 
 ## Acceptance Matrix
 
@@ -92,7 +93,9 @@ downloaded images.
 
 Hosted Development data now includes the approved synthetic 200/540/1000
 learner cohorts, one 200-item Batch A, one pending credential, one permanently
-reserved number, one private generated PDF, and one append-only provenance row.
+reserved number, one private generated PDF, and one append-only provenance row
+from the control path, plus the approved ten-item slice with ten more pending
+credentials, reserved numbers, private PDFs, and provenance rows.
 The batch remains pinned to immutable published template v1. Published template
 v2 exists for future batches but was not used to repin or mutate Batch A.
 
@@ -164,7 +167,24 @@ weakening the content-policy assertion.
   shape. The raw token and signed preview URL were not added to the repository
   or acceptance report;
 - current Batch A remainder is intentionally untouched: 145 queued, 54
-  retryable, and 1 reviewed.
+  retryable, and 1 reviewed before the approved ten-item continuation.
+
+The approved continuation then processed positions 2–11 only:
+
+- all ten started as retryable attempt 1 with no credential and no reserved
+  target number;
+- individual guarded retry produced ten generated items at attempt 2 with
+  numbers `NITBS-C-2026-000002` through `NITBS-C-2026-000011`;
+- server-side acceptance confirmed ten pending credentials, ten primary private
+  PDFs, ten canonical Storage objects, ten v1 provenance rows, valid hashes,
+  ten total pages, and zero error, activation, or email records;
+- every PDF was rendered for review; the contact sheet confirmed the matching
+  holder and number on each item without clipping or misplaced content;
+- every one of the ten QR codes decoded independently to the expected HTTPS
+  `/verify/<43-char-token>` shape;
+- all ten were marked reviewed only after the complete visual and QR pass;
+- the final Batch A state is 145 queued, 44 retryable, and 11 reviewed;
+- exactly 11 approved-pool numbers are consumed and `000012` remains unused.
 
 The hosted fixes were isolated to this ticket: full-cohort reference pagination,
 placement lookup through template documents, PDF.js Node canvas bootstrapping,
@@ -187,8 +207,9 @@ wrapped error cause, and explicit Vercel worker/font output tracing.
 ## Deviations / Open Questions
 
 - Cohort data and the approved permanent-number pool exist in Development, but
-  only one Batch A item was generated and reviewed. 200/540/1000 throughput,
-  resume, and aggregate outcome acceptance must not be represented as passed.
+  only 11 Batch A items were generated and reviewed. 200/540/1000 throughput,
+  automatic chunk resume, and aggregate outcome acceptance must not be
+  represented as passed.
 - Vercel Deployment Protection returns 401 before the anonymous public route in
   Preview. Therefore the hosted `pending -> not_found` QR response could not be
   observed anonymously at the protected Preview URL; database status, route
@@ -200,8 +221,10 @@ wrapped error cause, and explicit Vercel worker/font output tracing.
 
 ## Next Dependency
 
-Next is the explicitly bounded Batch A continuation decision: process a small
-chunk, inspect its aggregate retry/resume behavior, and only then consider the
-remaining 200-item cohort. Activation/email acceptance follows generation and
-review acceptance and remains a separate user-approved step. The 540- and
-1000-item cohorts and any Production promotion stay later gates.
+Next is the explicit Batch A continuation decision: either repeat another
+ten-item individual retry/review slice or separately approve the built-in
+25-item queued processing chunk to exercise automatic chunk behavior. The UI
+`Process` action loops until no queued items remain, so it must not be used for
+this bounded test without a lower-level single-chunk invocation. Activation and
+email remain separate user-approved steps. The 540- and 1000-item cohorts and
+any Production promotion stay later gates.
