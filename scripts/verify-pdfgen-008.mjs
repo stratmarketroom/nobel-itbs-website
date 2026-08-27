@@ -112,6 +112,16 @@ if (!generationSource.includes(".in('template_document_id', documents.map((docum
   errors.push('Credential generation must load field placements through their template_document_id relationship.');
 }
 
+const pdfGenerationSource = readFileSync('lib/credential-templates/pdf-generation.ts', 'utf8');
+for (const part of [
+  'credential_template_pdf_validation_failed',
+  '[redacted-url]',
+  '[redacted-id]',
+  '.slice(0, 240)',
+]) {
+  if (!pdfGenerationSource.includes(part)) errors.push(`Safe PDF validation diagnostics missing ${part}`);
+}
+
 for (const path of [
   'lib/credential-templates/admin.ts',
   'lib/credential-templates/storage.ts',

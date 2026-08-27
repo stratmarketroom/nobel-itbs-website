@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { PDFDocument, degrees, rgb, type PDFFont, type PDFPage } from 'pdf-lib';
 import QRCode from 'qrcode';
 import type { TemplateFieldKey, TemplatePlacement } from './admin-types.ts';
-import { validateTemplatePdf } from './pdf-validation.ts';
+import { TemplatePdfValidationError, validateTemplatePdf } from './pdf-validation.ts';
 import {
   CredentialPdfGenerationError,
   type CredentialPdfGenerationValues,
@@ -59,6 +59,21 @@ function failure(
   message: string,
 ): CredentialPdfGenerationError {
   return new CredentialPdfGenerationError(code, message);
+}
+
+function reportUnexpectedValidationFailure(error: unknown): void {
+  if (error instanceof TemplatePdfValidationError) return;
+
+  const name = error instanceof Error ? error.name : 'UnknownError';
+  const message = error instanceof Error ? error.message : 'Non-error validation failure';
+  const safeName = name.replace(/[^A-Za-z0-9_.-]/gu, '').slice(0, 64) || 'UnknownError';
+  const safeMessage = message
+    .replace(/https?:\/\/\S+/giu, '[redacted-url]')
+    .replace(/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/giu, '[redacted-id]')
+    .replace(/[\r\n\t\0-\x1f\x7f]+/gu, ' ')
+    .slice(0, 240);
+
+  console.error('credential_template_pdf_validation_failed', { name: safeName, message: safeMessage });
 }
 
 function loadFontResources(): Promise<Map<SupportedWeight, FontResource>> {
@@ -384,7 +399,8 @@ async function renderDocument(
   let sourceMetadata;
   try {
     sourceMetadata = await validateTemplatePdf(source);
-  } catch {
+  } catch (error) {
+    reportUnexpectedValidationFailure(error);
     throw failure('invalid_source_pdf', 'Template source PDF is malformed or unsafe.');
   }
 
