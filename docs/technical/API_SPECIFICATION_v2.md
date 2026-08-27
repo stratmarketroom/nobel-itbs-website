@@ -486,6 +486,26 @@ status. The response contains identifiers, attempt number, and file/page counts
 only; it never returns PDF bytes, private paths, signed source URLs, or token
 material.
 
+PDFGEN-006 batch generation/review routes:
+
+- `GET|POST /api/v1/admin/credential-generation-batches` — list private batches or expose protected reference data;
+- `POST /api/v1/admin/credential-generation-batches/preview` — classify the complete explicit cohort without mutation;
+- `POST /api/v1/admin/credential-generation-batches/confirm` — bind one idempotency key to the exact context and ordered cohort;
+- `GET /api/v1/admin/credential-generation-batches/{id}` — load aggregate progress and private review metadata;
+- `POST /api/v1/admin/credential-generation-batches/{id}/process` — process the next bounded resumable chunk;
+- `POST /api/v1/admin/credential-generation-batches/{id}/items/{itemId}/retry` — queue one retryable item without changing its permanent number or QR;
+- `POST /api/v1/admin/credential-generation-batches/{id}/items/{itemId}/review` — record explicit private human review of a complete pending package.
+
+PDFGEN-007 batch activation/delivery routes:
+
+- `POST /api/v1/admin/credential-generation-batches/{id}/activate` — bind an idempotency key to the exact selected reviewed items;
+- `POST /api/v1/admin/credential-generation-batches/{id}/activation-requests/{activationRequestId}/process` — process a bounded resumable activation/delivery chunk;
+- `POST /api/v1/admin/credential-generation-batches/{id}/activation-items/{activationItemId}/retry` — retry the safe per-item activation or delivery outcome.
+
+Every route establishes the authenticated actor context before entering the
+database or server-only Storage/SMTP boundary. Batch responses expose bounded
+identifiers, states, counts, and safe error codes only.
+
 Batch processing must automatically divide the cohort into bounded,
 configurable technical chunks while preserving one aggregate batch view. It
 must be resumable and idempotent. Every learner gets

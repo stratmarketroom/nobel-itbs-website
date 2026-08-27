@@ -3,32 +3,32 @@ begin;
 select plan(66);
 
 select results_eq(
-  $$ select enumlabel::text from pg_enum where enumtypid = 'public.credential_template_version_status'::regtype order by enumsortorder $$,
+  $$ select enumlabel::text collate "default" from pg_enum where enumtypid = 'public.credential_template_version_status'::regtype order by enumsortorder $$,
   $$ values ('draft'::text), ('published'::text), ('retired'::text) $$,
   'template versions should use the approved draft/published/retired lifecycle'
 );
 select results_eq(
-  $$ select enumlabel::text from pg_enum where enumtypid = 'public.credential_template_field_key'::regtype order by enumsortorder $$,
+  $$ select enumlabel::text collate "default" from pg_enum where enumtypid = 'public.credential_template_field_key'::regtype order by enumsortorder $$,
   $$ values ('holder_name'::text), ('programme_title'::text), ('credential_type'::text), ('document_number'::text), ('issue_date'::text), ('completion_date'::text), ('programme_run_label'::text), ('verification_qr'::text), ('verification_url'::text), ('static_text'::text) $$,
   'placement fields should be a closed allow-list'
 );
 select results_eq(
-  $$ select enumlabel::text from pg_enum where enumtypid = 'public.credential_template_text_alignment'::regtype order by enumsortorder $$,
+  $$ select enumlabel::text collate "default" from pg_enum where enumtypid = 'public.credential_template_text_alignment'::regtype order by enumsortorder $$,
   $$ values ('left'::text), ('center'::text), ('right'::text) $$,
   'text alignment should be constrained'
 );
 select results_eq(
-  $$ select enumlabel::text from pg_enum where enumtypid = 'public.credential_template_fit_mode'::regtype order by enumsortorder $$,
+  $$ select enumlabel::text collate "default" from pg_enum where enumtypid = 'public.credential_template_fit_mode'::regtype order by enumsortorder $$,
   $$ values ('single_line'::text), ('wrap'::text), ('shrink_to_fit'::text), ('fixed'::text) $$,
   'fit behavior should be constrained'
 );
 select results_eq(
-  $$ select enumlabel::text from pg_enum where enumtypid = 'public.credential_generation_batch_status'::regtype order by enumsortorder $$,
+  $$ select enumlabel::text collate "default" from pg_enum where enumtypid = 'public.credential_generation_batch_status'::regtype order by enumsortorder $$,
   $$ values ('draft'::text), ('confirmed'::text), ('processing'::text), ('review'::text), ('activating'::text), ('completed'::text), ('failed'::text) $$,
   'batch lifecycle should support confirmation, resumable work, review, activation, and terminal outcomes'
 );
 select results_eq(
-  $$ select enumlabel::text from pg_enum where enumtypid = 'public.credential_generation_item_status'::regtype order by enumsortorder $$,
+  $$ select enumlabel::text collate "default" from pg_enum where enumtypid = 'public.credential_generation_item_status'::regtype order by enumsortorder $$,
   $$ values ('queued'::text), ('processing'::text), ('generated'::text), ('retryable'::text), ('conflict'::text), ('reviewed'::text), ('activating'::text), ('activated'::text), ('failed'::text) $$,
   'batch items should expose resumable and review-safe outcomes'
 );
@@ -170,7 +170,7 @@ select results_eq(
   'Content Manager should have no template, batch, or generation access'
 );
 select results_eq(
-  $$ select enumlabel::text from pg_enum where enumtypid = 'public.credential_status'::regtype order by enumsortorder $$,
+  $$ select enumlabel::text collate "default" from pg_enum where enumtypid = 'public.credential_status'::regtype order by enumsortorder $$,
   $$ values ('pending'::text), ('valid'::text), ('revoked'::text), ('voided'::text) $$,
   'PDF generation must not add credential lifecycle statuses'
 );

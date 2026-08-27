@@ -63,10 +63,14 @@ if (!errors.length) {
     'lib/credentials/admin.ts': 'assertCanManageCredentials(context)',
     'lib/credentials/workspace.ts': 'assertCanManageCredentials(context)',
     'lib/credentials/files.ts': 'assertCanManageCredentials(context)',
+    'lib/credentials/generation.ts': 'assertCanManageCredentials(context)',
+    'lib/credentials/batch-generation.ts': 'assertCanManageCredentials(context)',
     'lib/credentials/activation.ts': 'assertCanManageCredentials(context)',
     'lib/credentials/public-data.ts': 'assertCanManageCredentials(context)',
     'lib/credentials/revoke.ts': 'assertCanManageCredentials(context)',
     'lib/credentials/void.ts': 'assertCanManageCredentials(context)',
+    'lib/credential-templates/admin.ts': 'assertCanManageCredentialTemplates(context)',
+    'lib/credential-templates/storage.ts': 'assertCanManageCredentialTemplates(context)',
     'lib/programmes/admin.ts': 'assertCanManageContent(context)',
     'lib/partnerships/admin.ts': 'assertCanManageContent(context)',
   };
@@ -99,6 +103,8 @@ if (!errors.length) {
     'aal1', 'aal2', 'site_settings', 'email_templates', 'create_pending_credential',
     'activate_credential', 'resend_credential', 'revoke_credential', 'void_pending_credential',
     'update_valid_credential_public_data', 'require_credential_file_mutation',
+    'can_manage_credential_templates', 'assert_single_generation_actor',
+    'assert_batch_generation_actor', 'prepare_credential_generation_batch_activation',
   ]) {
     if (!source.test.includes(required)) errors.push(`QA-003 matrix missing coverage: ${required}`);
   }

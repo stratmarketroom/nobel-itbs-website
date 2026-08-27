@@ -426,7 +426,7 @@ Do not add to Release 1:
 - News/Blog;
 - public PDF download;
 - automatic Moodle completion integration;
-- automatic PDF document generation;
+- external PDF-generation vendors or arbitrary template scripting;
 - public search by learner name/surname;
 - full page builder;
 - promotional pricing or installment workflow;

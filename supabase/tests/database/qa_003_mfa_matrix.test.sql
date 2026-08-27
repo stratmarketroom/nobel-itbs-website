@@ -1,6 +1,6 @@
 begin;
 
-select plan(27);
+select plan(31);
 
 select results_eq(
   $$
@@ -109,12 +109,21 @@ select results_eq(
     where schemaname = 'public'
       and tablename in (
         'contact_submissions', 'credential_email_sends', 'credential_file_types',
-        'credential_files', 'credential_history', 'credential_notes', 'credential_sets',
+        'credential_files', 'credential_generation_batch_activation_items',
+        'credential_generation_batch_activation_requests',
+        'credential_generation_batch_items', 'credential_generation_batches',
+        'credential_file_generations', 'credential_history', 'credential_notes', 'credential_sets',
+        'credential_template_document_pages', 'credential_template_documents',
+        'credential_template_field_placements', 'credential_template_packages',
+        'credential_template_versions',
         'credential_type_translations', 'credential_types', 'credentials',
         'document_number_log', 'email_templates', 'learner_emails', 'learner_phones',
         'learners'
       )
       and (coalesce(qual, '') || coalesce(with_check, '')) not like '%is_mfa_requirement_satisfied%'
+      and (coalesce(qual, '') || coalesce(with_check, '')) not like '%can_manage_credential_templates%'
+      and (coalesce(qual, '') || coalesce(with_check, '')) not like '%can_read_credential_template_package%'
+      and (coalesce(qual, '') || coalesce(with_check, '')) not like '%can_read_credential_template_version%'
   $$,
   $$ values (0::bigint) $$,
   'every private operational RLS policy should require the MFA condition'
@@ -209,6 +218,91 @@ select results_eq(
   $$,
   $$ values (4::bigint) $$,
   'every PDF metadata mutation should use the common protected file guard'
+);
+
+select results_eq(
+  $$
+    select count(distinct p.proname)::bigint
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in (
+        'create_credential_template_package', 'create_credential_template_version',
+        'publish_credential_template_version', 'retire_credential_template_version',
+        'attach_credential_template_document', 'delete_credential_template_document',
+        'validate_credential_template_version', 'update_credential_template_document',
+        'replace_credential_template_document_placements', 'record_credential_template_preview'
+      )
+      and p.prosrc like '%assert_sensitive_action_allowed%'
+      and p.prosrc like '%owner%'
+      and p.prosrc like '%super_admin%'
+      and p.prosrc not like '%content_manager%'
+      and p.prosrc not like '%credential_manager%'
+  $$,
+  $$ values (10::bigint) $$,
+  'all template definition mutations should require Owner or Super Admin plus MFA'
+);
+
+select results_eq(
+  $$
+    select count(*)::bigint
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in (
+        'begin_single_credential_generation', 'refresh_single_credential_generation',
+        'complete_single_credential_generation', 'fail_single_credential_generation'
+      )
+      and p.prosrc like '%assert_single_generation_actor%'
+  $$,
+  $$ values (4::bigint) $$,
+  'all single-generation functions should use the Owner/Super Admin/Credential Manager MFA guard'
+);
+
+select results_eq(
+  $$
+    select count(*)::bigint
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in (
+        'preview_credential_generation_batch', 'confirm_credential_generation_batch',
+        'begin_credential_generation_batch_item', 'prepare_credential_generation_batch_item',
+        'refresh_credential_generation_batch_item', 'complete_credential_generation_batch_item',
+        'fail_credential_generation_batch_item', 'queue_credential_generation_batch_item',
+        'review_credential_generation_batch_item',
+        'prepare_credential_generation_batch_activation',
+        'claim_credential_generation_batch_activation_item',
+        'complete_credential_generation_batch_activation_item',
+        'bind_credential_generation_batch_activation_email_send',
+        'fail_credential_generation_batch_activation_item',
+        'complete_credential_generation_batch_email_send',
+        'requeue_credential_generation_batch_activation_item'
+      )
+      and p.prosrc like '%assert_batch_generation_actor%'
+  $$,
+  $$ values (16::bigint) $$,
+  'all batch generation, review, activation, retry, and delivery functions should use the shared MFA guard'
+);
+
+select results_eq(
+  $$
+    select count(*)::bigint
+    from pg_proc
+    where oid in (
+      'internal.can_manage_credential_templates()'::regprocedure,
+      'internal.can_read_credential_template_package(uuid)'::regprocedure,
+      'internal.can_read_credential_template_version(uuid)'::regprocedure,
+      'internal.assert_single_generation_actor()'::regprocedure,
+      'internal.assert_batch_generation_actor()'::regprocedure
+    )
+      and (
+        prosrc like '%is_mfa_requirement_satisfied%'
+        or prosrc like '%assert_sensitive_action_allowed%'
+      )
+  $$,
+  $$ values (5::bigint) $$,
+  'every template and generation authorization helper should enforce the common MFA condition'
 );
 
 select results_eq(
@@ -315,8 +409,20 @@ select results_eq(
     select count(*)::bigint
     from pg_policies
     where schemaname = 'public'
-      and tablename in ('credentials', 'credential_files', 'credential_history', 'credential_notes', 'document_number_log')
+      and tablename in (
+        'credentials', 'credential_files', 'credential_history', 'credential_notes',
+        'document_number_log', 'credential_file_generations',
+        'credential_generation_batches', 'credential_generation_batch_items',
+        'credential_generation_batch_activation_requests',
+        'credential_generation_batch_activation_items',
+        'credential_template_packages', 'credential_template_versions',
+        'credential_template_documents', 'credential_template_document_pages',
+        'credential_template_field_placements'
+      )
       and (coalesce(qual, '') || coalesce(with_check, '')) not like '%is_mfa_requirement_satisfied%'
+      and (coalesce(qual, '') || coalesce(with_check, '')) not like '%can_manage_credential_templates%'
+      and (coalesce(qual, '') || coalesce(with_check, '')) not like '%can_read_credential_template_package%'
+      and (coalesce(qual, '') || coalesce(with_check, '')) not like '%can_read_credential_template_version%'
   $$,
   $$ values (0::bigint) $$,
   'credential reads should all require MFA for sensitive roles'

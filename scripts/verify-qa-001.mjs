@@ -9,6 +9,8 @@ const expectedPublicTables = [
   'credential_file_types',
   'credential_file_generations',
   'credential_files',
+  'credential_generation_batch_activation_items',
+  'credential_generation_batch_activation_requests',
   'credential_generation_batch_items',
   'credential_generation_batches',
   'credential_history',
@@ -99,6 +101,8 @@ if (!errors.length) {
     'service_role',
     'is_mfa_requirement_satisfied',
     'search_path=',
+    'credential_generation_batch_activation_requests',
+    'credential_generation_batch_activation_items',
   ]) {
     if (!testSource.includes(boundary)) errors.push(`QA-001 matrix is missing boundary: ${boundary}`);
   }

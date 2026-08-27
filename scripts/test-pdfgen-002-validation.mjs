@@ -66,7 +66,10 @@ assert.deepEqual(validatedTwoPages.pages, [
 await expectRejected(Buffer.from('%PDF-1.7\nnot a real PDF'), 'malformed PDF should be rejected');
 await expectRejected(Buffer.from('plain text'), 'non-PDF should be rejected');
 
-for (const name of ['/Encrypt', '/JavaScript', '/J#53', '/EmbeddedFiles', '/Launch', '/URI', '/AcroForm']) {
+for (const name of [
+  '/Encrypt', '/JavaScript', '/J#53', '/EmbeddedFiles', '/Launch', '/URI',
+  '/AcroForm', '/SubmitForm', '/ImportData', '/GoToR', '/RichMedia', '/OpenAction',
+]) {
   await expectRejected(createPdf([[595, 842]], { catalogEntries: `${name} null` }), `${name} should be rejected`);
 }
 
