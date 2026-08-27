@@ -7,6 +7,7 @@ const requiredPaths = [
   'scripts/test-pdfgen-002-validation.mjs',
   'scripts/test-pdfgen-004-generation.mjs',
   'scripts/test-pdfgen-008-cohort-pagination.mjs',
+  'scripts/test-pdfgen-008-batch-detail-chunking.mjs',
   'docs/qa/PDFGEN_008_GENERATION_SECURITY_ACCEPTANCE_2026-08-27.md',
 ];
 const errors = [];
@@ -111,6 +112,16 @@ for (const part of ['length: 1740', '[[0, 999], [1000, 1999]]', 'collectPaginate
   if (!paginationTest.includes(part)) errors.push(`Cohort pagination acceptance test missing ${part}`);
 }
 
+const chunkingTest = existsSync(requiredPaths[6]) ? readFileSync(requiredPaths[6], 'utf8') : '';
+for (const part of ['[540, 1000]', 'chunk.length <= 100', 'collectChunkedRows']) {
+  if (!chunkingTest.includes(part)) errors.push(`Batch detail chunking acceptance test missing ${part}`);
+}
+
+const batchGenerationSource = readFileSync('lib/credentials/batch-generation.ts', 'utf8');
+for (const part of ['collectChunkedRows', "collectPaginatedRows(async (from, to)", "provenanceByBatchItem"]) {
+  if (!batchGenerationSource.includes(part)) errors.push(`Large batch detail hardening missing ${part}`);
+}
+
 const generationSource = readFileSync('lib/credentials/generation.ts', 'utf8');
 if (/from\('credential_template_field_placements'\)[\s\S]{0,800}\.eq\('template_version_id'/u.test(generationSource)) {
   errors.push('Credential generation must not filter field placements by the nonexistent template_version_id column.');
@@ -165,6 +176,9 @@ if (pkg.scripts?.['verify:pdfgen-008'] !== 'node scripts/verify-pdfgen-008.mjs')
 }
 if (pkg.scripts?.['test:pdfgen-008:pagination'] !== 'node --experimental-strip-types scripts/test-pdfgen-008-cohort-pagination.mjs') {
   errors.push('Missing PDFGEN-008 cohort pagination test script.');
+}
+if (pkg.scripts?.['test:pdfgen-008:chunking'] !== 'node --experimental-strip-types scripts/test-pdfgen-008-batch-detail-chunking.mjs') {
+  errors.push('Missing PDFGEN-008 batch detail chunking test script.');
 }
 
 if (errors.length) {

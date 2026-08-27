@@ -20,6 +20,7 @@ import type {
   CredentialGenerationBatchStatus,
   CredentialGenerationItemStatus,
 } from '@/lib/credentials/batch-generation-types';
+import type { CredentialEmailSendStatus } from '@/lib/credentials/activation-types';
 import {
   ApiError,
   assertCanManageCredentials,
@@ -27,6 +28,7 @@ import {
   type AdminContext,
 } from '@/lib/supabase/server';
 import { collectPaginatedRows } from '@/lib/credentials/pagination';
+import { collectChunkedRows } from '@/lib/credentials/chunking';
 
 type BatchRow = {
   id: string; template_version_id: string; programme_id: string; programme_run_id: string | null;
@@ -50,6 +52,17 @@ type ActivationItemRow = {
 type ActivationClaimRow = {
   activation_request_id: string; batch_item_id: string; credential_id: string; email_send_id: string | null;
 };
+type CredentialSummaryRow = {
+  id: string; document_number: string; status: 'pending' | 'valid' | 'revoked' | 'voided';
+};
+type CredentialFileRow = {
+  id: string; credential_id: string; admin_label: string; is_primary: boolean;
+};
+type GenerationProvenanceRow = {
+  credential_file_id: string; generation_batch_item_id: string; template_document_id: string;
+};
+type TemplateDocumentPageRow = { id: string; page_count: number };
+type EmailSendStatusRow = { id: string; status: CredentialEmailSendStatus };
 type TemplateMeta = {
   packageId: string; versionId: string; versionNumber: number; displayName: string;
   programmeId: string; programmeRunId: string | null; credentialTypeId: string;
@@ -314,63 +327,97 @@ export async function listCredentialGenerationBatches(context: AdminContext): Pr
   if (batchesResult.error) throw databaseError(batchesResult.error, 'Credential generation batches could not be loaded.');
   const batches = (batchesResult.data ?? []) as BatchRow[];
   if (!batches.length) return [];
-  const itemsResult = await db.from('credential_generation_batch_items').select(itemSelect).in('batch_id', batches.map((batch) => batch.id));
-  if (itemsResult.error) throw databaseError(itemsResult.error, 'Credential generation batch counts could not be loaded.');
-  const items = (itemsResult.data ?? []) as ItemRow[];
+  const items = await collectPaginatedRows(async (from, to) => {
+    const result = await db.from('credential_generation_batch_items')
+      .select(itemSelect)
+      .in('batch_id', batches.map((batch) => batch.id))
+      .order('id')
+      .range(from, to);
+    if (result.error) throw databaseError(result.error, 'Credential generation batch counts could not be loaded.');
+    return (result.data ?? []) as ItemRow[];
+  });
   return batches.map((batch) => listItem(batch, items.filter((item) => item.batch_id === batch.id), lookup));
 }
 
 export async function getCredentialGenerationBatch(context: AdminContext, batchId: string): Promise<BatchDetail> {
   const db = client(context);
-  const [lookup, batchResult, itemsResult] = await Promise.all([
+  const [lookup, batchResult, items] = await Promise.all([
     loadLookup(db),
     db.from('credential_generation_batches').select(batchSelect).eq('id', batchId).maybeSingle(),
-    db.from('credential_generation_batch_items').select(itemSelect).eq('batch_id', batchId).order('position'),
+    collectPaginatedRows(async (from, to) => {
+      const result = await db.from('credential_generation_batch_items')
+        .select(itemSelect)
+        .eq('batch_id', batchId)
+        .order('position')
+        .range(from, to);
+      if (result.error) throw databaseError(result.error, 'Credential generation batch could not be loaded.');
+      return (result.data ?? []) as ItemRow[];
+    }),
   ]);
-  if (batchResult.error || itemsResult.error) throw databaseError(batchResult.error ?? itemsResult.error, 'Credential generation batch could not be loaded.');
+  if (batchResult.error) throw databaseError(batchResult.error, 'Credential generation batch could not be loaded.');
   if (!batchResult.data) throw new ApiError('not_found', 404, 'Credential generation batch was not found.');
   const batch = batchResult.data as BatchRow;
-  const items = (itemsResult.data ?? []) as ItemRow[];
   const credentialIds = items.map((item) => item.credential_id).filter((id): id is string => Boolean(id));
-  const [credentialsResult, filesResult, provenanceResult, documentsResult] = await Promise.all([
-    credentialIds.length ? db.from('credentials').select('id, document_number, status').in('id', credentialIds) : Promise.resolve({ data: [], error: null }),
-    credentialIds.length ? db.from('credential_files').select('id, credential_id, admin_label, is_primary').in('credential_id', credentialIds) : Promise.resolve({ data: [], error: null }),
-    db.from('credential_file_generations').select('credential_file_id, generation_batch_item_id, template_document_id').in('generation_batch_item_id', items.map((item) => item.id)),
+  const itemIds = items.map((item) => item.id);
+  const [credentials, files, provenance, documentsResult] = await Promise.all([
+    collectChunkedRows(credentialIds, async (ids) => {
+      const result = await db.from('credentials').select('id, document_number, status').in('id', [...ids]);
+      if (result.error) throw databaseError(result.error, 'Credential batch review data could not be loaded.');
+      return (result.data ?? []) as CredentialSummaryRow[];
+    }),
+    collectChunkedRows(credentialIds, async (ids) => {
+      const result = await db.from('credential_files').select('id, credential_id, admin_label, is_primary').in('credential_id', [...ids]);
+      if (result.error) throw databaseError(result.error, 'Credential batch review data could not be loaded.');
+      return (result.data ?? []) as CredentialFileRow[];
+    }),
+    collectChunkedRows(itemIds, async (ids) => {
+      const result = await db.from('credential_file_generations')
+        .select('credential_file_id, generation_batch_item_id, template_document_id')
+        .in('generation_batch_item_id', [...ids]);
+      if (result.error) throw databaseError(result.error, 'Credential batch review data could not be loaded.');
+      return (result.data ?? []) as GenerationProvenanceRow[];
+    }),
     db.from('credential_template_documents').select('id, page_count').eq('template_version_id', batch.template_version_id),
   ]);
-  for (const result of [credentialsResult, filesResult, provenanceResult, documentsResult]) {
-    if (result.error) throw databaseError(result.error, 'Credential batch review data could not be loaded.');
-  }
-  const activationItemsResult = items.length
-    ? await db.from('credential_generation_batch_activation_items')
+  if (documentsResult.error) throw databaseError(documentsResult.error, 'Credential batch review data could not be loaded.');
+  const documents = (documentsResult.data ?? []) as TemplateDocumentPageRow[];
+  const activationItems = await collectChunkedRows(itemIds, async (ids) => {
+    const result = await db.from('credential_generation_batch_activation_items')
       .select('id, activation_request_id, batch_item_id, position, status, attempt_count, last_error_code, email_send_id')
-      .in('batch_item_id', items.map((item) => item.id))
-    : { data: [], error: null };
-  if (activationItemsResult.error) throw databaseError(activationItemsResult.error, 'Batch activation outcomes could not be loaded.');
-  const activationItems = (activationItemsResult.data ?? []) as ActivationItemRow[];
+      .in('batch_item_id', [...ids]);
+    if (result.error) throw databaseError(result.error, 'Batch activation outcomes could not be loaded.');
+    return (result.data ?? []) as ActivationItemRow[];
+  });
   const activationRequestIds = [...new Set(activationItems.map((item) => item.activation_request_id))];
   const emailSendIds = activationItems.map((item) => item.email_send_id).filter((id): id is string => Boolean(id));
-  const [activationRequestsResult, emailSendsResult] = await Promise.all([
-    activationRequestIds.length
-      ? db.from('credential_generation_batch_activation_requests').select('id, status').in('id', activationRequestIds)
-      : Promise.resolve({ data: [], error: null }),
-    emailSendIds.length
-      ? db.from('credential_email_sends').select('id, status').in('id', emailSendIds)
-      : Promise.resolve({ data: [], error: null }),
+  const [activationRequests, emailSends] = await Promise.all([
+    collectChunkedRows(activationRequestIds, async (ids) => {
+      const result = await db.from('credential_generation_batch_activation_requests').select('id, status').in('id', [...ids]);
+      if (result.error) throw databaseError(result.error, 'Batch delivery outcomes could not be loaded.');
+      return (result.data ?? []) as ActivationRequestRow[];
+    }),
+    collectChunkedRows(emailSendIds, async (ids) => {
+      const result = await db.from('credential_email_sends').select('id, status').in('id', [...ids]);
+      if (result.error) throw databaseError(result.error, 'Batch delivery outcomes could not be loaded.');
+      return (result.data ?? []) as EmailSendStatusRow[];
+    }),
   ]);
-  if (activationRequestsResult.error || emailSendsResult.error) {
-    throw databaseError(activationRequestsResult.error ?? emailSendsResult.error, 'Batch delivery outcomes could not be loaded.');
+  const credentialById = new Map(credentials.map((row) => [row.id, row]));
+  const fileById = new Map(files.map((row) => [row.id, row]));
+  const provenanceByBatchItem = new Map<string, GenerationProvenanceRow[]>();
+  for (const row of provenance) {
+    const current = provenanceByBatchItem.get(row.generation_batch_item_id) ?? [];
+    current.push(row);
+    provenanceByBatchItem.set(row.generation_batch_item_id, current);
   }
-  const credentialById = new Map((credentialsResult.data ?? []).map((row) => [row.id, row]));
-  const fileById = new Map((filesResult.data ?? []).map((row) => [row.id, row]));
-  const documentPages = new Map((documentsResult.data ?? []).map((row) => [row.id, Number(row.page_count)]));
+  const documentPages = new Map(documents.map((row) => [row.id, Number(row.page_count)]));
   const expectedDocumentCount = lookup.templates.get(batch.template_version_id)?.documentCount ?? 0;
-  const activationRequestById = new Map(((activationRequestsResult.data ?? []) as ActivationRequestRow[]).map((row) => [row.id, row]));
-  const emailSendById = new Map((emailSendsResult.data ?? []).map((row) => [row.id, row]));
+  const activationRequestById = new Map(activationRequests.map((row) => [row.id, row]));
+  const emailSendById = new Map(emailSends.map((row) => [row.id, row]));
   const activationByBatchItem = new Map(activationItems.map((row) => [row.batch_item_id, row]));
   const reviewItems: BatchReviewItem[] = items.map((item) => {
     const credential = item.credential_id ? credentialById.get(item.credential_id) : null;
-    const files = (provenanceResult.data ?? []).filter((row) => row.generation_batch_item_id === item.id).map((row) => {
+    const itemFiles = (provenanceByBatchItem.get(item.id) ?? []).map((row) => {
       const file = fileById.get(row.credential_file_id);
       return file ? {
         id: file.id,
@@ -395,9 +442,9 @@ export async function getCredentialGenerationBatch(context: AdminContext, batchI
       lastErrorCode: item.last_error_code,
       generatedAt: item.generated_at,
       reviewedAt: item.reviewed_at,
-      files,
+      files: itemFiles,
       activationEligible: !activationItem && item.status === 'reviewed' && credential?.status === 'pending'
-        && files.length === expectedDocumentCount,
+        && itemFiles.length === expectedDocumentCount,
       activation: activationItem && activationRequest ? {
         id: activationItem.id,
         requestId: activationItem.activation_request_id,
