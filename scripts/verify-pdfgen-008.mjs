@@ -99,6 +99,14 @@ for (const part of ['length: 1740', '[[0, 999], [1000, 1999]]', 'collectPaginate
   if (!paginationTest.includes(part)) errors.push(`Cohort pagination acceptance test missing ${part}`);
 }
 
+const generationSource = readFileSync('lib/credentials/generation.ts', 'utf8');
+if (/from\('credential_template_field_placements'\)[\s\S]{0,800}\.eq\('template_version_id'/u.test(generationSource)) {
+  errors.push('Credential generation must not filter field placements by the nonexistent template_version_id column.');
+}
+if (!generationSource.includes(".in('template_document_id', documents.map((document) => document.id))")) {
+  errors.push('Credential generation must load field placements through their template_document_id relationship.');
+}
+
 for (const path of [
   'lib/credential-templates/admin.ts',
   'lib/credential-templates/storage.ts',
