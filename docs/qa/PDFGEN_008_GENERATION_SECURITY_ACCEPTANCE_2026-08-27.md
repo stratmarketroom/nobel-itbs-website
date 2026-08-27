@@ -1,22 +1,22 @@
 # PDFGEN-008 Generation Security and End-to-End Acceptance
 
 Date: 2026-08-27
-Status: PDFGEN runtime security gate passed; content-MFA gap resolved locally;
-mutation E2E remains open
+Status: PDFGEN runtime security gate passed; hosted Development single-item
+generation and private review passed; full cohort and activation acceptance remain open
 
 ## Scope For This Stage
 
-This stage implements the first four approved PDFGEN-008 work items:
+The initial stage implemented the first four approved PDFGEN-008 work items:
 
 1. reconcile the active documentation and exact acceptance matrix;
 2. extend aggregate RLS, private Storage, function-grant, and audit/privacy coverage;
 3. extend the Owner/Super Admin/Content Manager/Credential Manager and AAL1/AAL2 matrix;
 4. strengthen local unsafe-PDF, multi-document, multi-page, EN/UA/CZ, long-content, and QR tests.
 
-This stage does not create learners, credentials, permanent numbers, batches,
-Storage objects, activation records, or email sends. The 200/540/1000 cohort
-tests, hosted mutation E2E, Production PDFGEN-007 migration, and real VEDOS
-delivery remain later acceptance gates.
+The approved hosted Development stage then created synthetic 200/540/1000
+cohorts, confirmed a 200-item Batch A, and completed one deliberately bounded
+generation/review path. It did not process the remaining cohort, activate a
+credential, send email, or mutate Production.
 
 ## Acceptance Matrix
 
@@ -73,16 +73,28 @@ delivery remain later acceptance gates.
   `scripts/verify-pdfgen-008.mjs`;
 - PDF tests: `scripts/test-pdfgen-002-validation.mjs`,
   `scripts/test-pdfgen-004-generation.mjs`;
+- hosted runtime corrections: `lib/credentials/generation.ts`,
+  `lib/credential-templates/pdf-validation.ts`,
+  `lib/credential-templates/pdf-generation.ts`, and `next.config.mjs`;
+- full-cohort reference pagination coverage:
+  `lib/credentials/cohort-pagination.ts`,
+  `scripts/test-pdfgen-008-cohort-pagination.mjs`;
 - directly related active documentation and `package.json`.
 
 ## Database Objects
 
-PDFGEN-008 itself adds no database object. The separate
+PDFGEN-008 itself adds no database schema object or migration. The separate
 QA-003-MFA-RLS-001 ticket adds repository migration 62 and alters 45 editorial
 mutation policies; it was applied only to the local Docker Supabase stack.
 Every test used its transaction/rollback boundary, and the stack was stopped
 after verification. Docker retained only its local development volume and
 downloaded images.
+
+Hosted Development data now includes the approved synthetic 200/540/1000
+learner cohorts, one 200-item Batch A, one pending credential, one permanently
+reserved number, one private generated PDF, and one append-only provenance row.
+The batch remains pinned to immutable published template v1. Published template
+v2 exists for future batches but was not used to repin or mutate Batch A.
 
 ## Tests / Verification
 
@@ -97,6 +109,12 @@ Passed locally on 2026-08-27:
 - `npx tsc --noEmit`;
 - `npm run build`;
 - `git diff --check`.
+
+The final hosted-runtime correction was also verified by inspecting the local
+Next.js output trace for the exact batch retry route. Its serverless manifest
+contains `pdf.worker.mjs`, Noto Sans Regular, and Noto Sans Bold. This closes the
+Vercel-only fake-worker failure while keeping both single and batch generation
+assets explicit.
 
 The 42-assertion QA-001, 31-assertion QA-003, and 23-assertion focused
 PDFGEN-008 pgTAP files have internally matching plans. Static verification
@@ -122,19 +140,59 @@ separate QA-003-MFA-RLS-001 migration. All 45 editorial
 mandatory by default. PDFGEN helper-delegated MFA remains covered without
 weakening the content-policy assertion.
 
+## Hosted Development Mutation Evidence
+
+- approved number pool: `NITBS-C-2026-000001` through
+  `NITBS-C-2026-001740`, partitioned 200 + 540 + 1000;
+- Batch A: 200 synthetic learners, immutable published template v1;
+- bounded control item: `E2eA0001`, document number
+  `NITBS-C-2026-000001`;
+- final batch item state: `reviewed`, generation attempt 7,
+  `last_error_code = null`, reviewer and review timestamp present;
+- credential state remains `pending`; no activation or email record exists;
+- exactly one credential file exists, is primary, is a private PDF, uses the
+  canonical path invariant, and has a valid bounded size;
+- exactly one private Storage object exists and the bucket is non-public;
+- exactly one provenance row exists, points to template v1, batch item, and
+  attempt 7, carries valid SHA-256 inputs/outputs, and resolves to one page;
+- `000001` exists once as reserved, `000002` is absent, and only one number from
+  the approved pool is consumed;
+- rendered PDF is A4 landscape, one page, unencrypted, contains no JavaScript or
+  form, and visually preserves the holder, programme, issue date, document
+  number, and QR without clipping;
+- the rendered QR decodes to HTTPS with the expected `/verify/<43-char-token>`
+  shape. The raw token and signed preview URL were not added to the repository
+  or acceptance report;
+- current Batch A remainder is intentionally untouched: 145 queued, 54
+  retryable, and 1 reviewed.
+
+The hosted fixes were isolated to this ticket: full-cohort reference pagination,
+placement lookup through template documents, PDF.js Node canvas bootstrapping,
+actual-glyph height measurement, sanitized validation diagnostics, preserved
+wrapped error cause, and explicit Vercel worker/font output tracing.
+
 ## Security Notes
 
 - No service-role, SMTP, token-encryption, or HMAC secret is added or exposed.
 - No private object URL or real token enters a test fixture.
 - PDF runtime fixtures are fictional and remain in memory.
-- Production remains untouched during this stage.
+- Unexpected PDF validator diagnostics contain only a normalized error name and
+  a redacted, control-character-stripped message capped at 240 characters;
+  browser responses remain generic.
+- Generated output stays in the non-public `private-credentials` bucket; local
+  review used a temporary mode-0600 copy outside the repository.
+- Production remains untouched during this stage. No activation or VEDOS email
+  operation was attempted.
 
 ## Deviations / Open Questions
 
-- Full mutation E2E requires an explicitly approved non-production cohort and
-  permanent-number allocation.
-- Cohort-size acceptance at 200, 540, and 1000 items is not part of this first
-  stage and must not be represented as passed.
+- Cohort data and the approved permanent-number pool exist in Development, but
+  only one Batch A item was generated and reviewed. 200/540/1000 throughput,
+  resume, and aggregate outcome acceptance must not be represented as passed.
+- Vercel Deployment Protection returns 401 before the anonymous public route in
+  Preview. Therefore the hosted `pending -> not_found` QR response could not be
+  observed anonymously at the protected Preview URL; database status, route
+  logic, and existing public-verification tests remain the supporting evidence.
 - The first approved real complete-package VEDOS delivery remains a separate
   operational acceptance dependency.
 - The separate content-policy migration is verified locally and in hosted
@@ -142,8 +200,8 @@ weakening the content-policy assertion.
 
 ## Next Dependency
 
-The independent `import_learners` finding is resolved by LRN-LINT-001 migration
-64, and hosted lint is clean at 64/64 parity. Production policy/function
-promotion and the later PDFGEN mutation stage remain separate; the mutation
-stage additionally requires an approved non-production cohort and
-permanent-number allocation.
+Next is the explicitly bounded Batch A continuation decision: process a small
+chunk, inspect its aggregate retry/resume behavior, and only then consider the
+remaining 200-item cohort. Activation/email acceptance follows generation and
+review acceptance and remains a separate user-approved step. The 540- and
+1000-item cohorts and any Production promotion stay later gates.
