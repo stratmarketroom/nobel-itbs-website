@@ -487,11 +487,11 @@ The orchestrator controls:
 
 Current ticket:
 
-- `LRN-LINT-001 Import Learners Relation Resolution` — complete locally and in hosted Development: forward-only migration 64 replaces the lint-invisible, same-transaction-conflicting temporary table in `public.import_learners(jsonb)` with normalized transaction-local JSONB. The clean 64-migration rebuild, selected local and hosted database gates pass 111/111, hosted lint reports no schema errors, and Development parity is 64/64. Production remains at 60.
+- `QA-005-PROD-MIG-001 Production Migration Promotion 61–64` — complete: the exact ordered set passed a clean local rebuild, 168/168 focused pgTAP assertions, Production preflight, promotion, 64/64 parity, no-pending dry run, clean hosted lint, and read-only RLS/function/data acceptance. No cohort, learner, credential, number, template, PDF, activation, email, or Storage object was created.
 
 Next ticket:
 
-- promote ordered migrations 61–64 to Production only through a separately authorized release ticket; Owner-gated PDFGEN cohort acceptance remains separate;
+- continue PDFGEN-008 mutation acceptance only after the Owner approves a non-production cohort and permanent-number allocation; backup activation/restore and real VEDOS delivery remain separately gated;
 
 Agent:
 
@@ -506,14 +506,14 @@ Owner action needed:
 - PDFGEN-001 is implemented, merged through PR #29 as `1b2d224`, and applied in dev and Production: the private schema, forced RLS, role/MFA boundary, immutable versioning, multi-document/multi-page publication, unbounded-cohort batch foundation, provenance, and forward-only trigger correction passed the available checks; Production contains zero PDFGEN fixture rows, while full pgTAP execution remains queued for a compatible runner;
 - PDFGEN-002 was merged through PR #31 as `970fd6c`; its private bucket, strict PDF validation, controlled source routes, page metadata/hash extraction, rollback, safe metadata grants, publication source guard, and published-object immutability passed local code/build checks. Preview and Production deployment checks passed, and migration `20260825120000` is applied/recorded and read-only accepted in dev and Production with zero template fixtures. Authenticated real-template workflow acceptance is assigned to PDFGEN-003 because that ticket provides the package UI;
 - PDFGEN-006 is merged, deployed, and read-only accepted in dev and Production. Full mutation acceptance remains Owner-gated until an explicitly approved non-production cohort and permanent-number allocation are available;
-- PDFGEN-007 was merged through PR #41 as `26d35f2`; its development migration and hosted read-only acceptance are complete. Production migration, mutation acceptance, and real activation/delivery remain gated by PDFGEN-008 and an approved non-production cohort;
+- PDFGEN-007 was merged through PR #41 as `26d35f2`; migration 61 and its read-only security acceptance are complete in Development and Production. Mutation acceptance and real activation/delivery remain gated by PDFGEN-008 and an approved non-production cohort;
 - CRD-PDFGEN-001 scope alignment is approved: Release 1 must generate one or more private, potentially multi-page PDFs per credential from a reusable programme/type/language/variant Template Package and must support controlled batches;
 - QA-005-A11Y-FIX-001 is merged, deployed, and accepted at its focused scope through PR #25 and Production merge `083b045`; no real credentials were submitted during browser acceptance;
 - QA-005-TELEGRAM-INVITE-001 is complete: the Owner revoked the setup-time Telegram group invitation link, and no change to the accepted bot/chat configuration or Telegram notification payload is required;
 - backup activation/restore remains Owner-deferred until real learners and credentials exist; before operational issuance it will still require Supabase Pro and an approved encrypted independent private-PDF destination;
 - provide or approve production-only service configuration when its checklist item is reached; do not add VEDOS SMTP, Telegram, analytics, or CAPTCHA credentials before the corresponding launch decision;
-- QA-001 and QA-003 full local pgTAP execution is complete; migration 62 is accepted in hosted Development and remains unpromoted to Production;
-- LRN-LINT-001 migration 64 is accepted in hosted Development with clean lint and 64/64 parity; Production promotion remains separately authorized;
+- QA-001 and QA-003 full local pgTAP execution is complete; migration 62 is accepted in hosted Development and Production;
+- LRN-LINT-001 migration 64 is accepted in hosted Development and Production with clean lint and 64/64 parity;
 - QA-002 and QA-004 are complete at the current dev level: the retained credential passed valid verification, irreversible revocation, and status-only revoked verification by number and QR;
 - WF-004 resend is implemented, migrated and deployed in dev/Production through merged PR #22; authenticated valid-record smoke and one Owner-approved delivery are deferred until a valid credential exists;
 - VEDOS SMTP credentials remain required only in encrypted deployment settings for real credential-email delivery and QA-005 acceptance.
