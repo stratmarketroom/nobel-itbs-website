@@ -94,6 +94,11 @@ for (const part of ['/Encrypt', '/JavaScript', '/EmbeddedFiles', '/Launch', '/UR
   if (!validationTest.includes(part)) errors.push(`PDF validation acceptance test missing ${part}`);
 }
 
+const validationSource = readFileSync('lib/credential-templates/pdf-validation.ts', 'utf8');
+for (const part of ["from '@napi-rs/canvas'", 'installPdfJsCanvasGlobals()', 'CanvasDOMMatrix', 'CanvasImageData', 'CanvasPath2D']) {
+  if (!validationSource.includes(part)) errors.push(`PDF.js Node canvas bootstrap missing ${part}`);
+}
+
 const paginationTest = existsSync(requiredPaths[5]) ? readFileSync(requiredPaths[5], 'utf8') : '';
 for (const part of ['length: 1740', '[[0, 999], [1000, 1999]]', 'collectPaginatedRows']) {
   if (!paginationTest.includes(part)) errors.push(`Cohort pagination acceptance test missing ${part}`);
