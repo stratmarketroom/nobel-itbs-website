@@ -73,13 +73,14 @@ Passed against hosted Development:
 
 ## Deviations / Open Questions
 
-- The separate pre-existing `public.import_learners` lint finding remains
-  outside this ticket.
+- The separate pre-existing `public.import_learners` lint finding remained
+  outside this ticket and was subsequently resolved by LRN-LINT-001 migration
+  64.
 - Hosted Development contains migration 63. Production remains at 60 and was
   not changed by this ticket.
 
 ## Next Dependency
 
-Address the independent `import_learners` lint finding in its own ticket.
-Production promotion of migration 63 and PDFGEN mutation acceptance remain
+Hosted lint is clean after the separately scoped migration 64. Production
+promotion of ordered migrations 61–64 and PDFGEN mutation acceptance remain
 separately authorized steps.

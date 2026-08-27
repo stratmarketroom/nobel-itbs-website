@@ -90,12 +90,14 @@ Passed against hosted Development:
 - Hosted `db lint --level error` reported two pre-existing issues outside this
   policy ticket. The composite-to-UUID assignment in
   `public.begin_single_credential_generation` is corrected locally and in
-  hosted Development by separate migration 63; the `public.import_learners`
-  temporary-table resolution finding remains open. This policy migration
-  creates or modifies neither function.
+  hosted Development by separate migration 63. The `public.import_learners`
+  temporary-table finding and its same-transaction runtime defect are corrected
+  by separate migration 64. This policy migration creates or modifies neither
+  function.
 
 ## Next Dependency
 
-Triage `import_learners` in its own ticket. Production promotion of migrations
-62–63 requires separate explicit authorization; PDFGEN cohort mutation
-acceptance remains a separate Owner-approved dependency.
+Hosted lint is clean after the separately scoped migrations 63 and 64.
+Production promotion of migrations 61–64 requires separate explicit
+authorization; PDFGEN cohort mutation acceptance remains a separate
+Owner-approved dependency.

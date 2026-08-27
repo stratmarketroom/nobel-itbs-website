@@ -51,6 +51,7 @@
     "verify:lrn-003": "node scripts/verify-lrn-003.mjs",
     "verify:lrn-004": "node scripts/verify-lrn-004.mjs",
     "verify:lrn-005": "node scripts/verify-lrn-005.mjs",
+    "verify:lrn-lint-001": "node scripts/verify-lrn-lint-001.mjs",
     "verify:lrn-005:live": "node --env-file=.env.local scripts/verify-lrn-005-live.mjs",
     "verify:crd-001": "node scripts/verify-crd-001.mjs",
     "verify:crd-002": "node scripts/verify-crd-002.mjs",
