@@ -487,15 +487,15 @@ The orchestrator controls:
 
 Current ticket:
 
-- `PDFGEN-LINT-001 Single Generation Package Assignment` — complete locally and in hosted Development: forward-only migration 63 corrects the Template Package composite assignment without changing the function contract; the clean local regression passes 293/293, the hosted focused gate passes 27/27, hosted lint no longer reports the single-generation error, and Development parity is 63/63. Production remains at 60.
+- `LRN-LINT-001 Import Learners Relation Resolution` — complete locally and in hosted Development: forward-only migration 64 replaces the lint-invisible, same-transaction-conflicting temporary table in `public.import_learners(jsonb)` with normalized transaction-local JSONB. The clean 64-migration rebuild, selected local and hosted database gates pass 111/111, hosted lint reports no schema errors, and Development parity is 64/64. Production remains at 60.
 
 Next ticket:
 
-- address the independent `import_learners` lint finding in its own ticket; Production promotions and Owner-gated PDFGEN cohort acceptance remain separate;
+- promote ordered migrations 61–64 to Production only through a separately authorized release ticket; Owner-gated PDFGEN cohort acceptance remains separate;
 
 Agent:
 
-- Full-Stack / Admin UI + PDF Placement Agent
+- Database / Security Agent
 
 Parallel agents:
 
@@ -513,6 +513,7 @@ Owner action needed:
 - backup activation/restore remains Owner-deferred until real learners and credentials exist; before operational issuance it will still require Supabase Pro and an approved encrypted independent private-PDF destination;
 - provide or approve production-only service configuration when its checklist item is reached; do not add VEDOS SMTP, Telegram, analytics, or CAPTCHA credentials before the corresponding launch decision;
 - QA-001 and QA-003 full local pgTAP execution is complete; migration 62 is accepted in hosted Development and remains unpromoted to Production;
+- LRN-LINT-001 migration 64 is accepted in hosted Development with clean lint and 64/64 parity; Production promotion remains separately authorized;
 - QA-002 and QA-004 are complete at the current dev level: the retained credential passed valid verification, irreversible revocation, and status-only revoked verification by number and QR;
 - WF-004 resend is implemented, migrated and deployed in dev/Production through merged PR #22; authenticated valid-record smoke and one Owner-approved delivery are deferred until a valid credential exists;
 - VEDOS SMTP credentials remain required only in encrypted deployment settings for real credential-email delivery and QA-005 acceptance.

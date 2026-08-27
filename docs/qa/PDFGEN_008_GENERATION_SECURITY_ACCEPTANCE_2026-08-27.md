@@ -142,7 +142,8 @@ weakening the content-policy assertion.
 
 ## Next Dependency
 
-Address the independent `import_learners` lint finding in a separate ticket.
-Production policy/function promotion and the later PDFGEN mutation stage remain
-separate; the mutation stage additionally requires an approved non-production
-cohort and permanent-number allocation.
+The independent `import_learners` finding is resolved by LRN-LINT-001 migration
+64, and hosted lint is clean at 64/64 parity. Production policy/function
+promotion and the later PDFGEN mutation stage remain separate; the mutation
+stage additionally requires an approved non-production cohort and
+permanent-number allocation.

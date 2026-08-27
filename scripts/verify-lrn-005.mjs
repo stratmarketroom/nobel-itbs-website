@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const files = {
   migration: 'supabase/migrations/20260812110000_lrn_005_learner_import.sql',
+  correctionMigration: 'supabase/migrations/20260827140000_lrn_lint_001_import_learners_relation_resolution.sql',
   data: 'lib/learners/import.ts',
   types: 'lib/learners/types.ts',
   component: 'components/admin-learners.tsx',
@@ -16,14 +17,18 @@ const errors = Object.values(files).filter((file) => !existsSync(file)).map((fil
 if (!errors.length) {
   const source = Object.fromEntries(Object.entries(files).map(([key, file]) => [key, readFileSync(file, 'utf8')]));
   const routes = source.preview + source.commit + source.template;
+  const effectiveMigration = source.correctionMigration;
 
-  for (const snippet of ['security definer', 'assert_sensitive_action_allowed', "'owner'", "'super_admin'", "'credential_manager'", 'jsonb_to_recordset', 'write_audit_log', "'count'", 'on commit drop']) {
-    if (!source.migration.includes(snippet)) errors.push(`Import migration missing: ${snippet}`);
+  for (const snippet of ['security definer', 'assert_sensitive_action_allowed', "'owner'", "'super_admin'", "'credential_manager'", 'jsonb_to_recordset', 'write_audit_log', "'count'", 'v_normalized_rows jsonb']) {
+    if (!effectiveMigration.includes(snippet)) errors.push(`Effective import migration missing: ${snippet}`);
   }
   for (const snippet of ['revoke all on function public.import_learners(jsonb) from public, anon', 'grant execute on function public.import_learners(jsonb) to authenticated, service_role']) {
-    if (!source.migration.includes(snippet)) errors.push(`Import function privilege contract missing: ${snippet}`);
+    if (!effectiveMigration.includes(snippet)) errors.push(`Import function privilege contract missing: ${snippet}`);
   }
-  if (!source.migration.includes("set search_path = internal, public, extensions, pg_temp")) errors.push('Import function must use a fixed search path.');
+  if (!effectiveMigration.includes("set search_path = internal, public, extensions, pg_temp")) errors.push('Import function must use a fixed search path.');
+  if (/create\s+(?:temporary|temp)\s+table/iu.test(effectiveMigration) || effectiveMigration.includes('lrn_005_import_rows')) {
+    errors.push('Effective learner import must not depend on a transaction-scoped temporary relation.');
+  }
   if (/getSupabaseAdminClient|SUPABASE_SERVICE_ROLE_KEY/.test(source.data + routes)) errors.push('Learner import must preserve actor-scoped RLS and never use service role in application code.');
   for (const snippet of ['maximumFileBytes', 'maximumRows = 500', "extension !== 'xlsx' && extension !== 'csv'", 'map: (value) => value', 'addFileDuplicates', 'addDatabaseConflicts', "rpc('import_learners'", 'learnerImportTemplate']) {
     if (!source.data.includes(snippet)) errors.push(`Import service missing: ${snippet}`);
