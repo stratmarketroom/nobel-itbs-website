@@ -129,6 +129,16 @@ for (const part of [
   if (!pdfGenerationSource.includes(part)) errors.push(`Safe PDF validation diagnostics missing ${part}`);
 }
 
+const nextConfigSource = readFileSync('next.config.mjs', 'utf8');
+for (const part of [
+  "'./node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'",
+  "'/api/v1/admin/credentials/**': credentialGenerationAssets",
+  "'/api/v1/admin/credential-generation-batches/**': credentialGenerationAssets",
+  "'./node_modules/notosans-fontface/fonts/NotoSans-Regular.ttf'",
+]) {
+  if (!nextConfigSource.includes(part)) errors.push(`Credential generation output tracing missing ${part}`);
+}
+
 for (const path of [
   'lib/credential-templates/admin.ts',
   'lib/credential-templates/storage.ts',
