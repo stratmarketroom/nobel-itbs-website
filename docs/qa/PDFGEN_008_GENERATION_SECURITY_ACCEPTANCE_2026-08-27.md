@@ -1,7 +1,7 @@
 # PDFGEN-008 Generation Security and End-to-End Acceptance
 
 Date: 2026-08-27
-Status: PDFGEN runtime security gate passed; hosted Development 11-item bounded
+Status: PDFGEN runtime security gate passed; hosted Development 21-item bounded
 generation and private review passed; full cohort and activation acceptance remain open
 
 ## Scope For This Stage
@@ -15,8 +15,8 @@ The initial stage implemented the first four approved PDFGEN-008 work items:
 
 The approved hosted Development stage then created synthetic 200/540/1000
 cohorts, confirmed a 200-item Batch A, and completed one deliberately bounded
-generation/review path followed by an approved ten-item retry/review slice. It
-did not process the remaining cohort, activate a credential, send email, or
+generation/review path followed by two approved ten-item retry/review slices.
+It did not process the remaining cohort, activate a credential, send email, or
 mutate Production.
 
 ## Acceptance Matrix
@@ -94,8 +94,8 @@ downloaded images.
 Hosted Development data now includes the approved synthetic 200/540/1000
 learner cohorts, one 200-item Batch A, one pending credential, one permanently
 reserved number, one private generated PDF, and one append-only provenance row
-from the control path, plus the approved ten-item slice with ten more pending
-credentials, reserved numbers, private PDFs, and provenance rows.
+from the control path, plus two approved ten-item slices with twenty more
+pending credentials, reserved numbers, private PDFs, and provenance rows.
 The batch remains pinned to immutable published template v1. Published template
 v2 exists for future batches but was not used to repin or mutate Batch A.
 
@@ -166,8 +166,8 @@ weakening the content-policy assertion.
 - the rendered QR decodes to HTTPS with the expected `/verify/<43-char-token>`
   shape. The raw token and signed preview URL were not added to the repository
   or acceptance report;
-- current Batch A remainder is intentionally untouched: 145 queued, 54
-  retryable, and 1 reviewed before the approved ten-item continuation.
+- Batch A had 145 queued, 54 retryable, and 1 reviewed before the first approved
+  ten-item continuation.
 
 The approved continuation then processed positions 2–11 only:
 
@@ -183,8 +183,29 @@ The approved continuation then processed positions 2–11 only:
 - every one of the ten QR codes decoded independently to the expected HTTPS
   `/verify/<43-char-token>` shape;
 - all ten were marked reviewed only after the complete visual and QR pass;
-- the final Batch A state is 145 queued, 44 retryable, and 11 reviewed;
+- after this slice, Batch A was 145 queued, 44 retryable, and 11 reviewed;
 - exactly 11 approved-pool numbers are consumed and `000012` remains unused.
+
+The second approved continuation then processed positions 12–21 only:
+
+- all ten started as retryable attempt 1 with no credential and no reserved
+  target number;
+- individual guarded retry produced ten generated items at attempt 2 with
+  numbers `NITBS-C-2026-000012` through `NITBS-C-2026-000021`;
+- server-side acceptance confirmed ten pending credentials, ten primary private
+  PDFs, ten canonical Storage objects, ten v1 provenance rows, valid hashes,
+  ten total pages, and zero error, activation, or email records;
+- every downloaded PDF SHA-256 matched its append-only provenance row;
+- every PDF was rendered for review; the contact sheet confirmed the matching
+  holder and number on each item without clipping or misplaced content;
+- PDF metadata confirmed one unencrypted A4 landscape page per item with no
+  JavaScript or form;
+- every one of the ten QR codes decoded independently to the expected HTTPS
+  `/verify/<43-char-token>` shape;
+- all ten were marked reviewed only after the complete visual, metadata, hash,
+  and QR pass;
+- the final Batch A state is 145 queued, 34 retryable, and 21 reviewed;
+- exactly 21 approved-pool numbers are consumed and `000022` remains unused.
 
 The hosted fixes were isolated to this ticket: full-cohort reference pagination,
 placement lookup through template documents, PDF.js Node canvas bootstrapping,
@@ -207,7 +228,7 @@ wrapped error cause, and explicit Vercel worker/font output tracing.
 ## Deviations / Open Questions
 
 - Cohort data and the approved permanent-number pool exist in Development, but
-  only 11 Batch A items were generated and reviewed. 200/540/1000 throughput,
+  only 21 Batch A items were generated and reviewed. 200/540/1000 throughput,
   automatic chunk resume, and aggregate outcome acceptance must not be
   represented as passed.
 - Vercel Deployment Protection returns 401 before the anonymous public route in
@@ -222,7 +243,7 @@ wrapped error cause, and explicit Vercel worker/font output tracing.
 ## Next Dependency
 
 Next is the explicit Batch A continuation decision: either repeat another
-ten-item individual retry/review slice or separately approve the built-in
+ten-item individual retry/review slice for positions 22–31 or separately approve the built-in
 25-item queued processing chunk to exercise automatic chunk behavior. The UI
 `Process` action loops until no queued items remain, so it must not be used for
 this bounded test without a lower-level single-chunk invocation. Activation and
