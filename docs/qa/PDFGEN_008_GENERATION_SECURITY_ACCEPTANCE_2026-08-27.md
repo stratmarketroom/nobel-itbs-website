@@ -2,7 +2,8 @@
 
 Date: 2026-08-27
 Status: PDFGEN runtime security gate passed; hosted Development 200-item Batch A
-generation passed with 55 items privately reviewed; 540/1000 and activation remain open
+and 540-item Batch B generation passed; 55 Batch A items are privately reviewed;
+1000-item throughput and activation remain open
 
 ## Scope For This Stage
 
@@ -19,6 +20,16 @@ generation/review path followed by three approved ten-item retry/review slices
 and one approved 24-item retryable-remainder stage. After retryable recovery was
 complete, the normal resumable batch process generated the remaining 145 queued
 items. It did not activate a credential, send email, or mutate Production.
+
+The next approved hosted Development stage confirmed the complete 540-item
+synthetic Batch B against immutable published template v1. Opening that batch
+exposed a large-ID detail-loading bottleneck before any number was reserved.
+PDFGEN-008 then added bounded 100-ID relation loading, stable item pagination,
+and linear provenance grouping, with regression coverage for both 540 and 1000
+IDs. The deployed correction loaded all 540 queued items successfully. The
+normal generator then completed all 540 items across safe resumable checkpoints,
+including browser fetch interruptions after 230, 255, and 275 committed items.
+No item was duplicated, retried, reviewed, activated, or emailed.
 
 ## Acceptance Matrix
 
@@ -79,8 +90,11 @@ items. It did not activate a credential, send email, or mutate Production.
   `lib/credential-templates/pdf-validation.ts`,
   `lib/credential-templates/pdf-generation.ts`, and `next.config.mjs`;
 - full-cohort reference pagination coverage:
-  `lib/credentials/cohort-pagination.ts`,
+  `lib/credentials/pagination.ts`,
   `scripts/test-pdfgen-008-cohort-pagination.mjs`;
+- large-batch detail loading and regression coverage:
+  `lib/credentials/chunking.ts`, `lib/credentials/batch-generation.ts`,
+  `scripts/test-pdfgen-008-batch-detail-chunking.mjs`;
 - directly related active documentation and `package.json`.
 
 ## Database Objects
@@ -100,6 +114,13 @@ remain generated and intentionally unreviewed.
 The batch remains pinned to immutable published template v1. Published template
 v2 exists for future batches but was not used to repin or mutate Batch A.
 
+Hosted Development also contains one fully generated 540-item Batch B with 540
+pending credentials, permanent reserved numbers
+`NITBS-C-2026-000201–000740`, 540 private generated PDFs, and 540 append-only v1
+provenance rows. All 540 items remain generated and intentionally unreviewed.
+The batch is pinned to immutable published template v1. No Batch B activation,
+delivery, review, or email row exists, and `NITBS-C-2026-000741` remains free.
+
 ## Tests / Verification
 
 Passed locally on 2026-08-27:
@@ -109,6 +130,8 @@ Passed locally on 2026-08-27:
 - `npm run verify:pdfgen-001` through `npm run verify:pdfgen-008`;
 - `npm run test:pdfgen-002:validation`;
 - `npm run test:pdfgen-004:generation`;
+- `npm run test:pdfgen-008:pagination`;
+- `npm run test:pdfgen-008:chunking`;
 - `npm run lint -- --max-warnings=0`;
 - `npx tsc --noEmit`;
 - `npm run build`;
@@ -280,7 +303,46 @@ The normal resumable batch process then generated positions 56–200:
 The hosted fixes were isolated to this ticket: full-cohort reference pagination,
 placement lookup through template documents, PDF.js Node canvas bootstrapping,
 actual-glyph height measurement, sanitized validation diagnostics, preserved
-wrapped error cause, and explicit Vercel worker/font output tracing.
+wrapped error cause, explicit Vercel worker/font output tracing, bounded 100-ID
+batch-detail relation loading, stable item pagination beyond the PostgREST
+1000-row boundary, and linear provenance grouping.
+
+The approved 540-item Batch B throughput stage then passed:
+
+- preflight confirmed exactly 540 active synthetic learners
+  `E2eB0001–E2eB0540`, no existing Batch B item, and a completely free approved
+  range `NITBS-C-2026-000201–000740`;
+- server preview returned exactly 540 selected, 540 accepted, zero conflicts,
+  zero archived learners, template v1, issue date `2026-08-27`, and no
+  completion date;
+- confirmation created exactly 540 queued items and did not reserve a number;
+- the deployed large-batch correction loaded the complete 540-item review model
+  without one oversized UUID filter or a 1000-row truncation;
+- browser fetch interruptions occurred only after atomic item completion. DB
+  checkpoints were 230 generated/310 queued, 255 generated/285 queued, and 275
+  generated/265 queued, always with zero processing lease, retryable, conflict,
+  failed, or error-code item before resume;
+- each guarded resume continued only the remaining queued items. Permanent
+  numbers stayed contiguous and unique, and no item exceeded generation
+  attempt 1;
+- final state is 540 generated, zero queued/processing/retryable/conflict/
+  reviewed/activating/activated/failed items, and zero activation or email rows;
+- all 540 credentials remain `pending`, with numbers
+  `NITBS-C-2026-000201` through `NITBS-C-2026-000740`; the next approved number
+  `NITBS-C-2026-000741` is unused;
+- server-side acceptance confirmed 540 primary private PDFs, 540 canonical
+  Storage objects, 540 immutable-template-v1 provenance rows, valid generation
+  attempt 1 and SHA-256 fields, and a non-public `private-credentials` bucket;
+- every private PDF was downloaded in turn, matched against its append-only
+  output SHA-256, checked for exact stored size, inspected with PDF metadata
+  tooling, checked for the matching synthetic holder and document number,
+  rendered at 240 DPI for QR decoding, and deleted from temporary storage;
+- all 540 PDFs are one unencrypted A4 landscape page with no form, JavaScript,
+  embedded-file, launch, submit, or open action, and all 540 QR codes decode to
+  an HTTPS `/verify/<43-char-token>` shape;
+- visual positions 1, 2, 25, 100, 200, 300, 400, 500, 539, and 540 confirmed
+  correct holder/number pairs, consistent layout, QR placement, and no clipping
+  across the full range.
 
 ## Security Notes
 
@@ -297,12 +359,15 @@ wrapped error cause, and explicit Vercel worker/font output tracing.
 
 ## Deviations / Open Questions
 
-- Batch A 200-item generation and automatic bounded-chunk iteration passed in
-  Development. Only its first 55 items were individually reviewed; positions
-  56–200 remain generated because review is required before activation, not for
-  generation-throughput acceptance.
-- The 540- and 1000-item cohort throughput paths and an explicitly interrupted
-  resume scenario remain open and must not be represented as passed.
+- Batch A 200-item and Batch B 540-item generation passed in Development. Only
+  Batch A positions 1–55 were individually reviewed. Batch A positions 56–200
+  and all Batch B items remain generated because review is required before
+  activation, not for generation-throughput acceptance.
+- The explicitly interrupted Batch B resume path passed at three committed
+  checkpoints without duplicate number reservation, attempt escalation, or
+  partial-file state.
+- The 1000-item cohort throughput path remains open and must not be represented
+  as passed.
 - Vercel Deployment Protection returns 401 before the anonymous public route in
   Preview. Therefore the hosted `pending -> not_found` QR response could not be
   observed anonymously at the protected Preview URL; database status, route
@@ -315,7 +380,7 @@ wrapped error cause, and explicit Vercel worker/font output tracing.
 ## Next Dependency
 
 Next is an explicit decision between continuing hosted throughput acceptance
-with the 540-item cohort or defining the human-review strategy for Batch A
-positions 56–200 before any activation. Activation and email remain separate
-user-approved steps. The 1000-item cohort and any Production promotion stay
-later gates.
+with the 1000-item cohort or defining the human-review strategy for generated
+Batch A positions 56–200 and Batch B positions 1–540 before any activation.
+Activation and email remain separate user-approved steps. Any Production
+promotion stays a later gate.
