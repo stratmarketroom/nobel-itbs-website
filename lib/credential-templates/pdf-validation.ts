@@ -30,8 +30,8 @@ const forbiddenPdfNames = new Set([
 ]);
 
 export class TemplatePdfValidationError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
     this.name = 'TemplatePdfValidationError';
   }
 }
@@ -259,7 +259,7 @@ export async function validateTemplatePdf(bytes: Buffer): Promise<ValidatedTempl
     if (passwordRequested || error instanceof pdfjs.PasswordException) {
       throw new TemplatePdfValidationError('Encrypted PDFs are not accepted.');
     }
-    throw new TemplatePdfValidationError('PDF is malformed or uses unsupported content.');
+    throw new TemplatePdfValidationError('PDF is malformed or uses unsupported content.', { cause: error });
   } finally {
     await loadingTask.destroy().catch(() => undefined);
   }

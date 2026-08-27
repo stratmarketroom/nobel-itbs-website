@@ -95,7 +95,14 @@ for (const part of ['/Encrypt', '/JavaScript', '/EmbeddedFiles', '/Launch', '/UR
 }
 
 const validationSource = readFileSync('lib/credential-templates/pdf-validation.ts', 'utf8');
-for (const part of ["from '@napi-rs/canvas'", 'installPdfJsCanvasGlobals()', 'CanvasDOMMatrix', 'CanvasImageData', 'CanvasPath2D']) {
+for (const part of [
+  "from '@napi-rs/canvas'",
+  'installPdfJsCanvasGlobals()',
+  'CanvasDOMMatrix',
+  'CanvasImageData',
+  'CanvasPath2D',
+  "{ cause: error }",
+]) {
   if (!validationSource.includes(part)) errors.push(`PDF.js Node canvas bootstrap missing ${part}`);
 }
 

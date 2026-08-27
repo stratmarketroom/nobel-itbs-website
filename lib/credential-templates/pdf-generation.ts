@@ -62,10 +62,11 @@ function failure(
 }
 
 function reportUnexpectedValidationFailure(error: unknown): void {
-  if (error instanceof TemplatePdfValidationError) return;
+  const diagnostic = error instanceof TemplatePdfValidationError ? error.cause : error;
+  if (!diagnostic) return;
 
-  const name = error instanceof Error ? error.name : 'UnknownError';
-  const message = error instanceof Error ? error.message : 'Non-error validation failure';
+  const name = diagnostic instanceof Error ? diagnostic.name : 'UnknownError';
+  const message = diagnostic instanceof Error ? diagnostic.message : 'Non-error validation failure';
   const safeName = name.replace(/[^A-Za-z0-9_.-]/gu, '').slice(0, 64) || 'UnknownError';
   const safeMessage = message
     .replace(/https?:\/\/\S+/giu, '[redacted-url]')
