@@ -6,6 +6,7 @@ const requiredPaths = [
   'supabase/tests/database/qa_003_mfa_matrix.test.sql',
   'scripts/test-pdfgen-002-validation.mjs',
   'scripts/test-pdfgen-004-generation.mjs',
+  'scripts/test-pdfgen-008-cohort-pagination.mjs',
   'docs/qa/PDFGEN_008_GENERATION_SECURITY_ACCEPTANCE_2026-08-27.md',
 ];
 const errors = [];
@@ -93,6 +94,11 @@ for (const part of ['/Encrypt', '/JavaScript', '/EmbeddedFiles', '/Launch', '/UR
   if (!validationTest.includes(part)) errors.push(`PDF validation acceptance test missing ${part}`);
 }
 
+const paginationTest = existsSync(requiredPaths[5]) ? readFileSync(requiredPaths[5], 'utf8') : '';
+for (const part of ['length: 1740', '[[0, 999], [1000, 1999]]', 'collectPaginatedRows']) {
+  if (!paginationTest.includes(part)) errors.push(`Cohort pagination acceptance test missing ${part}`);
+}
+
 for (const path of [
   'lib/credential-templates/admin.ts',
   'lib/credential-templates/storage.ts',
@@ -116,6 +122,9 @@ for (const payload of auditPayloads) {
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 if (pkg.scripts?.['verify:pdfgen-008'] !== 'node scripts/verify-pdfgen-008.mjs') {
   errors.push('Missing verify:pdfgen-008 package script.');
+}
+if (pkg.scripts?.['test:pdfgen-008:pagination'] !== 'node --experimental-strip-types scripts/test-pdfgen-008-cohort-pagination.mjs') {
+  errors.push('Missing PDFGEN-008 cohort pagination test script.');
 }
 
 if (errors.length) {

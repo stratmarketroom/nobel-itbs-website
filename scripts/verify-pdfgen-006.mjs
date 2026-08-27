@@ -5,6 +5,7 @@ const requiredPaths = [
   'supabase/migrations/20260826123000_pdfgen_006_batch_confirm_enum_fix.sql',
   'supabase/tests/database/pdfgen_006_batch_generation.test.sql',
   'lib/credentials/batch-generation.ts',
+  'lib/credentials/pagination.ts',
   'lib/credentials/batch-generation-types.ts',
   'lib/credentials/batch-generation-input.ts',
   'app/api/v1/admin/credential-generation-batches/route.ts',
@@ -58,6 +59,9 @@ for (const part of [
   'processing_chunk_size',
   'queue_credential_generation_batch_item',
   'review_credential_generation_batch_item',
+  'collectPaginatedRows',
+  'learnerPageSize = 1000',
+  '.range(from, to)',
 ]) if (!server.includes(part)) errors.push(`Batch server workflow missing ${part}`);
 if (/console\.(?:log|error|warn)|rawToken|signedUrl/u.test(server)) errors.push('Batch server workflow must not log or return token/path material.');
 
@@ -66,7 +70,7 @@ for (const part of ['generateCredentialBatchItem', 'createCredentialTokenRpcMate
   if (!generation.includes(part)) errors.push(`Server-only batch renderer bridge missing ${part}`);
 }
 
-const ui = existsSync(requiredPaths[10]) ? readFileSync(requiredPaths[10], 'utf8') : '';
+const ui = existsSync(requiredPaths[11]) ? readFileSync(requiredPaths[11], 'utf8') : '';
 for (const part of ['No cohort-size cap', 'Preview conflicts', 'Confirm batch', 'Generate remaining', 'Retry this item', 'Private preview', 'Mark package reviewed', 'PDFGEN-007']) {
   if (!ui.includes(part)) errors.push(`Batch review UI missing ${part}`);
 }

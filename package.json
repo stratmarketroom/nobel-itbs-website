@@ -70,6 +70,7 @@
     "verify:pdfgen-lint-001": "node scripts/verify-pdfgen-lint-001.mjs",
     "test:pdfgen-004:generation": "node scripts/test-pdfgen-004-generation.mjs",
     "test:pdfgen-002:validation": "node scripts/test-pdfgen-002-validation.mjs",
+    "test:pdfgen-008:pagination": "node --experimental-strip-types scripts/test-pdfgen-008-cohort-pagination.mjs",
     "verify:wf-001": "node scripts/verify-wf-001.mjs",
     "verify:wf-002": "node scripts/verify-wf-002.mjs",
     "verify:wf-003": "node scripts/verify-wf-003.mjs",

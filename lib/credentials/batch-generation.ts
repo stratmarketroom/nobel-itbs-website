@@ -26,6 +26,7 @@ import {
   getSupabaseRequestClient,
   type AdminContext,
 } from '@/lib/supabase/server';
+import { collectPaginatedRows } from '@/lib/credentials/pagination';
 
 type BatchRow = {
   id: string; template_version_id: string; programme_id: string; programme_run_id: string | null;
@@ -54,6 +55,13 @@ type TemplateMeta = {
   programmeId: string; programmeRunId: string | null; credentialTypeId: string;
   languageCode: 'en' | 'ua' | 'cz'; documentCount: number; pageCount: number;
 };
+type LearnerReferenceRow = {
+  id: string;
+  latin_first_name: string;
+  latin_last_name: string;
+  ukrainian_full_name: string;
+  archived_at: string | null;
+};
 type Lookup = {
   learnerNames: Map<string, string>;
   programmeTitles: Map<string, string>;
@@ -61,6 +69,8 @@ type Lookup = {
   typeLabels: Map<string, string>;
   templates: Map<string, TemplateMeta>;
 };
+
+const learnerPageSize = 1000;
 
 const batchSelect = `id, template_version_id, programme_id, programme_run_id, credential_type_id,
   language_code, issue_date, completion_date, status, processing_chunk_size,
@@ -90,9 +100,24 @@ function runLabel(status: string, startsAt: string | null, endsAt: string | null
   return dates ? `${status} · ${dates}` : status;
 }
 
-async function loadLookup(db: SupabaseClient): Promise<Lookup> {
+async function loadLearners(db: SupabaseClient): Promise<LearnerReferenceRow[]> {
+  return collectPaginatedRows(async (from, to) => {
+    const result = await db
+      .from('learners')
+      .select('id, latin_first_name, latin_last_name, ukrainian_full_name, archived_at')
+      .order('latin_last_name')
+      .order('id')
+      .range(from, to);
+    if (result.error) {
+      throw databaseError(result.error, 'Credential batch learner references could not be loaded.');
+    }
+    return (result.data ?? []) as LearnerReferenceRow[];
+  }, learnerPageSize);
+}
+
+async function loadLookup(db: SupabaseClient, suppliedLearners?: LearnerReferenceRow[]): Promise<Lookup> {
   const [learners, programmes, programmeTranslations, runs, types, typeTranslations, packages, versions, documents] = await Promise.all([
-    db.from('learners').select('id, latin_first_name, latin_last_name, ukrainian_full_name'),
+    suppliedLearners ?? loadLearners(db),
     db.from('programmes').select('id, slug'),
     db.from('programme_translations').select('programme_id, language_code, title').eq('language_code', 'en'),
     db.from('programme_runs').select('id, status, starts_at, ends_at'),
@@ -102,7 +127,7 @@ async function loadLookup(db: SupabaseClient): Promise<Lookup> {
     db.from('credential_template_versions').select('id, template_package_id, version_number, status').in('status', ['published', 'retired']),
     db.from('credential_template_documents').select('id, template_version_id, page_count'),
   ]);
-  for (const result of [learners, programmes, programmeTranslations, runs, types, typeTranslations, packages, versions, documents]) {
+  for (const result of [programmes, programmeTranslations, runs, types, typeTranslations, packages, versions, documents]) {
     if (result.error) throw databaseError(result.error, 'Credential batch reference data could not be loaded.');
   }
   const programmeTitles = new Map((programmeTranslations.data ?? []).map((row) => [row.programme_id, row.title]));
@@ -133,7 +158,7 @@ async function loadLookup(db: SupabaseClient): Promise<Lookup> {
     });
   }
   return {
-    learnerNames: new Map((learners.data ?? []).map((row) => [row.id, `${row.latin_first_name} ${row.latin_last_name}`])),
+    learnerNames: new Map(learners.map((row) => [row.id, `${row.latin_first_name} ${row.latin_last_name}`])),
     programmeTitles: new Map((programmes.data ?? []).map((row) => [row.id, programmeTitles.get(row.id) ?? row.slug])),
     runLabels: new Map((runs.data ?? []).map((row) => [row.id, runLabel(row.status, row.starts_at, row.ends_at)])),
     typeLabels: new Map((types.data ?? []).map((row) => [row.id, typeLabels.get(row.id) ?? row.code])),
@@ -187,13 +212,13 @@ function listItem(batch: BatchRow, items: ItemRow[], lookup: Lookup): BatchListI
 
 export async function getBatchReferenceData(context: AdminContext): Promise<BatchReferenceData> {
   const db = client(context);
-  const [lookup, learners, publishedVersions] = await Promise.all([
-    loadLookup(db),
-    db.from('learners').select('id, latin_first_name, latin_last_name, archived_at').order('latin_last_name'),
+  const learners = await loadLearners(db);
+  const [lookup, publishedVersions] = await Promise.all([
+    loadLookup(db, learners),
     db.from('credential_template_versions').select('id').eq('status', 'published'),
   ]);
-  if (learners.error || publishedVersions.error) {
-    throw databaseError(learners.error ?? publishedVersions.error, 'Credential batch references could not be loaded.');
+  if (publishedVersions.error) {
+    throw databaseError(publishedVersions.error, 'Credential batch references could not be loaded.');
   }
   const publishedIds = new Set((publishedVersions.data ?? []).map((row) => row.id));
   const programmes = [...lookup.programmeTitles].map(([id, title]) => ({ id, title }));
@@ -202,7 +227,7 @@ export async function getBatchReferenceData(context: AdminContext): Promise<Batc
   if (runs.error) throw databaseError(runs.error, 'Programme run references could not be loaded.');
   const runProgramme = new Map((runs.data ?? []).map((row) => [row.id, row.programme_id]));
   return {
-    learners: (learners.data ?? []).map((row) => ({ id: row.id, name: `${row.latin_first_name} ${row.latin_last_name}`, archived: Boolean(row.archived_at) })),
+    learners: learners.map((row) => ({ id: row.id, name: `${row.latin_first_name} ${row.latin_last_name}`, archived: Boolean(row.archived_at) })),
     programmes,
     programmeRuns: programmeRuns.map((run) => ({ ...run, programmeId: runProgramme.get(run.id) ?? '' })),
     credentialTypes: [...lookup.typeLabels].map(([id, label]) => ({ id, label })),
