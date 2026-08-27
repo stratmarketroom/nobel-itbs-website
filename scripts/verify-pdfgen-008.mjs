@@ -85,7 +85,7 @@ for (const path of requiredPaths.slice(0, 3)) {
 const generationTest = existsSync(requiredPaths[4]) ? readFileSync(requiredPaths[4], 'utf8') : '';
 for (const part of [
   "locale: 'en'", "locale: 'ua'", "locale: 'cz'",
-  'longHolderName', 'longProgrammeTitle', 'text_overflow',
+  'longHolderName', 'longProgrammeTitle', 'exactSingleLineBox', 'NITBS-C-2026-000001', 'text_overflow',
   'rotatedDecoded', 'supplement.pdf',
 ]) if (!generationTest.includes(part)) errors.push(`PDF generation acceptance test missing ${part}`);
 

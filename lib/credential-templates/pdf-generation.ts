@@ -1,4 +1,4 @@
-import fontkit from '@pdf-lib/fontkit';
+import fontkit, { type Font as FontkitFont } from '@pdf-lib/fontkit';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -49,7 +49,10 @@ const monthNames = {
   },
 } as const;
 
-let fontBytesCache: Promise<Map<SupportedWeight, Uint8Array>> | undefined;
+type FontResource = { bytes: Uint8Array; metrics: FontkitFont };
+type RenderFont = { pdf: PDFFont; metrics: FontkitFont };
+
+let fontResourcesCache: Promise<Map<SupportedWeight, FontResource>> | undefined;
 
 function failure(
   code: ConstructorParameters<typeof CredentialPdfGenerationError>[0],
@@ -58,12 +61,13 @@ function failure(
   return new CredentialPdfGenerationError(code, message);
 }
 
-function loadFontBytes(): Promise<Map<SupportedWeight, Uint8Array>> {
-  fontBytesCache ??= Promise.all(supportedWeights.map(async (weight) => {
+function loadFontResources(): Promise<Map<SupportedWeight, FontResource>> {
+  fontResourcesCache ??= Promise.all(supportedWeights.map(async (weight) => {
     const path = join(process.cwd(), 'node_modules', 'notosans-fontface', 'fonts', fontFileByWeight[weight]);
-    return [weight, new Uint8Array(await readFile(path))] as const;
+    const bytes = new Uint8Array(await readFile(path));
+    return [weight, { bytes, metrics: fontkit.create(bytes) }] as const;
   })).then((items) => new Map(items));
-  return fontBytesCache;
+  return fontResourcesCache;
 }
 
 function isSupportedWeight(value: number | null): value is SupportedWeight {
@@ -222,15 +226,37 @@ function colour(value: string): ReturnType<typeof rgb> {
   );
 }
 
-function textWidth(font: PDFFont, value: string, size: number): number {
+function textWidth(font: RenderFont, value: string, size: number): number {
   try {
-    return font.widthOfTextAtSize(value, size);
+    return font.pdf.widthOfTextAtSize(value, size);
   } catch {
     throw failure('unsupported_font', 'Dynamic text contains a glyph unavailable in the approved embedded font.');
   }
 }
 
-function wrappedLines(font: PDFFont, value: string, size: number, maximumWidth: number): string[] {
+function textVerticalBounds(font: RenderFont, value: string, size: number): { minY: number; maxY: number; height: number } {
+  try {
+    const run = font.metrics.layout(value);
+    let minimum = Number.POSITIVE_INFINITY;
+    let maximum = Number.NEGATIVE_INFINITY;
+    run.glyphs.forEach((glyph, index) => {
+      const offset = run.positions[index]?.yOffset ?? 0;
+      minimum = Math.min(minimum, glyph.bbox.minY + offset);
+      maximum = Math.max(maximum, glyph.bbox.maxY + offset);
+    });
+    if (!Number.isFinite(minimum) || !Number.isFinite(maximum) || font.metrics.unitsPerEm <= 0) {
+      throw new Error('Invalid font metrics.');
+    }
+    const scale = size / font.metrics.unitsPerEm;
+    const minY = minimum * scale;
+    const maxY = maximum * scale;
+    return { minY, maxY, height: maxY - minY };
+  } catch {
+    throw failure('unsupported_font', 'Dynamic text contains a glyph unavailable in the approved embedded font.');
+  }
+}
+
+function wrappedLines(font: RenderFont, value: string, size: number, maximumWidth: number): string[] {
   const lines: string[] = [];
   for (const paragraph of value.split(/\r?\n/u)) {
     if (!paragraph.trim()) {
@@ -254,14 +280,14 @@ function wrappedLines(font: PDFFont, value: string, size: number, maximumWidth: 
   return lines;
 }
 
-function singleLineLayout(font: PDFFont, value: string, placement: TemplatePlacement): { lines: string[]; size: number } {
+function singleLineLayout(font: RenderFont, value: string, placement: TemplatePlacement): { lines: string[]; size: number } {
   if (/\r|\n/u.test(value)) throw failure('text_overflow', 'Single-line dynamic text contains a line break.');
   const configuredSize = placement.fontSizePoints as number;
   const minimumSize = placement.minFontSizePoints as number;
   if (placement.fitMode === 'single_line') {
     if (
       textWidth(font, value, configuredSize) > placement.widthPoints + 0.01
-      || font.heightAtSize(configuredSize, { descender: true }) > placement.heightPoints + 0.01
+      || textVerticalBounds(font, value, configuredSize).height > placement.heightPoints + 0.01
     ) {
       throw failure('text_overflow', 'Dynamic text does not fit its configured single-line box.');
     }
@@ -270,7 +296,7 @@ function singleLineLayout(font: PDFFont, value: string, placement: TemplatePlace
   for (let size = configuredSize; size >= minimumSize - 0.001; size = Math.max(minimumSize, size - 0.25)) {
     if (
       textWidth(font, value, size) <= placement.widthPoints + 0.01
-      && font.heightAtSize(size, { descender: true }) <= placement.heightPoints + 0.01
+      && textVerticalBounds(font, value, size).height <= placement.heightPoints + 0.01
     ) {
       return { lines: [value], size };
     }
@@ -279,7 +305,7 @@ function singleLineLayout(font: PDFFont, value: string, placement: TemplatePlace
   throw failure('text_overflow', 'Dynamic text cannot fit above the configured minimum font size.');
 }
 
-function textLayout(font: PDFFont, value: string, placement: TemplatePlacement): { lines: string[]; size: number } {
+function textLayout(font: RenderFont, value: string, placement: TemplatePlacement): { lines: string[]; size: number } {
   if (placement.fitMode !== 'wrap') return singleLineLayout(font, value, placement);
   const size = placement.fontSizePoints as number;
   const lines = wrappedLines(font, value, size, placement.widthPoints);
@@ -290,19 +316,22 @@ function textLayout(font: PDFFont, value: string, placement: TemplatePlacement):
   return { lines, size };
 }
 
-function drawTextPlacement(page: PDFPage, placement: TemplatePlacement, font: PDFFont, value: string): void {
+function drawTextPlacement(page: PDFPage, placement: TemplatePlacement, font: RenderFont, value: string): void {
   const layout = textLayout(font, value, placement);
   const { height: displayHeight } = displaySize(page);
   const lineHeight = layout.size * 1.2;
+  const bounds = placement.fitMode === 'wrap' ? null : textVerticalBounds(font, value, layout.size);
   const totalHeight = placement.fitMode === 'wrap'
     ? layout.lines.length * lineHeight
-    : font.heightAtSize(layout.size, { descender: true });
-  const ascent = font.heightAtSize(layout.size, { descender: false });
+    : (bounds as { height: number }).height;
+  const ascent = font.pdf.heightAtSize(layout.size, { descender: false });
   const boxBottom = displayHeight - placement.yPoints - placement.heightPoints;
   const blockBottom = placement.fitMode === 'wrap'
     ? boxBottom + placement.heightPoints - totalHeight
     : boxBottom + (placement.heightPoints - totalHeight) / 2;
-  const firstBaseline = blockBottom + totalHeight - ascent;
+  const firstBaseline = placement.fitMode === 'wrap'
+    ? blockBottom + totalHeight - ascent
+    : blockBottom - (bounds as { minY: number }).minY;
 
   layout.lines.forEach((line, index) => {
     const width = textWidth(font, line, layout.size);
@@ -317,7 +346,7 @@ function drawTextPlacement(page: PDFPage, placement: TemplatePlacement, font: PD
       x: point.x,
       y: point.y,
       size: layout.size,
-      font,
+      font: font.pdf,
       color: colour(placement.fontColor as string),
       rotate: point.rotate,
     });
@@ -342,7 +371,7 @@ async function renderDocument(
   template: CredentialPdfTemplateDocument,
   values: CredentialPdfGenerationValues,
   locale: CredentialPdfPackageInput['locale'],
-  fontBytes: Map<SupportedWeight, Uint8Array>,
+  fontResources: Map<SupportedWeight, FontResource>,
 ): Promise<GeneratedCredentialPdf> {
   const source = Buffer.from(template.sourcePdf);
   if (source.length < 1 || source.length > maximumPdfBytes) {
@@ -372,13 +401,13 @@ async function renderDocument(
   pdf.setCreator('Nobel ITBS Credential Generation');
   pdf.setProducer('Nobel ITBS Credential Generation');
 
-  const fonts = new Map<SupportedWeight, PDFFont>();
-  const getFont = async (weight: SupportedWeight): Promise<PDFFont> => {
+  const fonts = new Map<SupportedWeight, RenderFont>();
+  const getFont = async (weight: SupportedWeight): Promise<RenderFont> => {
     const existing = fonts.get(weight);
     if (existing) return existing;
-    const bytes = fontBytes.get(weight);
-    if (!bytes) throw failure('unsupported_font', 'Approved embedded font is unavailable.');
-    const embedded = await pdf.embedFont(bytes, { subset: true });
+    const resource = fontResources.get(weight);
+    if (!resource) throw failure('unsupported_font', 'Approved embedded font is unavailable.');
+    const embedded = { pdf: await pdf.embedFont(resource.bytes, { subset: true }), metrics: resource.metrics };
     fonts.set(weight, embedded);
     return embedded;
   };
@@ -479,10 +508,10 @@ export async function generateCredentialPdfPackage(
   input: CredentialPdfPackageInput,
 ): Promise<GeneratedCredentialPdf[]> {
   const documents = validatePackage(input);
-  const fontBytes = await loadFontBytes();
+  const fontResources = await loadFontResources();
   const outputs: GeneratedCredentialPdf[] = [];
   for (const document of documents) {
-    outputs.push(await renderDocument(document, input.values, input.locale, fontBytes));
+    outputs.push(await renderDocument(document, input.values, input.locale, fontResources));
   }
   return outputs;
 }
