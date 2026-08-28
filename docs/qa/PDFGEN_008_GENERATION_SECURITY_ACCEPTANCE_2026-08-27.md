@@ -1,9 +1,9 @@
 # PDFGEN-008 Generation Security and End-to-End Acceptance
 
-Date: 2026-08-27
-Status: PDFGEN runtime security gate passed; hosted Development 200-item Batch A
-and 540-item Batch B generation passed; 55 Batch A items are privately reviewed;
-1000-item throughput and activation remain open
+Date: 2026-08-28
+Status: PDFGEN runtime security gate passed; hosted Development 200-item Batch A,
+540-item Batch B, and 1000-item Batch C generation passed; 55 Batch A items are
+privately reviewed; activation remains open
 
 ## Scope For This Stage
 
@@ -30,6 +30,14 @@ IDs. The deployed correction loaded all 540 queued items successfully. The
 normal generator then completed all 540 items across safe resumable checkpoints,
 including browser fetch interruptions after 230, 255, and 275 committed items.
 No item was duplicated, retried, reviewed, activated, or emailed.
+
+The final approved throughput stage confirmed and generated the complete
+1000-item synthetic Batch C against the same immutable published template v1.
+The normal resumable generator completed the cohort without duplicate number
+reservation. Three isolated server failures became retryable and then generated
+successfully on attempt 2 with their original permanent numbers. All 1000
+private PDFs subsequently passed a server-side file, provenance, safety, text,
+hash, and QR audit. No Batch C item was reviewed, activated, or emailed.
 
 ## Acceptance Matrix
 
@@ -121,9 +129,17 @@ provenance rows. All 540 items remain generated and intentionally unreviewed.
 The batch is pinned to immutable published template v1. No Batch B activation,
 delivery, review, or email row exists, and `NITBS-C-2026-000741` remains free.
 
+Hosted Development now also contains one fully generated 1000-item Batch C with
+1000 pending credentials, permanent reserved numbers
+`NITBS-C-2026-000741–001740`, 1000 private primary PDFs, and 1000 append-only v1
+provenance rows. All items remain generated and intentionally unreviewed. The
+batch is pinned to immutable published template v1. No Batch C activation,
+delivery, review, or email row exists, and `NITBS-C-2026-001741` remains free.
+
 ## Tests / Verification
 
-Passed locally on 2026-08-27:
+Passed locally on 2026-08-27 and rerun for the final Batch C stage on
+2026-08-28 where applicable:
 
 - `npm run verify:qa-001`;
 - `npm run verify:qa-003`;
@@ -344,6 +360,48 @@ The approved 540-item Batch B throughput stage then passed:
   correct holder/number pairs, consistent layout, QR placement, and no clipping
   across the full range.
 
+The approved 1000-item Batch C throughput stage then passed:
+
+- preflight confirmed exactly 1000 active synthetic learners
+  `E2eC0001–E2eC1000`, no existing Batch C item, and a completely free approved
+  range `NITBS-C-2026-000741–001740`;
+- server preview returned exactly 1000 selected, 1000 accepted, zero conflicts,
+  zero archived learners, template v1, issue date `2026-08-28`, and no
+  completion date;
+- confirmation created exactly 1000 queued items and did not reserve a number;
+- bounded processing used the batch's five-item atomic chunk size while the UI
+  grouped at most 25 items per resumable action;
+- committed checkpoints included 109 generated/1 retryable/890 queued,
+  583 generated/2 retryable/415 queued, 810 generated/190 queued,
+  970 generated/30 queued, 985 generated/15 queued, and
+  995 generated/5 queued;
+- positions 87, 424, and 460 recovered from isolated server failures on attempt
+  2 while preserving permanent numbers `NITBS-C-2026-000827`,
+  `NITBS-C-2026-001164`, and `NITBS-C-2026-001200` respectively;
+- final server-reloaded state is 1000 generated and zero queued, processing,
+  retryable, conflict, reviewed, activating, activated, or failed items;
+- all 1000 credentials remain `pending`, with contiguous unique numbers
+  `NITBS-C-2026-000741` through `NITBS-C-2026-001740`; the next approved number
+  `NITBS-C-2026-001741` is unused;
+- server-side acceptance confirmed 1000 primary PDFs in the non-public
+  `private-credentials` bucket, 1000 canonical Storage objects, 1000
+  immutable-template-v1 provenance rows, 997 attempt-1 and three attempt-2
+  successful generations, and zero activation request, activation item, or
+  email-send row;
+- every private PDF was downloaded in turn, matched against its append-only
+  output SHA-256, checked for exact stored size, matched to its expected holder
+  and document number, rendered at 240 DPI for QR decoding, and discarded after
+  inspection;
+- all 1000 PDFs are one unencrypted A4 landscape page with no form, JavaScript,
+  embedded file, launch, submit, or open action, and all 1000 QR codes decode to
+  an HTTPS `/verify/<43-char-token>` shape;
+- visual positions 1, 2, 25, 87, 100, 200, 300, 400, 424, 460, 500, 600, 700,
+  800, 900, 999, and 1000 confirmed correct holder/number pairs, consistent
+  layout, QR placement, and no clipping across the complete range;
+- the machine audit completed in 696 seconds. Its one-time branch-scoped Vercel
+  Preview, contact sheet, temporary files, and local CLI project material were
+  deleted after evidence capture.
+
 ## Security Notes
 
 - No service-role, SMTP, token-encryption, or HMAC secret is added or exposed.
@@ -354,20 +412,24 @@ The approved 540-item Batch B throughput stage then passed:
   browser responses remain generic.
 - Generated output stays in the non-public `private-credentials` bucket; local
   review used a temporary mode-0600 copy outside the repository.
+- Sensitive Vercel variables remained unreadable to the local process. The
+  Batch C auditor received them only inside a one-time branch-scoped Preview
+  build and emitted counts and pass/fail evidence only; it never emitted secret
+  values, raw verification tokens, private paths, or PDF bytes.
 - Production remains untouched during this stage. No activation or VEDOS email
   operation was attempted.
 
 ## Deviations / Open Questions
 
-- Batch A 200-item and Batch B 540-item generation passed in Development. Only
-  Batch A positions 1–55 were individually reviewed. Batch A positions 56–200
-  and all Batch B items remain generated because review is required before
-  activation, not for generation-throughput acceptance.
+- Batch A 200-item, Batch B 540-item, and Batch C 1000-item generation passed in
+  Development. Only Batch A positions 1–55 were individually reviewed. Batch A
+  positions 56–200 and every Batch B/C item remain generated because review is
+  required before activation, not for generation-throughput acceptance.
 - The explicitly interrupted Batch B resume path passed at three committed
   checkpoints without duplicate number reservation, attempt escalation, or
   partial-file state.
-- The 1000-item cohort throughput path remains open and must not be represented
-  as passed.
+- The Batch C retry path passed at positions 87, 424, and 460 without number
+  reuse, duplicate current files, or partial provenance.
 - Vercel Deployment Protection returns 401 before the anonymous public route in
   Preview. Therefore the hosted `pending -> not_found` QR response could not be
   observed anonymously at the protected Preview URL; database status, route
@@ -379,8 +441,7 @@ The approved 540-item Batch B throughput stage then passed:
 
 ## Next Dependency
 
-Next is an explicit decision between continuing hosted throughput acceptance
-with the 1000-item cohort or defining the human-review strategy for generated
-Batch A positions 56–200 and Batch B positions 1–540 before any activation.
-Activation and email remain separate user-approved steps. Any Production
-promotion stays a later gate.
+Next is an explicit decision on the human-review strategy for generated Batch A
+positions 56–200, Batch B positions 1–540, and Batch C positions 1–1000 before
+any activation. Activation and email remain separate user-approved steps. Any
+Production promotion stays a later gate.
