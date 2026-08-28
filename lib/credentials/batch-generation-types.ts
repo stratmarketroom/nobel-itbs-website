@@ -167,6 +167,16 @@ export type BatchActivationInput = {
   itemIds: string[];
 };
 
+export type BatchReviewInput = {
+  itemIds: string[];
+};
+
+export type BatchReviewResult = {
+  reviewedCount: number;
+  failedCount: number;
+  batch: BatchDetail;
+};
+
 export type BatchActivationChunkResult = {
   activationRequestId: string;
   processedCount: number;

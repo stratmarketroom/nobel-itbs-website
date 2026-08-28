@@ -17,6 +17,7 @@ import type {
   BatchPreview,
   BatchReferenceData,
   BatchReviewItem,
+  BatchReviewResult,
   CredentialGenerationBatchStatus,
   CredentialGenerationItemStatus,
 } from '@/lib/credentials/batch-generation-types';
@@ -537,6 +538,36 @@ export async function reviewCredentialGenerationBatchItem(
   const reviewed = await db.rpc('review_credential_generation_batch_item', { p_batch_item_id: itemId });
   if (reviewed.error) throw databaseError(reviewed.error, 'Batch item could not be marked reviewed.');
   return getCredentialGenerationBatch(context, batchId);
+}
+
+export async function reviewCredentialGenerationBatchItems(
+  context: AdminContext,
+  batchId: string,
+  itemIds: string[],
+): Promise<BatchReviewResult> {
+  const db = client(context);
+  const belongs = await db.from('credential_generation_batch_items')
+    .select('id, status')
+    .eq('batch_id', batchId)
+    .in('id', itemIds);
+  if (belongs.error) throw databaseError(belongs.error, 'Batch review selection could not be loaded.');
+  if ((belongs.data ?? []).length !== itemIds.length) {
+    throw new ApiError('not_found', 404, 'One or more selected batch items were not found.');
+  }
+  if ((belongs.data ?? []).some((item) => item.status !== 'generated')) {
+    throw new ApiError('conflict', 409, 'Every selected package must still be generated and awaiting review.');
+  }
+
+  const outcomes = await Promise.all(itemIds.map(async (itemId) => {
+    const reviewed = await db.rpc('review_credential_generation_batch_item', { p_batch_item_id: itemId });
+    return !reviewed.error;
+  }));
+  const reviewedCount = outcomes.filter(Boolean).length;
+  return {
+    reviewedCount,
+    failedCount: itemIds.length - reviewedCount,
+    batch: await getCredentialGenerationBatch(context, batchId),
+  };
 }
 
 function activationErrorCode(error: unknown): string {

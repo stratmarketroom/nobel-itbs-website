@@ -467,8 +467,10 @@ The approved 1000-item Batch C throughput stage then passed:
 
 ## Next Dependency
 
-The human-review strategy is approved. The next dependency is implementing the
-private 25-item real-batch review workflow with explicit selection and bulk
-review marking, while preserving per-package inspection and separate activation
-confirmation. Any real activation, VEDOS delivery acceptance, or Production
-promotion remains a later, separately authorized gate.
+The human-review strategy is approved. Follow-up
+`PDFGEN-006-REVIEW-UX-001` implements the private 25-item real-batch review
+workflow with thumbnails, required per-package PDF opening, explicit selection,
+and bulk review marking while preserving separate activation confirmation. Its
+authenticated branch visual inspection remains pending. Any real activation,
+VEDOS delivery acceptance, or Production promotion remains a later, separately
+authorized gate.

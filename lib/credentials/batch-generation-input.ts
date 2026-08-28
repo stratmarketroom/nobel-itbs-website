@@ -1,6 +1,6 @@
 import { ApiError } from '@/lib/supabase/server';
 import { assertKeys, uuid } from '@/lib/programmes/admin-input';
-import type { BatchActivationInput, BatchIssuingContextInput } from '@/lib/credentials/batch-generation-types';
+import type { BatchActivationInput, BatchIssuingContextInput, BatchReviewInput } from '@/lib/credentials/batch-generation-types';
 
 type Payload = Record<string, unknown>;
 const languages = ['en', 'ua', 'cz'] as const;
@@ -75,4 +75,19 @@ export function batchActivationPayload(body: Payload): BatchActivationInput {
     idempotencyKey: uuid(body.idempotencyKey, 'activation idempotency key'),
     itemIds,
   };
+}
+
+export function batchReviewPayload(body: Payload): BatchReviewInput {
+  assertKeys(body, ['itemIds']);
+  if (!Array.isArray(body.itemIds) || body.itemIds.length === 0) {
+    throw new ApiError('bad_request', 400, 'Select at least one generated batch item.');
+  }
+  if (body.itemIds.length > 25) {
+    throw new ApiError('bad_request', 400, 'Review at most one 25-item page at a time.');
+  }
+  const itemIds = body.itemIds.map((value) => uuid(value, 'batch item ID'));
+  if (new Set(itemIds).size !== itemIds.length) {
+    throw new ApiError('bad_request', 400, 'Each generated batch item may be selected only once.');
+  }
+  return { itemIds };
 }
