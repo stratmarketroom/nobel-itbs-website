@@ -419,12 +419,38 @@ The approved 1000-item Batch C throughput stage then passed:
 - Production remains untouched during this stage. No activation or VEDOS email
   operation was attempted.
 
+## Approved Human Review And Activation Policy
+
+- Batch A, Batch B, and Batch C are synthetic QA cohorts. They require no
+  further manual review and must never be activated or emailed.
+- Every real generated credential package requires 100% private human review;
+  sampling is not sufficient for activation.
+- The responsible administrator reviews real packages in private pages of 25,
+  using thumbnails plus controlled open/zoom actions to verify holder name,
+  programme, credential type, issue date, document number, QR, and layout.
+- Only explicitly selected packages that passed review may be marked reviewed
+  and proceed to activation. A package with a problem is excluded, corrected or
+  regenerated under the same permanently reserved number, and reviewed again.
+- One accountable person owns a real batch from review through a separate,
+  explicit final activation confirmation. The authorized responsibility order
+  is Owner, then Super Admin, then Credential Manager; the acting user must
+  satisfy MFA.
+- Review does not activate a credential automatically. Activation and delivery
+  remain separate explicit actions, and email failure must not roll back a
+  successful activation.
+- Accountability is preserved through reviewer/timestamp data, activation
+  request ownership, credential history, and the security audit log.
+- The current authorization model permits all three approved credential roles.
+  Enforcing reviewer/activator identity equality as an additional database rule
+  is not part of PDFGEN-008 and would require a separately approved ticket.
+
 ## Deviations / Open Questions
 
 - Batch A 200-item, Batch B 540-item, and Batch C 1000-item generation passed in
   Development. Only Batch A positions 1–55 were individually reviewed. Batch A
-  positions 56–200 and every Batch B/C item remain generated because review is
-  required before activation, not for generation-throughput acceptance.
+  positions 56–200 and every Batch B/C item remain generated. These cohorts are
+  now classified as synthetic QA-only data, require no further manual review,
+  and must never be activated or emailed.
 - The explicitly interrupted Batch B resume path passed at three committed
   checkpoints without duplicate number reservation, attempt escalation, or
   partial-file state.
@@ -441,7 +467,8 @@ The approved 1000-item Batch C throughput stage then passed:
 
 ## Next Dependency
 
-Next is an explicit decision on the human-review strategy for generated Batch A
-positions 56–200, Batch B positions 1–540, and Batch C positions 1–1000 before
-any activation. Activation and email remain separate user-approved steps. Any
-Production promotion stays a later gate.
+The human-review strategy is approved. The next dependency is implementing the
+private 25-item real-batch review workflow with explicit selection and bulk
+review marking, while preserving per-package inspection and separate activation
+confirmation. Any real activation, VEDOS delivery acceptance, or Production
+promotion remains a later, separately authorized gate.
