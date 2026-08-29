@@ -54,6 +54,9 @@ const validatedOnePage = await validateTemplatePdf(onePage);
 assert.equal(validatedOnePage.pageCount, 1);
 assert.deepEqual(validatedOnePage.pages, [{ pageNumber: 1, widthPoints: 595, heightPoints: 842 }]);
 assert.equal(validatedOnePage.sourceSha256, createHash('sha256').update(onePage).digest('hex'));
+for (const constructorName of ['DOMMatrix', 'ImageData', 'Path2D']) {
+  assert.equal(typeof globalThis[constructorName], 'function', `${constructorName} should be available to PDF.js in Node`);
+}
 
 const twoPages = createPdf([[612, 792], [842, 595]]);
 const validatedTwoPages = await validateTemplatePdf(twoPages);

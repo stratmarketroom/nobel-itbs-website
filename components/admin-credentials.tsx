@@ -83,6 +83,18 @@ export function AdminCredentials() {
     return payload;
   }, [token]);
 
+  const requestBlob = useCallback(async (path: string): Promise<Blob> => {
+    const response = await fetch(path, {
+      headers: { Authorization: `Bearer ${await token()}` },
+      cache: 'no-store',
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      throw new Error(apiMessage(payload, 'Private preview could not be loaded.'));
+    }
+    return response.blob();
+  }, [token]);
+
   const loadCredentials = useCallback(async (preferredId?: string) => {
     setLoading(true);
     try {
@@ -206,7 +218,7 @@ export function AdminCredentials() {
         </section>
       </section>
     </> : null}
-    {tab === 'batches' ? <AdminCredentialBatches request={request} /> : null}
+    {tab === 'batches' ? <AdminCredentialBatches request={request} requestBlob={requestBlob} /> : null}
     {tab === 'sets' ? <RegistryTable headers={['Learner', 'Programme', 'Run / completion', 'Documents', 'Created']} rows={sets.map((item) => [item.learnerName, item.programmeTitle, [item.programmeRunLabel, item.completionDate].filter(Boolean).join(' · ') || '—', String(item.credentialCount), date(item.createdAt)])} empty="No credential sets yet." /> : null}
     {tab === 'numbers' ? <RegistryTable headers={['Document number', 'Type', 'Status', 'Origin', 'Credential', 'Created']} rows={numbers.map((item) => [item.documentNumber, item.credentialType, item.status, item.isManual ? 'Manual' : 'Automatic', item.credentialId ? 'Linked' : 'Unlinked', date(item.createdAt)])} empty="No document numbers reserved yet." /> : null}
   </main>;

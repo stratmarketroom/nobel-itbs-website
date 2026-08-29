@@ -324,7 +324,7 @@ async function loadGenerationPlan(
   isRegeneration: boolean,
 ) {
   const admin = getSupabaseAdminClient();
-  const [credentialResult, versionResult, documentsResult, placementsResult] = await Promise.all([
+  const [credentialResult, versionResult, documentsResult] = await Promise.all([
     admin.from('credentials')
       .select('id, credential_set_id, programme_id, programme_run_id, credential_type_id, language_code, status, issue_date, document_number, verification_token_encrypted, token_encryption_key_version, public_holder_name, public_programme_title, public_credential_type')
       .eq('id', credentialId)
@@ -337,18 +337,23 @@ async function loadGenerationPlan(
       .select('id, template_version_id, file_type_id, admin_label, output_filename_pattern, sort_order, is_primary, page_count, source_sha256')
       .eq('template_version_id', templateVersionId)
       .order('sort_order'),
-    admin.from('credential_template_field_placements')
-      .select('id, template_document_id, page_number, field_key, occurrence_order, x_points, y_points, width_points, height_points, font_family, font_size_points, min_font_size_points, font_weight, font_color, text_alignment, fit_mode, date_format, static_text, is_required')
-      .eq('template_version_id', templateVersionId)
-      .order('occurrence_order'),
   ]);
-  for (const result of [credentialResult, versionResult, documentsResult, placementsResult]) {
+  for (const result of [credentialResult, versionResult, documentsResult]) {
     if (result.error) throw new ApiError('server_error', 500, 'Authorized credential generation data could not be loaded.');
   }
   if (!credentialResult.data || !versionResult.data) throw new ApiError('not_found', 404, 'Credential generation context was not found.');
   const credential = credentialResult.data as CredentialRow;
   const version = versionResult.data as VersionRow;
   const documents = (documentsResult.data ?? []) as DocumentRow[];
+  const placementsResult = documents.length
+    ? await admin.from('credential_template_field_placements')
+      .select('id, template_document_id, page_number, field_key, occurrence_order, x_points, y_points, width_points, height_points, font_family, font_size_points, min_font_size_points, font_weight, font_color, text_alignment, fit_mode, date_format, static_text, is_required')
+      .in('template_document_id', documents.map((document) => document.id))
+      .order('occurrence_order')
+    : { data: [], error: null };
+  if (placementsResult.error) {
+    throw new ApiError('server_error', 500, 'Authorized credential generation data could not be loaded.');
+  }
   const placements = (placementsResult.data ?? []) as PlacementRow[];
 
   const [setResult, packageResult, runResult, filesResult] = await Promise.all([

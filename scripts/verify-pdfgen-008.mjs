@@ -6,6 +6,8 @@ const requiredPaths = [
   'supabase/tests/database/qa_003_mfa_matrix.test.sql',
   'scripts/test-pdfgen-002-validation.mjs',
   'scripts/test-pdfgen-004-generation.mjs',
+  'scripts/test-pdfgen-008-cohort-pagination.mjs',
+  'scripts/test-pdfgen-008-batch-detail-chunking.mjs',
   'docs/qa/PDFGEN_008_GENERATION_SECURITY_ACCEPTANCE_2026-08-27.md',
 ];
 const errors = [];
@@ -84,13 +86,68 @@ for (const path of requiredPaths.slice(0, 3)) {
 const generationTest = existsSync(requiredPaths[4]) ? readFileSync(requiredPaths[4], 'utf8') : '';
 for (const part of [
   "locale: 'en'", "locale: 'ua'", "locale: 'cz'",
-  'longHolderName', 'longProgrammeTitle', 'text_overflow',
+  'longHolderName', 'longProgrammeTitle', 'exactSingleLineBox', 'NITBS-C-2026-000001', 'text_overflow',
   'rotatedDecoded', 'supplement.pdf',
 ]) if (!generationTest.includes(part)) errors.push(`PDF generation acceptance test missing ${part}`);
 
 const validationTest = existsSync(requiredPaths[3]) ? readFileSync(requiredPaths[3], 'utf8') : '';
 for (const part of ['/Encrypt', '/JavaScript', '/EmbeddedFiles', '/Launch', '/URI', '/AcroForm', '/SubmitForm', '/GoToR']) {
   if (!validationTest.includes(part)) errors.push(`PDF validation acceptance test missing ${part}`);
+}
+
+const validationSource = readFileSync('lib/credential-templates/pdf-validation.ts', 'utf8');
+for (const part of [
+  "from '@napi-rs/canvas'",
+  'installPdfJsCanvasGlobals()',
+  'CanvasDOMMatrix',
+  'CanvasImageData',
+  'CanvasPath2D',
+  "{ cause: error }",
+]) {
+  if (!validationSource.includes(part)) errors.push(`PDF.js Node canvas bootstrap missing ${part}`);
+}
+
+const paginationTest = existsSync(requiredPaths[5]) ? readFileSync(requiredPaths[5], 'utf8') : '';
+for (const part of ['length: 1740', '[[0, 999], [1000, 1999]]', 'collectPaginatedRows']) {
+  if (!paginationTest.includes(part)) errors.push(`Cohort pagination acceptance test missing ${part}`);
+}
+
+const chunkingTest = existsSync(requiredPaths[6]) ? readFileSync(requiredPaths[6], 'utf8') : '';
+for (const part of ['[540, 1000]', 'chunk.length <= 100', 'collectChunkedRows']) {
+  if (!chunkingTest.includes(part)) errors.push(`Batch detail chunking acceptance test missing ${part}`);
+}
+
+const batchGenerationSource = readFileSync('lib/credentials/batch-generation.ts', 'utf8');
+for (const part of ['collectChunkedRows', "collectPaginatedRows(async (from, to)", "provenanceByBatchItem"]) {
+  if (!batchGenerationSource.includes(part)) errors.push(`Large batch detail hardening missing ${part}`);
+}
+
+const generationSource = readFileSync('lib/credentials/generation.ts', 'utf8');
+if (/from\('credential_template_field_placements'\)[\s\S]{0,800}\.eq\('template_version_id'/u.test(generationSource)) {
+  errors.push('Credential generation must not filter field placements by the nonexistent template_version_id column.');
+}
+if (!generationSource.includes(".in('template_document_id', documents.map((document) => document.id))")) {
+  errors.push('Credential generation must load field placements through their template_document_id relationship.');
+}
+
+const pdfGenerationSource = readFileSync('lib/credential-templates/pdf-generation.ts', 'utf8');
+for (const part of [
+  'credential_template_pdf_validation_failed',
+  '[redacted-url]',
+  '[redacted-id]',
+  '.slice(0, 240)',
+]) {
+  if (!pdfGenerationSource.includes(part)) errors.push(`Safe PDF validation diagnostics missing ${part}`);
+}
+
+const nextConfigSource = readFileSync('next.config.mjs', 'utf8');
+for (const part of [
+  "'./node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'",
+  "'/api/v1/admin/credentials/**': credentialGenerationAssets",
+  "'/api/v1/admin/credential-generation-batches/**': credentialGenerationAssets",
+  "'./node_modules/notosans-fontface/fonts/NotoSans-Regular.ttf'",
+]) {
+  if (!nextConfigSource.includes(part)) errors.push(`Credential generation output tracing missing ${part}`);
 }
 
 for (const path of [
@@ -116,6 +173,12 @@ for (const payload of auditPayloads) {
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 if (pkg.scripts?.['verify:pdfgen-008'] !== 'node scripts/verify-pdfgen-008.mjs') {
   errors.push('Missing verify:pdfgen-008 package script.');
+}
+if (pkg.scripts?.['test:pdfgen-008:pagination'] !== 'node --experimental-strip-types scripts/test-pdfgen-008-cohort-pagination.mjs') {
+  errors.push('Missing PDFGEN-008 cohort pagination test script.');
+}
+if (pkg.scripts?.['test:pdfgen-008:chunking'] !== 'node --experimental-strip-types scripts/test-pdfgen-008-batch-detail-chunking.mjs') {
+  errors.push('Missing PDFGEN-008 batch detail chunking test script.');
 }
 
 if (errors.length) {

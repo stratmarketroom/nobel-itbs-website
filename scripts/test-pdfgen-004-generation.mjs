@@ -136,6 +136,29 @@ const input = {
   ],
 };
 
+const exactSingleLineBox = await generateCredentialPdfPackage({
+  ...input,
+  locale: 'en',
+  values: {
+    ...input.values,
+    documentNumber: 'NITBS-C-2026-000001',
+  },
+  documents: [{
+    ...input.documents[0],
+    placements: [placement({
+      fieldKey: 'document_number',
+      widthPoints: 190,
+      heightPoints: 14,
+      fontSizePoints: 14,
+      minFontSizePoints: 10,
+      fontWeight: 400,
+      textAlignment: 'left',
+      fitMode: 'single_line',
+    })],
+  }],
+});
+assert.equal(exactSingleLineBox[0].pageCount, 1);
+
 const outputs = await generateCredentialPdfPackage(input);
 assert.equal(outputs.length, 2);
 assert.deepEqual(outputs.map((item) => item.outputFilename), ['certificate.pdf', 'supplement.pdf']);

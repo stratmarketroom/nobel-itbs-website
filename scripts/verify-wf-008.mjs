@@ -50,7 +50,8 @@ if (!errors.length) {
   for (const snippet of [
     "createHmac('sha256', secret)",
     'credential-verification:',
-    "lookup('token_hash', credentialTokenLookupHash(rawToken), request)",
+    'credentialTokenLookupHashes(rawToken)',
+    "lookup('token_hash', lookupHash, request)",
     "lookup('document_number', normalizeDocumentNumber(documentNumber), request)",
     "error.message.includes('CREDENTIAL_VERIFICATION_RATE_LIMITED')",
     "result: 'not_found'",

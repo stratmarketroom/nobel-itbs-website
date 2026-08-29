@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type {
@@ -9,11 +10,15 @@ import type {
   BatchListItem,
   BatchPreview,
   BatchReferenceData,
+  BatchReviewFile,
+  BatchReviewResult,
   CredentialGenerationItemStatus,
 } from '@/lib/credentials/batch-generation-types';
 
 type Request = <T>(path: string, init?: RequestInit) => Promise<T>;
+type RequestBlob = (path: string) => Promise<Blob>;
 type Notice = { kind: 'success' | 'error'; message: string } | null;
+const reviewPageSize = 25;
 
 const statusLabel: Record<CredentialGenerationItemStatus, string> = {
   queued: 'Queued', processing: 'Processing', generated: 'Generated', retryable: 'Retryable',
@@ -24,7 +29,7 @@ function formattedDate(value: string | null): string {
   return value ? new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium' }).format(new Date(value)) : '—';
 }
 
-export function AdminCredentialBatches({ request }: { request: Request }) {
+export function AdminCredentialBatches({ request, requestBlob }: { request: Request; requestBlob: RequestBlob }) {
   const [references, setReferences] = useState<BatchReferenceData | null>(null);
   const [batches, setBatches] = useState<BatchListItem[]>([]);
   const [batch, setBatch] = useState<BatchDetail | null>(null);
@@ -32,6 +37,8 @@ export function AdminCredentialBatches({ request }: { request: Request }) {
   const [preview, setPreview] = useState<BatchPreview | null>(null);
   const [draft, setDraft] = useState<BatchIssuingContextInput | null>(null);
   const [selectedLearners, setSelectedLearners] = useState<Set<string>>(new Set());
+  const [selectedReviewItems, setSelectedReviewItems] = useState<Set<string>>(new Set());
+  const [openedReviewFiles, setOpenedReviewFiles] = useState<Set<string>>(new Set());
   const [selectedActivationItems, setSelectedActivationItems] = useState<Set<string>>(new Set());
   const [learnerSearch, setLearnerSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -58,14 +65,14 @@ export function AdminCredentialBatches({ request }: { request: Request }) {
   }, [activeLearners, learnerSearch]);
 
   async function openBatch(id: string) {
-    setLoading(true); setCreating(false); setPreview(null); setSelectedActivationItems(new Set()); setNotice(null);
+    setLoading(true); setCreating(false); setPreview(null); setSelectedReviewItems(new Set()); setOpenedReviewFiles(new Set()); setSelectedActivationItems(new Set()); setNotice(null);
     try { setBatch((await request<{ batch: BatchDetail }>(`/api/v1/admin/credential-generation-batches/${id}`)).batch); }
     catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Generation batch could not be loaded.' }); }
     finally { setLoading(false); }
   }
 
   function startCreate() {
-    setCreating(true); setBatch(null); setPreview(null); setDraft(null); setSelectedLearners(new Set()); setNotice(null);
+    setCreating(true); setBatch(null); setPreview(null); setDraft(null); setSelectedLearners(new Set()); setSelectedReviewItems(new Set()); setOpenedReviewFiles(new Set()); setNotice(null);
   }
 
   function toggleLearner(id: string) {
@@ -145,23 +152,50 @@ export function AdminCredentialBatches({ request }: { request: Request }) {
     setSaving(true); setNotice(null);
     try {
       const payload = await request<{ batch: BatchDetail }>(`/api/v1/admin/credential-generation-batches/${batch.id}/items/${itemId}/retry`, { method: 'POST' });
+      const replacedFileIds = batch.items.find((item) => item.id === itemId)?.files.map((file) => file.id) ?? [];
+      setOpenedReviewFiles((current) => new Set([...current].filter((id) => !replacedFileIds.includes(id))));
+      setSelectedReviewItems((current) => new Set([...current].filter((id) => id !== itemId)));
       setBatch(payload.batch); await loadWorkspace(); setNotice({ kind: 'success', message: 'Batch item regenerated with its existing permanent number.' });
     } catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Batch item retry failed safely.' }); }
     finally { setSaving(false); }
   }
 
-  async function reviewItem(itemId: string) {
+  async function reviewSelected() {
     if (!batch) return;
+    const itemIds = batch.items
+      .filter((item) => selectedReviewItems.has(item.id) && item.status === 'generated'
+        && item.files.length === batch.context.templateDocumentCount
+        && item.files.every((file) => openedReviewFiles.has(file.id)))
+      .map((item) => item.id)
+      .slice(0, reviewPageSize);
+    if (!itemIds.length) return;
+    const reviewOutcome = batch.activationBlocked
+      ? 'This records you as reviewer. This synthetic QA batch remains permanently blocked from activation and email delivery.'
+      : 'This records you as reviewer and makes the packages activation-eligible. It does not activate or email any credential.';
+    if (!window.confirm(`Mark ${itemIds.length} selected package${itemIds.length === 1 ? '' : 's'} reviewed? ${reviewOutcome}`)) return;
     setSaving(true); setNotice(null);
     try {
-      const payload = await request<{ batch: BatchDetail }>(`/api/v1/admin/credential-generation-batches/${batch.id}/items/${itemId}/review`, { method: 'POST' });
-      setBatch(payload.batch); await loadWorkspace(); setNotice({ kind: 'success', message: 'Generated package marked reviewed and is now eligible for explicit batch activation.' });
-    } catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Batch item could not be marked reviewed.' }); }
+      const payload = await request<{ result: BatchReviewResult }>(`/api/v1/admin/credential-generation-batches/${batch.id}/review`, {
+        method: 'POST', body: JSON.stringify({ itemIds }),
+      });
+      setBatch(payload.result.batch);
+      setSelectedReviewItems(new Set());
+      await loadWorkspace();
+      setNotice({
+        kind: payload.result.failedCount ? 'error' : 'success',
+        message: `${payload.result.reviewedCount} package${payload.result.reviewedCount === 1 ? '' : 's'} marked reviewed.${payload.result.failedCount ? ` ${payload.result.failedCount} changed before completion and remain unreviewed.` : batch.activationBlocked ? ' This synthetic QA batch remains blocked from activation and email delivery.' : ' Activation remains a separate explicit action.'}`,
+      });
+    } catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Selected packages could not be marked reviewed.' }); }
     finally { setSaving(false); }
   }
 
   async function activateSelected() {
     if (!batch) return;
+    if (batch.activationBlocked) {
+      setSelectedActivationItems(new Set());
+      setNotice({ kind: 'error', message: 'This synthetic QA batch is permanently blocked from activation and email delivery.' });
+      return;
+    }
     const itemIds = batch.items
       .filter((item) => selectedActivationItems.has(item.id) && item.activationEligible)
       .map((item) => item.id);
@@ -228,10 +262,20 @@ export function AdminCredentialBatches({ request }: { request: Request }) {
   }
 
   async function previewFile(credentialId: string, fileId: string) {
+    const previewWindow = window.open('about:blank', '_blank');
+    if (!previewWindow) {
+      setNotice({ kind: 'error', message: 'The browser blocked the private preview tab. Allow pop-ups for this admin site and try again.' });
+      return;
+    }
+    previewWindow.opener = null;
     try {
       const payload = await request<{ signedUrl: string }>(`/api/v1/admin/credentials/${credentialId}/files/${fileId}?disposition=inline`);
-      window.open(payload.signedUrl, '_blank', 'noopener,noreferrer');
-    } catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Private preview could not be opened.' }); }
+      previewWindow.location.replace(payload.signedUrl);
+      setOpenedReviewFiles((current) => new Set([...current, fileId]));
+    } catch (error) {
+      previewWindow.close();
+      setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Private preview could not be opened.' });
+    }
   }
 
   return <section className="credential-batch-module">
@@ -246,7 +290,7 @@ export function AdminCredentialBatches({ request }: { request: Request }) {
         {!loading && batches.length === 0 ? <p>No generation batches yet.</p> : null}
         {batches.map((item) => <button type="button" key={item.id} aria-pressed={batch?.id === item.id} onClick={() => void openBatch(item.id)}>
           <strong>{item.context.programmeTitle}</strong><span>{item.context.credentialType} · {item.context.languageCode.toUpperCase()} · v{item.context.templateVersionNumber}</span>
-          <small>{item.generatedCount}/{item.totalCount} generated · {item.retryableCount} retry · {formattedDate(item.createdAt)}</small>
+          <small>{item.generatedCount}/{item.totalCount} generated · {item.retryableCount} retry{item.activationBlocked ? ' · QA locked' : ''} · {formattedDate(item.createdAt)}</small>
         </button>)}
       </nav>
       <div className="credential-batch-editor">
@@ -277,44 +321,97 @@ export function AdminCredentialBatches({ request }: { request: Request }) {
             <button type="button" disabled={saving || preview.archivedCount > 0 || preview.acceptedCount === 0} onClick={() => void confirmBatch()}>{saving ? 'Confirming…' : `Confirm batch for ${preview.acceptedCount} accepted learners`}</button>
           </section> : null}
         </form> : null}
-        {!creating && batch ? <BatchReview batch={batch} saving={saving} selectedActivationItems={selectedActivationItems} onToggleActivation={(id) => setSelectedActivationItems((current) => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next; })} onSelectAllActivation={() => setSelectedActivationItems(new Set(batch.items.filter((item) => item.activationEligible).map((item) => item.id)))} onClearActivation={() => setSelectedActivationItems(new Set())} onActivate={() => void activateSelected()} onResumeActivation={(id) => void resumeActivationRequest(id)} onRetryActivation={(id) => void retryActivation(id)} onProcess={() => void processAll()} onRetry={(id) => void retryItem(id)} onReview={(id) => void reviewItem(id)} onPreview={(credentialId, fileId) => void previewFile(credentialId, fileId)} /> : null}
+        {!creating && batch ? <BatchReview key={batch.id} batch={batch} saving={saving} requestBlob={requestBlob} selectedReviewItems={selectedReviewItems} openedReviewFiles={openedReviewFiles} onToggleReview={(id) => setSelectedReviewItems((current) => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next; })} onSetReviewSelection={(ids) => setSelectedReviewItems(new Set(ids))} onClearReview={() => setSelectedReviewItems(new Set())} onReviewSelected={() => void reviewSelected()} selectedActivationItems={selectedActivationItems} onToggleActivation={(id) => setSelectedActivationItems((current) => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next; })} onSelectAllActivation={() => setSelectedActivationItems(new Set(batch.items.filter((item) => item.activationEligible).map((item) => item.id)))} onClearActivation={() => setSelectedActivationItems(new Set())} onActivate={() => void activateSelected()} onResumeActivation={(id) => void resumeActivationRequest(id)} onRetryActivation={(id) => void retryActivation(id)} onProcess={() => void processAll()} onRetry={(id) => void retryItem(id)} onPreview={(credentialId, fileId) => void previewFile(credentialId, fileId)} /> : null}
         {!creating && !batch ? <div className="credential-empty editor"><strong>Select or create a batch</strong><span>The aggregate review keeps the entire selected cohort under one resumable record.</span></div> : null}
       </div>
     </div>
   </section>;
 }
 
-function BatchReview({ batch, saving, selectedActivationItems, onToggleActivation, onSelectAllActivation, onClearActivation, onActivate, onResumeActivation, onRetryActivation, onProcess, onRetry, onReview, onPreview }: {
-  batch: BatchDetail; saving: boolean; onProcess: () => void; onRetry: (id: string) => void;
+function BatchReview({ batch, saving, requestBlob, selectedReviewItems, openedReviewFiles, onToggleReview, onSetReviewSelection, onClearReview, onReviewSelected, selectedActivationItems, onToggleActivation, onSelectAllActivation, onClearActivation, onActivate, onResumeActivation, onRetryActivation, onProcess, onRetry, onPreview }: {
+  batch: BatchDetail; saving: boolean; requestBlob: RequestBlob; onProcess: () => void; onRetry: (id: string) => void;
+  selectedReviewItems: Set<string>; openedReviewFiles: Set<string>; onToggleReview: (id: string) => void;
+  onSetReviewSelection: (ids: string[]) => void; onClearReview: () => void; onReviewSelected: () => void;
   selectedActivationItems: Set<string>; onToggleActivation: (id: string) => void;
   onSelectAllActivation: () => void; onClearActivation: () => void; onActivate: () => void;
-  onResumeActivation: (id: string) => void; onRetryActivation: (id: string) => void; onReview: (id: string) => void;
+  onResumeActivation: (id: string) => void; onRetryActivation: (id: string) => void;
   onPreview: (credentialId: string, fileId: string) => void;
 }) {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(batch.items.length / reviewPageSize));
+  const pageItems = batch.items.slice((page - 1) * reviewPageSize, page * reviewPageSize);
+  const readyForSelection = pageItems.filter((item) => item.status === 'generated'
+    && item.files.length === batch.context.templateDocumentCount
+    && item.files.every((file) => openedReviewFiles.has(file.id)));
+  const selectedOnPage = pageItems.filter((item) => selectedReviewItems.has(item.id)).length;
   const eligibleCount = batch.items.filter((item) => item.activationEligible).length;
-  const resumableRequestIds = [...new Set(batch.items
+  const resumableRequestIds = batch.activationBlocked ? [] : [...new Set(batch.items
     .filter((item) => item.activation?.requestStatus === 'processing' && ['queued', 'processing'].includes(item.activation.status))
     .map((item) => item.activation?.requestId)
     .filter((id): id is string => Boolean(id)))];
+
+  function changePage(nextPage: number) {
+    onClearReview();
+    setPage(Math.max(1, Math.min(totalPages, nextPage)));
+  }
+
   return <section className="credential-batch-review">
     <header><div><small>PDFGEN-007 · aggregate batch · {batch.status}</small><h3>{batch.context.programmeTitle}</h3><p>{batch.context.credentialType} · {batch.context.languageCode.toUpperCase()} · {batch.context.templateDisplayName} v{batch.context.templateVersionNumber} · {batch.context.templateDocumentCount} PDF / {batch.context.templatePageCount} pages per learner</p></div>
       {batch.pendingCount > 0 ? <button type="button" disabled={saving} onClick={onProcess}>{saving ? 'Processing bounded chunks…' : `Generate remaining ${batch.pendingCount}`}</button> : null}
     </header>
     <div className="credential-batch-metrics"><span><strong>{batch.totalCount}</strong> total</span><span><strong>{batch.generatedCount}</strong> generated</span><span><strong>{batch.reviewedCount}</strong> reviewed</span><span><strong>{batch.activatedCount}</strong> activated</span><span><strong>{batch.activationSentCount}</strong> sent</span><span><strong>{batch.activationNotSentCount}</strong> not sent</span><span><strong>{batch.activationFailedCount}</strong> failed</span></div>
-    <p className="credential-batch-review-note">Generated files remain private. Only explicitly selected reviewed packages activate. Each valid credential keeps its own immutable delivery history; an empty recipient or VEDOS failure never rolls back activation or blocks another item.</p>
+    {batch.activationBlocked ? <p className="credential-batch-warning" role="status">Synthetic QA safety lock: review is allowed, but activation and email delivery are permanently blocked for every credential in this batch.</p> : null}
+    <p className="credential-batch-review-note">Generated files remain private. Review every package before selection: holder, programme, credential type, dates, number, QR, and layout. Review never activates or emails a credential.</p>
+    <div className="credential-batch-review-toolbar">
+      <div><strong>{selectedOnPage}</strong><span> selected on page {page} of {totalPages}</span><small>Open every PDF in a package to enable its review checkbox.</small></div>
+      <div><button type="button" className="secondary" disabled={saving || readyForSelection.length === 0} onClick={() => onSetReviewSelection(readyForSelection.map((item) => item.id))}>Select opened packages</button><button type="button" className="secondary" disabled={saving || selectedReviewItems.size === 0} onClick={onClearReview}>Clear</button><button type="button" aria-label="Mark package reviewed for selected items" disabled={saving || selectedReviewItems.size === 0} onClick={onReviewSelected}>{saving ? 'Recording review…' : `Mark selected reviewed ${selectedReviewItems.size}`}</button></div>
+    </div>
     {eligibleCount ? <div className="credential-batch-activation-toolbar"><div><strong>{selectedActivationItems.size}</strong><span> selected of {eligibleCount} activation-eligible</span></div><div><button type="button" className="secondary" disabled={saving} onClick={onSelectAllActivation}>Select all eligible</button><button type="button" className="secondary" disabled={saving || selectedActivationItems.size === 0} onClick={onClearActivation}>Clear</button><button type="button" disabled={saving || selectedActivationItems.size === 0} onClick={onActivate}>{saving ? 'Activating bounded chunks…' : `Activate selected ${selectedActivationItems.size}`}</button></div></div> : null}
     {resumableRequestIds.map((requestId) => <div className="credential-batch-resume" key={requestId}><span>An earlier activation request has queued work or an active/expired lease.</span><button type="button" disabled={saving} onClick={() => onResumeActivation(requestId)}>Resume recorded activation</button></div>)}
-    <div className="credential-batch-items">{batch.items.map((item) => <article key={item.id}>
+    <nav className="credential-batch-pagination" aria-label="Batch review pages"><button type="button" className="secondary" disabled={saving || page === 1} onClick={() => changePage(page - 1)}>Previous 25</button><span>Items {(page - 1) * reviewPageSize + 1}–{Math.min(page * reviewPageSize, batch.items.length)} of {batch.items.length}</span><button type="button" className="secondary" disabled={saving || page === totalPages} onClick={() => changePage(page + 1)}>Next 25</button></nav>
+    <div className="credential-batch-items">{pageItems.map((item) => {
+      const packageOpened = item.files.length === batch.context.templateDocumentCount && item.files.every((file) => openedReviewFiles.has(file.id));
+      return <article key={item.id}>
       <header><div><strong>{item.position}. {item.learnerName}</strong><span>{item.documentNumber ?? (item.status === 'conflict' ? 'Existing credential conflict' : 'Number not reserved yet')} · attempt {item.attemptCount}</span></div><em className={item.status}>{statusLabel[item.status]}</em></header>
       {item.lastErrorCode ? <p className="credential-batch-error">Validation: {item.lastErrorCode.replaceAll('_', ' ')}</p> : null}
-      {item.files.length ? <div className="credential-batch-files">{item.files.map((file) => <button type="button" key={file.id} disabled={saving || !item.credentialId} onClick={() => item.credentialId && onPreview(item.credentialId, file.id)}><strong>{file.adminLabel}</strong><span>{file.pageCount} page{file.pageCount === 1 ? '' : 's'}{file.isPrimary ? ' · Primary' : ''} · Private preview</span></button>)}</div> : null}
+      {item.files.length && item.credentialId ? <div className="credential-batch-files">{item.files.map((file) => <CredentialReviewThumbnail key={file.id} credentialId={item.credentialId!} learnerName={item.learnerName} file={file} opened={openedReviewFiles.has(file.id)} saving={saving} requestBlob={requestBlob} onOpen={() => onPreview(item.credentialId!, file.id)} />)}</div> : null}
       <footer>
         {['retryable', 'failed'].includes(item.status) ? <button type="button" disabled={saving} onClick={() => onRetry(item.id)}>Retry this item</button> : null}
-        {item.status === 'generated' ? <button type="button" disabled={saving || item.files.length !== batch.context.templateDocumentCount} onClick={() => onReview(item.id)}>Mark package reviewed</button> : null}
+        {item.status === 'generated' ? <label className={`credential-batch-review-choice${packageOpened ? ' ready' : ''}`}><input type="checkbox" checked={selectedReviewItems.has(item.id)} disabled={saving || !packageOpened} onChange={() => onToggleReview(item.id)} /><span>{packageOpened ? 'Select reviewed package' : `Open ${item.files.filter((file) => !openedReviewFiles.has(file.id)).length} remaining PDF${item.files.filter((file) => !openedReviewFiles.has(file.id)).length === 1 ? '' : 's'} before selection`}</span></label> : null}
         {item.activationEligible ? <label className="credential-batch-activation-choice"><input type="checkbox" checked={selectedActivationItems.has(item.id)} disabled={saving} onChange={() => onToggleActivation(item.id)} /><span>Select reviewed item for activation</span></label> : null}
         {item.activation ? <span className={`credential-batch-activation-outcome ${item.activation.status}`}>Activation: {item.activation.status.replaceAll('_', ' ')} · attempt {item.activation.attemptCount}{item.activation.deliveryStatus ? ` · delivery ${item.activation.deliveryStatus.replaceAll('_', ' ')}` : ''}</span> : null}
-        {item.activation && ['activation_failed', 'delivery_retryable'].includes(item.activation.status) ? <button type="button" disabled={saving} onClick={() => onRetryActivation(item.activation!.id)}>Retry activation/delivery</button> : null}
+        {!batch.activationBlocked && item.activation && ['activation_failed', 'delivery_retryable'].includes(item.activation.status) ? <button type="button" disabled={saving} onClick={() => onRetryActivation(item.activation!.id)}>Retry activation/delivery</button> : null}
       </footer>
-    </article>)}</div>
+    </article>;})}</div>
+    <nav className="credential-batch-pagination bottom" aria-label="Batch review pages"><button type="button" className="secondary" disabled={saving || page === 1} onClick={() => changePage(page - 1)}>Previous 25</button><span>Page {page} of {totalPages}</span><button type="button" className="secondary" disabled={saving || page === totalPages} onClick={() => changePage(page + 1)}>Next 25</button></nav>
   </section>;
+}
+
+function CredentialReviewThumbnail({ credentialId, learnerName, file, opened, saving, requestBlob, onOpen }: {
+  credentialId: string; learnerName: string; file: BatchReviewFile; opened: boolean; saving: boolean;
+  requestBlob: RequestBlob; onOpen: () => void;
+}) {
+  const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [thumbnailError, setThumbnailError] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    let objectUrl = '';
+    void requestBlob(`/api/v1/admin/credentials/${credentialId}/files/${file.id}/pages/1`)
+      .then((blob) => {
+        objectUrl = URL.createObjectURL(blob);
+        if (active) setThumbnailUrl(objectUrl);
+      })
+      .catch(() => { if (active) setThumbnailError(true); });
+    return () => {
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [credentialId, file.id, requestBlob]);
+
+  return <button type="button" className={`credential-review-thumbnail${opened ? ' opened' : ''}`} disabled={saving} onClick={onOpen}>
+    <span className="credential-review-thumbnail-image">{thumbnailUrl ? <img src={thumbnailUrl} loading="lazy" alt={`First page of ${file.adminLabel} for ${learnerName}`} /> : <span>{thumbnailError ? 'Thumbnail unavailable' : 'Loading private thumbnail…'}</span>}</span>
+    <strong>{file.adminLabel}</strong>
+    <span>{file.pageCount} page{file.pageCount === 1 ? '' : 's'}{file.isPrimary ? ' · Primary' : ''} · {opened ? 'Opened' : 'Open and inspect'}</span>
+  </button>;
 }

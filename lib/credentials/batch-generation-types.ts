@@ -78,6 +78,8 @@ export type BatchContextSummary = {
 export type BatchListItem = {
   id: string;
   status: CredentialGenerationBatchStatus;
+  activationBlocked: boolean;
+  activationBlockReason: 'synthetic_qa' | null;
   context: BatchContextSummary;
   totalCount: number;
   generatedCount: number;
@@ -165,6 +167,16 @@ export type BatchChunkResult = {
 export type BatchActivationInput = {
   idempotencyKey: string;
   itemIds: string[];
+};
+
+export type BatchReviewInput = {
+  itemIds: string[];
+};
+
+export type BatchReviewResult = {
+  reviewedCount: number;
+  failedCount: number;
+  batch: BatchDetail;
 };
 
 export type BatchActivationChunkResult = {

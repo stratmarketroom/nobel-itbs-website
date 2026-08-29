@@ -30,22 +30,26 @@ const browserSecurityHeaders = [
   { key: 'X-Frame-Options', value: 'DENY' },
 ];
 
+const credentialGenerationAssets = [
+  './node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs',
+  './node_modules/notosans-fontface/fonts/NotoSans-Thin.ttf',
+  './node_modules/notosans-fontface/fonts/NotoSans-ExtraLight.ttf',
+  './node_modules/notosans-fontface/fonts/NotoSans-Light.ttf',
+  './node_modules/notosans-fontface/fonts/NotoSans-Regular.ttf',
+  './node_modules/notosans-fontface/fonts/NotoSans-Medium.ttf',
+  './node_modules/notosans-fontface/fonts/NotoSans-SemiBold.ttf',
+  './node_modules/notosans-fontface/fonts/NotoSans-Bold.ttf',
+  './node_modules/notosans-fontface/fonts/NotoSans-ExtraBold.ttf',
+  './node_modules/notosans-fontface/fonts/NotoSans-Black.ttf',
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
   serverExternalPackages: ['@napi-rs/canvas', 'pdfjs-dist'],
   outputFileTracingIncludes: {
-    '/api/v1/admin/credentials/**': [
-      './node_modules/notosans-fontface/fonts/NotoSans-Thin.ttf',
-      './node_modules/notosans-fontface/fonts/NotoSans-ExtraLight.ttf',
-      './node_modules/notosans-fontface/fonts/NotoSans-Light.ttf',
-      './node_modules/notosans-fontface/fonts/NotoSans-Regular.ttf',
-      './node_modules/notosans-fontface/fonts/NotoSans-Medium.ttf',
-      './node_modules/notosans-fontface/fonts/NotoSans-SemiBold.ttf',
-      './node_modules/notosans-fontface/fonts/NotoSans-Bold.ttf',
-      './node_modules/notosans-fontface/fonts/NotoSans-ExtraBold.ttf',
-      './node_modules/notosans-fontface/fonts/NotoSans-Black.ttf',
-    ],
+    '/api/v1/admin/credentials/**': credentialGenerationAssets,
+    '/api/v1/admin/credential-generation-batches/**': credentialGenerationAssets,
   },
   skipTrailingSlashRedirect: true,
   async headers() {

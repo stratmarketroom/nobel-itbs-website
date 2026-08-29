@@ -256,3 +256,16 @@ export async function createCredentialFileSignedUrl(
   if (error || !data?.signedUrl) throw new ApiError('server_error', 500, 'Private PDF access link could not be created.');
   return { signedUrl: data.signedUrl, expiresIn: signedUrlLifetimeSeconds };
 }
+
+export async function downloadCredentialFileForPreview(
+  context: AdminContext,
+  credentialId: string,
+  fileId: string,
+): Promise<ArrayBuffer> {
+  const db = requestClient(context);
+  await credentialStatus(db, credentialId);
+  await fileRow(db, credentialId, fileId);
+  const result = await getSupabaseAdminClient().storage.from(bucket).download(filePath(credentialId, fileId));
+  if (result.error || !result.data) throw new ApiError('server_error', 500, 'Private PDF preview could not be loaded.');
+  return result.data.arrayBuffer();
+}

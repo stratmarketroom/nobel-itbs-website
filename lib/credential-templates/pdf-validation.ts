@@ -1,3 +1,8 @@
+import {
+  DOMMatrix as CanvasDOMMatrix,
+  ImageData as CanvasImageData,
+  Path2D as CanvasPath2D,
+} from '@napi-rs/canvas';
 import { createHash } from 'node:crypto';
 import type { CredentialTemplatePageMetadata } from './types.ts';
 
@@ -25,8 +30,8 @@ const forbiddenPdfNames = new Set([
 ]);
 
 export class TemplatePdfValidationError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
     this.name = 'TemplatePdfValidationError';
   }
 }
@@ -135,6 +140,24 @@ function roundedPoints(value: number): number {
   return Math.round(value * 1000) / 1000;
 }
 
+function installPdfJsCanvasGlobals(): void {
+  const constructors = {
+    DOMMatrix: CanvasDOMMatrix,
+    ImageData: CanvasImageData,
+    Path2D: CanvasPath2D,
+  } as const;
+
+  for (const [name, value] of Object.entries(constructors)) {
+    if (!(name in globalThis)) {
+      Object.defineProperty(globalThis, name, {
+        configurable: true,
+        value,
+        writable: true,
+      });
+    }
+  }
+}
+
 export async function validateTemplatePdf(bytes: Buffer): Promise<ValidatedTemplatePdf> {
   if (!bytes.subarray(0, Math.min(bytes.length, 1024)).includes(Buffer.from('%PDF-', 'ascii'))) {
     throw new TemplatePdfValidationError('The uploaded file is not a valid PDF.');
@@ -142,6 +165,7 @@ export async function validateTemplatePdf(bytes: Buffer): Promise<ValidatedTempl
 
   assertNoForbiddenPdfNames(bytes);
 
+  installPdfJsCanvasGlobals();
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
   const loadingTask = pdfjs.getDocument({
     data: new Uint8Array(bytes),
@@ -235,7 +259,7 @@ export async function validateTemplatePdf(bytes: Buffer): Promise<ValidatedTempl
     if (passwordRequested || error instanceof pdfjs.PasswordException) {
       throw new TemplatePdfValidationError('Encrypted PDFs are not accepted.');
     }
-    throw new TemplatePdfValidationError('PDF is malformed or uses unsupported content.');
+    throw new TemplatePdfValidationError('PDF is malformed or uses unsupported content.', { cause: error });
   } finally {
     await loadingTask.destroy().catch(() => undefined);
   }
