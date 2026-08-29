@@ -1,6 +1,6 @@
 # Implementation Status
 
-Last updated: 2026-08-27
+Last updated: 2026-08-29
 
 This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
@@ -17,7 +17,8 @@ This is the current implementation record. The v2 product and technical specific
 - PDFGEN-004 server-side multi-document PDF generation was merged through PR #35 as `d777f6c`; all local checks, the 2/2 PR checks, Vercel Preview, the merge commit's 1/1 Production check, and focused public Production smoke passed. No database object or Supabase data was changed.
 - PDFGEN-005 single pending-credential generation/regeneration was merged through PR #37 as `159916c`; Preview and Production deployment `2FXVz7Xrz5jegFXnMrRvTwiv3Y5D` passed, migration `20260826100000` is applied/recorded as migration 58 in dev and Production, and independent security/read-only acceptance passed in both environments without creating a pending credential, number, template, PDF, batch, or provenance row.
 - PDFGEN-006 batch generation/review was merged through PR #39 as `f59c4a0`; migrations `20260826120000` and `20260826123000` are applied and read-only accepted in dev and Production as migrations 59 and 60.
-- PDFGEN-007 batch activation/VEDOS delivery was merged through PR #41 as `26d35f2`; migration `20260826140000` is applied and read-only accepted in Development and Production as migration 61. Mutation acceptance remains intentionally pending until an approved non-production cohort exists.
+- PDFGEN-007 batch activation/VEDOS delivery was merged through PR #41 as `26d35f2`; migration `20260826140000` is applied and read-only accepted in Development and Production as migration 61. PDFGEN-008 completed approved synthetic generation mutation acceptance; real activation and VEDOS delivery remain separately gated.
+- SEC-DEV-SECRET-ROTATION-001 is implemented on branch `codex/sec-dev-secret-rotation-001` at `d936aa2`; migration `20260829100000` is applied/recorded in Development, all 1,741 credential token records use key version 2, modern Supabase publishable/secret keys are active, legacy Development JWT and credential-token keys are retired, and Production is untouched. Pull-request review remains pending.
 - No direct push to `main` is used.
 
 ## Supabase Dev Project
@@ -28,8 +29,10 @@ This is the current implementation record. The v2 product and technical specific
 - Local secrets remain in ignored environment files and must never be committed.
 - A pre-integration backup is available under the ignored `backups/supabase/2026-08-05-pre-content/` directory.
 
-The repository, clean local chain, hosted Development, and Production contain
-64 documented SQL migrations. Production migrations 61–64 passed the exact
+The repository, clean local chain, and hosted Development contain 65 documented
+SQL migrations. Production remains at 64 migrations. Development-only migration
+65 is `20260829100000_sec_001_credential_token_rotation.sql`; Production
+promotion is not authorized by that ticket. Production migrations 61–64 passed the exact
 preflight, ordered promotion, 64/64 parity, no-pending dry run, clean hosted
 lint, and read-only RLS/function/data acceptance on 2026-08-27. PDFGEN-001
 through PDFGEN-007 and WF-004 remain applied and recorded in both hosted
@@ -80,6 +83,7 @@ secrets remain outside Git.
 
 ## Verified in Dev / Production
 
+- On 2026-08-29, SEC-DEV-SECRET-ROTATION-001 completed the controlled Development credential-token and Supabase client-key rotation. A clean local 65-migration rebuild, focused 17/17 SEC pgTAP, selected 19-file 464/464 SEC/PDFGEN/RLS/WF regression, static verifiers, TypeScript, lint, build, hosted dry run/apply, independent database audit, private token decrypt/HMAC check, Ready Preview smoke, and post-disable modern-key HTTP/database checks passed. All 1,741 credentials moved from token key version 1 to 2 with 1,741 distinct valid hashes, zero malformed material, unchanged `1740 pending + 1 revoked`, three unchanged generation batches, and 1,740 unchanged batch items. The Owner disabled the Development legacy JWT `anon` and `service_role` keys after modern publishable/secret migration. Production, review, activation, VEDOS email, document numbers, PDFs, and lifecycle state were untouched. See `docs/qa/SEC_DEV_SECRET_ROTATION_001_2026-08-29.md`.
 - On 2026-08-27, QA-005-PROD-MIG-001 promoted the ordered migrations 61–64 to Production after a clean 64-migration rebuild, 168/168 focused local pgTAP assertions, clean local lint, a confirmed zero-data Production preflight, and an exact four-migration dry run. Production now has 64/64 parity, no pending migration, clean hosted lint, 2/2 forced-RLS activation tables, 2/2 guarded read policies, 7/7 guarded activation functions, 45/45 hardened editorial mutation policies, both function corrections, unchanged four-status lifecycle, and zero learner/credential/template/generation/activation/private-Storage rows. See `docs/qa/QA_005_PRODUCTION_MIGRATIONS_61_64_2026-08-27.md`.
 - On 2026-08-27, LRN-LINT-001 resolved the final hosted schema-lint finding and the underlying same-transaction reuse defect in `public.import_learners(jsonb)` through forward-only migration 64. The temporary staging table is replaced by normalized transaction-local JSONB without changing role/MFA, validation, duplicate/no-overwrite, audit, return, or grant contracts. The clean local 64-migration rebuild, selected local and hosted gates pass 111/111, hosted lint reports no schema errors, and Development/Production parity is 64/64. See `docs/qa/LRN_LINT_001_IMPORT_LEARNERS_RELATION_RESOLUTION_2026-08-27.md`.
 - On 2026-08-27, QA-003-MFA-RLS-001 closed the defence-in-depth gap across 45 editorial content mutation policies. Forward-only migration 62 adds the shared profile-aware MFA helper without changing Content Manager's MFA-optional role contract, editorial role membership, read policies, grants, or data. A clean local rebuild passed 286/286 combined assertions. The confirmed hosted Development target listed only migration 62, applied it successfully, passed focused QA-003 10/10, aggregate QA-003 31/31, QA-001 42/42, and reported full post-push migration parity. Migration 62 is now promoted and read-only accepted in Production without changing a content row. The two lint findings observed during that ticket were subsequently resolved by migrations 63 and 64. See `docs/qa/QA_003_CONTENT_POLICY_MFA_HARDENING_2026-08-27.md`.
@@ -126,8 +130,15 @@ Docker Desktop and a local PostgreSQL/pgTAP runner are now available. The
 PDFGEN-008 selected database gate executed 276 planned assertions and all 276
 passed after the separately scoped local content-policy MFA correction. With
 the focused 10-assertion hardening suite, the combined regression is 286/286.
-The full repository-wide historical pgTAP suite and PDFGEN mutation E2E have
-not been claimed as passed.
+The full repository-wide historical pgTAP suite is not claimed as a clean
+gate. PDFGEN-008 synthetic generation mutation E2E passed separately for its
+approved 200-, 540-, and 1,000-item cohorts.
+
+SEC-DEV-SECRET-ROTATION-001 separately passed its current selected database
+gate across 19 files and 464/464 assertions. The full historical collection
+executed 60 files and 1,292 assertions but remains non-clean because of known
+phase-local and pgTAP compatibility expectations outside the SEC ticket; those
+adjacent historical tests were not changed.
 
 ## Operational Dependencies
 
