@@ -37,6 +37,7 @@ const navItems: AdminNavItem[] = [
   { href: '/admin/credential-templates', label: 'Template packages', shortLabel: 'Templates', roles: ['owner', 'super_admin'] },
   { href: '/admin/site-settings', label: 'Site settings', shortLabel: 'Settings', roles: ['owner', 'super_admin'] },
   { href: '/admin/users', label: 'Users and roles', shortLabel: 'Users', roles: ['owner', 'super_admin'] },
+  { href: '/admin/audit-history', label: 'Audit / History', shortLabel: 'Audit', roles: ['owner', 'super_admin'] },
 ];
 
 function matchesAdminRoute(pathname: string, href: string): boolean {

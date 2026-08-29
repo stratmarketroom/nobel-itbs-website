@@ -49,6 +49,7 @@ its secrets remain outside Git.
 - Private contact-submission storage, programme-question plus general/partnership/organisation public forms, protected manager list/status workflow, audit logging, database-backed rate limiting, CAPTCHA hooks, and a server-only privacy-minimised Telegram notification adapter. Telegram receives no visitor name, email, phone, or message, and delivery failure cannot reject a stored submission.
 - Shared protected admin shell with role-aware desktop/mobile navigation, account context, and explicit signed-out, MFA-required, and access-denied states.
 - Role-aware protected Dashboard at `/admin` with caller-JWT/RLS counts for content readiness and credential operations, plus a role-safe post-login landing for every Release 1 admin role.
+- Global append-only Audit/History code for Owner/Super Admin AAL2, including caller-JWT/RLS list/detail reads, actor display-name lookup, pagination/filters, and a server privacy projection that withholds raw metadata and transport/security fields.
 - Actor-scoped Admin Programme API for areas, types, programmes/translations, runs, pricing options/translations, and read-only slug redirect review.
 - Responsive programme manager for list/create/edit, publication and catalogue settings, localized page copy, controlled sales sections, and SEO.
 - Responsive Programme Area and Programme Type managers with controlled EN/UA/CZ landing sections, SEO, ordering, and publication guards.
