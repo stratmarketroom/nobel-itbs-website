@@ -246,6 +246,22 @@ Returns:
 - active status;
 - MFA requirement/status.
 
+### Dashboard Summary
+
+`GET /api/v1/admin/dashboard`
+
+Returns a read-only, role-aware aggregate for the protected admin Dashboard:
+
+- Owner and Super Admin receive both content and credential-operation totals;
+- Content Manager receives only content/programme publication and translation-work totals;
+- Credential Manager receives only contact-submission, learner, and credential-status totals;
+- roles that require MFA must use an AAL2 session;
+- counts execute with the caller JWT and existing RLS; the response contains no learner identity,
+  contact detail, credential token, document path, email content, note, or audit payload.
+
+The Dashboard does not add a new lifecycle or database object. It summarizes existing
+Release 1 states and links to the protected source modules.
+
 ### User Management
 
 Owner/Super Admin according to role rules:
