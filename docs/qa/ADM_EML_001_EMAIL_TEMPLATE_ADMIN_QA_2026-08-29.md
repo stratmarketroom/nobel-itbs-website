@@ -1,7 +1,7 @@
 # ADM-EML-001 Email Template Admin Management
 
 Date: 2026-08-29
-Status: implementation and Preview accepted; migration accepted in Development and Production; Production application deployment pending
+Status: complete in Development, Preview, and Production
 
 ## Summary
 
@@ -121,6 +121,26 @@ The production build includes `/admin/email-templates`,
   acceptance-found touch-target correction;
 - the final Preview console contained zero warnings or errors.
 
+## Vercel Production Acceptance
+
+- PR #50 merged without conflict as `5a058b2`;
+- Vercel Production deployment `6156396124` completed successfully for that
+  exact merge commit;
+- the stable Production route `/admin/email-templates` returned HTTP `200`;
+- the stable unauthenticated `/api/v1/admin/email-templates` boundary returned
+  HTTP `401` with `Bearer session is required`;
+- the existing Production Owner session remained MFA/AAL2-verified and loaded
+  the protected Email Templates navigation item and editor;
+- both stored EN/UA templates loaded, and Arrow Right selected the UA tab;
+- 390-pixel and 320-pixel checks had no horizontal overflow and both actions
+  measured 48 pixels high;
+- the Production console contained zero warnings or errors;
+- Save was not submitted;
+- final database read-back confirmed 67 migrations ending at
+  `20260829140000`, exactly two release templates, zero
+  `email_template.updated` rows, no browser QA content, and zero learners,
+  credentials, or credential email sends.
+
 ## Security Notes
 
 - The browser receives no service-role secret and uses the caller JWT.
@@ -142,12 +162,12 @@ The production build includes `/admin/email-templates`,
   transaction and rolled back in both environments; cleanup was verified.
 - The Development CLI access token is stale, so the documented direct TLS
   pooler fallback was used with exact project identity guards.
-- Application code is committed and accepted in Preview but is not yet merged
-  or deployed to Vercel Production. The Production database change is additive
-  and remains compatible with the currently deployed application.
+- No real template update was performed during browser acceptance. The
+  successful transactional pgTAP change/audit coverage was rolled back in both
+  hosted environments, while Preview and Production UI checks intentionally
+  exercised only reversible in-browser draft/reset behavior.
 
 ## Next Dependency
 
-Merge PR #50 and confirm the Vercel Production deployment plus the protected
-route and unauthenticated API boundary. Dashboard and global Audit/History must
-remain separate tickets.
+Select the next separate Release 1 ticket. Dashboard and global Audit/History
+must remain independent tickets; no work on either was included here.
