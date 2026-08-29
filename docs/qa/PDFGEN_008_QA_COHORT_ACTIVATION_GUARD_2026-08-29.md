@@ -1,7 +1,7 @@
 # PDFGEN-008 QA Cohort Activation Guard
 
 Date: 2026-08-29
-Status: local implementation and verification passed; hosted Development application pending
+Status: accepted in hosted Development; Production untouched
 
 ## Summary
 
@@ -74,6 +74,26 @@ runner in this shell because the Docker executable was not on its inherited
 inside the healthy local Supabase PostgreSQL container and passed 27/27. This is
 a local runner limitation, not a database-test failure.
 
+Passed in hosted Development (`flswzhgjbpagohbwehcz`):
+
+- the pre-apply dry run listed only
+  `20260829120000_pdfgen_008_qa_cohort_activation_guard.sql`;
+- the migration applied successfully and the second dry run reported the remote
+  database up to date, giving repository/Development parity at 66 migrations;
+- read-only audit confirmed the 200, 540, and 1000 batches are all permanently
+  locked with reason `synthetic_qa`;
+- cohort state remains 1,740 `pending`, zero `valid`, zero activation requests,
+  zero activation items, and zero cohort email-send rows;
+- three privacy-minimal `credential_generation.batch_activation_blocked` audit
+  events exist, one for each batch;
+- a transaction-scoped negative database test passed 4/4: activation-request
+  insert, activation-item processing, `pending -> valid`, and email-send insert
+  were each rejected, followed by `ROLLBACK`;
+- Vercel Preview for implementation commit `cdbb779` completed successfully;
+- authenticated Owner/AAL2 browser acceptance showed `QA locked` on all three
+  batches, the permanent warning and review controls in each batch detail, no
+  activation controls, and no browser console warnings or errors.
+
 ## Security Notes
 
 - enforcement is database-side and does not rely on a disabled button;
@@ -86,13 +106,16 @@ a local runner limitation, not a database-test failure.
   internal learner note is copied into audit metadata or returned by the API;
 - browser roles retain no direct batch-state DML and cannot execute the new
   internal trigger functions;
-- no hosted environment or Production data has been changed at this stage.
+- the hosted Development migration changed only the intended batch lock
+  metadata and wrote the three corresponding audit events; credentials,
+  numbers, private PDFs, provenance, review state, activation state, and email
+  state were not changed;
+- Production was not accessed or changed.
 
 ## Deviations / Open Questions
 
-- The migration has not yet been applied to hosted Development. Until that
-  separately approved step, the repository guard is not active against the
-  hosted 200 + 540 + 1000 cohort records.
+- No implementation or acceptance deviation remains for the synthetic-cohort
+  guard in hosted Development.
 - Review is intentionally not blocked. It remains useful for QA evidence and
   does not activate or email a credential.
 - Reviewer/activator identity equality is intentionally not enforced. Staff
@@ -101,8 +124,8 @@ a local runner limitation, not a database-test failure.
 
 ## Next Dependency
 
-After explicit approval, apply the forward-only migration and matching
-application deployment to hosted Development, verify that all three known
-batches show `QA locked`, and perform a safe negative activation check.
-Production promotion and the first real VEDOS delivery remain separate
-authorization gates.
+The synthetic-cohort guard needs no further Development action. Production
+promotion is unnecessary for these Development-only synthetic records unless a
+separate ticket establishes a reusable Production policy requirement. The next
+operational dependency remains one explicitly approved real complete-package
+activation and VEDOS delivery acceptance with an authorized MFA actor.

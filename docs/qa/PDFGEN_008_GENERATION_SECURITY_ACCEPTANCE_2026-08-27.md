@@ -3,8 +3,8 @@
 Date: 2026-08-28
 Status: PDFGEN runtime security gate passed; hosted Development 200-item Batch A,
 540-item Batch B, and 1000-item Batch C generation passed; 55 Batch A items are
-privately reviewed; permanent QA activation guard passed local verification and
-is pending hosted Development application
+privately reviewed; permanent QA activation guard is accepted in hosted
+Development; Production is untouched
 
 ## Scope For This Stage
 
@@ -111,12 +111,12 @@ hash, and QR audit. No Batch C item was reviewed, activated, or emailed.
 The PDFGEN-008 QA cohort guard adds a forward-only migration with permanent
 batch activation-block metadata, synthetic-cohort marking/backfill, privacy-safe
 audit coverage, and fail-closed activation/delivery triggers. It is implemented
-locally and has not yet been applied to hosted Development or Production. The
+locally and applied in hosted Development only. The
 separate QA-003-MFA-RLS-001 ticket adds repository migration 62 and alters 45
-editorial mutation policies; it was applied only to the local Docker Supabase stack.
-Every test used its transaction/rollback boundary, and the stack was stopped
-after verification. Docker retained only its local development volume and
-downloaded images.
+editorial mutation policies and is already applied in hosted Development and
+Production. The local guard tests used transaction/rollback boundaries, and the
+stack was stopped after verification. Docker retained only its local
+development volume and downloaded images.
 
 Hosted Development data now includes the approved synthetic 200/540/1000
 learner cohorts and one fully generated 200-item Batch A with 200 pending
@@ -179,6 +179,19 @@ Runtime pgTAP was rerun against local PostgreSQL 15 after a clean rebuild of all
 - aggregate QA-003: 31/31 assertions passed;
 - PDFGEN plus aggregate QA result: 276/276 assertions passed;
 - including the focused 10-assertion content-policy hardening suite: 286/286.
+
+The later permanent QA-cohort guard stage also passed its focused local pgTAP
+suite 27/27, static regression checks, ESLint, TypeScript, the 51-page production
+build, and diff validation. In hosted Development, migration
+`20260829120000_pdfgen_008_qa_cohort_activation_guard.sql` was the only pending
+migration, applied successfully, and reached 66/66 parity. The post-apply audit
+confirmed three locked batches, 1,740 pending cohort credentials, zero valid
+cohort credentials, zero activation requests/items, zero cohort email sends,
+and three lock audit events. A transaction-scoped hosted negative test rejected
+all four guarded mutation paths and rolled back. Vercel Preview completed for
+commit `cdbb779`; authenticated Owner/AAL2 UI acceptance confirmed `QA locked`
+for 200/540/1000, retained review controls, no activation controls, and no
+console warnings or errors.
 
 The previously reported aggregate QA-003 failure is resolved locally by the
 separate QA-003-MFA-RLS-001 migration. All 45 editorial
@@ -466,13 +479,13 @@ The approved 1000-item Batch C throughput stage then passed:
   operational acceptance dependency.
 - The separate content-policy migration is verified locally and in hosted
   Development; Production remains untouched.
-- The permanent synthetic-cohort activation guard is implemented locally but
-  is not active in hosted Development until its migration and matching
-  application build are separately approved and deployed.
+- The permanent synthetic-cohort activation guard is active and accepted in
+  hosted Development. It is intentionally not promoted to Production in this
+  ticket because the protected cohorts exist only in Development.
 
 ## Next Dependency
 
-After separate approval, apply the locally verified synthetic-cohort activation
-guard to hosted Development, confirm all three QA batches show the lock, and
-execute a safe negative activation check. Any real activation, VEDOS delivery
-acceptance, or Production promotion remains a later, separately authorized gate.
+PDFGEN-008 synthetic generation and permanent non-activation acceptance are
+complete in Development. The next operational dependency is a separately
+approved real complete-package activation and VEDOS delivery acceptance. Any
+Production promotion remains a separate ticket and authorization gate.
