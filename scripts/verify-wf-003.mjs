@@ -95,7 +95,7 @@ if (!errors.length) {
     errors.push('Credential tokens, delivery content, and provider failures must not be logged.');
   }
 
-  for (const snippet of ['createDecipheriv', 'aes-256-gcm', 'storedKeyVersion !== keyVersion', '/verify/', 'encodeURIComponent(token)']) {
+  for (const snippet of ['createDecipheriv', 'aes-256-gcm', 'encryptionKeys.get(storedKeyVersion)', '/verify/', 'encodeURIComponent(token)']) {
     if (!source.token.includes(snippet)) errors.push(`WF-003 secure verification-link rendering missing: ${snippet}`);
   }
   for (const snippet of [

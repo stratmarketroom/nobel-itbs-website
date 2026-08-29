@@ -240,6 +240,20 @@ export function assertCanManageCredentials(context: AdminContext): void {
   }
 }
 
+export function assertCanManageEmailTemplates(context: AdminContext): void {
+  const allowed = context.roles.some((role) => (
+    role === 'owner' || role === 'super_admin' || role === 'credential_manager'
+  ));
+
+  if (!allowed) {
+    throw new ApiError('forbidden', 403, 'Email template management access is not permitted.');
+  }
+
+  if (!context.mfaSatisfied) {
+    throw new ApiError('forbidden', 403, 'MFA/AAL2 is required for email template management.');
+  }
+}
+
 export function assertCanManageCredentialTemplates(context: AdminContext): void {
   if (!context.roles.includes('owner') && !context.roles.includes('super_admin')) {
     throw new ApiError('forbidden', 403, 'Owner or Super Admin role is required for credential templates.');
