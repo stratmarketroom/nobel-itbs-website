@@ -2194,7 +2194,7 @@ h1 span {
 }
 
 .email-template-notice button {
-  min-height: 2rem;
+  min-height: 2.75rem;
   border: 1px solid currentColor;
   border-radius: 6px;
   padding: 0.35rem 0.65rem;
@@ -2418,7 +2418,7 @@ h1 span {
 .email-template-actions > div { display: flex; gap: 0.5rem; }
 
 .email-template-actions button {
-  min-height: 2.55rem;
+  min-height: 3rem;
   border: 1px solid oklch(78% 0.025 255);
   border-radius: 7px;
   padding: 0.55rem 0.85rem;

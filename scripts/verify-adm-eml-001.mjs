@@ -130,6 +130,14 @@ if (!errors.length) {
     if (!source.styles.includes(snippet)) errors.push(`Responsive admin styling missing: ${snippet}`);
   }
 
+  if (!/\.email-template-actions button\s*\{[\s\S]*?min-height:\s*3rem;/u.test(source.styles)) {
+    errors.push('Email-template action buttons must keep a 48px minimum touch target.');
+  }
+
+  if (!/\.email-template-notice button\s*\{[\s\S]*?min-height:\s*2\.75rem;/u.test(source.styles)) {
+    errors.push('Email-template retry action must keep a 44px minimum touch target.');
+  }
+
   const plan = source.test.match(/select\s+plan\((\d+)\)/i)?.[1];
   const assertions = [...source.test.matchAll(/^select\s+(?:results_eq|has_function|has_trigger|lives_ok|throws_ok)\s*\(/gim)].length;
   if (Number(plan) !== assertions) {
