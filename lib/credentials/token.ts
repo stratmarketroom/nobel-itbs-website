@@ -5,34 +5,68 @@ import { ApiError } from '@/lib/supabase/server';
 const hmacSecretEnvName = 'CREDENTIAL_TOKEN_HMAC_SECRET';
 const encryptionKeyEnvName = 'CREDENTIAL_TOKEN_ENCRYPTION_KEY';
 const encryptionKeyVersionEnvName = 'CREDENTIAL_TOKEN_ENCRYPTION_KEY_VERSION';
+const legacyEncryptionKeyEnvName = 'CREDENTIAL_TOKEN_ENCRYPTION_KEY_LEGACY';
+const legacyEncryptionKeyVersionEnvName = 'CREDENTIAL_TOKEN_ENCRYPTION_KEY_LEGACY_VERSION';
 
-function tokenConfiguration(): { hmacSecret: Buffer; encryptionKey: Buffer; keyVersion: number } {
+function decodeEncryptionKey(value: string | undefined): Buffer {
+  let encryptionKey: Buffer;
+  try {
+    encryptionKey = Buffer.from(value ?? '', 'base64');
+  } catch {
+    throw new ApiError('server_error', 500, 'Credential token encryption configuration is invalid.');
+  }
+
+  if (encryptionKey.length !== 32) {
+    throw new ApiError('server_error', 500, 'Credential token encryption configuration is missing or invalid.');
+  }
+  return encryptionKey;
+}
+
+function tokenConfiguration(): {
+  hmacSecret: Buffer;
+  encryptionKey: Buffer;
+  encryptionKeys: Map<number, Buffer>;
+  keyVersion: number;
+} {
   const hmacValue = process.env[hmacSecretEnvName];
   const encryptionValue = process.env[encryptionKeyEnvName];
   const keyVersionValue = process.env[encryptionKeyVersionEnvName] ?? '1';
   const keyVersion = Number(keyVersionValue);
+  const legacyEncryptionValue = process.env[legacyEncryptionKeyEnvName];
+  const legacyKeyVersionValue = process.env[legacyEncryptionKeyVersionEnvName];
 
   if (!hmacValue || Buffer.byteLength(hmacValue, 'utf8') < 32) {
     throw new ApiError('server_error', 500, 'Credential token HMAC configuration is missing or invalid.');
   }
 
-  let encryptionKey: Buffer;
-  try {
-    encryptionKey = Buffer.from(encryptionValue ?? '', 'base64');
-  } catch {
-    throw new ApiError('server_error', 500, 'Credential token encryption configuration is invalid.');
-  }
+  const encryptionKey = decodeEncryptionKey(encryptionValue);
 
   if (
-    encryptionKey.length !== 32
-    || hmacValue === encryptionValue
+    hmacValue === encryptionValue
     || !Number.isSafeInteger(keyVersion)
     || keyVersion < 1
   ) {
     throw new ApiError('server_error', 500, 'Credential token encryption configuration is missing or invalid.');
   }
 
-  return { hmacSecret: Buffer.from(hmacValue, 'utf8'), encryptionKey, keyVersion };
+  const encryptionKeys = new Map<number, Buffer>([[keyVersion, encryptionKey]]);
+  if (legacyEncryptionValue || legacyKeyVersionValue) {
+    const legacyKeyVersion = Number(legacyKeyVersionValue);
+    const legacyEncryptionKey = decodeEncryptionKey(legacyEncryptionValue);
+    if (
+      !legacyEncryptionValue
+      || !legacyKeyVersionValue
+      || !Number.isSafeInteger(legacyKeyVersion)
+      || legacyKeyVersion < 1
+      || legacyKeyVersion === keyVersion
+      || legacyEncryptionKey.equals(encryptionKey)
+    ) {
+      throw new ApiError('server_error', 500, 'Credential token legacy encryption configuration is invalid.');
+    }
+    encryptionKeys.set(legacyKeyVersion, legacyEncryptionKey);
+  }
+
+  return { hmacSecret: Buffer.from(hmacValue, 'utf8'), encryptionKey, encryptionKeys, keyVersion };
 }
 
 export type CredentialTokenMaterial = {
@@ -81,8 +115,9 @@ export function createCredentialTokenRpcMaterial(): CredentialTokenRpcMaterial {
 }
 
 export function decryptCredentialVerificationUrl(encryptedToken: string, storedKeyVersion: number): string {
-  const { encryptionKey, keyVersion } = tokenConfiguration();
-  if (storedKeyVersion !== keyVersion) {
+  const { encryptionKeys } = tokenConfiguration();
+  const encryptionKey = encryptionKeys.get(storedKeyVersion);
+  if (!encryptionKey) {
     throw new ApiError('server_error', 500, 'Credential token encryption key version is unavailable.');
   }
 

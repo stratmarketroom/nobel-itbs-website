@@ -36,6 +36,16 @@ function requiredSecret(name: 'CREDENTIAL_TOKEN_HMAC_SECRET' | 'CREDENTIAL_VERIF
   return value;
 }
 
+function credentialTokenHmacSecrets(): string[] {
+  const current = requiredSecret('CREDENTIAL_TOKEN_HMAC_SECRET');
+  const legacy = process.env.CREDENTIAL_TOKEN_HMAC_SECRET_LEGACY;
+  if (!legacy) return [current];
+  if (Buffer.byteLength(legacy, 'utf8') < 32 || legacy === current) {
+    throw new PublicVerificationError('temporary_error');
+  }
+  return [current, legacy];
+}
+
 function clientAddress(request: Request): string {
   return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     || request.headers.get('x-real-ip')?.trim()
@@ -50,8 +60,14 @@ export function verificationRateKey(request: Request): string {
 }
 
 export function credentialTokenLookupHash(rawToken: string): string {
-  const secret = requiredSecret('CREDENTIAL_TOKEN_HMAC_SECRET');
-  return createHmac('sha256', secret).update(rawToken.trim(), 'utf8').digest('hex');
+  return credentialTokenLookupHashes(rawToken)[0];
+}
+
+export function credentialTokenLookupHashes(rawToken: string): string[] {
+  const token = rawToken.trim();
+  return credentialTokenHmacSecrets().map((secret) => (
+    createHmac('sha256', secret).update(token, 'utf8').digest('hex')
+  ));
 }
 
 export function normalizeDocumentNumber(value: string): string {
@@ -109,8 +125,12 @@ async function lookup(kind: 'token_hash' | 'document_number', value: string, req
   }
 }
 
-export function verifyCredentialByToken(rawToken: string, request: Request) {
-  return lookup('token_hash', credentialTokenLookupHash(rawToken), request);
+export async function verifyCredentialByToken(rawToken: string, request: Request) {
+  for (const lookupHash of credentialTokenLookupHashes(rawToken)) {
+    const result = await lookup('token_hash', lookupHash, request);
+    if (result.result !== 'not_found') return result;
+  }
+  return notFoundResult;
 }
 
 export function verifyCredentialByDocumentNumber(documentNumber: string, request: Request) {
