@@ -2158,6 +2158,330 @@ h1 span {
   text-transform: uppercase;
 }
 
+/* ADM-EML-001: protected credential email templates */
+.email-template-admin-shell {
+  width: min(100%, 78rem);
+  margin-inline: auto;
+}
+
+.email-template-notice {
+  display: flex;
+  min-height: 2.8rem;
+  align-items: center;
+  gap: 0.75rem;
+  margin-block: 0.85rem;
+  border: 1px solid oklch(78% 0.045 250);
+  border-radius: 7px;
+  padding: 0.65rem 0.8rem;
+  background: oklch(96% 0.014 250);
+  color: oklch(35% 0.055 250);
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.email-template-notice span { margin-right: auto; }
+
+.email-template-notice.success {
+  border-color: oklch(77% 0.05 155);
+  background: oklch(96% 0.02 155);
+  color: oklch(37% 0.065 155);
+}
+
+.email-template-notice.error {
+  border-color: oklch(77% 0.055 25);
+  background: oklch(96% 0.02 25);
+  color: oklch(40% 0.075 25);
+}
+
+.email-template-notice button {
+  min-height: 2rem;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.email-template-workspace {
+  margin-top: 1rem;
+  overflow: clip;
+  border: 1px solid oklch(84% 0.018 255);
+  border-radius: 8px;
+  background: oklch(99% 0.004 255);
+  box-shadow: 0 14px 38px oklch(27% 0.025 255 / 6%);
+}
+
+.email-template-language-bar {
+  display: flex;
+  min-height: 4.25rem;
+  align-items: center;
+  gap: 1.2rem;
+  border-bottom: 1px solid oklch(86% 0.014 255);
+  padding: 0.65rem 1rem;
+  background: oklch(96.5% 0.01 255);
+}
+
+.email-template-language-bar > span {
+  color: oklch(46% 0.025 255);
+  font-size: 0.68rem;
+  font-weight: 760;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.email-template-language-bar > div {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.email-template-language-bar button {
+  display: grid;
+  min-width: 9.5rem;
+  min-height: 2.9rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.45rem;
+  align-items: center;
+  border: 1px solid oklch(82% 0.02 255);
+  border-radius: 6px;
+  padding: 0.45rem 0.65rem;
+  background: oklch(99% 0.004 255);
+  color: oklch(37% 0.035 255);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.email-template-language-bar button:hover {
+  border-color: oklch(65% 0.075 250);
+  background: oklch(97% 0.018 250);
+}
+
+.email-template-language-bar button[aria-selected="true"] {
+  border-color: oklch(57% 0.105 250);
+  background: oklch(92.5% 0.034 250);
+  color: oklch(29% 0.08 250);
+}
+
+.email-template-language-bar button strong {
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+}
+
+.email-template-language-bar button span {
+  font-size: 0.74rem;
+  font-weight: 650;
+}
+
+.email-template-language-bar button small {
+  color: oklch(44% 0.085 55);
+  font-size: 0.61rem;
+  font-weight: 760;
+}
+
+.email-template-editor {
+  padding: clamp(1rem, 2.6vw, 1.75rem);
+}
+
+.email-template-editor-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.48fr);
+  gap: 2rem;
+  align-items: start;
+  border-bottom: 1px solid oklch(88% 0.012 255);
+  padding-bottom: 1.25rem;
+}
+
+.email-template-editor-heading > div > small {
+  color: oklch(46% 0.1 250);
+  font-size: 0.65rem;
+  font-weight: 780;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.email-template-editor-heading h2 {
+  margin: 0.35rem 0 0.25rem;
+  color: oklch(22% 0.03 255);
+  font-size: 1.1rem;
+  line-height: 1.25;
+}
+
+.email-template-editor-heading p {
+  max-width: 68ch;
+  margin: 0;
+  color: oklch(49% 0.025 255);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.email-template-editor-heading dl { margin: 0; }
+
+.email-template-editor-heading dl div {
+  display: grid;
+  grid-template-columns: 5.2rem minmax(0, 1fr);
+  gap: 0.7rem;
+  border-bottom: 1px solid oklch(91% 0.01 255);
+  padding: 0.45rem 0;
+  font-size: 0.7rem;
+}
+
+.email-template-editor-heading dt { color: oklch(51% 0.02 255); }
+.email-template-editor-heading dd { margin: 0; color: oklch(31% 0.03 255); font-weight: 650; }
+
+.email-template-editor > label {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.email-template-editor > label > span,
+.email-template-placeholders > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: oklch(38% 0.035 255);
+  font-size: 0.72rem;
+  font-weight: 730;
+}
+
+.email-template-editor > label > span small {
+  color: oklch(52% 0.02 255);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.email-template-subject { margin-top: 1.25rem; }
+.email-template-body { margin-top: 1rem; }
+
+.email-template-editor input,
+.email-template-editor textarea {
+  width: 100%;
+  border: 1px solid oklch(79% 0.024 255);
+  border-radius: 7px;
+  padding: 0.68rem 0.75rem;
+  background: oklch(99.5% 0.003 255);
+  color: oklch(25% 0.025 255);
+  font: inherit;
+  font-size: 0.83rem;
+  line-height: 1.55;
+}
+
+.email-template-editor input { min-height: 2.75rem; }
+
+.email-template-editor textarea {
+  min-height: 22rem;
+  resize: vertical;
+  white-space: pre-wrap;
+}
+
+.email-template-placeholders {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1rem;
+  border-top: 1px solid oklch(90% 0.01 255);
+  padding-top: 0.85rem;
+}
+
+.email-template-placeholders > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+}
+
+.email-template-placeholders code {
+  border: 1px solid oklch(83% 0.025 250);
+  border-radius: 5px;
+  padding: 0.22rem 0.42rem;
+  background: oklch(95% 0.018 250);
+  color: oklch(35% 0.075 250);
+  font-size: 0.68rem;
+}
+
+.email-template-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.4rem;
+  border-top: 1px solid oklch(86% 0.014 255);
+  padding-top: 1rem;
+}
+
+.email-template-actions p {
+  margin: 0;
+  color: oklch(48% 0.025 255);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.email-template-actions > div { display: flex; gap: 0.5rem; }
+
+.email-template-actions button {
+  min-height: 2.55rem;
+  border: 1px solid oklch(78% 0.025 255);
+  border-radius: 7px;
+  padding: 0.55rem 0.85rem;
+  background: oklch(98.5% 0.005 255);
+  color: oklch(32% 0.04 255);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 720;
+  cursor: pointer;
+}
+
+.email-template-actions button.primary {
+  border-color: oklch(43% 0.13 250);
+  background: oklch(43% 0.13 250);
+  color: oklch(97% 0.008 255);
+}
+
+.email-template-actions button:hover:not(:disabled) { border-color: oklch(55% 0.11 250); }
+.email-template-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.email-template-admin-shell :is(button, input, textarea):focus-visible {
+  outline: 3px solid oklch(67% 0.13 250 / 35%);
+  outline-offset: 2px;
+}
+
+.email-template-loading {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  border: 1px solid oklch(86% 0.014 255);
+  border-radius: 8px;
+  padding: 1rem;
+  background: oklch(99% 0.004 255);
+}
+
+.email-template-loading span {
+  min-height: 3.2rem;
+  border-radius: 6px;
+  background: linear-gradient(90deg, oklch(96% 0.008 255), oklch(92% 0.018 252), oklch(96% 0.008 255));
+  background-size: 220% 100%;
+  animation: contact-admin-skeleton 1.4s ease-in-out infinite;
+}
+
+@media (max-width: 760px) {
+  .email-template-language-bar { align-items: stretch; flex-direction: column; gap: 0.5rem; }
+  .email-template-language-bar > div { display: grid; grid-template-columns: 1fr 1fr; }
+  .email-template-language-bar button { min-width: 0; grid-template-columns: auto minmax(0, 1fr); }
+  .email-template-language-bar button small { grid-column: 1 / -1; }
+  .email-template-editor-heading { grid-template-columns: 1fr; gap: 1rem; }
+  .email-template-actions { align-items: stretch; flex-direction: column; }
+  .email-template-actions > div { display: grid; grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .email-template-language-bar > div { grid-template-columns: 1fr; }
+  .email-template-actions > div { grid-template-columns: 1fr; }
+  .email-template-editor textarea { min-height: 18rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .email-template-loading span { animation: none; }
+}
+
 .admin-shell-loading,
 .admin-access-state {
   display: grid;

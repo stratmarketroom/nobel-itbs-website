@@ -28,6 +28,7 @@ if (!errors.length) {
     "MFA/AAL2 is required for contact submissions.",
     "MFA/AAL2 is required for learner management.",
     "MFA/AAL2 is required for credential management.",
+    "MFA/AAL2 is required for email template management.",
     "MFA/AAL2 is required for content management.",
     "MFA/AAL2 is required for site settings.",
   ]) {
@@ -69,6 +70,7 @@ if (!errors.length) {
     'lib/credentials/public-data.ts': 'assertCanManageCredentials(context)',
     'lib/credentials/revoke.ts': 'assertCanManageCredentials(context)',
     'lib/credentials/void.ts': 'assertCanManageCredentials(context)',
+    'lib/email-templates/admin.ts': 'assertCanManageEmailTemplates(context)',
     'lib/credential-templates/admin.ts': 'assertCanManageCredentialTemplates(context)',
     'lib/credential-templates/storage.ts': 'assertCanManageCredentialTemplates(context)',
     'lib/programmes/admin.ts': 'assertCanManageContent(context)',

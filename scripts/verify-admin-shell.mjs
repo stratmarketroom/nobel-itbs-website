@@ -8,6 +8,7 @@ const required = [
   'components/admin-content-pages.tsx',
   'components/admin-contact-submissions.tsx',
   'components/admin-site-settings.tsx',
+  'components/admin-email-templates.tsx',
 ];
 const errors = required.filter((file) => !existsSync(file)).map((file) => `Missing ${file}`);
 const shell = existsSync(required[1]) ? readFileSync(required[1], 'utf8') : '';
