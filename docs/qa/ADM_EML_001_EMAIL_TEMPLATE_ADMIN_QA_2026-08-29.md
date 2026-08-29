@@ -1,7 +1,7 @@
 # ADM-EML-001 Email Template Admin Management
 
 Date: 2026-08-29
-Status: implementation complete; migration accepted in Development and Production; application deployment pending
+Status: implementation and Preview accepted; migration accepted in Development and Production; Production application deployment pending
 
 ## Summary
 
@@ -64,7 +64,7 @@ or public-verification behavior was added or changed.
   row were all rolled back; post-test counts were zero and both release
   templates remained present.
 
-## Production Acceptance
+## Production Database Acceptance
 
 - exact identity guard matched `nobel-itbs-prod`
   (`szratzjodgiacvnhqmhx`);
@@ -101,6 +101,26 @@ The production build includes `/admin/email-templates`,
 `/api/v1/admin/email-templates`, and
 `/api/v1/admin/email-templates/[id]`.
 
+## Vercel Preview Acceptance
+
+- PR #50 was opened from `codex/adm-eml-001-email-template-admin`;
+- commit `8dc70e2` deployed successfully to Vercel Preview;
+- the Development Owner password session upgraded to AAL2 with the existing
+  verified TOTP factor;
+- the protected Email Templates navigation item and editor loaded under the
+  Owner/AAL2 session;
+- the EN and UA stored templates, character limits, supported placeholders,
+  saved timestamps, and content-free audit explanation rendered correctly;
+- Arrow Right moved selection and focus from EN to UA;
+- a browser-local subject edit enabled Save/Reset and displayed the dirty
+  state; Reset restored the exact stored value and disabled both actions;
+- Save was intentionally not submitted, so Preview acceptance wrote no
+  template or audit mutation;
+- 390-pixel and 320-pixel viewport checks had no horizontal overflow;
+- Reset and Save measured 48 pixels high at both mobile widths after the
+  acceptance-found touch-target correction;
+- the final Preview console contained zero warnings or errors.
+
 ## Security Notes
 
 - The browser receives no service-role secret and uses the caller JWT.
@@ -122,13 +142,12 @@ The production build includes `/admin/email-templates`,
   transaction and rolled back in both environments; cleanup was verified.
 - The Development CLI access token is stale, so the documented direct TLS
   pooler fallback was used with exact project identity guards.
-- Application code has not yet been committed, reviewed in Preview, merged, or
-  deployed. The Production database change is additive and remains compatible
-  with the currently deployed application.
+- Application code is committed and accepted in Preview but is not yet merged
+  or deployed to Vercel Production. The Production database change is additive
+  and remains compatible with the currently deployed application.
 
 ## Next Dependency
 
-Open the ADM-EML-001 application PR, complete authenticated Owner/AAL2 Preview
-UI/API acceptance at desktop and mobile widths, merge, and confirm the Vercel
-Production deployment. Dashboard and global Audit/History must remain separate
-tickets.
+Merge PR #50 and confirm the Vercel Production deployment plus the protected
+route and unauthenticated API boundary. Dashboard and global Audit/History must
+remain separate tickets.
