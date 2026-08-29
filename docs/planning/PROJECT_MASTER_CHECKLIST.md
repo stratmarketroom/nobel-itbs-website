@@ -141,7 +141,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 
 | Admin module | Current implementation | Verification still required |
 | --- | --- | --- |
-| Dashboard | Not started | Route, role-aware summary, authenticated smoke |
+| Dashboard | Protected `/admin` route, caller-JWT/RLS role-aware summary API, responsive operational UI, and role-safe post-login landing implemented | Static, lint, build, unauthenticated API, and authenticated Owner/AAL2 responsive smoke required |
 | Content Pages | Protected API plus responsive controlled fields for fixed sections, nested cards/lists, legal paragraphs, H1, SEO, and EN/UA/CZ publication | Authenticated edit and role/MFA smoke passed; final editorial publication review remains operational |
 | Programmes | Protected CRUD API plus responsive list/create/edit UI for record fields, localized copy, controlled sales sections, and SEO | Authenticated create/edit/order/translation/cleanup smoke passed |
 | Programme Areas | Protected CRUD API plus responsive list/create/edit UI with controlled localized landing sections | Authenticated draft record/translation/validation/cleanup smoke passed |

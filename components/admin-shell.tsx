@@ -23,6 +23,7 @@ type AdminNavItem = {
 };
 
 const navItems: AdminNavItem[] = [
+  { href: '/admin', label: 'Dashboard', shortLabel: 'Dashboard', roles: ['owner', 'super_admin', 'content_manager', 'credential_manager'] },
   { href: '/admin/content-pages', label: 'Content pages', shortLabel: 'Content', roles: ['owner', 'super_admin', 'content_manager'] },
   { href: '/admin/programmes', label: 'Programmes', shortLabel: 'Programmes', roles: ['owner', 'super_admin', 'content_manager'] },
   { href: '/admin/programme-areas', label: 'Programme areas', shortLabel: 'Areas', roles: ['owner', 'super_admin', 'content_manager'] },
@@ -38,6 +39,12 @@ const navItems: AdminNavItem[] = [
   { href: '/admin/users', label: 'Users and roles', shortLabel: 'Users', roles: ['owner', 'super_admin'] },
 ];
 
+function matchesAdminRoute(pathname: string, href: string): boolean {
+  return href === '/admin'
+    ? pathname === href
+    : pathname === href || pathname.startsWith(`${href}/`);
+}
+
 const roleLabels: Record<AdminRole, string> = {
   owner: 'Owner',
   super_admin: 'Super Admin',
@@ -46,7 +53,7 @@ const roleLabels: Record<AdminRole, string> = {
 };
 
 function routeAccess(pathname: string): AdminRole[] | null {
-  const item = navItems.find((candidate) => pathname === candidate.href || pathname.startsWith(`${candidate.href}/`));
+  const item = navItems.find((candidate) => matchesAdminRoute(pathname, candidate.href));
   return item?.roles ?? null;
 }
 
@@ -185,12 +192,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="admin-app-shell">
       <aside className="admin-app-sidebar">
-        <Link className="admin-app-brand" href={accessibleItems[0]?.href ?? '/admin/login'}>
+        <Link className="admin-app-brand" href="/admin">
           <span>N</span><strong>Nobel ITBS</strong><small>Admin</small>
         </Link>
         <nav aria-label="Admin modules">
           {accessibleItems.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const active = matchesAdminRoute(pathname, item.href);
             return <Link href={item.href} key={item.href} aria-current={active ? 'page' : undefined}><span>{item.shortLabel.slice(0, 1)}</span><strong>{item.label}</strong></Link>;
           })}
         </nav>
@@ -208,7 +215,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </header>
         <nav className="admin-app-mobile-nav" aria-label="Admin modules">
           {accessibleItems.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const active = matchesAdminRoute(pathname, item.href);
             return <Link href={item.href} key={item.href} aria-current={active ? 'page' : undefined}>{item.shortLabel}</Link>;
           })}
         </nav>

@@ -127,13 +127,13 @@ export function AdminMfaLogin() {
 
     if (context.mfa.satisfied || assurance.data.currentLevel === 'aal2') {
       setPhase('ready');
-      router.push('/admin/users');
+      router.push('/admin');
       return;
     }
 
     if (!context.mfa.required) {
       setPhase('ready');
-      router.push('/admin/users');
+      router.push('/admin');
       return;
     }
 
@@ -219,7 +219,7 @@ export function AdminMfaLogin() {
       }
 
       setPhase('ready');
-      router.push('/admin/users');
+      router.push('/admin');
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : 'MFA verification failed.');
     } finally {
