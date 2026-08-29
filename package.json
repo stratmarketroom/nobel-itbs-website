@@ -69,6 +69,8 @@
     "verify:pdfgen-007": "node scripts/verify-pdfgen-007.mjs",
     "verify:pdfgen-008": "node scripts/verify-pdfgen-008.mjs",
     "verify:pdfgen-lint-001": "node scripts/verify-pdfgen-lint-001.mjs",
+    "verify:sec-dev-secret-rotation-001": "node scripts/verify-sec-dev-secret-rotation-001.mjs",
+    "rotate:credential-token-secrets": "node scripts/rotate-credential-token-secrets.mjs",
     "test:pdfgen-004:generation": "node scripts/test-pdfgen-004-generation.mjs",
     "test:pdfgen-002:validation": "node scripts/test-pdfgen-002-validation.mjs",
     "test:pdfgen-008:pagination": "node --experimental-strip-types scripts/test-pdfgen-008-cohort-pagination.mjs",
