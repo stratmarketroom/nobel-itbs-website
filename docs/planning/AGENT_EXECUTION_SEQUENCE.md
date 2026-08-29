@@ -487,11 +487,11 @@ The orchestrator controls:
 
 Current ticket:
 
-- `SEC-DEV-SECRET-ROTATION-001 Development Secret Rotation` — complete in Development: migration 65 is applied/recorded, 1,741 credential token records moved from key version 1 to 2, the modern Supabase publishable/secret keys are active, legacy Development JWT and credential-token keys are retired, focused 17/17 plus selected 464/464 database assertions and hosted acceptance pass, and Production is untouched. Pull-request review remains pending.
+- `QA-005-PROD-MIG-002 Production Migration Promotion 65–66` — complete: exact Production preflight and dry run, ordered promotion, 66/66 parity, no-pending dry run, clean hosted lint, unchanged zero Production operational rows, and `200/200/401` HTTP smoke passed. No token material, environment configuration, or credential workflow was changed.
 
 Next ticket:
 
-- complete the separately scoped authenticated visual acceptance for `PDFGEN-006-REVIEW-UX-001` without marking synthetic QA cohorts reviewed or activating/emailing them; real activation, VEDOS delivery, backup activation/restore, Production promotion, and Production secret rotation remain separately gated;
+- perform one separately approved real complete-package activation and VEDOS delivery acceptance with an authorized MFA actor; backup activation/restore remains gated before operational issuance;
 
 Agent:
 
@@ -505,16 +505,16 @@ Owner action needed:
 
 - PDFGEN-001 is implemented, merged through PR #29 as `1b2d224`, and applied in dev and Production: the private schema, forced RLS, role/MFA boundary, immutable versioning, multi-document/multi-page publication, unbounded-cohort batch foundation, provenance, and forward-only trigger correction passed the available checks; Production contains zero PDFGEN fixture rows, while full pgTAP execution remains queued for a compatible runner;
 - PDFGEN-002 was merged through PR #31 as `970fd6c`; its private bucket, strict PDF validation, controlled source routes, page metadata/hash extraction, rollback, safe metadata grants, publication source guard, and published-object immutability passed local code/build checks. Preview and Production deployment checks passed, and migration `20260825120000` is applied/recorded and read-only accepted in dev and Production with zero template fixtures. Authenticated real-template workflow acceptance is assigned to PDFGEN-003 because that ticket provides the package UI;
-- PDFGEN-006 is merged, deployed, and read-only accepted in dev and Production. PDFGEN-008 then completed the approved Development generation acceptance for synthetic batches of 200, 540, and 1,000 credentials; the follow-up 25-item private review workspace still requires authenticated visual acceptance and must not mark or activate the synthetic cohorts;
+- PDFGEN-006 is merged, deployed, and read-only accepted in dev and Production. PDFGEN-008 completed the approved Development generation acceptance for synthetic batches of 200, 540, and 1,000 credentials, including authenticated private-review acceptance and a permanent database-enforced non-activation guard for all three synthetic cohorts;
 - PDFGEN-007 was merged through PR #41 as `26d35f2`; migration 61 and its read-only security acceptance are complete in Development and Production. Real activation and VEDOS delivery acceptance remain separately gated and were not exercised by the synthetic PDFGEN-008 cohorts;
-- SEC-DEV-SECRET-ROTATION-001 completed the Development-only credential-token and Supabase API-key rotation at `d936aa2`; the Owner disabled the legacy Development JWT keys after modern-key verification, while Production configuration and data remain unchanged;
+- SEC-DEV-SECRET-ROTATION-001 completed the Development credential-token and Supabase API-key rotation; migration 65 is now also installed in Production as a service-only capability with zero Production credentials and without changing Production configuration or token data;
 - CRD-PDFGEN-001 scope alignment is approved: Release 1 must generate one or more private, potentially multi-page PDFs per credential from a reusable programme/type/language/variant Template Package and must support controlled batches;
 - QA-005-A11Y-FIX-001 is merged, deployed, and accepted at its focused scope through PR #25 and Production merge `083b045`; no real credentials were submitted during browser acceptance;
 - QA-005-TELEGRAM-INVITE-001 is complete: the Owner revoked the setup-time Telegram group invitation link, and no change to the accepted bot/chat configuration or Telegram notification payload is required;
 - backup activation/restore remains Owner-deferred until real learners and credentials exist; before operational issuance it will still require Supabase Pro and an approved encrypted independent private-PDF destination;
 - provide or approve production-only service configuration when its checklist item is reached; do not add VEDOS SMTP, Telegram, analytics, or CAPTCHA credentials before the corresponding launch decision;
 - QA-001 and QA-003 full local pgTAP execution is complete; migration 62 is accepted in hosted Development and Production;
-- LRN-LINT-001 migration 64 is accepted in hosted Development and Production with clean lint and 64/64 parity;
+- LRN-LINT-001 migration 64 and the later migrations 65–66 are accepted in hosted Development and Production with clean lint and 66/66 parity;
 - QA-002 and QA-004 are complete at the current dev level: the retained credential passed valid verification, irreversible revocation, and status-only revoked verification by number and QR;
 - WF-004 resend is implemented, migrated and deployed in dev/Production through merged PR #22; authenticated valid-record smoke and one Owner-approved delivery are deferred until a valid credential exists;
 - VEDOS SMTP credentials remain required only in encrypted deployment settings for real credential-email delivery and QA-005 acceptance.
