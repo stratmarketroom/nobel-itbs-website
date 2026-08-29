@@ -6,6 +6,7 @@ const paths = {
   input: 'lib/credentials/batch-generation-input.ts',
   server: 'lib/credentials/batch-generation.ts',
   files: 'lib/credentials/files.ts',
+  styles: 'app/globals.css',
   bulkRoute: 'app/api/v1/admin/credential-generation-batches/[id]/review/route.ts',
   thumbnailRoute: 'app/api/v1/admin/credentials/[id]/files/[fileId]/pages/[pageNumber]/route.ts',
   report: 'docs/qa/PDFGEN_006_REVIEW_UX_001_2026-08-28.md',
@@ -38,6 +39,11 @@ if (!ui.includes('window.confirm(`Mark ${itemIds.length} selected package')) {
 const parent = source(paths.parent);
 for (const part of ['const requestBlob = useCallback', 'Authorization: `Bearer ${await token()}`', 'requestBlob={requestBlob}']) {
   if (!parent.includes(part)) errors.push(`Authenticated thumbnail request bridge missing ${part}`);
+}
+
+const styles = source(paths.styles);
+if (!styles.includes('.credential-workspace-tabs button { flex: 0 0 auto; }')) {
+  errors.push('Credential workspace tabs must not shrink or overlap on narrow viewports.');
 }
 
 const input = source(paths.input);
