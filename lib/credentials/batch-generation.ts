@@ -35,6 +35,7 @@ type BatchRow = {
   id: string; template_version_id: string; programme_id: string; programme_run_id: string | null;
   credential_type_id: string; language_code: 'en' | 'ua' | 'cz'; issue_date: string;
   completion_date: string | null; status: CredentialGenerationBatchStatus; processing_chunk_size: number;
+  activation_blocked: boolean; activation_block_reason: 'synthetic_qa' | null;
   confirmed_at: string | null; started_at: string | null; finished_at: string | null; created_at: string;
 };
 type ItemRow = {
@@ -88,6 +89,7 @@ const learnerPageSize = 1000;
 
 const batchSelect = `id, template_version_id, programme_id, programme_run_id, credential_type_id,
   language_code, issue_date, completion_date, status, processing_chunk_size,
+  activation_blocked, activation_block_reason,
   confirmed_at, started_at, finished_at, created_at`;
 const itemSelect = `id, batch_id, learner_id, position, credential_id, conflicting_credential_id,
   status, attempt_count, last_error_code, generated_at, reviewed_at`;
@@ -217,6 +219,8 @@ function listItem(batch: BatchRow, items: ItemRow[], lookup: Lookup): BatchListI
   return {
     id: batch.id,
     status: batch.status,
+    activationBlocked: batch.activation_blocked,
+    activationBlockReason: batch.activation_block_reason,
     context: contextSummary(batch, lookup),
     ...counts(items),
     createdAt: batch.created_at,
@@ -444,7 +448,8 @@ export async function getCredentialGenerationBatch(context: AdminContext, batchI
       generatedAt: item.generated_at,
       reviewedAt: item.reviewed_at,
       files: itemFiles,
-      activationEligible: !activationItem && item.status === 'reviewed' && credential?.status === 'pending'
+      activationEligible: !batch.activation_blocked && !activationItem
+        && item.status === 'reviewed' && credential?.status === 'pending'
         && itemFiles.length === expectedDocumentCount,
       activation: activationItem && activationRequest ? {
         id: activationItem.id,

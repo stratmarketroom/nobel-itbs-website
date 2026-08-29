@@ -169,7 +169,10 @@ export function AdminCredentialBatches({ request, requestBlob }: { request: Requ
       .map((item) => item.id)
       .slice(0, reviewPageSize);
     if (!itemIds.length) return;
-    if (!window.confirm(`Mark ${itemIds.length} selected package${itemIds.length === 1 ? '' : 's'} reviewed? This records you as reviewer and makes the packages activation-eligible. It does not activate or email any credential.`)) return;
+    const reviewOutcome = batch.activationBlocked
+      ? 'This records you as reviewer. This synthetic QA batch remains permanently blocked from activation and email delivery.'
+      : 'This records you as reviewer and makes the packages activation-eligible. It does not activate or email any credential.';
+    if (!window.confirm(`Mark ${itemIds.length} selected package${itemIds.length === 1 ? '' : 's'} reviewed? ${reviewOutcome}`)) return;
     setSaving(true); setNotice(null);
     try {
       const payload = await request<{ result: BatchReviewResult }>(`/api/v1/admin/credential-generation-batches/${batch.id}/review`, {
@@ -180,7 +183,7 @@ export function AdminCredentialBatches({ request, requestBlob }: { request: Requ
       await loadWorkspace();
       setNotice({
         kind: payload.result.failedCount ? 'error' : 'success',
-        message: `${payload.result.reviewedCount} package${payload.result.reviewedCount === 1 ? '' : 's'} marked reviewed.${payload.result.failedCount ? ` ${payload.result.failedCount} changed before completion and remain unreviewed.` : ' Activation remains a separate explicit action.'}`,
+        message: `${payload.result.reviewedCount} package${payload.result.reviewedCount === 1 ? '' : 's'} marked reviewed.${payload.result.failedCount ? ` ${payload.result.failedCount} changed before completion and remain unreviewed.` : batch.activationBlocked ? ' This synthetic QA batch remains blocked from activation and email delivery.' : ' Activation remains a separate explicit action.'}`,
       });
     } catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Selected packages could not be marked reviewed.' }); }
     finally { setSaving(false); }
@@ -188,6 +191,11 @@ export function AdminCredentialBatches({ request, requestBlob }: { request: Requ
 
   async function activateSelected() {
     if (!batch) return;
+    if (batch.activationBlocked) {
+      setSelectedActivationItems(new Set());
+      setNotice({ kind: 'error', message: 'This synthetic QA batch is permanently blocked from activation and email delivery.' });
+      return;
+    }
     const itemIds = batch.items
       .filter((item) => selectedActivationItems.has(item.id) && item.activationEligible)
       .map((item) => item.id);
@@ -282,7 +290,7 @@ export function AdminCredentialBatches({ request, requestBlob }: { request: Requ
         {!loading && batches.length === 0 ? <p>No generation batches yet.</p> : null}
         {batches.map((item) => <button type="button" key={item.id} aria-pressed={batch?.id === item.id} onClick={() => void openBatch(item.id)}>
           <strong>{item.context.programmeTitle}</strong><span>{item.context.credentialType} · {item.context.languageCode.toUpperCase()} · v{item.context.templateVersionNumber}</span>
-          <small>{item.generatedCount}/{item.totalCount} generated · {item.retryableCount} retry · {formattedDate(item.createdAt)}</small>
+          <small>{item.generatedCount}/{item.totalCount} generated · {item.retryableCount} retry{item.activationBlocked ? ' · QA locked' : ''} · {formattedDate(item.createdAt)}</small>
         </button>)}
       </nav>
       <div className="credential-batch-editor">
@@ -337,7 +345,7 @@ function BatchReview({ batch, saving, requestBlob, selectedReviewItems, openedRe
     && item.files.every((file) => openedReviewFiles.has(file.id)));
   const selectedOnPage = pageItems.filter((item) => selectedReviewItems.has(item.id)).length;
   const eligibleCount = batch.items.filter((item) => item.activationEligible).length;
-  const resumableRequestIds = [...new Set(batch.items
+  const resumableRequestIds = batch.activationBlocked ? [] : [...new Set(batch.items
     .filter((item) => item.activation?.requestStatus === 'processing' && ['queued', 'processing'].includes(item.activation.status))
     .map((item) => item.activation?.requestId)
     .filter((id): id is string => Boolean(id)))];
@@ -352,6 +360,7 @@ function BatchReview({ batch, saving, requestBlob, selectedReviewItems, openedRe
       {batch.pendingCount > 0 ? <button type="button" disabled={saving} onClick={onProcess}>{saving ? 'Processing bounded chunks…' : `Generate remaining ${batch.pendingCount}`}</button> : null}
     </header>
     <div className="credential-batch-metrics"><span><strong>{batch.totalCount}</strong> total</span><span><strong>{batch.generatedCount}</strong> generated</span><span><strong>{batch.reviewedCount}</strong> reviewed</span><span><strong>{batch.activatedCount}</strong> activated</span><span><strong>{batch.activationSentCount}</strong> sent</span><span><strong>{batch.activationNotSentCount}</strong> not sent</span><span><strong>{batch.activationFailedCount}</strong> failed</span></div>
+    {batch.activationBlocked ? <p className="credential-batch-warning" role="status">Synthetic QA safety lock: review is allowed, but activation and email delivery are permanently blocked for every credential in this batch.</p> : null}
     <p className="credential-batch-review-note">Generated files remain private. Review every package before selection: holder, programme, credential type, dates, number, QR, and layout. Review never activates or emails a credential.</p>
     <div className="credential-batch-review-toolbar">
       <div><strong>{selectedOnPage}</strong><span> selected on page {page} of {totalPages}</span><small>Open every PDF in a package to enable its review checkbox.</small></div>
@@ -371,7 +380,7 @@ function BatchReview({ batch, saving, requestBlob, selectedReviewItems, openedRe
         {item.status === 'generated' ? <label className={`credential-batch-review-choice${packageOpened ? ' ready' : ''}`}><input type="checkbox" checked={selectedReviewItems.has(item.id)} disabled={saving || !packageOpened} onChange={() => onToggleReview(item.id)} /><span>{packageOpened ? 'Select reviewed package' : `Open ${item.files.filter((file) => !openedReviewFiles.has(file.id)).length} remaining PDF${item.files.filter((file) => !openedReviewFiles.has(file.id)).length === 1 ? '' : 's'} before selection`}</span></label> : null}
         {item.activationEligible ? <label className="credential-batch-activation-choice"><input type="checkbox" checked={selectedActivationItems.has(item.id)} disabled={saving} onChange={() => onToggleActivation(item.id)} /><span>Select reviewed item for activation</span></label> : null}
         {item.activation ? <span className={`credential-batch-activation-outcome ${item.activation.status}`}>Activation: {item.activation.status.replaceAll('_', ' ')} · attempt {item.activation.attemptCount}{item.activation.deliveryStatus ? ` · delivery ${item.activation.deliveryStatus.replaceAll('_', ' ')}` : ''}</span> : null}
-        {item.activation && ['activation_failed', 'delivery_retryable'].includes(item.activation.status) ? <button type="button" disabled={saving} onClick={() => onRetryActivation(item.activation!.id)}>Retry activation/delivery</button> : null}
+        {!batch.activationBlocked && item.activation && ['activation_failed', 'delivery_retryable'].includes(item.activation.status) ? <button type="button" disabled={saving} onClick={() => onRetryActivation(item.activation!.id)}>Retry activation/delivery</button> : null}
       </footer>
     </article>;})}</div>
     <nav className="credential-batch-pagination bottom" aria-label="Batch review pages"><button type="button" className="secondary" disabled={saving || page === 1} onClick={() => changePage(page - 1)}>Previous 25</button><span>Page {page} of {totalPages}</span><button type="button" className="secondary" disabled={saving || page === totalPages} onClick={() => changePage(page + 1)}>Next 25</button></nav>

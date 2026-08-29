@@ -78,6 +78,8 @@ export type BatchContextSummary = {
 export type BatchListItem = {
   id: string;
   status: CredentialGenerationBatchStatus;
+  activationBlocked: boolean;
+  activationBlockReason: 'synthetic_qa' | null;
   context: BatchContextSummary;
   totalCount: number;
   generatedCount: number;

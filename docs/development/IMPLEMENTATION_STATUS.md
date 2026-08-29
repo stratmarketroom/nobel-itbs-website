@@ -140,6 +140,12 @@ executed 60 files and 1,292 assertions but remains non-clean because of known
 phase-local and pgTAP compatibility expectations outside the SEC ticket; those
 adjacent historical tests were not changed.
 
+PDFGEN-008 now also has a local forward-only synthetic-cohort activation guard.
+It permanently marks the approved 200 + 540 + 1000 QA batches and blocks
+activation request creation, processing claims, credential activation, and
+email-ledger creation while leaving private review available. Hosted Development
+application and its negative activation check remain separately gated.
+
 ## Operational Dependencies
 
 - General Psychology, Child Psychology, and Space Business have accepted Leeloo URLs in dev and Production. Space Business PR #19 was merged as `d6b889e`, and Preview plus post-merge Production acceptance passed across EN/UA/CZ.

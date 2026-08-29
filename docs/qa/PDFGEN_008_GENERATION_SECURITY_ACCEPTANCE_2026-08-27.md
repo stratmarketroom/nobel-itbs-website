@@ -3,7 +3,8 @@
 Date: 2026-08-28
 Status: PDFGEN runtime security gate passed; hosted Development 200-item Batch A,
 540-item Batch B, and 1000-item Batch C generation passed; 55 Batch A items are
-privately reviewed; activation remains open
+privately reviewed; permanent QA activation guard passed local verification and
+is pending hosted Development application
 
 ## Scope For This Stage
 
@@ -107,9 +108,12 @@ hash, and QR audit. No Batch C item was reviewed, activated, or emailed.
 
 ## Database Objects
 
-PDFGEN-008 itself adds no database schema object or migration. The separate
-QA-003-MFA-RLS-001 ticket adds repository migration 62 and alters 45 editorial
-mutation policies; it was applied only to the local Docker Supabase stack.
+The PDFGEN-008 QA cohort guard adds a forward-only migration with permanent
+batch activation-block metadata, synthetic-cohort marking/backfill, privacy-safe
+audit coverage, and fail-closed activation/delivery triggers. It is implemented
+locally and has not yet been applied to hosted Development or Production. The
+separate QA-003-MFA-RLS-001 ticket adds repository migration 62 and alters 45
+editorial mutation policies; it was applied only to the local Docker Supabase stack.
 Every test used its transaction/rollback boundary, and the stack was stopped
 after verification. Docker retained only its local development volume and
 downloaded images.
@@ -431,18 +435,16 @@ The approved 1000-item Batch C throughput stage then passed:
 - Only explicitly selected packages that passed review may be marked reviewed
   and proceed to activation. A package with a problem is excluded, corrected or
   regenerated under the same permanently reserved number, and reviewed again.
-- One accountable person owns a real batch from review through a separate,
-  explicit final activation confirmation. The authorized responsibility order
-  is Owner, then Super Admin, then Credential Manager; the acting user must
-  satisfy MFA.
+- Review and activation may be performed by different available authorized
+  people. For each action the responsibility order is Owner, then Super Admin,
+  then Credential Manager, and the acting user must satisfy MFA.
 - Review does not activate a credential automatically. Activation and delivery
   remain separate explicit actions, and email failure must not roll back a
   successful activation.
-- Accountability is preserved through reviewer/timestamp data, activation
-  request ownership, credential history, and the security audit log.
-- The current authorization model permits all three approved credential roles.
-  Enforcing reviewer/activator identity equality as an additional database rule
-  is not part of PDFGEN-008 and would require a separately approved ticket.
+- Accountability is preserved through separate reviewer/timestamp data,
+  activation-request ownership, credential history, and the security audit log.
+- The current authorization model permits all three approved credential roles
+  and intentionally does not require reviewer/activator identity equality.
 
 ## Deviations / Open Questions
 
@@ -464,13 +466,13 @@ The approved 1000-item Batch C throughput stage then passed:
   operational acceptance dependency.
 - The separate content-policy migration is verified locally and in hosted
   Development; Production remains untouched.
+- The permanent synthetic-cohort activation guard is implemented locally but
+  is not active in hosted Development until its migration and matching
+  application build are separately approved and deployed.
 
 ## Next Dependency
 
-The human-review strategy is approved. Follow-up
-`PDFGEN-006-REVIEW-UX-001` implements the private 25-item real-batch review
-workflow with thumbnails, required per-package PDF opening, explicit selection,
-and bulk review marking while preserving separate activation confirmation. Its
-authenticated branch visual inspection remains pending. Any real activation,
-VEDOS delivery acceptance, or Production promotion remains a later, separately
-authorized gate.
+After separate approval, apply the locally verified synthetic-cohort activation
+guard to hosted Development, confirm all three QA batches show the lock, and
+execute a safe negative activation check. Any real activation, VEDOS delivery
+acceptance, or Production promotion remains a later, separately authorized gate.
