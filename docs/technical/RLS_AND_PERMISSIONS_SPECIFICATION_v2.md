@@ -235,6 +235,16 @@ Only controlled functions can create/change number log statuses.
 
 Public and Content Manager cannot access.
 
+## 10A. Global Audit / History
+
+- `audit_log` remains append-only and forced-RLS;
+- Owner and Super Admin may read the global cross-module log only with MFA/AAL2;
+- Content Manager, Credential Manager, anonymous, and public roles cannot read it;
+- authenticated readers receive no insert, update, delete, or truncate capability;
+- audit actor lookup grants only `user_profiles.id` and `user_profiles.full_name` to the
+  same Owner/Super Admin AAL2 boundary;
+- the application applies an additional privacy projection before metadata reaches the browser.
+
 ## 11. Email Templates and Sending
 
 Email templates:

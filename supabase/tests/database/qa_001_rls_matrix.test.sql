@@ -227,15 +227,16 @@ select results_eq(
 
 select results_eq(
   $$
-    select count(*)::bigint
+    select controlled_table.name::text collate "default"
     from unnest(array['audit_log', 'user_profiles', 'user_roles']) as controlled_table(name)
     where has_table_privilege('authenticated', format('public.%I', controlled_table.name), 'select')
       or has_table_privilege('authenticated', format('public.%I', controlled_table.name), 'insert')
       or has_table_privilege('authenticated', format('public.%I', controlled_table.name), 'update')
       or has_table_privilege('authenticated', format('public.%I', controlled_table.name), 'delete')
+    order by controlled_table.name::text collate "C"
   $$,
-  $$ values (0::bigint) $$,
-  'identity and audit tables should expose no direct authenticated table privileges'
+  $$ values ('audit_log'::text) $$,
+  'global Audit/History should be the only identity/audit table with an authenticated table grant; RLS still controls reads'
 );
 
 select results_eq(
@@ -427,9 +428,18 @@ select results_eq(
 );
 
 select results_eq(
-  $$ select count(*)::bigint from pg_policies where schemaname = 'public' and tablename in ('audit_log', 'user_profiles', 'user_roles') $$,
-  $$ values (0::bigint) $$,
-  'audit and identity tables should be reachable only through controlled server functions'
+  $$
+    select policyname::text collate "default"
+    from pg_policies
+    where schemaname = 'public'
+      and tablename in ('audit_log', 'user_profiles', 'user_roles')
+    order by policyname::text collate "C"
+  $$,
+  $$ values
+    ('audit_log_owner_super_admin_read'::text),
+    ('user_profiles_audit_actor_read'::text)
+  $$,
+  'global audit and actor-name policies should be the only direct identity/audit read policies'
 );
 
 select results_eq(

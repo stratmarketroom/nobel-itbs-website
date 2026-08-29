@@ -285,6 +285,12 @@ Audit must not store:
 - private template/generated-file paths;
 - unnecessary PII.
 
+The Release 1 global Audit/History view is read-only for Owner and Super Admin
+with MFA/AAL2. It reads through the caller JWT and forced RLS. The browser receives
+only event summaries, administrative actor display names, and explicitly projected
+safe metadata; raw metadata, request IDs, IP/user-agent hashes, reasons, contact
+details, private paths, and token material remain server-side.
+
 ## 12. External Services
 
 Approved Release 1 integrations:

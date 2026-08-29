@@ -156,7 +156,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Email Templates | Private seeded EN/UA credential-delivery templates are implemented and used by activation | Protected editing UI/API and audit smoke remain |
 | Site Settings | Protected API/UI implemented | Authenticated AAL2 save/audit smoke passed; final For Organisations URL remains |
 | Users and Roles | Protected API/UI implemented | Authenticated create/roles/deactivate/reactivate/audit/cleanup smoke passed |
-| Audit/History | Audit storage implemented; admin view not started | Protected list/detail and privacy review |
+| Audit/History | Append-only storage plus Owner/Super Admin AAL2 read policy, protected paginated list/detail API, privacy projection, responsive filters/list/detail UI, and role-aware navigation implemented | Migration/pgTAP, authenticated role/privacy, mobile, Preview, and Production acceptance required |
 | Unified admin shell/navigation | Shared protected layout, role-aware desktop/mobile navigation, account context, and signed-out/MFA/access-denied states implemented | Authenticated access matrix passed for all four roles and a multi-role account |
 
 ## Stage 5 — Learner Foundation

@@ -190,6 +190,16 @@ export function assertCanManageUsers(context: AdminContext): void {
   }
 }
 
+export function assertCanViewGlobalAudit(context: AdminContext): void {
+  if (!context.roles.includes('owner') && !context.roles.includes('super_admin')) {
+    throw new ApiError('forbidden', 403, 'Owner or Super Admin role is required for global Audit/History.');
+  }
+
+  if (!context.mfaSatisfied) {
+    throw new ApiError('forbidden', 403, 'MFA/AAL2 is required for global Audit/History.');
+  }
+}
+
 export function assertCanManageRoles(context: AdminContext, roles: AppRole[]): void {
   assertCanManageUsers(context);
 

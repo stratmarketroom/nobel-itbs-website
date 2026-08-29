@@ -692,6 +692,10 @@ Append-only global audit for sensitive/admin actions.
 
 Must not store raw token, MFA secret, private file content, or unnecessary PII.
 
+The Release 1 global admin view is read-only for Owner and Super Admin with MFA/AAL2.
+It uses caller-JWT RLS and a privacy-projected metadata response; Content Manager and
+Credential Manager retain only their existing module-specific history access.
+
 ## 13. Storage
 
 Buckets:

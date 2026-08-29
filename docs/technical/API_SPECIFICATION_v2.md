@@ -262,6 +262,21 @@ Returns a read-only, role-aware aggregate for the protected admin Dashboard:
 The Dashboard does not add a new lifecycle or database object. It summarizes existing
 Release 1 states and links to the protected source modules.
 
+### Global Audit / History
+
+Owner and Super Admin with MFA/AAL2 only:
+
+- `GET /api/v1/admin/audit-events` lists newest-first append-only audit events;
+- `GET /api/v1/admin/audit-events/{id}` returns one event with privacy-projected metadata;
+- list filters support action text, target table, UTC start/end dates, limit, and offset;
+- reads use the caller JWT and forced RLS;
+- actor lookup exposes only the administrative display name, never auth email;
+- request IDs, IP/user-agent hashes, raw metadata JSON, reasons, contact details, paths,
+  token material, email content, and other unapproved strings are not returned.
+
+Content Manager and Credential Manager cannot access the global cross-module log.
+Their existing module-specific history remains governed by the relevant module rules.
+
 ### User Management
 
 Owner/Super Admin according to role rules:
