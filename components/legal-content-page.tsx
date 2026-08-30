@@ -2,18 +2,24 @@ import Link from 'next/link';
 import type { StructuredContentPage } from '@/lib/content/pages';
 import type { ContentLocale } from '@/lib/content/localization';
 import { localizePublicPath } from '@/lib/content/localization';
+import { PublicResponsiveHeader } from './public-responsive-header';
 
 type LegalBlock = { heading: string; paragraphs: string[] };
 
 export function LegalContentPage({ page, locale }: { page: StructuredContentPage; locale: ContentLocale }) {
   const blocks = Array.isArray(page.sections.blocks) ? page.sections.blocks as LegalBlock[] : [];
   const slug = typeof page.sections.slug === 'string' ? page.sections.slug : '';
+  const legalPath = slug ? `/${slug}` : '/';
   return <main className="legal-page">
-    <header className="managed-header">
-      <Link className="managed-brand" href={localizePublicPath(locale, '/')}>NOBEL <span>ITBS</span></Link>
-      <nav aria-label="Primary navigation"><Link href={localizePublicPath(locale, '/programmes')}>Programmes</Link><Link href={localizePublicPath(locale, '/about')}>About Us</Link><Link href={localizePublicPath(locale, '/verify')}>Verify</Link></nav>
-      <nav aria-label="Language"><Link href={`/${slug}`}>EN</Link><Link href={`/ua/${slug}`}>UA</Link><Link href={`/cz/${slug}`}>CZ</Link></nav>
-    </header>
+    <PublicResponsiveHeader
+      className="managed-public-header legal-public-header"
+      locale={locale}
+      localeHrefs={{
+        en: localizePublicPath('en', legalPath),
+        ua: localizePublicPath('ua', legalPath),
+        cz: localizePublicPath('cz', legalPath),
+      }}
+    />
     <article className="legal-document">
       <p className="eyebrow">Nobel ITBS s.r.o.</p><h1>{page.h1}</h1>
       {blocks.map((block, index) => <section key={`${block.heading}-${index}`}>

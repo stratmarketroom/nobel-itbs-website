@@ -5,16 +5,11 @@ import { localizePublicPath } from '@/lib/content/localization';
 import { homeCopy } from '@/lib/i18n';
 import { programmeCatalogueCopy } from '@/lib/programmes/catalogue-copy';
 import type { ProgrammeCatalogueItem } from '@/lib/programmes/catalogue-types';
+import { PublicResponsiveHeader } from './public-responsive-header';
 
 type ProgrammeCatalogueProps = {
   locale: ContentLocale;
   programmes: ProgrammeCatalogueItem[];
-};
-
-const localeLabels: Record<ContentLocale, string> = {
-  en: 'EN',
-  ua: 'UA',
-  cz: 'CZ',
 };
 
 export function ProgrammeCatalogue({ locale, programmes }: ProgrammeCatalogueProps) {
@@ -24,31 +19,16 @@ export function ProgrammeCatalogue({ locale, programmes }: ProgrammeCataloguePro
 
   return (
     <main className="catalogue-page">
-      <header className="site-header catalogue-header">
-        <Link className="brand" href={shellCopy.homeHref} aria-label="Nobel ITBS home">
-          <Image src="/brand/nobel-logo-full-horizontal-web.svg" width={230} height={54} alt="Nobel ITBS" priority />
-        </Link>
-
-        <nav className="nav" aria-label={copy.navLabel}>
-          {shellCopy.nav.map((item) => (
-            <Link key={item.href} href={item.href} aria-current={item.href.endsWith('/programmes') ? 'page' : undefined}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <nav className="locale-switcher" aria-label={copy.localeLabel}>
-          {(['en', 'ua', 'cz'] as const).map((itemLocale) => (
-            <Link
-              key={itemLocale}
-              href={localizePublicPath(itemLocale, '/programmes')}
-              aria-current={itemLocale === locale ? 'page' : undefined}
-            >
-              {localeLabels[itemLocale]}
-            </Link>
-          ))}
-        </nav>
-      </header>
+      <PublicResponsiveHeader
+        className="catalogue-header"
+        currentSection="/programmes"
+        locale={locale}
+        localeHrefs={{
+          en: localizePublicPath('en', '/programmes'),
+          ua: localizePublicPath('ua', '/programmes'),
+          cz: localizePublicPath('cz', '/programmes'),
+        }}
+      />
 
       <section className="catalogue-intro" aria-labelledby="catalogue-title">
         <div className="catalogue-intro-heading">

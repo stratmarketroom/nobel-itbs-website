@@ -8,6 +8,7 @@ import type { ProgrammeCatalogueItem } from '@/lib/programmes/catalogue-types';
 import type { ProgrammeLandingEntity, ProgrammeNamespaceEntity, ProgrammeSection, TaxonomyLandingEntity } from '@/lib/programmes/landing-types';
 import { programmeQuestionCopy } from '@/lib/contact/programme-question';
 import { ProgrammeQuestionForm } from './programme-question-form';
+import { PublicResponsiveHeader } from './public-responsive-header';
 import { StructuredContent } from './structured-content';
 
 type ProgrammeLandingProps = {
@@ -21,30 +22,22 @@ const ui = {
   cz: { catalogue: 'Všechny programy', view: 'Zobrazit program', facts: 'Informace o programu', document: 'Dokumenty a dokončení', pricing: 'Vyberte si variantu', related: 'Související programy', contact: 'Kontakt', question: 'Položit dotaz' },
 } satisfies Record<ContentLocale, Record<string, string>>;
 
-const localeLabels: Record<ContentLocale, string> = { en: 'EN', ua: 'UA', cz: 'CZ' };
-
 function pagePath(locale: ContentLocale, slug?: string): string {
   return localizePublicPath(locale, slug ? `/programmes/${slug}` : '/programmes');
 }
 
 function PublicHeader({ locale, slug }: { locale: ContentLocale; slug: string }) {
-  const copy = homeCopy[locale];
   return (
-    <header className="site-header landing-header">
-      <Link className="brand" href={copy.homeHref} aria-label="Nobel ITBS home">
-        <Image src="/brand/nobel-logo-full-horizontal-web.svg" width={230} height={54} alt="Nobel ITBS" priority />
-      </Link>
-      <nav className="nav" aria-label={copy.navLabel}>
-        {copy.nav.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
-      </nav>
-      <nav className="locale-switcher" aria-label={copy.localeLabel}>
-        {(['en', 'ua', 'cz'] as const).map((itemLocale) => (
-          <Link key={itemLocale} href={pagePath(itemLocale, slug)} aria-current={itemLocale === locale ? 'page' : undefined}>
-            {localeLabels[itemLocale]}
-          </Link>
-        ))}
-      </nav>
-    </header>
+    <PublicResponsiveHeader
+      className="landing-header"
+      currentSection="/programmes"
+      locale={locale}
+      localeHrefs={{
+        en: pagePath('en', slug),
+        ua: pagePath('ua', slug),
+        cz: pagePath('cz', slug),
+      }}
+    />
   );
 }
 

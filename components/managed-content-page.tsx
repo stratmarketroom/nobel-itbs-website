@@ -6,6 +6,7 @@ import type { PartnerCard } from '@/lib/partners/types';
 import type { ExpertCard } from '@/lib/experts/types';
 import { homeCopy } from '@/lib/i18n';
 import { ExpertCards } from './expert-cards';
+import { PublicResponsiveHeader, type PublicNavSection } from './public-responsive-header';
 import { PublicEnquiryForm } from './public-enquiry-form';
 
 type ContentBlock = {
@@ -30,6 +31,12 @@ function localizedTarget(target: string | undefined, locale: ContentLocale, fall
   return localizePublicPath(locale, target);
 }
 
+const managedPageSections: Record<string, PublicNavSection> = {
+  about: '/about',
+  for_organisations: '/for-organisations',
+  partnerships: '/partnerships',
+};
+
 export function ManagedContentPage({ page, locale, partners = [], experts = [], primaryHrefOverride }: {
   page: StructuredContentPage;
   locale: ContentLocale;
@@ -49,20 +56,21 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
     : page.pageKey === 'partnerships' ? 'partner_enquiry'
       : page.pageKey === 'for_organisations' ? 'organisation_enquiry' : null;
   const shell = homeCopy[locale];
+  const currentSection = managedPageSections[page.pageKey];
+  const currentPath = currentSection ?? '/';
 
   return (
     <main className="managed-page">
-      <header className="managed-header">
-        <Link className="managed-brand" href={localizePublicPath(locale, '/')}>NOBEL <span>ITBS</span></Link>
-        <nav aria-label={shell.navLabel}>
-          {shell.nav.map((item) => <Link href={item.href} key={item.href}>{item.label}</Link>)}
-        </nav>
-        <nav aria-label={shell.localeLabel}>
-          <Link href={page.pageKey === 'home' ? '/' : `/${page.pageKey.replaceAll('_', '-')}`}>EN</Link>
-          <Link href={page.pageKey === 'home' ? '/ua' : `/ua/${page.pageKey.replaceAll('_', '-')}`}>UA</Link>
-          <Link href={page.pageKey === 'home' ? '/cz' : `/cz/${page.pageKey.replaceAll('_', '-')}`}>CZ</Link>
-        </nav>
-      </header>
+      <PublicResponsiveHeader
+        className="managed-public-header"
+        currentSection={currentSection}
+        locale={locale}
+        localeHrefs={{
+          en: localizePublicPath('en', currentPath),
+          ua: localizePublicPath('ua', currentPath),
+          cz: localizePublicPath('cz', currentPath),
+        }}
+      />
 
       <section className="managed-hero">
         <p className="eyebrow">{heroFields.eyebrow || hero?.title}</p>
