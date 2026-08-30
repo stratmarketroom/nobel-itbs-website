@@ -55,7 +55,17 @@ Passed:
 The managed About page intentionally has no seed-mode fixture, so its local
 seed response is not used as destination evidence. The unchanged deployed
 Production `/about` route returned `200` during the pre-ticket read-only crawl.
-Preview and canonical-domain edge acceptance remain separate deployment steps.
+
+The Ready Vercel Preview for commit `74290d7` also passed an authenticated
+Chrome smoke:
+
+- `/tracks?utm_source=legacy` resolved directly to
+  `/programmes?utm_source=legacy`, with canonical
+  `https://nobel-itbs.eu/programmes`;
+- `/works?ref=tilda` resolved directly to `/about?ref=tilda`, with canonical
+  `https://nobel-itbs.eu/about`.
+
+Canonical-domain edge acceptance remains a separate cutover step.
 
 ## Security Notes
 
@@ -81,7 +91,7 @@ Preview and canonical-domain edge acceptance remain separate deployment steps.
 
 ## Next Dependency
 
-Deploy this branch to Preview and confirm both redirects against that build.
-After merge, attach the canonical domain in a controlled window and run the
-post-cutover crawl across all old URL variants, the 51-URL sitemap, robots,
-canonical, hreflang, and final host/protocol redirects.
+Open, review, and merge the branch PR. Then attach the canonical domain in a
+controlled window and run the post-cutover crawl across all old URL variants,
+the 51-URL sitemap, robots, canonical, hreflang, and final host/protocol
+redirects.
