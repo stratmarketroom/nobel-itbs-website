@@ -1,13 +1,11 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { FormEvent, useCallback, useEffect, useId, useState } from 'react';
 import type { ContentLocale } from '@/lib/content/localization';
 import { localizePublicPath } from '@/lib/content/localization';
 import type { PublicCredentialVerification, PublicVerificationErrorCode } from '@/lib/credentials/verification-types';
 import { verificationCopy } from '@/lib/credentials/verification-copy';
-import { homeCopy } from '@/lib/i18n';
+import { PublicFooter } from './public-footer';
 import { PublicResponsiveHeader } from './public-responsive-header';
 
 type ViewState =
@@ -45,7 +43,6 @@ function formatIssueDate(value: string, locale: ContentLocale) {
 
 export function PublicVerification({ locale, token, initialDocumentNumber = '' }: PublicVerificationProps) {
   const copy = verificationCopy[locale];
-  const shellCopy = homeCopy[locale];
   const inputId = useId();
   const errorId = useId();
   const initialNumber = initialDocumentNumber.trim().toUpperCase();
@@ -186,11 +183,7 @@ export function PublicVerification({ locale, token, initialDocumentNumber = '' }
         </div>
       </section>
 
-      <footer className="site-footer verification-footer">
-        <div className="footer-brand"><Image src="/brand/nobel-logo-full-horizontal-web.svg" width={180} height={42} alt="Nobel ITBS" /><p>{shellCopy.footer.text}</p></div>
-        {shellCopy.footer.columns.map((column) => <nav key={column.title} aria-label={column.title}><h2>{column.title}</h2>{column.links.map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>)}</nav>)}
-        <address><h2>{copy.contact}</h2>{shellCopy.footer.contact.map((line) => <span key={line}>{line}</span>)}</address>
-      </footer>
+      <PublicFooter locale={locale} />
     </main>
   );
 }

@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import type { StructuredContentPage } from '@/lib/content/pages';
 import type { ContentLocale } from '@/lib/content/localization';
 import { localizePublicPath } from '@/lib/content/localization';
+import { PublicFooter } from './public-footer';
 import { PublicResponsiveHeader } from './public-responsive-header';
 
 type LegalBlock = { heading: string; paragraphs: string[] };
@@ -27,11 +27,6 @@ export function LegalContentPage({ page, locale }: { page: StructuredContentPage
         {block.paragraphs.map((paragraph, paragraphIndex) => <p key={paragraphIndex}>{paragraph}</p>)}
       </section>)}
     </article>
-    <footer className="managed-footer">
-      <strong>Nobel ITBS s.r.o.</strong><span>Praha, Czech Republic</span><a href="mailto:info@nobel-itbs.eu">info@nobel-itbs.eu</a>
-      <Link href={localizePublicPath(locale, '/privacy-policy')}>Privacy Policy</Link>
-      <Link href={localizePublicPath(locale, '/terms-of-use')}>Terms of Use</Link>
-      <Link href={localizePublicPath(locale, '/refund-policy')}>Refund Policy</Link>
-    </footer>
+    <PublicFooter locale={locale} />
   </main>;
 }

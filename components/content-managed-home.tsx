@@ -6,6 +6,7 @@ import type { StructuredContentPage } from '@/lib/content/pages';
 import { programmeCatalogueCopy } from '@/lib/programmes/catalogue-copy';
 import type { ProgrammeCatalogueItem } from '@/lib/programmes/catalogue-types';
 import { HomeVerificationCard, type HomeVerificationCopy } from './home-verification-card';
+import { PublicFooter } from './public-footer';
 import { PublicResponsiveMobileMenu } from './public-responsive-header';
 
 type ContentCard = {
@@ -299,12 +300,7 @@ export function ContentManagedHome({ page, locale, programmes }: {
 
       {finalCta ? <section className="content-home-final" aria-labelledby="final-title"><div><h2 id="final-title">{field(finalCta, 'h2', finalCta.title)}</h2><p>{field(finalCta, 'body')}</p></div><Link className="content-home-button primary" href={localizePublicPath(locale, '/programmes')}>{field(finalCta, 'cta', ui.programmesCta)}<span aria-hidden="true">→</span></Link></section> : null}
 
-      <footer className="content-home-footer">
-        <div className="content-home-footer-brand"><Image src="/brand/nobel-logo-full-horizontal-web.svg" width={180} height={42} alt="Nobel ITBS" /><p>Nobel ITBS s.r.o.</p></div>
-        <nav aria-label={ui.footer.navigation}><h2>{ui.footer.navigation}</h2>{ui.nav.map((item) => <Link key={item.path} href={localizePublicPath(locale, item.path)}>{item.label}</Link>)}<Link href={verifyHref}>{ui.verifyLabel}</Link></nav>
-        <nav aria-label={ui.footer.legal}><h2>{ui.footer.legal}</h2><Link href={localizePublicPath(locale, '/privacy-policy')}>{ui.footer.privacy}</Link><Link href={localizePublicPath(locale, '/terms-of-use')}>{ui.footer.terms}</Link><Link href={localizePublicPath(locale, '/refund-policy')}>{ui.footer.refunds}</Link></nav>
-        <address><h2>{ui.footer.contact}</h2><span>Praha, Czech Republic</span><a href="mailto:info@nobel-itbs.eu">info@nobel-itbs.eu</a></address>
-      </footer>
+      <PublicFooter locale={locale} />
     </main>
   );
 }

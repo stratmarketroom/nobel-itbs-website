@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { localizePublicPath, type ContentLocale } from '@/lib/content/localization';
+import { PublicFooter } from '@/components/public-footer';
 import { PublicResponsiveHeader } from '@/components/public-responsive-header';
 
 const notFoundCopy: Record<ContentLocale, { eyebrow: string; title: string; action: string }> = {
@@ -37,6 +38,7 @@ export default function NotFound() {
         <h1>{copy.title}</h1>
         <Link href={localizePublicPath(locale, '/')}>{copy.action}</Link>
       </section>
+      <PublicFooter locale={locale} />
     </main>
   );
 }

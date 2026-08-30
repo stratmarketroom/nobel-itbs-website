@@ -1,10 +1,9 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { ContentLocale } from '@/lib/content/localization';
 import { localizePublicPath } from '@/lib/content/localization';
-import { homeCopy } from '@/lib/i18n';
 import { programmeCatalogueCopy } from '@/lib/programmes/catalogue-copy';
 import type { ProgrammeCatalogueItem } from '@/lib/programmes/catalogue-types';
+import { PublicFooter } from './public-footer';
 import { PublicResponsiveHeader } from './public-responsive-header';
 
 type ProgrammeCatalogueProps = {
@@ -14,7 +13,6 @@ type ProgrammeCatalogueProps = {
 
 export function ProgrammeCatalogue({ locale, programmes }: ProgrammeCatalogueProps) {
   const copy = programmeCatalogueCopy[locale];
-  const shellCopy = homeCopy[locale];
   const programmePath = (slug: string) => localizePublicPath(locale, `/programmes/${slug}`);
 
   return (
@@ -91,24 +89,7 @@ export function ProgrammeCatalogue({ locale, programmes }: ProgrammeCataloguePro
         )}
       </section>
 
-      <footer className="site-footer catalogue-footer">
-        <div className="footer-brand">
-          <Image src="/brand/nobel-logo-full-horizontal-web.svg" width={180} height={42} alt="Nobel ITBS" />
-          <p>{shellCopy.footer.text}</p>
-        </div>
-        {shellCopy.footer.columns.map((column) => (
-          <nav key={column.title} aria-label={column.title}>
-            <h2>{column.title}</h2>
-            {column.links.map((link) => (
-              <Link key={link.href} href={link.href}>{link.label}</Link>
-            ))}
-          </nav>
-        ))}
-        <address>
-          <h2>{shellCopy.footer.contactTitle}</h2>
-          {shellCopy.footer.contact.map((line) => <span key={line}>{line}</span>)}
-        </address>
-      </footer>
+      <PublicFooter locale={locale} />
     </main>
   );
 }

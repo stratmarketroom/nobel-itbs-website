@@ -4,8 +4,8 @@ import type { ContentLocale } from '@/lib/content/localization';
 import { localizePublicPath } from '@/lib/content/localization';
 import type { PartnerCard } from '@/lib/partners/types';
 import type { ExpertCard } from '@/lib/experts/types';
-import { homeCopy } from '@/lib/i18n';
 import { ExpertCards } from './expert-cards';
+import { PublicFooter } from './public-footer';
 import { PublicResponsiveHeader, type PublicNavSection } from './public-responsive-header';
 import { PublicEnquiryForm } from './public-enquiry-form';
 
@@ -55,7 +55,6 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
   const enquiryType = page.pageKey === 'about' ? 'general'
     : page.pageKey === 'partnerships' ? 'partner_enquiry'
       : page.pageKey === 'for_organisations' ? 'organisation_enquiry' : null;
-  const shell = homeCopy[locale];
   const currentSection = managedPageSections[page.pageKey];
   const currentPath = currentSection ?? '/';
 
@@ -117,10 +116,7 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
       {page.pageKey === 'partnerships' && experts.length ? <ExpertCards experts={experts} /> : null}
       {enquiryType ? <PublicEnquiryForm locale={locale} type={enquiryType} /> : null}
 
-      <footer className="managed-footer">
-        <strong>Nobel ITBS s.r.o.</strong><span>Praha, Czech Republic</span><a href="mailto:info@nobel-itbs.eu">info@nobel-itbs.eu</a>
-        {shell.footer.legal.map((item) => <Link href={item.href} key={item.href}>{item.label}</Link>)}
-      </footer>
+      <PublicFooter locale={locale} />
     </main>
   );
 }
