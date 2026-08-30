@@ -3,7 +3,7 @@
 Product: Nobel ITBS Website and Credential Registry  
 Scope: canonical, hreflang, sitemap, robots, and redirects for Release 1  
 Canonical origin: `https://nobel-itbs.eu`  
-Status: implementation and legacy-cutover follow-up complete at code/local-smoke level; production domain acceptance pending
+Status: implementation and production legacy-URL acceptance complete; host/protocol one-hop acceptance pending
 Updated: 2026-08-30
 
 Implementation note: `QA-005-SEO-001` completed the publication layer on
@@ -242,7 +242,7 @@ new-site cutover.
 | `/aboutus` | `/about` | 301 | current Tilda About URL |
 | `/about-us-en/` | `/about` | 301 | older WordPress About URL |
 | `/course-en/` | `/programmes/space-business` | 301 | older Space Business page |
-| `/contacts-en/` | `/about#contact` | 301 | no standalone Contact page in Release 1 |
+| `/contacts-en/` | `/about` | 301 | no standalone Contact page or stable contact anchor in Release 1 |
 | `/termsofservice` | `/terms-of-use` | 301 | current Tilda legal URL; aligned with the implemented Release 1 route |
 | `/terms/` | `/terms-of-use` | 301 | older WordPress legal URL; aligned with the implemented Release 1 route |
 | `/refund` | `/refund-policy` | 301 | current Tilda legal URL |
@@ -252,9 +252,8 @@ new-site cutover.
 | `/home-page-2/` | `/` | 301 | older WordPress home URL |
 | `/blog-en/` | none | 410 | News/Blog is intentionally out of Release 1 |
 
-`/about#contact` requires a stable contact anchor in the About/footer contact
-section. If implementation does not provide that anchor, use `/about` and record
-the deviation before launch.
+The current About page has no stable `#contact` anchor, so `/contacts-en/`
+redirects directly to `/about` as recorded in the implementation note above.
 
 Do not redirect removed Blog articles or unknown legacy URLs to Home. Return a
 useful localized 404, or `410 Gone` for URLs confirmed as intentionally removed.
