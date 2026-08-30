@@ -8,6 +8,7 @@ import { localizePublicPath } from '@/lib/content/localization';
 import type { PublicCredentialVerification, PublicVerificationErrorCode } from '@/lib/credentials/verification-types';
 import { verificationCopy } from '@/lib/credentials/verification-copy';
 import { homeCopy } from '@/lib/i18n';
+import { PublicResponsiveHeader } from './public-responsive-header';
 
 type ViewState =
   | { kind: 'idle' }
@@ -17,7 +18,6 @@ type ViewState =
 
 type PublicVerificationProps = { locale: ContentLocale; token?: string; initialDocumentNumber?: string };
 
-const localeLabels: Record<ContentLocale, string> = { en: 'EN', ua: 'UA', cz: 'CZ' };
 const numberFormat = /^NITBS-[CD]-\d{4}-\d{6}$/;
 
 async function requestVerification(endpoint: string, init?: RequestInit): Promise<ViewState> {
@@ -104,23 +104,16 @@ export function PublicVerification({ locale, token, initialDocumentNumber = '' }
 
   return (
     <main className="verification-page">
-      <header className="site-header verification-header">
-        <Link className="brand" href={shellCopy.homeHref} aria-label="Nobel ITBS home">
-          <Image src="/brand/nobel-logo-full-horizontal-web.svg" width={230} height={54} alt="Nobel ITBS" priority />
-        </Link>
-        <nav className="nav" aria-label={shellCopy.navLabel}>
-          {shellCopy.nav.map((item) => (
-            <Link key={item.href} href={item.href} aria-current={item.href.endsWith('/verify') ? 'page' : undefined}>{item.label}</Link>
-          ))}
-        </nav>
-        <nav className="locale-switcher" aria-label={shellCopy.localeLabel}>
-          {(['en', 'ua', 'cz'] as const).map((itemLocale) => (
-            <Link key={itemLocale} href={token ? tokenPath(itemLocale, token) : localizePublicPath(itemLocale, '/verify')} aria-current={itemLocale === locale ? 'page' : undefined}>
-              {localeLabels[itemLocale]}
-            </Link>
-          ))}
-        </nav>
-      </header>
+      <PublicResponsiveHeader
+        className="verification-header"
+        currentSection="/verify"
+        locale={locale}
+        localeHrefs={{
+          en: token ? tokenPath('en', token) : localizePublicPath('en', '/verify'),
+          ua: token ? tokenPath('ua', token) : localizePublicPath('ua', '/verify'),
+          cz: token ? tokenPath('cz', token) : localizePublicPath('cz', '/verify'),
+        }}
+      />
 
       <section className="verification-hero" aria-labelledby="verification-title">
         <div className="verification-intro">
