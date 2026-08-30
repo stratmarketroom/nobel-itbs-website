@@ -7,6 +7,7 @@ import { homeCopy } from '@/lib/i18n';
 import type { PartnerCard } from '@/lib/partners/types';
 import type { PartnershipsPageContent } from '@/lib/partnerships/types';
 import { ExpertCards } from './expert-cards';
+import { PublicFooter } from './public-footer';
 
 type PartnershipsPageProps = {
   content: PartnershipsPageContent;
@@ -36,28 +37,6 @@ function PageHeader({ locale }: { locale: ContentLocale }) {
         ))}
       </nav>
     </header>
-  );
-}
-
-function PageFooter({ locale }: { locale: ContentLocale }) {
-  const shell = homeCopy[locale];
-  return (
-    <footer className="site-footer partnerships-footer">
-      <div className="footer-brand">
-        <Image src="/brand/nobel-logo-full-horizontal-web.svg" width={180} height={42} alt="Nobel ITBS" />
-        <p>{shell.footer.text}</p>
-      </div>
-      {shell.footer.columns.map((column) => (
-        <nav key={column.title} aria-label={column.title}>
-          <h2>{column.title}</h2>
-          {column.links.map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>)}
-        </nav>
-      ))}
-      <address>
-        <h2>{shell.footer.contactTitle}</h2>
-        {shell.footer.contact.map((line) => <span key={line}>{line}</span>)}
-      </address>
-    </footer>
   );
 }
 
@@ -185,7 +164,7 @@ export function PartnershipsPage({ content, partners, experts }: PartnershipsPag
         <a className="button primary" href={contactHref}>{content.hero.fallbackCta}<span aria-hidden="true">↗</span></a>
       </section>
 
-      <PageFooter locale={content.locale} />
+      <PublicFooter locale={content.locale} />
     </main>
   );
 }

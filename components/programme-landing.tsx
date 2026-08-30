@@ -1,13 +1,12 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { ContentLocale } from '@/lib/content/localization';
 import { localizePublicPath } from '@/lib/content/localization';
-import { homeCopy } from '@/lib/i18n';
 import { programmeCatalogueCopy } from '@/lib/programmes/catalogue-copy';
 import type { ProgrammeCatalogueItem } from '@/lib/programmes/catalogue-types';
 import type { ProgrammeLandingEntity, ProgrammeNamespaceEntity, ProgrammeSection, TaxonomyLandingEntity } from '@/lib/programmes/landing-types';
 import { programmeQuestionCopy } from '@/lib/contact/programme-question';
 import { ProgrammeQuestionForm } from './programme-question-form';
+import { PublicFooter } from './public-footer';
 import { PublicResponsiveHeader } from './public-responsive-header';
 import { StructuredContent } from './structured-content';
 
@@ -38,28 +37,6 @@ function PublicHeader({ locale, slug }: { locale: ContentLocale; slug: string })
         cz: pagePath('cz', slug),
       }}
     />
-  );
-}
-
-function PublicFooter({ locale }: { locale: ContentLocale }) {
-  const copy = homeCopy[locale];
-  return (
-    <footer className="site-footer landing-footer">
-      <div className="footer-brand">
-        <Image src="/brand/nobel-logo-full-horizontal-web.svg" width={180} height={42} alt="Nobel ITBS" />
-        <p>{copy.footer.text}</p>
-      </div>
-      {copy.footer.columns.map((column) => (
-        <nav key={column.title} aria-label={column.title}>
-          <h2>{column.title}</h2>
-          {column.links.map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>)}
-        </nav>
-      ))}
-      <address>
-        <h2>{copy.footer.contactTitle}</h2>
-        {copy.footer.contact.map((line) => <span key={line}>{line}</span>)}
-      </address>
-    </footer>
   );
 }
 

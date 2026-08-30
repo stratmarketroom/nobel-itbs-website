@@ -3,6 +3,7 @@ import Image from 'next/image';
 import type { Locale, HomeCopy } from '@/lib/i18n';
 import { localeLinks } from '@/lib/i18n';
 import type { PartnerCard } from '@/lib/partners/types';
+import { PublicFooter } from './public-footer';
 
 type PublicShellProps = {
   copy: HomeCopy;
@@ -205,28 +206,7 @@ export function PublicShell({ copy, locale, partners }: PublicShellProps) {
         </div>
       </section>
 
-      <footer className="site-footer">
-        <div className="footer-brand">
-          <Image src="/brand/nobel-logo-full-horizontal-web.svg" width={180} height={42} alt="Nobel ITBS" />
-          <p>{copy.footer.text}</p>
-        </div>
-        {copy.footer.columns.map((column) => (
-          <nav key={column.title} aria-label={column.title}>
-            <h2>{column.title}</h2>
-            {column.links.map((link) => (
-              <Link key={link.href} href={link.href}>
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        ))}
-        <address>
-          <h2>{copy.footer.contactTitle}</h2>
-          {copy.footer.contact.map((line) => (
-            <span key={line}>{line}</span>
-          ))}
-        </address>
-      </footer>
+      <PublicFooter locale={locale} />
     </main>
   );
 }
