@@ -113,7 +113,11 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
           </div>
         </section>
       ) : null}
-      {page.pageKey === 'partnerships' && experts.length ? <ExpertCards experts={experts} /> : null}
+      {page.pageKey === 'partnerships' && experts.length ? (
+        <div className="managed-experts-section">
+          <ExpertCards experts={experts} />
+        </div>
+      ) : null}
       {enquiryType ? <PublicEnquiryForm locale={locale} type={enquiryType} /> : null}
 
       <PublicFooter locale={locale} />

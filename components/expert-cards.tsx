@@ -19,7 +19,7 @@ export function ExpertCards({ experts }: ExpertCardsProps) {
               <Image
                 src={expert.photoPath}
                 fill
-                sizes="(max-width: 760px) 92vw, 33vw"
+                sizes="(max-width: 700px) calc(100vw - 2.5rem), (max-width: 1050px) 44vw, 28rem"
                 alt={expert.photoAlt}
               />
             ) : (
