@@ -10,6 +10,8 @@ const legacyRedirects: Record<string, string> = {
   '/human': '/programmes/psychology-human',
   '/tech': '/programmes/technology-innovation',
   '/business': '/programmes/business-management',
+  '/tracks': '/programmes',
+  '/works': '/about',
   '/aboutus': '/about',
   '/about-us-en': '/about',
   '/course-en': '/programmes/space-business',

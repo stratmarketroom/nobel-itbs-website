@@ -80,6 +80,8 @@ const proxy = read(paths.proxy);
 for (const snippet of [
   "const localeAliases = { en: '', uk: '/ua', cs: '/cz' }",
   "'/human': '/programmes/psychology-human'",
+  "'/tracks': '/programmes'",
+  "'/works': '/about'",
   "'/termsofservice': '/terms-of-use'",
   "'/privacypolicy': '/privacy-policy'",
   "new Set(['/blog-en'])",

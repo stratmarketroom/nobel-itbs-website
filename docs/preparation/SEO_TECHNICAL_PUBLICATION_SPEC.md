@@ -3,8 +3,8 @@
 Product: Nobel ITBS Website and Credential Registry  
 Scope: canonical, hreflang, sitemap, robots, and redirects for Release 1  
 Canonical origin: `https://nobel-itbs.eu`  
-Status: implementation complete at code/local-smoke level; production domain acceptance pending
-Updated: 2026-08-24
+Status: implementation and legacy-cutover follow-up complete at code/local-smoke level; production domain acceptance pending
+Updated: 2026-08-30
 
 Implementation note: `QA-005-SEO-001` completed the publication layer on
 2026-08-24. The implemented legal routes are `/terms-of-use` and
@@ -13,6 +13,14 @@ older working destinations `/terms` and `/privacy` below. Legacy sources now
 redirect directly to those current routes. `/contacts-en/` redirects to
 `/about` because the current About page has no stable `#contact` anchor. See
 `docs/qa/QA_005_SEO_PUBLICATION_2026-08-24.md`.
+
+Cutover follow-up note: the live Tilda sitemap was re-audited on 2026-08-30
+before DNS attachment. It exposed two current legacy URLs that were absent from
+the earlier inventory: `/tracks` and `/works`. The former consolidates into the
+Release 1 programme catalogue; the latter consolidates into About, whose
+current structured content covers how Nobel ITBS works, its educational
+approach, and its audiences. Both now use direct permanent redirects. See
+`docs/qa/QA_005_SEO_CUTOVER_2026-08-30.md`.
 
 ## 1. Canonical Host And URL Normalisation
 
@@ -229,6 +237,8 @@ new-site cutover.
 | `/human` | `/programmes/psychology-human` | 301 | renamed Programme Area |
 | `/tech` | `/programmes/technology-innovation` | 301 | renamed Programme Area |
 | `/business` | `/programmes/business-management` | 301 | Programme Area URL model |
+| `/tracks` | `/programmes` | 301 | current Tilda learning-direction index consolidates into the Release 1 catalogue |
+| `/works` | `/about` | 301 | current Tilda process/audience content consolidates into the structured About page |
 | `/aboutus` | `/about` | 301 | current Tilda About URL |
 | `/about-us-en/` | `/about` | 301 | older WordPress About URL |
 | `/course-en/` | `/programmes/space-business` | 301 | older Space Business page |
