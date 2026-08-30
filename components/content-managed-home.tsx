@@ -7,7 +7,7 @@ import { programmeCatalogueCopy } from '@/lib/programmes/catalogue-copy';
 import type { ProgrammeCatalogueItem } from '@/lib/programmes/catalogue-types';
 import { HomeVerificationCard, type HomeVerificationCopy } from './home-verification-card';
 import { PublicFooter } from './public-footer';
-import { PublicResponsiveMobileMenu } from './public-responsive-header';
+import { PublicResponsiveMobileMenu, PublicSkipLink } from './public-responsive-header';
 
 type ContentCard = {
   title?: string;
@@ -198,34 +198,36 @@ export function ContentManagedHome({ page, locale, programmes }: {
   };
 
   return (
-    <main className="content-home">
-      <section className="content-home-hero" aria-labelledby="home-title">
-        <header className="content-home-header">
-          <Link className="content-home-brand" href={homeHref} aria-label="Nobel ITBS home">
-            <Image src="/brand/nobel-logo-full-horizontal-web.svg" width={230} height={54} alt="Nobel ITBS" priority />
-          </Link>
-          <nav className="content-home-nav" aria-label={ui.navLabel}>
-            {ui.nav.map((item) => <Link key={item.path} href={localizePublicPath(locale, item.path)}>{item.label}</Link>)}
+    <div className="content-home">
+      <header className="content-home-header" role="banner">
+        <PublicSkipLink locale={locale} />
+        <Link className="content-home-brand" href={homeHref} aria-label="Nobel ITBS home">
+          <Image src="/brand/nobel-logo-full-horizontal-web.svg" width={230} height={54} alt="Nobel ITBS" priority />
+        </Link>
+        <nav className="content-home-nav" aria-label={ui.navLabel}>
+          {ui.nav.map((item) => <Link key={item.path} href={localizePublicPath(locale, item.path)}>{item.label}</Link>)}
+        </nav>
+        <div className="content-home-header-actions">
+          <Link className="content-home-verify-nav" href={verifyHref}>{ui.verifyLabel}</Link>
+          <nav className="content-home-locales" aria-label={ui.localeLabel}>
+            {(['en', 'ua', 'cz'] as const).map((itemLocale) => (
+              <Link key={itemLocale} href={localizePublicPath(itemLocale, '/')} aria-current={itemLocale === locale ? 'page' : undefined}>{localeLabels[itemLocale]}</Link>
+            ))}
           </nav>
-          <div className="content-home-header-actions">
-            <Link className="content-home-verify-nav" href={verifyHref}>{ui.verifyLabel}</Link>
-            <nav className="content-home-locales" aria-label={ui.localeLabel}>
-              {(['en', 'ua', 'cz'] as const).map((itemLocale) => (
-                <Link key={itemLocale} href={localizePublicPath(itemLocale, '/')} aria-current={itemLocale === locale ? 'page' : undefined}>{localeLabels[itemLocale]}</Link>
-              ))}
-            </nav>
-          </div>
-          <PublicResponsiveMobileMenu
-            locale={locale}
-            localeHrefs={{
-              en: localizePublicPath('en', '/'),
-              ua: localizePublicPath('ua', '/'),
-              cz: localizePublicPath('cz', '/'),
-            }}
-            verifyHref={verifyHref}
-          />
-        </header>
+        </div>
+        <PublicResponsiveMobileMenu
+          locale={locale}
+          localeHrefs={{
+            en: localizePublicPath('en', '/'),
+            ua: localizePublicPath('ua', '/'),
+            cz: localizePublicPath('cz', '/'),
+          }}
+          verifyHref={verifyHref}
+        />
+      </header>
 
+      <main id="main-content" tabIndex={-1}>
+      <section className="content-home-hero" aria-labelledby="home-title">
         <div className="content-home-hero-layout">
           <div className="content-home-hero-copy">
             <p className="content-home-eyebrow">{field(hero, 'eyebrow')}</p>
@@ -299,8 +301,9 @@ export function ContentManagedHome({ page, locale, programmes }: {
       </section> : null}
 
       {finalCta ? <section className="content-home-final" aria-labelledby="final-title"><div><h2 id="final-title">{field(finalCta, 'h2', finalCta.title)}</h2><p>{field(finalCta, 'body')}</p></div><Link className="content-home-button primary" href={localizePublicPath(locale, '/programmes')}>{field(finalCta, 'cta', ui.programmesCta)}<span aria-hidden="true">→</span></Link></section> : null}
+      </main>
 
-      <PublicFooter locale={locale} />
-    </main>
+      <PublicFooter locale={locale} currentHref={homeHref} />
+    </div>
   );
 }

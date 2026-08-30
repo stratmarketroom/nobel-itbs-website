@@ -132,6 +132,25 @@ textarea:focus-visible {
   outline-offset: 4px;
 }
 
+.public-skip-link {
+  position: absolute;
+  z-index: 100;
+  top: .75rem;
+  left: .75rem;
+  transform: translateY(calc(-100% - 1rem));
+  border-radius: var(--radius);
+  padding: .7rem 1rem;
+  background: oklch(84% 0.1 78);
+  color: oklch(16% 0.051 263);
+  font-size: .9rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.public-skip-link:focus-visible {
+  transform: translateY(0);
+}
+
 button {
   font: inherit;
 }
@@ -7550,6 +7569,7 @@ h1 span {
   --home-gold: oklch(76% 0.09 78);
   --home-accent: oklch(57% 0.18 275);
   --home-max: 88rem;
+  position: relative;
   min-height: 100dvh;
   overflow-x: hidden;
   background:
@@ -7578,7 +7598,8 @@ h1 span {
 }
 
 .content-home-header {
-  position: relative;
+  position: absolute;
+  inset: 0 0 auto;
   z-index: 4;
   display: flex;
   align-items: center;
@@ -7624,11 +7645,11 @@ h1 span {
   grid-template-columns: minmax(0, 1.25fr) minmax(18rem, .62fr);
   gap: clamp(1.5rem, 4vw, 4.5rem);
   width: min(100% - 2rem, var(--home-max));
-  min-height: calc(min(52rem, 100dvh) - 5.5rem);
+  min-height: min(52rem, 100dvh);
   align-content: center;
   align-items: center;
   margin-inline: auto;
-  padding: clamp(2rem, 4vw, 4rem) 0 clamp(3rem, 5vw, 5rem);
+  padding: clamp(7rem, 11vw, 9rem) 0 clamp(3rem, 5vw, 5rem);
 }
 .content-home-hero-copy { max-width: 62rem; }
 .content-home-eyebrow { margin-bottom: 1.2rem; color: var(--home-gold); font-size: .78rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
@@ -7808,6 +7829,7 @@ h1 span {
 .public-footer address { display: grid; align-content: start; gap: .38rem; font-style: normal; }
 .public-footer a { width: fit-content; text-decoration: none; }
 .public-footer a:hover { color: oklch(96% 0.009 264); }
+.public-footer a[aria-current="page"] { color: oklch(96% 0.009 264); text-decoration: underline; text-underline-offset: .2em; }
 
 @media (max-width: 1180px) {
   .content-home-nav,

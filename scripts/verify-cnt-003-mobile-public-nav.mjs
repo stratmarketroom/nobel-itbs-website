@@ -62,7 +62,7 @@ for (const [file, className, section] of targetChecks) {
 }
 
 const sharedSurfaceChecks = [
-  [files.home, "import { PublicResponsiveMobileMenu } from './public-responsive-header';", '<PublicResponsiveMobileMenu'],
+  [files.home, "import { PublicResponsiveMobileMenu, PublicSkipLink } from './public-responsive-header';", '<PublicResponsiveMobileMenu'],
   [files.managed, "import { PublicResponsiveHeader, type PublicNavSection } from './public-responsive-header';", 'className="managed-public-header"'],
   [files.legal, "import { PublicResponsiveHeader } from './public-responsive-header';", 'className="managed-public-header legal-public-header"'],
   [files.notFound, "import { PublicResponsiveHeader } from '@/components/public-responsive-header';", 'className="managed-public-header not-found-header"'],
