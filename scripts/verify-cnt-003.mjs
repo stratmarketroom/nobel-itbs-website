@@ -19,7 +19,11 @@ const errors = requiredFiles.filter((file) => !existsSync(file)).map((file) => `
 const readRequiredFile = (file) => existsSync(file) ? readFileSync(file, 'utf8') : '';
 
 const managedPage = readRequiredFile(filePaths.managedPage);
-if (!managedPage.includes("import { homeCopy } from '@/lib/i18n';") || !managedPage.includes('shell.nav.map')) {
+if (
+  !managedPage.includes("import { PublicResponsiveHeader, type PublicNavSection } from './public-responsive-header';")
+  || !managedPage.includes('<PublicResponsiveHeader')
+  || !managedPage.includes('const managedPageSections: Record<string, PublicNavSection>')
+) {
   errors.push('Managed public pages must render the shared localized navigation.');
 }
 

@@ -2,6 +2,10 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const files = {
   header: 'components/public-responsive-header.tsx',
+  home: 'components/content-managed-home.tsx',
+  managed: 'components/managed-content-page.tsx',
+  legal: 'components/legal-content-page.tsx',
+  notFound: 'app/not-found.tsx',
   catalogue: 'components/programme-catalogue.tsx',
   landing: 'components/programme-landing.tsx',
   verification: 'components/public-verification.tsx',
@@ -17,17 +21,28 @@ const header = read(files.header);
 const css = read(files.css);
 
 for (const snippet of [
-  'className="public-header-mobile-menu"',
+  "export type PublicNavSection = '/programmes' | '/for-organisations' | '/partnerships' | '/verify' | '/about';",
+  'export function PublicResponsiveMobileMenu',
+  '<details className="public-header-mobile-menu">',
   '<summary aria-label={menuLabels[locale]}>',
   'className="public-header-mobile-panel"',
+  'className="public-header-mobile-verify"',
   'className="public-header-mobile-locales"',
+  'className="public-header-verify-nav"',
+  'className="nav public-header-nav"',
+  'className="public-header-desktop-actions"',
   "en: 'Menu'",
   "ua: 'Меню'",
   "cz: 'Menu'",
-  "aria-current={isCurrentSection(item.href) ? 'page' : undefined}",
+  "aria-current={isCurrentHref(item.href, locale, currentSection) ? 'page' : undefined}",
+  "aria-current={currentSection === '/verify' ? 'page' : undefined}",
   "aria-current={itemLocale === locale ? 'page' : undefined}",
 ]) {
   if (!header.includes(snippet)) errors.push(`Responsive public header missing ${snippet}`);
+}
+
+if (!header.includes('copy.nav.filter((item) => !isVerificationHref(item.href))')) {
+  errors.push('Verify must be separated from the standard navigation links and rendered as a clear utility button.');
 }
 
 const targetChecks = [
@@ -46,14 +61,65 @@ for (const [file, className, section] of targetChecks) {
   }
 }
 
+const sharedSurfaceChecks = [
+  [files.home, "import { PublicResponsiveMobileMenu } from './public-responsive-header';", '<PublicResponsiveMobileMenu'],
+  [files.managed, "import { PublicResponsiveHeader, type PublicNavSection } from './public-responsive-header';", 'className="managed-public-header"'],
+  [files.legal, "import { PublicResponsiveHeader } from './public-responsive-header';", 'className="managed-public-header legal-public-header"'],
+  [files.notFound, "import { PublicResponsiveHeader } from '@/components/public-responsive-header';", 'className="managed-public-header not-found-header"'],
+];
+
+for (const [file, importSnippet, renderSnippet] of sharedSurfaceChecks) {
+  const source = read(file);
+  if (!source.includes(importSnippet) || !source.includes(renderSnippet)) {
+    errors.push(`${file} must use the shared responsive public navigation.`);
+  }
+}
+
+const managed = read(files.managed);
+for (const [key, path] of [
+  ['about', '/about'],
+  ['for_organisations', '/for-organisations'],
+  ['partnerships', '/partnerships'],
+]) {
+  if (!managed.includes(`${key}: '${path}'`)) errors.push(`Managed navigation missing active-section mapping ${key} -> ${path}.`);
+}
+for (const locale of ['en', 'ua', 'cz']) {
+  if (!managed.includes(`${locale}: localizePublicPath('${locale}', currentPath)`)) {
+    errors.push(`Managed navigation missing the correct ${locale.toUpperCase()} page transition.`);
+  }
+  if (!read(files.legal).includes(`${locale}: localizePublicPath('${locale}', legalPath)`)) {
+    errors.push(`Legal navigation missing the correct ${locale.toUpperCase()} page transition.`);
+  }
+}
+
+const home = read(files.home);
+if (!home.includes("en: localizePublicPath('en', '/')") || !home.includes('verifyHref={verifyHref}')) {
+  errors.push('Home must use the shared mobile menu while preserving its configured Verify destination.');
+}
+
+const notFound = read(files.notFound);
+for (const locale of ['en', 'ua', 'cz']) {
+  if (!notFound.includes(`${locale}: localizePublicPath('${locale}', '/')`)) {
+    errors.push(`404 navigation missing the safe ${locale.toUpperCase()} home transition.`);
+  }
+}
+
 for (const selector of [
-  '.public-header-mobile-menu { display: none; }',
-  '@media (max-width: 860px)',
-  '.site-header .public-header-desktop-locales { display: none; }',
-  '.site-header .public-header-mobile-menu {',
+  '/* CNT-003-MOBILE-NAV-002: one complete navigation pattern across every public page */',
+  '.public-header-mobile-menu {',
+  '@media (max-width: 1180px)',
+  '.content-home-header .public-header-mobile-menu { display: block; }',
+  '@media (max-width: 1040px)',
+  '.site-header .public-header-nav { display: none; }',
+  '.site-header .public-header-desktop-actions { display: none; }',
+  '.site-header .public-header-mobile-menu { display: block; }',
   '.public-header-mobile-menu summary:focus-visible {',
   '.public-header-mobile-panel a {',
+  '.public-header-mobile-verify {',
+  '.public-header-mobile-panel > nav:first-child a[aria-current="page"]',
   '.public-header-mobile-locales a[aria-current="page"] {',
+  '.public-header-nav a[aria-current="page"]::after {',
+  '.public-header-verify-nav[aria-current="page"] {',
 ]) {
   if (!css.includes(selector)) errors.push(`Mobile navigation CSS missing ${selector}`);
 }
@@ -68,9 +134,9 @@ if (pkg.scripts?.['verify:cnt-003:mobile-nav'] !== 'node scripts/verify-cnt-003-
 }
 
 if (errors.length) {
-  console.error('CNT-003-MOBILE-NAV-001 verification failed:');
+  console.error('CNT-003-MOBILE-NAV-002 verification failed:');
   for (const error of errors) console.error(`- ${error}`);
   process.exit(1);
 }
 
-console.log('CNT-003-MOBILE-NAV-001 verification passed.');
+console.log('CNT-003-MOBILE-NAV-002 verification passed.');

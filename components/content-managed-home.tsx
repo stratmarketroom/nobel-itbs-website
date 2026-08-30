@@ -6,6 +6,7 @@ import type { StructuredContentPage } from '@/lib/content/pages';
 import { programmeCatalogueCopy } from '@/lib/programmes/catalogue-copy';
 import type { ProgrammeCatalogueItem } from '@/lib/programmes/catalogue-types';
 import { HomeVerificationCard, type HomeVerificationCopy } from './home-verification-card';
+import { PublicResponsiveMobileMenu } from './public-responsive-header';
 
 type ContentCard = {
   title?: string;
@@ -213,16 +214,15 @@ export function ContentManagedHome({ page, locale, programmes }: {
               ))}
             </nav>
           </div>
-          <details className="content-home-mobile-menu">
-            <summary aria-label={ui.menuLabel}><span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" /></summary>
-            <div className="content-home-mobile-panel">
-              <nav aria-label={ui.navLabel}>{ui.nav.map((item) => <Link key={item.path} href={localizePublicPath(locale, item.path)}>{item.label}</Link>)}</nav>
-              <Link className="content-home-mobile-verify" href={verifyHref}>{ui.verifyLabel}</Link>
-              <nav className="content-home-mobile-locales" aria-label={ui.localeLabel}>
-                {(['en', 'ua', 'cz'] as const).map((itemLocale) => <Link key={itemLocale} href={localizePublicPath(itemLocale, '/')} aria-current={itemLocale === locale ? 'page' : undefined}>{localeLabels[itemLocale]}</Link>)}
-              </nav>
-            </div>
-          </details>
+          <PublicResponsiveMobileMenu
+            locale={locale}
+            localeHrefs={{
+              en: localizePublicPath('en', '/'),
+              ua: localizePublicPath('ua', '/'),
+              cz: localizePublicPath('cz', '/'),
+            }}
+            verifyHref={verifyHref}
+          />
         </header>
 
         <div className="content-home-hero-layout">
