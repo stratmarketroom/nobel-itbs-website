@@ -14,7 +14,7 @@ for (const snippet of [
   'signInWithPassword',
   'getAuthenticatorAssuranceLevel',
   'challengeAndVerify',
-  "router.push('/admin/users')",
+  "router.push('/admin')",
   'className="auth-error" role="alert"',
 ]) {
   if (!login.includes(snippet)) errors.push(`Admin login missing ${snippet}`);
