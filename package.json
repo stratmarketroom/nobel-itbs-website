@@ -32,6 +32,7 @@
     "verify:cnt-003": "node scripts/verify-cnt-003.mjs",
     "verify:cnt-003:mobile-nav": "node scripts/verify-cnt-003-mobile-public-nav.mjs",
     "verify:cnt-003:global-footer": "node scripts/verify-cnt-003-global-public-footer.mjs",
+    "verify:cnt-003:partnership-experts-responsive": "node scripts/verify-cnt-003-partnership-experts-responsive.mjs",
     "verify:cnt-004": "node scripts/verify-cnt-004.mjs",
     "verify:cnt-005": "node scripts/verify-cnt-005.mjs",
     "verify:prg-001": "node scripts/verify-prg-001.mjs",
