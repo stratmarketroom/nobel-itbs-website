@@ -10,7 +10,7 @@ export function LegalContentPage({ page, locale }: { page: StructuredContentPage
   const blocks = Array.isArray(page.sections.blocks) ? page.sections.blocks as LegalBlock[] : [];
   const slug = typeof page.sections.slug === 'string' ? page.sections.slug : '';
   const legalPath = slug ? `/${slug}` : '/';
-  return <main className="legal-page">
+  return <div className="legal-page">
     <PublicResponsiveHeader
       className="managed-public-header legal-public-header"
       locale={locale}
@@ -20,6 +20,7 @@ export function LegalContentPage({ page, locale }: { page: StructuredContentPage
         cz: localizePublicPath('cz', legalPath),
       }}
     />
+    <main id="main-content" tabIndex={-1}>
     <article className="legal-document">
       <p className="eyebrow">Nobel ITBS s.r.o.</p><h1>{page.h1}</h1>
       {blocks.map((block, index) => <section key={`${block.heading}-${index}`}>
@@ -27,6 +28,7 @@ export function LegalContentPage({ page, locale }: { page: StructuredContentPage
         {block.paragraphs.map((paragraph, paragraphIndex) => <p key={paragraphIndex}>{paragraph}</p>)}
       </section>)}
     </article>
-    <PublicFooter locale={locale} />
-  </main>;
+    </main>
+    <PublicFooter locale={locale} currentHref={localizePublicPath(locale, legalPath)} />
+  </div>;
 }

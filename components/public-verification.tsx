@@ -100,7 +100,7 @@ export function PublicVerification({ locale, token, initialDocumentNumber = '' }
     : null;
 
   return (
-    <main className="verification-page">
+    <div className="verification-page">
       <PublicResponsiveHeader
         className="verification-header"
         currentSection="/verify"
@@ -112,6 +112,7 @@ export function PublicVerification({ locale, token, initialDocumentNumber = '' }
         }}
       />
 
+      <main id="main-content" tabIndex={-1}>
       <section className="verification-hero" aria-labelledby="verification-title">
         <div className="verification-intro">
           <p className="eyebrow">{copy.eyebrow}</p>
@@ -182,8 +183,9 @@ export function PublicVerification({ locale, token, initialDocumentNumber = '' }
           </div>
         </div>
       </section>
+      </main>
 
-      <PublicFooter locale={locale} />
-    </main>
+      <PublicFooter locale={locale} currentHref={token ? tokenPath(locale, token) : localizePublicPath(locale, '/verify')} />
+    </div>
   );
 }

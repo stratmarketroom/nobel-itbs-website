@@ -250,10 +250,12 @@ function TaxonomyPage({ entity, locale }: { entity: TaxonomyLandingEntity; local
 
 export function ProgrammeLanding({ entity, locale }: ProgrammeLandingProps) {
   return (
-    <main className="landing-page" lang={entity.renderedLocale === 'ua' ? 'uk' : entity.renderedLocale === 'cz' ? 'cs' : 'en'}>
+    <div className="landing-page" lang={entity.renderedLocale === 'ua' ? 'uk' : entity.renderedLocale === 'cz' ? 'cs' : 'en'}>
       <PublicHeader locale={locale} slug={entity.slug} />
+      <main id="main-content" tabIndex={-1}>
       {entity.kind === 'programme' ? <ProgrammePage entity={entity} locale={locale} /> : <TaxonomyPage entity={entity} locale={locale} />}
-      <PublicFooter locale={locale} />
-    </main>
+      </main>
+      <PublicFooter locale={locale} currentHref={pagePath(locale, entity.slug)} />
+    </div>
   );
 }

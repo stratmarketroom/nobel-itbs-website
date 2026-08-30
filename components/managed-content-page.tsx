@@ -59,7 +59,7 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
   const currentPath = currentSection ?? '/';
 
   return (
-    <main className="managed-page">
+    <div className="managed-page">
       <PublicResponsiveHeader
         className="managed-public-header"
         currentSection={currentSection}
@@ -71,6 +71,7 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
         }}
       />
 
+      <main id="main-content" tabIndex={-1}>
       <section className="managed-hero">
         <p className="eyebrow">{heroFields.eyebrow || hero?.title}</p>
         <h1>{page.h1}</h1>
@@ -119,8 +120,9 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
         </div>
       ) : null}
       {enquiryType ? <PublicEnquiryForm locale={locale} type={enquiryType} /> : null}
+      </main>
 
-      <PublicFooter locale={locale} />
-    </main>
+      <PublicFooter locale={locale} currentHref={localizePublicPath(locale, currentPath)} />
+    </div>
   );
 }

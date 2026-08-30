@@ -23,7 +23,7 @@ export default function NotFound() {
   const copy = notFoundCopy[locale];
 
   return (
-    <main className="not-found-page">
+    <div className="not-found-page">
       <PublicResponsiveHeader
         className="managed-public-header not-found-header"
         locale={locale}
@@ -33,12 +33,14 @@ export default function NotFound() {
           cz: localizePublicPath('cz', '/'),
         }}
       />
+      <main id="main-content" tabIndex={-1}>
       <section className="not-found">
         <p className="eyebrow">{copy.eyebrow}</p>
         <h1>{copy.title}</h1>
         <Link href={localizePublicPath(locale, '/')}>{copy.action}</Link>
       </section>
+      </main>
       <PublicFooter locale={locale} />
-    </main>
+    </div>
   );
 }

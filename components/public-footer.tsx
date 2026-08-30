@@ -9,7 +9,11 @@ const footerSectionLabels: Record<ContentLocale, { navigation: string; legal: st
   cz: { navigation: 'Navigace', legal: 'Právní informace' },
 };
 
-export function PublicFooter({ locale }: { locale: ContentLocale }) {
+function isCurrentFooterHref(href: string, currentHref?: string): boolean {
+  return Boolean(currentHref && (href === currentHref || currentHref.startsWith(`${href}/`)));
+}
+
+export function PublicFooter({ locale, currentHref }: { locale: ContentLocale; currentHref?: string }) {
   const copy = homeCopy[locale];
   const labels = footerSectionLabels[locale];
   const primaryNavigation = copy.nav.filter((item) => item.label !== copy.verify.navLabel);
@@ -18,7 +22,7 @@ export function PublicFooter({ locale }: { locale: ContentLocale }) {
   const location = copy.footer.contact.find((line) => line !== 'Nobel ITBS s.r.o.' && !line.includes('@')) ?? 'Praha, Czech Republic';
 
   return (
-    <footer className="public-footer">
+    <footer className="public-footer" role="contentinfo">
       <div className="public-footer-inner">
         <div className="public-footer-brand">
           <Image src="/brand/nobel-logo-full-horizontal-web.svg" width={180} height={42} alt="Nobel ITBS" />
@@ -27,13 +31,25 @@ export function PublicFooter({ locale }: { locale: ContentLocale }) {
 
         <nav aria-label={labels.navigation}>
           <h2>{labels.navigation}</h2>
-          {primaryNavigation.map((item) => <Link href={item.href} key={item.href}>{item.label}</Link>)}
-          {verifyItem ? <Link href={verifyItem.href}>{verifyItem.label}</Link> : null}
+          {primaryNavigation.map((item) => (
+            <Link href={item.href} key={item.href} aria-current={isCurrentFooterHref(item.href, currentHref) ? 'page' : undefined}>
+              {item.label}
+            </Link>
+          ))}
+          {verifyItem ? (
+            <Link href={verifyItem.href} aria-current={isCurrentFooterHref(verifyItem.href, currentHref) ? 'page' : undefined}>
+              {verifyItem.label}
+            </Link>
+          ) : null}
         </nav>
 
         <nav aria-label={labels.legal}>
           <h2>{labels.legal}</h2>
-          {copy.footer.legal.map((item) => <Link href={item.href} key={item.href}>{item.label}</Link>)}
+          {copy.footer.legal.map((item) => (
+            <Link href={item.href} key={item.href} aria-current={item.href === currentHref ? 'page' : undefined}>
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         <address>

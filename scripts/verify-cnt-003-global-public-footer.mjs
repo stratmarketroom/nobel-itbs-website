@@ -24,11 +24,11 @@ const css = read(files.css);
 
 for (const snippet of [
   'export function PublicFooter',
-  '<footer className="public-footer">',
+  '<footer className="public-footer" role="contentinfo">',
   'className="public-footer-inner"',
   'src="/brand/nobel-logo-full-horizontal-web.svg"',
   'primaryNavigation.map((item)',
-  'verifyItem ? <Link href={verifyItem.href}>{verifyItem.label}</Link> : null',
+  'aria-current={isCurrentFooterHref(verifyItem.href, currentHref)',
   'copy.footer.legal.map((item)',
   '<address>',
   'mailto:${email}',

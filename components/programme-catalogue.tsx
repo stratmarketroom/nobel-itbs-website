@@ -16,7 +16,7 @@ export function ProgrammeCatalogue({ locale, programmes }: ProgrammeCataloguePro
   const programmePath = (slug: string) => localizePublicPath(locale, `/programmes/${slug}`);
 
   return (
-    <main className="catalogue-page">
+    <div className="catalogue-page">
       <PublicResponsiveHeader
         className="catalogue-header"
         currentSection="/programmes"
@@ -28,6 +28,7 @@ export function ProgrammeCatalogue({ locale, programmes }: ProgrammeCataloguePro
         }}
       />
 
+      <main id="main-content" tabIndex={-1}>
       <section className="catalogue-intro" aria-labelledby="catalogue-title">
         <div className="catalogue-intro-heading">
           <p className="eyebrow">{copy.eyebrow}</p>
@@ -88,8 +89,9 @@ export function ProgrammeCatalogue({ locale, programmes }: ProgrammeCataloguePro
           ))
         )}
       </section>
+      </main>
 
-      <PublicFooter locale={locale} />
-    </main>
+      <PublicFooter locale={locale} currentHref={localizePublicPath(locale, '/programmes')} />
+    </div>
   );
 }
