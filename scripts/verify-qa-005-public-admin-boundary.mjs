@@ -3,16 +3,12 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 const paths = {
   rootLayout: 'app/layout.tsx',
   publicLayout: 'app/(public)/layout.tsx',
-  publicNotFound: 'app/(public)/not-found.tsx',
-  publicCatchAll: 'app/(public)/[...not-found]/page.tsx',
-  publicCatchAllBoundary: 'app/(public)/[...not-found]/not-found.tsx',
-  localizedPublicNotFound: 'app/(public)/[locale]/not-found.tsx',
-  localizedPublicCatchAll: 'app/(public)/[locale]/[...not-found]/page.tsx',
-  localizedPublicCatchAllBoundary: 'app/(public)/[locale]/[...not-found]/not-found.tsx',
+  globalNotFound: 'app/global-not-found.tsx',
+  publicNotFoundBoundary: 'app/(public)/not-found.tsx',
+  publicNotFound: 'components/public-not-found.tsx',
   adminLayout: 'app/admin/layout.tsx',
   adminNotFound: 'app/admin/not-found.tsx',
   adminCatchAll: 'app/admin/[...not-found]/page.tsx',
-  rootNotFound: 'app/not-found.tsx',
   baseCss: 'app/base.css',
   publicCss: 'app/public.css',
   adminCss: 'app/admin.css',
@@ -20,6 +16,7 @@ const paths = {
   sitemap: 'app/sitemap.ts',
   proxy: 'proxy.ts',
   analytics: 'lib/analytics/google-analytics.ts',
+  config: 'next.config.mjs',
   package: 'package.json',
 };
 
@@ -52,7 +49,9 @@ const robots = read(paths.robots);
 const sitemap = read(paths.sitemap);
 const proxy = read(paths.proxy);
 const analytics = read(paths.analytics);
-const rootNotFound = read(paths.rootNotFound);
+const globalNotFound = read(paths.globalNotFound);
+const publicNotFound = read(paths.publicNotFound);
+const config = read(paths.config);
 
 for (const snippet of ["import './base.css'", '<html lang={htmlLanguage}', '<body>{children}</body>']) {
   if (!rootLayout.includes(snippet)) errors.push(`Root layout is missing shared-only foundation: ${snippet}`);
@@ -60,12 +59,22 @@ for (const snippet of ["import './base.css'", '<html lang={htmlLanguage}', '<bod
 for (const forbidden of ['public.css', 'admin.css', 'GoogleAnalytics', 'CookieConsent', 'createSocialMetadata', 'canonicalOrigin']) {
   if (rootLayout.includes(forbidden)) errors.push(`Root layout must not cross the public/admin boundary: ${forbidden}`);
 }
-for (const forbidden of ['public.css', 'PublicResponsiveHeader', 'PublicFooter', 'GoogleAnalytics', 'CookieConsent']) {
-  if (rootNotFound.includes(forbidden)) errors.push(`Root fallback must remain private-safe: ${forbidden}`);
+for (const snippet of [
+  "import './base.css'",
+  "import './public.css'",
+  '<html lang={htmlLanguageByLocale[locale]}',
+  '<PublicNotFound locale={locale} />',
+  '<GoogleAnalytics />',
+  '<CookieConsent />',
+]) {
+  if (!globalNotFound.includes(snippet)) errors.push(`Global public 404 is missing: ${snippet}`);
 }
-if (!rootNotFound.includes("from './(public)/not-found'")) {
-  errors.push('Root fallback must delegate public 404 rendering without importing public CSS or analytics.');
+for (const forbidden of ['admin.css', 'AdminShell']) {
+  if (globalNotFound.includes(forbidden) || publicNotFound.includes(forbidden)) {
+    errors.push(`Global public 404 must not import an admin concern: ${forbidden}`);
+  }
 }
+if (!config.includes('globalNotFound: true')) errors.push('Next.js globalNotFound must remain enabled.');
 
 for (const snippet of [
   "import '../public.css'",

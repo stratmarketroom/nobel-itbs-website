@@ -28,7 +28,7 @@ if (!proxy.includes('htmlLanguageForPathname(request.nextUrl.pathname)')) {
 if (!proxy.includes('request: {') || !proxy.includes('headers: requestHeaders')) {
   errors.push('Proxy must forward the locale as an upstream request header.');
 }
-for (const preservedRule of ['programmeSlugPath', 'getProgrammeSlugRedirect', "NextResponse.rewrite(new URL('/404'", "pathname.startsWith('/api')"]) {
+for (const preservedRule of ['programmeSlugPath', 'getProgrammeSlugRedirect', 'rewriteToGlobalNotFound', "pathname.startsWith('/api')"]) {
   if (!proxy.includes(preservedRule)) errors.push(`Existing proxy rule was not preserved: ${preservedRule}`);
 }
 if (!layout.includes('resolveHtmlLanguage(requestHeaders.get(htmlLanguageHeader))')) {
