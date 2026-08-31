@@ -1,6 +1,6 @@
 # QA-005 Client HTML Language Synchronization — 2026-08-31
 
-Status: implemented and verified locally and on Vercel Preview; merge pending
+Status: merged through PR #74 as `5ca05ca` and accepted in Production
 
 ## Summary
 
@@ -58,6 +58,9 @@ None.
   same `uk`, `cs`, and `en` document-language results. The in-app browser's
   automatic page translation changed the initial translated EN DOM to `uk`;
   this browser feature was excluded from the application acceptance result.
+- Production client navigation on `nobel-itbs.eu` passed after the deployment
+  completed: EN rendered `lang="en"`, CZ rendered `lang="cs"`, and UA rendered
+  `lang="uk"` without requiring a full page reload.
 
 ## Security Notes
 
@@ -75,4 +78,4 @@ public route changes.
 
 ## Next Dependency
 
-Review PR #74 and merge only after Owner confirmation.
+None. The ticket is merged, deployed, and accepted in Production.
