@@ -61,6 +61,12 @@ None.
   - `/ua/missing-public-page`: Ukrainian copy, public header/footer,
     `lang="uk"`;
   - `/cz/missing-public-page`: Czech copy, public header/footer, `lang="cs"`.
+- Vercel Preview smoke:
+  - `/verify`: base + public CSS only, public footer present, production
+    canonical retained;
+  - `/admin/login`: base + admin CSS only, `noindex, nofollow, nocache`, no
+    public footer, Google Analytics script, canonical, Open Graph, or Twitter
+    metadata.
 
 ## CSS delivery result
 
@@ -88,16 +94,13 @@ bundle.
 ## Deviations and open questions
 
 - Local `/admin/login` cannot fully render in this worktree because deployed
-  Supabase browser configuration is not present locally. The production build,
-  route manifest, static boundary verifier, response headers, CSS chunks, and
-  JavaScript chunk contents were verified. The Vercel Preview must provide the
-  final environment-backed admin smoke check.
+  Supabase browser configuration is not present locally. The environment-backed
+  admin login was therefore smoke-tested on the successful Vercel Preview.
 - No production Lighthouse rerun is included in this ticket; it should be
   repeated after deployment when this structural split is available on a
   production-equivalent URL.
 
 ## Next dependency
 
-Review the Vercel Preview for public pages and `/admin/login`, then merge this
-ticket. Continue with the next previously agreed error-fix ticket only after
-approval.
+Review and merge PR #67. Continue with the next previously agreed error-fix
+ticket only after approval.
