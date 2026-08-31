@@ -25,6 +25,16 @@ const legacyRedirects: Record<string, string> = {
   '/home-page-2': '/',
 };
 const removedLegacyPaths = new Set(['/blog-en']);
+const publicRootSegments = new Set([
+  'about',
+  'for-organisations',
+  'partnerships',
+  'privacy-policy',
+  'programmes',
+  'refund-policy',
+  'terms-of-use',
+  'verify',
+]);
 
 function normalizedPathname(pathname: string): string {
   if (pathname === '/') return pathname;
@@ -118,6 +128,15 @@ function nextWithoutPublicDiscovery(request: NextRequest) {
   return response;
 }
 
+function rewriteToGlobalNotFound(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(htmlLanguageHeader, htmlLanguageForPathname(request.nextUrl.pathname));
+
+  return NextResponse.rewrite(new URL('/__nobel-global-not-found__/404', request.url), {
+    request: { headers: requestHeaders },
+  });
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const normalized = normalizedPathname(pathname);
@@ -146,8 +165,12 @@ export async function proxy(request: NextRequest) {
 
   const [firstSegment] = pathname.split('/').filter(Boolean);
 
-  if (firstSegment && firstSegment.length === 2 && !prefixedLocales.includes(firstSegment as 'ua' | 'cz')) {
-    return NextResponse.rewrite(new URL('/404', request.url));
+  if (
+    firstSegment
+    && !prefixedLocales.includes(firstSegment as 'ua' | 'cz')
+    && !publicRootSegments.has(firstSegment)
+  ) {
+    return rewriteToGlobalNotFound(request);
   }
 
   const programmePath = programmeSlugPath(pathname);

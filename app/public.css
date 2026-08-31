@@ -1724,22 +1724,67 @@ h1 span {
 
 .not-found {
   display: grid;
-  min-height: calc(100dvh - 5.8rem);
+  min-height: clamp(32rem, 68dvh, 47rem);
   place-content: center;
-  padding: 2rem;
+  padding: clamp(4rem, 9vw, 8rem) 1rem;
   text-align: center;
 }
 
-.not-found h1 {
-  max-width: none;
-  color: var(--ink);
-  font-size: clamp(2.4rem, 8vw, 5rem);
+.not-found-copy {
+  display: grid;
+  justify-items: center;
+  max-width: 48rem;
 }
 
-.not-found a {
-  margin-top: 1.2rem;
-  color: var(--concept-violet);
+.not-found h1 {
+  max-width: 14ch;
+  margin-top: .65rem;
+  color: var(--ink);
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  letter-spacing: 0;
+  line-height: .98;
+}
+
+.not-found-body {
+  max-width: 48ch;
+  margin-top: 1.4rem;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.6vw, 1.18rem);
+  line-height: 1.65;
+}
+
+.not-found-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .75rem 1rem;
+  margin-top: 2rem;
+}
+
+.not-found-actions .button {
+  margin: 0;
+}
+
+.not-found-secondary {
+  display: inline-flex;
+  min-height: 3.25rem;
+  align-items: center;
+  justify-content: center;
+  padding: .85rem 1.15rem;
+  color: var(--deep-blue);
   font-weight: 800;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .28rem;
+}
+
+@media (max-width: 520px) {
+  .not-found-actions {
+    width: min(100%, 22rem);
+  }
+
+  .not-found-actions a {
+    width: 100%;
+  }
 }
 
 @media (max-width: 1080px) {

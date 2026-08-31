@@ -46,6 +46,9 @@ const credentialGenerationAssets = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  experimental: {
+    globalNotFound: true,
+  },
   serverExternalPackages: ['@napi-rs/canvas', 'pdfjs-dist'],
   outputFileTracingIncludes: {
     '/api/v1/admin/credentials/**': credentialGenerationAssets,
