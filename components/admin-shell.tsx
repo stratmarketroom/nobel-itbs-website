@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { AdminRole } from '@/lib/admin/types';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
@@ -117,6 +117,7 @@ function AccessState({
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const isPublicAuthPath = pathname === '/admin/login';
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [state, setState] = useState<ShellState>('loading');
@@ -171,7 +172,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   async function signOut() {
     await supabase.auth.signOut();
-    window.location.assign('/admin/login');
+    router.replace('/admin/login');
   }
 
   if (isPublicAuthPath) return children;

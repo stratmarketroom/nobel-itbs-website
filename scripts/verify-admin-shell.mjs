@@ -15,6 +15,8 @@ const shell = existsSync(required[1]) ? readFileSync(required[1], 'utf8') : '';
 for (const snippet of [
   "fetch('/api/v1/admin/me'",
   "pathname === '/admin/login'",
+  'const router = useRouter();',
+  "router.replace('/admin/login');",
   "'signed_out'",
   "'mfa_required'",
   "'forbidden'",
@@ -24,6 +26,7 @@ for (const snippet of [
   'No protected data has been loaded.',
 ]) if (!shell.includes(snippet)) errors.push(`Admin shell missing ${snippet}`);
 if (shell.includes('SUPABASE_SERVICE_ROLE_KEY')) errors.push('Admin shell must not reference the service role.');
+if (shell.includes("window.location.assign('/admin/login')")) errors.push('Admin sign-out must use Next.js router navigation.');
 const cookie = existsSync(required[2]) ? readFileSync(required[2], 'utf8') : '';
 if (!cookie.includes("path.startsWith('/admin/')")) errors.push('Cookie consent must stay out of protected admin routes.');
 for (const file of required.slice(3)) {
