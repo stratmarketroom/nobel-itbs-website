@@ -1,6 +1,6 @@
 # QA-005 Client HTML Language Synchronization — 2026-08-31
 
-Status: implemented and locally verified; Preview verification pending
+Status: implemented and verified locally and on Vercel Preview; merge pending
 
 ## Summary
 
@@ -52,6 +52,12 @@ None.
   - client navigation to UA: `/ua/verify`, `lang="uk"`;
   - client navigation to CZ: `/cz/verify`, `lang="cs"`;
   - client navigation back to EN: `/verify`, `lang="en"`.
+- Vercel Preview deployment completed with both repository checks passing and
+  no base-branch conflicts;
+- Preview client navigation passed for UA, CZ, and the return to EN with the
+  same `uk`, `cs`, and `en` document-language results. The in-app browser's
+  automatic page translation changed the initial translated EN DOM to `uk`;
+  this browser feature was excluded from the application acceptance result.
 
 ## Security Notes
 
@@ -69,5 +75,4 @@ public route changes.
 
 ## Next Dependency
 
-Create a Vercel Preview, repeat the EN to UA to CZ client-navigation smoke, and
-merge only after the Preview deployment and repository checks pass.
+Review PR #74 and merge only after Owner confirmation.
