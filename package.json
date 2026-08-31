@@ -101,6 +101,7 @@
     "generate:qa-005:og-images": "node scripts/generate-qa-005-social-images.mjs",
     "verify:qa-005:og-images": "node scripts/verify-qa-005-og-images.mjs",
     "verify:qa-005:google-analytics": "node --experimental-strip-types scripts/verify-qa-005-google-analytics.mjs",
+    "verify:qa-005:cookie-lcp": "node --experimental-strip-types scripts/verify-qa-005-cookie-lcp.mjs",
     "verify:qa-005:manrope-font": "node scripts/verify-qa-005-manrope-font.mjs",
     "verify:qa-005:public-admin-boundary": "node scripts/verify-qa-005-public-admin-boundary.mjs",
     "verify:qa-005:partner-logo-adaptation": "node scripts/verify-qa-005-partner-logo-adaptation.mjs",

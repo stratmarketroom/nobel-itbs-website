@@ -9,6 +9,9 @@ import {
 import {
   COOKIE_CONSENT_CHANGE_EVENT,
   COOKIE_CONSENT_STORAGE_KEY,
+  parseCookieConsentDecision,
+  readCookieConsentDecision,
+  type CookieConsentDecision,
 } from '@/lib/privacy/cookie-consent';
 
 type DataLayerValue = unknown[];
@@ -34,8 +37,16 @@ function subscribeToConsent(onStoreChange: () => void) {
   };
 }
 
-function getConsentSnapshot() {
-  return window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY) ?? 'pending';
+function getConsentSnapshot(initialConsent: CookieConsentDecision) {
+  try {
+    const storedDecision = parseCookieConsentDecision(window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY));
+    if (storedDecision !== 'pending') return storedDecision;
+  } catch {
+    // The necessary cookie remains available when localStorage is unavailable.
+  }
+
+  const cookieDecision = readCookieConsentDecision(document.cookie);
+  return cookieDecision === 'pending' ? initialConsent : cookieDecision;
 }
 
 function configureGoogleAnalytics(safePath: string) {
@@ -79,10 +90,14 @@ function configureGoogleAnalytics(safePath: string) {
   }
 }
 
-export function GoogleAnalytics() {
+export function GoogleAnalytics({ initialConsent }: { initialConsent: CookieConsentDecision }) {
   const pathname = usePathname();
   const lastTrackedPath = useRef<string | null>(null);
-  const consent = useSyncExternalStore(subscribeToConsent, getConsentSnapshot, () => 'unknown');
+  const consent = useSyncExternalStore(
+    subscribeToConsent,
+    () => getConsentSnapshot(initialConsent),
+    () => initialConsent,
+  );
 
   useEffect(() => {
     const safePath = getPrivacySafeAnalyticsPath(pathname);
