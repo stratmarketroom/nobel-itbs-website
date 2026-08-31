@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import './globals.css';
 import { CookieConsent } from '@/components/cookie-consent';
+import { GoogleAnalytics } from '@/components/google-analytics';
 import { htmlLanguageHeader, resolveHtmlLanguage } from '@/lib/content/html-language';
 import { createSocialMetadata, getInstitutionalSocialAlt, socialImagePaths } from '@/lib/seo/social';
 import { canonicalOrigin, localizedAbsoluteUrl } from '@/lib/seo/urls';
@@ -33,7 +34,7 @@ export default async function RootLayout({
 
   return (
     <html lang={htmlLanguage}>
-      <body>{children}<CookieConsent /></body>
+      <body>{children}<GoogleAnalytics /><CookieConsent /></body>
     </html>
   );
 }
