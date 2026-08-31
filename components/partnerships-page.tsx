@@ -7,6 +7,7 @@ import { homeCopy } from '@/lib/i18n';
 import type { PartnerCard } from '@/lib/partners/types';
 import type { PartnershipsPageContent } from '@/lib/partnerships/types';
 import { ExpertCards } from './expert-cards';
+import { PartnerLogoImage } from './partner-logo-image';
 import { PublicFooter } from './public-footer';
 
 type PartnershipsPageProps = {
@@ -41,11 +42,7 @@ function PageHeader({ locale }: { locale: ContentLocale }) {
 }
 
 function PartnerLogo({ partner }: { partner: PartnerCard }) {
-  return (
-    <span className={`partnership-logo partnership-logo-${partner.slug}`}>
-      <Image src={partner.logoPath} fill sizes="(max-width: 760px) 72vw, 320px" alt={partner.logoAlt} />
-    </span>
-  );
+  return <PartnerLogoImage className="partnership-logo" partner={partner} sizes="20rem" />;
 }
 
 export function PartnershipsPage({ content, partners, experts }: PartnershipsPageProps) {

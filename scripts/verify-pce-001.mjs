@@ -8,6 +8,7 @@ const paths = {
   loader: 'lib/partners/public.ts',
   api: 'app/api/v1/public/partners/route.ts',
   shell: 'components/public-shell.tsx',
+  logo: 'components/partner-logo-image.tsx',
   home: 'app/(public)/page.tsx',
   localizedHome: 'app/(public)/[locale]/page.tsx',
 };
@@ -52,10 +53,17 @@ if (existsSync(paths.loader)) {
 
 if (existsSync(paths.shell)) {
   const shell = readFileSync(paths.shell, 'utf8');
-  for (const snippet of ['partners.map', 'partner.logoPath', 'partner.officialUrl', 'target="_blank"']) {
+  for (const snippet of ['partners.map', '<PartnerLogoImage', 'partner.officialUrl', 'target="_blank"']) {
     if (!shell.includes(snippet)) errors.push(`Homepage partner cards missing behavior: ${snippet}`);
   }
   if (/ACCA|EduQual|OTHM|ATHE|QFHE|EU Partners/.test(shell)) errors.push('Unapproved placeholder partners remain in the homepage shell.');
+}
+
+if (existsSync(paths.logo)) {
+  const logo = readFileSync(paths.logo, 'utf8');
+  for (const snippet of ['partner.logoPath', 'partner.logoAlt', "from 'next/image'"]) {
+    if (!logo.includes(snippet)) errors.push(`Shared partner logo rendering missing behavior: ${snippet}`);
+  }
 }
 
 const i18n = readFileSync('lib/i18n.ts', 'utf8');

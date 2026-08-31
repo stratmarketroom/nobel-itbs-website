@@ -6,6 +6,7 @@ import type { PartnerCard } from '@/lib/partners/types';
 import type { ExpertCard } from '@/lib/experts/types';
 import { ExpertCards } from './expert-cards';
 import { PublicFooter } from './public-footer';
+import { PartnerLogoImage } from './partner-logo-image';
 import { PublicResponsiveHeader, type PublicNavSection } from './public-responsive-header';
 import { PublicEnquiryForm } from './public-enquiry-form';
 
@@ -106,8 +107,11 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
           <div className="managed-card-grid">
             {partners.map((partner) => (
               <a className="managed-partner-card" href={partner.officialUrl} key={partner.slug} rel="noreferrer" target="_blank">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img alt={partner.logoAlt} src={partner.logoPath} />
+                <PartnerLogoImage
+                  className="managed-partner-logo"
+                  partner={partner}
+                  sizes="(max-width: 700px) calc(100vw - 5.5rem), (max-width: 1100px) 22rem, 20rem"
+                />
                 <h3>{partner.name}</h3><p>{partner.role}</p>{partner.location ? <p>{partner.location}</p> : null}
               </a>
             ))}
