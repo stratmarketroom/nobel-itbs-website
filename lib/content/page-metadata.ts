@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ContentLocale } from './localization';
 import type { ContentPageKey, StructuredContentPage } from './pages';
+import { createSocialMetadata, getInstitutionalSocialAlt, socialImagePaths } from '@/lib/seo/social';
 import { languageAlternates, localizedAbsoluteUrl } from '@/lib/seo/urls';
 
 const paths: Record<ContentPageKey, string> = {
@@ -11,11 +12,21 @@ const paths: Record<ContentPageKey, string> = {
 export function managedPageMetadata(page: StructuredContentPage, requestedLocale: ContentLocale): Metadata {
   const path = paths[page.pageKey];
   const locales = page.publishedLocales.filter((locale) => locale !== requestedLocale || page.renderedLocale === requestedLocale);
+  const canonical = localizedAbsoluteUrl(page.renderedLocale, path || '/');
   return {
     title: page.seoTitle,
     description: page.seoDescription,
+    ...createSocialMetadata({
+      title: page.seoTitle,
+      description: page.seoDescription,
+      canonical,
+      locale: page.renderedLocale,
+      imagePath: socialImagePaths.institutional,
+      imageAlt: getInstitutionalSocialAlt(page.renderedLocale),
+      publishedLocales: locales,
+    }),
     alternates: {
-      canonical: localizedAbsoluteUrl(page.renderedLocale, path || '/'),
+      canonical,
       languages: languageAlternates(path || '/', locales),
     },
   };

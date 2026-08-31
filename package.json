@@ -98,6 +98,8 @@
     "verify:qa-005:production-grants:live": "node scripts/verify-qa-005-production-grants-live.mjs",
     "verify:qa-005:html-language": "node scripts/verify-html-language.mjs",
     "verify:qa-005:seo": "node scripts/verify-qa-005-seo.mjs",
+    "generate:qa-005:og-images": "node scripts/generate-qa-005-social-images.mjs",
+    "verify:qa-005:og-images": "node scripts/verify-qa-005-og-images.mjs",
     "verify:qa-005:security-headers": "node scripts/verify-qa-005-security-headers.mjs",
     "verify:qa-005:backup-readiness": "node scripts/verify-qa-005-backup-readiness.mjs",
     "verify:qa-005:cta": "node scripts/verify-qa-005-cta.mjs",

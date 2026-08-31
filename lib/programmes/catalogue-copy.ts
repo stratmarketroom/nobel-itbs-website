@@ -5,6 +5,8 @@ export type ProgrammeCatalogueCopy = {
   seo: {
     title: string;
     description: string;
+    ogTitle: string;
+    ogDescription: string;
   };
   eyebrow: string;
   title: string;
@@ -38,6 +40,8 @@ export const programmeCatalogueCopy: Record<ContentLocale, ProgrammeCatalogueCop
     seo: {
       title: 'Professional Programmes | Nobel ITBS',
       description: 'Explore Nobel ITBS professional programmes in business, technology, and psychology, including distance courses, certificate programmes, and Mini-MBA study.',
+      ogTitle: 'Nobel ITBS Professional Programmes',
+      ogDescription: 'Find a programme to develop your competencies, pursue a new professional direction, or structure your existing experience.',
     },
     eyebrow: 'Programmes',
     title: 'Professional Programmes',
@@ -65,6 +69,8 @@ export const programmeCatalogueCopy: Record<ContentLocale, ProgrammeCatalogueCop
     seo: {
       title: 'Професійні програми | Nobel ITBS',
       description: 'Обирайте професійні програми Nobel ITBS у бізнесі, технологіях та психології: дистанційні курси, сертифікатні програми й Mini-MBA.',
+      ogTitle: 'Професійні програми Nobel ITBS',
+      ogDescription: 'Знайдіть програму для розвитку компетентностей, нового професійного напряму або систематизації досвіду.',
     },
     eyebrow: 'Програми',
     title: 'Професійні програми',
@@ -92,6 +98,8 @@ export const programmeCatalogueCopy: Record<ContentLocale, ProgrammeCatalogueCop
     seo: {
       title: 'Profesní vzdělávací programy | Nobel ITBS',
       description: 'Prohlédněte si profesní programy Nobel ITBS v oblasti byznysu, technologií a psychologie, včetně distančních kurzů, certifikátových programů a studia Mini-MBA.',
+      ogTitle: 'Profesní programy Nobel ITBS',
+      ogDescription: 'Najděte program pro rozvoj kompetencí, nový profesní směr nebo systematizaci dosavadních zkušeností.',
     },
     eyebrow: 'Programy',
     title: 'Profesní vzdělávací programy',

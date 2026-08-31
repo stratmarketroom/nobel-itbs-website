@@ -4,6 +4,7 @@ import { PublicVerification } from '@/components/public-verification';
 import { isContentLocale } from '@/lib/content/localization';
 import { verificationCopy } from '@/lib/credentials/verification-copy';
 import { isPrefixedLocale } from '@/lib/i18n';
+import { createSocialMetadata, getVerificationSocialAlt, socialImagePaths } from '@/lib/seo/social';
 import { localizedAbsoluteUrl } from '@/lib/seo/urls';
 
 type Props = { params: Promise<{ locale: string; token: string }> };
@@ -11,10 +12,22 @@ type Props = { params: Promise<{ locale: string; token: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   if (!isPrefixedLocale(locale) || !isContentLocale(locale)) return {};
+  const copy = verificationCopy[locale];
+  const canonical = localizedAbsoluteUrl(locale, '/verify');
   return {
-    title: verificationCopy[locale].seo.title,
+    title: copy.seo.title,
+    description: copy.seo.description,
+    ...createSocialMetadata({
+      title: copy.seo.ogTitle,
+      description: copy.seo.ogDescription,
+      canonical,
+      locale,
+      imagePath: socialImagePaths.verify,
+      imageAlt: getVerificationSocialAlt(locale),
+      publishedLocales: [locale],
+    }),
     robots: { index: false, follow: false },
-    alternates: { canonical: localizedAbsoluteUrl(locale, '/verify') },
+    alternates: { canonical },
   };
 }
 

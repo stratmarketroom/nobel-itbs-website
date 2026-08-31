@@ -3,8 +3,8 @@
 Product: Nobel ITBS Website and Credential Registry  
 Scope: Release 1  
 Locales: EN, UA, CZ  
-Status: copy complete; asset and implementation QA pending  
-Updated: 2026-07-31
+Status: copy and social-image implementation complete; Production preview QA pending
+Updated: 2026-08-31
 
 ## 1. Source Of Truth
 
@@ -88,7 +88,9 @@ No system or verification-result page may include:
 
 ## 5. Open Graph Image Matrix
 
-Text metadata is complete. Image files are an asset-production dependency.
+The approved image matrix is implemented as optimized 1200 × 630 PNG files in
+`public/brand/social`. Production social-preview cache validation remains a
+post-deploy acceptance step.
 
 Required 1200 × 630 image roles:
 

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ContentLocale } from '@/lib/content/localization';
-import { languageAlternates, localizedAbsoluteUrl, seoLocaleConfig } from '@/lib/seo/urls';
+import { createSocialMetadata, getProgrammeSocialAlt, programmeSocialImagePath } from '@/lib/seo/social';
+import { languageAlternates, localizedAbsoluteUrl } from '@/lib/seo/urls';
 import type { ProgrammeNamespaceEntity } from './landing-types';
 
 function path(locale: ContentLocale, slug: string): string {
@@ -19,16 +20,14 @@ export function programmeLandingMetadata(entity: ProgrammeNamespaceEntity, reque
     title: entity.seo.title,
     description: entity.seo.description,
     alternates: { canonical, languages },
-    openGraph: {
-      type: 'website',
-      url: canonical,
+    ...createSocialMetadata({
       title: entity.seo.ogTitle,
       description: entity.seo.ogDescription,
-      siteName: 'Nobel ITBS',
-      locale: seoLocaleConfig[entity.renderedLocale].openGraphLocale,
-      alternateLocale: (['en', 'ua', 'cz'] as const)
-        .filter((locale) => locale !== entity.renderedLocale)
-        .map((locale) => seoLocaleConfig[locale].openGraphLocale),
-    },
+      canonical,
+      locale: entity.renderedLocale,
+      imagePath: programmeSocialImagePath(entity),
+      imageAlt: getProgrammeSocialAlt(entity.renderedLocale, entity.title),
+      publishedLocales: entity.publishedLocales,
+    }),
   };
 }
