@@ -34,14 +34,20 @@ partner names may wrap inside their card instead of forcing horizontal overflow.
 
 ## Verification
 
-- `npm run verify:qa-005:partner-logo-adaptation`
-- `npm run verify:cnt-003:partnership-experts-responsive`
-- `npm run verify:pce-001`
-- `npm run verify:pce-003`
-- `npx tsc --noEmit`
-- `npm run lint`
-- `npm run build`
-- visual smoke for EN, UA, and CZ Partnerships at desktop and mobile widths
+- `npm run verify:qa-005:partner-logo-adaptation` passed;
+- `npm run verify:cnt-003:partnership-experts-responsive` passed;
+- `npm run verify:pce-001` passed;
+- `npm run verify:pce-003` passed;
+- `npx tsc --noEmit` passed;
+- `npm run lint` passed with the pre-existing `components/admin-shell.tsx:174`
+  navigation warning and no errors;
+- `npm run build` passed with all 60 static pages generated;
+- Vercel Preview visual smoke passed for EN, UA, and CZ Partnerships at
+  1440×900 and 390×844;
+- desktop and mobile both rendered five cards with `object-fit: contain`, no
+  horizontal overflow, and optimized `/_next/image` sources;
+- the 390 px viewport selected a 384 px image candidate instead of transferring
+  the original oversized assets.
 
 ## Security
 
