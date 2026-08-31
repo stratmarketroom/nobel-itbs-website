@@ -37,7 +37,29 @@
 .managed-card-grid article, .managed-partner-card { padding: 1.5rem; border: 1px solid #ddd9e8; border-radius: 1rem; background: #fff; color: inherit; text-decoration: none; }
 .managed-card-grid h3 { margin: 0 0 .75rem; font-size: 1.25rem; }
 .managed-card-grid p { line-height: 1.6; }
-.managed-partner-card img { width: 100%; height: 6rem; object-fit: contain; object-position: left center; margin-bottom: 1rem; }
+.managed-partner-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.managed-partner-logo {
+  position: relative;
+  display: block;
+  width: min(100%, 20rem);
+  height: clamp(6rem, 8vw, 7.5rem);
+  margin-bottom: 1.25rem;
+}
+.managed-partner-logo img {
+  object-fit: contain;
+  object-position: left center;
+}
+.managed-partner-logo.partner-logo-image-riga-nordic-university,
+.managed-partner-logo.partner-logo-image-nataliia-kholodenko-psychology-centre {
+  width: 7.5rem;
+}
+.managed-partner-card h3 {
+  overflow-wrap: anywhere;
+}
 .managed-experts-section {
   padding: clamp(3.5rem, 7vw, 7rem) clamp(1.25rem, 8vw, 9rem);
   border-bottom: 1px solid #dedbe8;
@@ -1175,8 +1197,8 @@ h1 span {
   object-position: left center;
 }
 
-.partnership-logo-riga-nordic-university,
-.partnership-logo-nataliia-kholodenko-psychology-centre {
+.partnership-logo.partner-logo-image-riga-nordic-university,
+.partnership-logo.partner-logo-image-nataliia-kholodenko-psychology-centre {
   width: 8rem;
 }
 

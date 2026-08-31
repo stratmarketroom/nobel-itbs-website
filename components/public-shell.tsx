@@ -3,6 +3,7 @@ import Image from 'next/image';
 import type { Locale, HomeCopy } from '@/lib/i18n';
 import { localeLinks } from '@/lib/i18n';
 import type { PartnerCard } from '@/lib/partners/types';
+import { PartnerLogoImage } from './partner-logo-image';
 import { PublicFooter } from './public-footer';
 
 type PublicShellProps = {
@@ -116,9 +117,11 @@ export function PublicShell({ copy, locale, partners }: PublicShellProps) {
                 rel="noreferrer"
                 key={partner.slug}
               >
-                <span className={`partner-logo-image partner-logo-image-${partner.slug}`}>
-                  <Image src={partner.logoPath} fill sizes="(max-width: 760px) 72vw, 300px" alt={partner.logoAlt} />
-                </span>
+                <PartnerLogoImage
+                  className="partner-logo-image"
+                  partner={partner}
+                  sizes={partner.type === 'exclusive_academic_partner' ? '20rem' : '12rem'}
+                />
                 <span className="partner-logo-copy">
                   <strong>{partner.name}</strong>
                   <small>{partner.role}</small>
