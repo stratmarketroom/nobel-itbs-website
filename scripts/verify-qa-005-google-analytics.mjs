@@ -37,8 +37,11 @@ if (!consent.includes('COOKIE_CONSENT_STORAGE_KEY') || !consent.includes('COOKIE
   errors.push('Cookie banner and analytics must share the consent contract.');
 }
 
-if (!layout.includes('<GoogleAnalytics initialConsent={initialConsent} />') || !layout.includes('<CookieConsent initialConsent={initialConsent} />')) {
+if (!layout.includes('<GoogleAnalytics />') || !layout.includes('<CookieConsent />')) {
   errors.push('Public layout must mount analytics and the cookie consent banner.');
+}
+if (layout.includes("from 'next/headers'") || layout.includes('cookies()')) {
+  errors.push('Public analytics/consent mounting must not disable public response caching.');
 }
 
 for (const source of [

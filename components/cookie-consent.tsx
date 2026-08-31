@@ -12,6 +12,8 @@ import {
   type PersistedCookieConsentDecision,
 } from '@/lib/privacy/cookie-consent';
 
+type ConsentSnapshot = CookieConsentDecision | 'initializing';
+
 const copy = {
   en: { aria: 'Cookie consent', text: 'We use necessary cookies to operate this website. With your consent, we may also use optional cookies for analytics and website improvement. You can accept or decline them.', accept: 'Accept', decline: 'Decline' },
   ua: { aria: 'Згода на використання cookie', text: 'Ми використовуємо необхідні cookie для роботи сайту. За вашою згодою ми також можемо використовувати необов’язкові cookie для аналітики та покращення сайту. Ви можете прийняти або відхилити їх.', accept: 'Приймаю', decline: 'Не приймаю' },
@@ -27,7 +29,7 @@ function subscribeToConsent(onStoreChange: () => void) {
   };
 }
 
-function getConsentSnapshot(initialConsent: CookieConsentDecision) {
+function getConsentSnapshot(): ConsentSnapshot {
   try {
     const storedDecision = parseCookieConsentDecision(window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY));
     if (storedDecision !== 'pending') return storedDecision;
@@ -36,7 +38,11 @@ function getConsentSnapshot(initialConsent: CookieConsentDecision) {
   }
 
   const cookieDecision = readCookieConsentDecision(document.cookie);
-  return cookieDecision === 'pending' ? initialConsent : cookieDecision;
+  return cookieDecision;
+}
+
+function getServerConsentSnapshot(): ConsentSnapshot {
+  return 'initializing';
 }
 
 function persistConsent(decision: PersistedCookieConsentDecision) {
@@ -72,13 +78,13 @@ function synchronizeConsentStores() {
   }
 }
 
-export function CookieConsent({ initialConsent }: { initialConsent: CookieConsentDecision }) {
+export function CookieConsent() {
   const path = usePathname();
   const locale: keyof typeof copy = path === '/ua' || path.startsWith('/ua/') ? 'ua' : path === '/cz' || path.startsWith('/cz/') ? 'cz' : 'en';
   const consent = useSyncExternalStore(
     subscribeToConsent,
-    () => getConsentSnapshot(initialConsent),
-    () => initialConsent,
+    getConsentSnapshot,
+    getServerConsentSnapshot,
   );
 
   useEffect(() => {
