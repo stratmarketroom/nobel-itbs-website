@@ -3,8 +3,8 @@
 Product: Nobel ITBS Website and Credential Registry  
 Scope: canonical, hreflang, sitemap, robots, and redirects for Release 1  
 Canonical origin: `https://nobel-itbs.eu`  
-Status: implementation and production legacy-URL acceptance complete; host/protocol one-hop acceptance pending
-Updated: 2026-08-30
+Status: implementation, Production legacy-URL, and canonical host/protocol acceptance complete
+Updated: 2026-08-31
 
 Implementation note: `QA-005-SEO-001` completed the publication layer on
 2026-08-24. The implemented legal routes are `/terms-of-use` and
@@ -21,6 +21,12 @@ Release 1 programme catalogue; the latter consolidates into About, whose
 current structured content covers how Nobel ITBS works, its educational
 approach, and its audiences. Both now use direct permanent redirects. See
 `docs/qa/QA_005_SEO_CUTOVER_2026-08-30.md`.
+
+Canonical-edge acceptance update: on 2026-08-31 the live matrix confirmed
+`https://nobel-itbs.eu/` returns `200`, `http://nobel-itbs.eu/` redirects to it
+with `308`, and both `http://www.nobel-itbs.eu/` and
+`https://www.nobel-itbs.eu/` redirect to it with one direct `301`. The domain
+and the required host/protocol normalization are therefore accepted.
 
 ## 1. Canonical Host And URL Normalisation
 

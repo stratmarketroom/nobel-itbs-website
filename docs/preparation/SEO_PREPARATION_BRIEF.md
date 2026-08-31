@@ -2,8 +2,8 @@
 
 Product: Nobel ITBS Website and Credential Registry
 Stage: Release 1 SEO preparation
-Status: SEO/OG copy and technical publication decisions complete; implementation pending
-Updated: 2026-07-31
+Status: SEO/OG copy, technical publication, and canonical Production-domain implementation complete
+Updated: 2026-08-31
 
 ## 1. SEO Goal
 

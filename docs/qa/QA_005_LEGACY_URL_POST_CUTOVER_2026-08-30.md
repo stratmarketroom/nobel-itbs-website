@@ -69,6 +69,11 @@ Passed on Production:
 - `410` plus `X-Robots-Tag: noindex, nofollow` for `/blog-en/`;
 - genuine `404` for `/definitely-not-a-real-legacy-page`;
 - 51-entry sitemap check confirming every audited source is absent.
+- follow-up canonical host/protocol matrix on 2026-08-31:
+  - `https://nobel-itbs.eu/` → `200`;
+  - `http://nobel-itbs.eu/` → direct `308` to the canonical HTTPS origin;
+  - `https://www.nobel-itbs.eu/` → direct `301` to the canonical origin;
+  - `http://www.nobel-itbs.eu/` → direct `301` to the canonical origin.
 
 Passed locally:
 
@@ -94,6 +99,6 @@ Passed locally:
 
 ## Next Dependency
 
-Complete the separate canonical host/protocol ticket so
-`http://www.nobel-itbs.eu/*` reaches `https://nobel-itbs.eu/*` in one edge hop,
-then re-run the host/protocol acceptance matrix.
+None for canonical-domain or verified legacy-URL acceptance. Continue normal
+Search Console and analytics observation without inventing redirects that are
+not supported by real legacy traffic evidence.

@@ -69,8 +69,9 @@ None.
   physical mobile devices;
 - this was targeted responsive/semantic browser QA, not a complete automated
   WCAG contrast or assistive-technology audit;
-- custom-domain canonical verification remains open until the final domain is
-  attached;
+- historical checkpoint note: custom-domain canonical verification remained
+  open on 2026-08-12; the canonical domain and host/protocol matrix were
+  accepted on 2026-08-31;
 - production authentication, Owner/MFA enrolment, and the protected admin
   acceptance have not yet been performed.
 

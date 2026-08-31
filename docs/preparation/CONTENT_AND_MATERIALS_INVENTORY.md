@@ -3,7 +3,7 @@
 Product: Nobel ITBS Website and Credential Registry
 Stage: Release 1 copy and materials preparation
 Status: UA/EN/CZ public copy and current materials approved; internal parity QA complete; CZ native-language review remains external
-Updated: 2026-08-01
+Updated: 2026-08-31
 
 ## 1. Purpose
 
@@ -82,7 +82,7 @@ Integration:
 - programme-level Leeloo or partner-site URLs when supplied;
 - pricing-option application URLs, if used later;
 - pre-launch Telegram manager-chat decision, bot token, and chat ID for PCE-005;
-- analytics provider decision;
+- Google Analytics 4 provider decision — complete for consent-gated page views;
 - CAPTCHA provider decision;
 - cookie/provider inventory and consent implementation.
 
@@ -441,7 +441,7 @@ Required materials:
 - data controller details;
 - contact email for privacy/legal;
 - payment/refund relationship with Leeloo;
-- cookie/analytics provider list;
+- cookie/analytics provider list — GA4 is recorded for consent-gated page views;
 - basic cookie/provider inventory for Release 1;
 - jurisdiction and governing-law decisions.
 

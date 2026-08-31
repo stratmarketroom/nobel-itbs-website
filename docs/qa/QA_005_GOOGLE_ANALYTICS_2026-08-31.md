@@ -1,6 +1,6 @@
 # QA-005 Google Analytics — 2026-08-31
 
-Status: implemented and locally verified; Preview/Production acceptance pending review and merge
+Status: implemented, merged, deployed, and accepted in Preview/Production
 
 ## Summary
 
@@ -37,6 +37,13 @@ None.
   - after EN `Accept`: `1`, with `G-RT0GQGPC6V` in the script URL;
   - after UA `Не приймаю` on a fresh origin: `0`;
   - the localized consent banner closed after either decision.
+- PR #65 merged as `5646ac0` and its Production deployment reached Ready;
+- Vercel Preview consent/network smoke confirmed zero Google tag requests
+  before consent, one tag request after acceptance, and zero after decline;
+- the Owner confirmed that Google Analytics detected measurement ID
+  `G-RT0GQGPC6V` on the live site;
+- the later Production cookie/LCP audit recorded zero Google Analytics network
+  requests before consent in all three cold mobile runs.
 
 ## Security Notes
 
@@ -47,9 +54,11 @@ None.
 
 ## Deviations / Open Questions
 
-- No custom CTA, contact-submit, or verification-success events are added in this ticket; it establishes consent-gated page-view analytics only.
-- Preview and Production network acceptance must confirm zero Google requests before consent, requests after acceptance, and the measurement ID in GA Realtime/DebugView.
+- No custom CTA, contact-submit, or verification-success events were added;
+  they remain a separate future analytics ticket. Their absence does not
+  reopen the accepted basic consent-gated page-view integration.
 
 ## Next Dependency
 
-Review the Vercel Preview, merge after approval, and run the documented Production consent/network acceptance.
+None for the basic GA4 page-view integration. Define and approve privacy-safe
+custom events as a separate ticket when required.

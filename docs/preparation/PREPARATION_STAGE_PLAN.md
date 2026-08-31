@@ -3,7 +3,7 @@
 Product: Nobel ITBS Website and Credential Registry
 Stage: SEO, UI design system, copy, and launch materials
 Status: product decisions synchronized; remaining preparation deliverables in progress
-Updated: 2026-07-31
+Updated: 2026-08-31
 
 ## 1. Purpose
 
@@ -209,7 +209,11 @@ Preparation is ready to feed implementation when:
 ## 8. Open Questions
 
 1. Which partner and accreditation names/logos are approved for public display?
-2. Which analytics provider is approved, if any, for Release 1 events?
+
+Resolved analytics decision: Google Analytics 4 with measurement ID
+`G-RT0GQGPC6V` is approved and deployed for consent-gated privacy-minimal page
+views. Custom CTA, contact-submit, and verification-success events remain a
+separate future ticket.
 
 Resolved legal-page decision: Privacy Policy, Terms of Use (Public Contract),
 and Refund Policy are mandatory full website pages in EN, UA, and CZ. The

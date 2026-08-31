@@ -4,7 +4,13 @@
 
 The separate `nobel-itbs-prod` Supabase project is initialized in the Frankfurt region and now has the complete ordered migration chain. Production and dev each match all 47 local migrations through `20260811120000_qa_005_restore_partnership_service_grants.sql`.
 
-Production is not launch-ready yet. This checkpoint accepts only the Supabase production foundation, initial data, anonymous RLS boundary, and server access required by the existing application. Vercel configuration, production Auth bootstrap/MFA, external integrations, domain, backups, and final browser acceptance remain open QA-005 work.
+At this 2026-08-11 checkpoint, Production was not launch-ready. The ticket
+accepted only the Supabase production foundation, initial data, anonymous RLS
+boundary, and required server access. Vercel configuration, production Auth
+bootstrap/MFA, external integrations, domain, backups, and final browser
+acceptance were open at that time. The canonical domain and consent-gated GA4
+page views were subsequently completed on 2026-08-31; backup/restore remains
+Owner-deferred until real learner and credential data exists.
 
 ## Files Changed
 
@@ -64,7 +70,10 @@ The same migration and server-key smoke test passed against dev. The local Supab
 - The Owner approved VEDOS SMTP for credential delivery instead of Google Workspace. Current v2 baseline and WF-003 code still specify Google Workspace. This is an explicit documentation/code alignment ticket before real delivery testing; it was not changed inside this database-foundation correction.
 - CAPTCHA remains conditionally disabled by Owner decision and is not a blocker unless abuse signals require it.
 - The Supabase Free plan currently has no production backup retention shown in the project dashboard. The approved launch baseline is Supabase Pro daily backups with seven-day retention; private Storage PDFs require a separate backup/export procedure because database backups do not contain Storage objects.
-- Final Leeloo/partner URLs, Telegram manager notification, analytics, and the canonical domain are still external launch inputs.
+- Historical checkpoint note: final Leeloo/partner URLs, Telegram manager
+  notification, analytics, and the canonical domain were external launch
+  inputs on 2026-08-11. They were subsequently completed at their documented
+  acceptance level.
 
 ## Remediation Note
 

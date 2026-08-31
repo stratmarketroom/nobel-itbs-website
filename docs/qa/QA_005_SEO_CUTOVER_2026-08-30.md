@@ -65,7 +65,15 @@ Chrome smoke:
 - `/works?ref=tilda` resolved directly to `/about?ref=tilda`, with canonical
   `https://nobel-itbs.eu/about`.
 
-Canonical-domain edge acceptance remains a separate cutover step.
+Historical ticket boundary: canonical-domain edge acceptance was a separate
+cutover step. It was completed after merge; see the status update below.
+
+### Post-Cutover Status Update — 2026-08-31
+
+The canonical Production domain is attached and live. A read-only edge matrix
+confirmed `https://nobel-itbs.eu/` returns `200`, HTTP apex redirects to it with
+`308`, and both HTTP and HTTPS `www` variants redirect to it with one direct
+`301`. The domain dependency recorded by this pre-cutover ticket is closed.
 
 ## Security Notes
 
@@ -86,12 +94,10 @@ Canonical-domain edge acceptance remains a separate cutover step.
 - Search Console, analytics, legacy WordPress exports, and backlink reports are
   still external operational sources. They must be reviewed before DNS cutover
   for any additional genuinely equivalent legacy URLs.
-- Actual `http`/`www`/HTTPS one-hop behavior cannot be accepted until Vercel is
-  attached to the domain.
+- At the time of this pre-cutover ticket, `http`/`www`/HTTPS behavior could not
+  yet be accepted. The dated status update above records its later completion.
 
 ## Next Dependency
 
-Open, review, and merge the branch PR. Then attach the canonical domain in a
-controlled window and run the post-cutover crawl across all old URL variants,
-the 51-URL sitemap, robots, canonical, hreflang, and final host/protocol
-redirects.
+Completed. The branch was merged, the canonical domain was attached, the
+legacy post-cutover crawl passed, and the host/protocol matrix is accepted.
