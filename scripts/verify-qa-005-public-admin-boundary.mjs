@@ -69,8 +69,8 @@ if (!rootNotFound.includes("from './(public)/not-found'")) {
 
 for (const snippet of [
   "import '../public.css'",
-  '<GoogleAnalytics />',
-  '<CookieConsent />',
+  '<GoogleAnalytics initialConsent={initialConsent} />',
+  '<CookieConsent initialConsent={initialConsent} />',
   'metadataBase: new URL(canonicalOrigin)',
   'createSocialMetadata',
 ]) {
