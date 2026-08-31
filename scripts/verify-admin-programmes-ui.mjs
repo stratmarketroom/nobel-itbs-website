@@ -4,7 +4,7 @@ const files = {
   page: 'app/admin/programmes/page.tsx',
   component: 'components/admin-programmes.tsx',
   shell: 'components/admin-shell.tsx',
-  styles: 'app/globals.css',
+  styles: 'app/admin.css',
 };
 const errors = [];
 

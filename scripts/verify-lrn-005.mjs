@@ -9,7 +9,7 @@ const files = {
   preview: 'app/api/v1/admin/learners/import/preview/route.ts',
   commit: 'app/api/v1/admin/learners/import/commit/route.ts',
   template: 'app/api/v1/admin/learners/import/template/route.ts',
-  styles: 'app/globals.css',
+  styles: 'app/admin.css',
   databaseTest: 'supabase/tests/database/lrn_005_learner_import.test.sql',
 };
 const errors = Object.values(files).filter((file) => !existsSync(file)).map((file) => `Missing required file: ${file}`);

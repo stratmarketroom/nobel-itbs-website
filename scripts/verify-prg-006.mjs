@@ -7,8 +7,8 @@ const requiredPaths = [
   'lib/programmes/catalogue-seed.ts',
   'lib/programmes/catalogue-copy.ts',
   'components/programme-catalogue.tsx',
-  'app/programmes/page.tsx',
-  'app/[locale]/programmes/page.tsx',
+  'app/(public)/programmes/page.tsx',
+  'app/(public)/[locale]/programmes/page.tsx',
   'app/api/v1/public/programmes/route.ts',
 ];
 const errors = [];

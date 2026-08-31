@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const required = [
   'components/admin-mfa-login.tsx',
-  'app/globals.css',
+  'app/admin.css',
   'package.json',
 ];
 const errors = required.filter((file) => !existsSync(file)).map((file) => `Missing ${file}`);

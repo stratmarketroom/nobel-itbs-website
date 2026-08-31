@@ -102,6 +102,12 @@ function nextWithHtmlLanguage(request: NextRequest) {
   });
 }
 
+function nextWithoutPublicDiscovery(request: NextRequest) {
+  const response = nextWithHtmlLanguage(request);
+  response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet, noimageindex');
+  return response;
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const normalized = normalizedPathname(pathname);
@@ -118,11 +124,14 @@ export async function proxy(request: NextRequest) {
 
   if (
     pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
     pathname === '/favicon.ico' ||
     publicFilePattern.test(pathname)
   ) {
     return NextResponse.next();
+  }
+
+  if (pathname === '/admin' || pathname.startsWith('/admin/') || pathname.startsWith('/api')) {
+    return nextWithoutPublicDiscovery(request);
   }
 
   const [firstSegment] = pathname.split('/').filter(Boolean);

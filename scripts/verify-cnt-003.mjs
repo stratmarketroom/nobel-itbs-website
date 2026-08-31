@@ -10,9 +10,9 @@ const filePaths = {
   sharedCopy: 'lib/i18n.ts',
 };
 const routeFiles = [
-  'app/about/page.tsx', 'app/[locale]/about/page.tsx',
-  'app/for-organisations/page.tsx', 'app/[locale]/for-organisations/page.tsx',
-  'app/partnerships/page.tsx', 'app/[locale]/partnerships/page.tsx',
+  'app/(public)/about/page.tsx', 'app/(public)/[locale]/about/page.tsx',
+  'app/(public)/for-organisations/page.tsx', 'app/(public)/[locale]/for-organisations/page.tsx',
+  'app/(public)/partnerships/page.tsx', 'app/(public)/[locale]/partnerships/page.tsx',
 ];
 const requiredFiles = [...Object.values(filePaths), ...routeFiles];
 const errors = requiredFiles.filter((file) => !existsSync(file)).map((file) => `Missing ${file}`);

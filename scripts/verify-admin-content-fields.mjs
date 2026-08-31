@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 const componentPath = 'components/admin-content-pages.tsx';
-const stylesPath = 'app/globals.css';
+const stylesPath = 'app/admin.css';
 const apiPath = 'app/api/v1/admin/content-pages/[id]/route.ts';
 const errors = [];
 for (const file of [componentPath, stylesPath, apiPath]) if (!fs.existsSync(file)) errors.push(`Missing required file: ${file}`);

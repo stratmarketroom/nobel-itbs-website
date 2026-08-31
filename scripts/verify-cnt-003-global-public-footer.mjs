@@ -10,8 +10,8 @@ const files = {
   verification: 'components/public-verification.tsx',
   legacyHome: 'components/public-shell.tsx',
   legacyPartnerships: 'components/partnerships-page.tsx',
-  notFound: 'app/not-found.tsx',
-  css: 'app/globals.css',
+  notFound: 'app/(public)/not-found.tsx',
+  css: 'app/public.css',
   package: 'package.json',
 };
 

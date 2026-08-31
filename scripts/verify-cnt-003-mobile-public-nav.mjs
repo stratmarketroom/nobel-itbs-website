@@ -5,11 +5,11 @@ const files = {
   home: 'components/content-managed-home.tsx',
   managed: 'components/managed-content-page.tsx',
   legal: 'components/legal-content-page.tsx',
-  notFound: 'app/not-found.tsx',
+  notFound: 'app/(public)/not-found.tsx',
   catalogue: 'components/programme-catalogue.tsx',
   landing: 'components/programme-landing.tsx',
   verification: 'components/public-verification.tsx',
-  css: 'app/globals.css',
+  css: 'app/public.css',
   package: 'package.json',
 };
 

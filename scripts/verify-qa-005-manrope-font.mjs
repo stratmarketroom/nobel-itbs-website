@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 
 const errors = [];
 const layout = readFileSync('app/layout.tsx', 'utf8');
-const styles = readFileSync('app/globals.css', 'utf8');
+const styles = readFileSync('app/base.css', 'utf8');
 const config = readFileSync('next.config.mjs', 'utf8');
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 

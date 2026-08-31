@@ -12,7 +12,7 @@ const files = {
   types: 'lib/email-templates/types.ts',
   server: 'lib/supabase/server.ts',
   shell: 'components/admin-shell.tsx',
-  styles: 'app/globals.css',
+  styles: 'app/admin.css',
 };
 
 const errors = [];

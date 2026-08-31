@@ -5,7 +5,7 @@ const files = {
   areaPage: 'app/admin/programme-areas/page.tsx',
   typePage: 'app/admin/programme-types/page.tsx',
   shell: 'components/admin-shell.tsx',
-  styles: 'app/globals.css',
+  styles: 'app/admin.css',
   areaApi: 'app/api/v1/admin/programme-areas/[id]/route.ts',
   typeApi: 'app/api/v1/admin/programme-types/[id]/route.ts',
 };

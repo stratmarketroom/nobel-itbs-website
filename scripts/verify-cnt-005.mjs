@@ -5,9 +5,10 @@ const files = [
   'supabase/tests/database/cnt_005_legal_pages.test.sql',
   'components/legal-content-page.tsx',
   'components/cookie-consent.tsx',
-  'app/privacy-policy/page.tsx', 'app/[locale]/privacy-policy/page.tsx',
-  'app/terms-of-use/page.tsx', 'app/[locale]/terms-of-use/page.tsx',
-  'app/refund-policy/page.tsx', 'app/[locale]/refund-policy/page.tsx',
+  'lib/privacy/cookie-consent.ts',
+  'app/(public)/privacy-policy/page.tsx', 'app/(public)/[locale]/privacy-policy/page.tsx',
+  'app/(public)/terms-of-use/page.tsx', 'app/(public)/[locale]/terms-of-use/page.tsx',
+  'app/(public)/refund-policy/page.tsx', 'app/(public)/[locale]/refund-policy/page.tsx',
 ];
 const errors = files.filter((file) => !existsSync(file)).map((file) => `Missing ${file}`);
 const migration = existsSync(files[0]) ? readFileSync(files[0], 'utf8') : '';
@@ -21,7 +22,10 @@ for (const locale of ['en', 'ua', 'cz']) {
 if (migration.length < 50_000) errors.push('Legal migration is unexpectedly short; full documents may be missing.');
 const legalMetadata = existsSync('lib/content/legal-pages.ts') ? readFileSync('lib/content/legal-pages.ts', 'utf8') : '';
 if (!legalMetadata.includes('index: false, follow: true')) errors.push('Legal routes must be noindex, follow.');
-const cookie = existsSync('components/cookie-consent.tsx') ? readFileSync('components/cookie-consent.tsx', 'utf8') : '';
+const cookie = [
+  existsSync('components/cookie-consent.tsx') ? readFileSync('components/cookie-consent.tsx', 'utf8') : '',
+  existsSync('lib/privacy/cookie-consent.ts') ? readFileSync('lib/privacy/cookie-consent.ts', 'utf8') : '',
+].join('\n');
 for (const value of ['accepted', 'declined', 'nobel_cookie_consent']) if (!cookie.includes(value)) errors.push(`Cookie consent missing ${value}`);
 if (errors.length) {
   console.error('CNT-005 verification failed:');

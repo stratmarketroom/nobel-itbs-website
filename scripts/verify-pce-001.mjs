@@ -8,8 +8,8 @@ const paths = {
   loader: 'lib/partners/public.ts',
   api: 'app/api/v1/public/partners/route.ts',
   shell: 'components/public-shell.tsx',
-  home: 'app/page.tsx',
-  localizedHome: 'app/[locale]/page.tsx',
+  home: 'app/(public)/page.tsx',
+  localizedHome: 'app/(public)/[locale]/page.tsx',
 };
 const errors = [];
 

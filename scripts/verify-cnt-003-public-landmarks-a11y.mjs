@@ -9,8 +9,8 @@ const files = {
   catalogue: 'components/programme-catalogue.tsx',
   landing: 'components/programme-landing.tsx',
   verification: 'components/public-verification.tsx',
-  notFound: 'app/not-found.tsx',
-  css: 'app/globals.css',
+  notFound: 'app/(public)/not-found.tsx',
+  css: 'app/public.css',
   package: 'package.json',
 };
 

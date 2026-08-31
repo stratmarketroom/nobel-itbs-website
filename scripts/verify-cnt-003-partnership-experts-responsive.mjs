@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 const [page, cards, css, pkgRaw] = await Promise.all([
   readFile('components/managed-content-page.tsx', 'utf8'),
   readFile('components/expert-cards.tsx', 'utf8'),
-  readFile('app/globals.css', 'utf8'),
+  readFile('app/public.css', 'utf8'),
   readFile('package.json', 'utf8'),
 ]);
 

@@ -7,7 +7,7 @@ import {
 const errors = [];
 const component = readFileSync('components/google-analytics.tsx', 'utf8');
 const consent = readFileSync('components/cookie-consent.tsx', 'utf8');
-const layout = readFileSync('app/layout.tsx', 'utf8');
+const layout = readFileSync('app/(public)/layout.tsx', 'utf8');
 const config = readFileSync('next.config.mjs', 'utf8');
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 
@@ -38,7 +38,7 @@ if (!consent.includes('COOKIE_CONSENT_STORAGE_KEY') || !consent.includes('COOKIE
 }
 
 if (!layout.includes('<GoogleAnalytics />') || !layout.includes('<CookieConsent />')) {
-  errors.push('Root layout must mount analytics and the cookie consent banner.');
+  errors.push('Public layout must mount analytics and the cookie consent banner.');
 }
 
 for (const source of [

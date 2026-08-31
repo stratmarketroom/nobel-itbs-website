@@ -9,10 +9,10 @@ const files = {
   types: 'lib/credentials/verification-types.ts',
   copy: 'lib/credentials/verification-copy.ts',
   component: 'components/public-verification.tsx',
-  enPage: 'app/verify/page.tsx',
-  uaCzPage: 'app/[locale]/verify/page.tsx',
-  tokenPage: 'app/verify/[token]/page.tsx',
-  localizedTokenPage: 'app/[locale]/verify/[token]/page.tsx',
+  enPage: 'app/(public)/verify/page.tsx',
+  uaCzPage: 'app/(public)/[locale]/verify/page.tsx',
+  tokenPage: 'app/(public)/verify/[token]/page.tsx',
+  localizedTokenPage: 'app/(public)/[locale]/verify/[token]/page.tsx',
 };
 const errors = [];
 

@@ -13,7 +13,7 @@ const files = {
   types: 'lib/audit/types.ts',
   server: 'lib/supabase/server.ts',
   shell: 'components/admin-shell.tsx',
-  styles: 'app/globals.css',
+  styles: 'app/admin.css',
   apiSpec: 'docs/technical/API_SPECIFICATION_v2.md',
 };
 
