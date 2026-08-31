@@ -2,6 +2,11 @@
 
 import { useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
+import {
+  COOKIE_CONSENT_CHANGE_EVENT,
+  COOKIE_CONSENT_STORAGE_KEY,
+  type CookieConsentDecision,
+} from '@/lib/privacy/cookie-consent';
 
 const copy = {
   en: { aria: 'Cookie consent', text: 'We use necessary cookies to operate this website. With your consent, we may also use optional cookies for analytics and website improvement. You can accept or decline them.', accept: 'Accept', decline: 'Decline' },
@@ -15,18 +20,18 @@ export function CookieConsent() {
   const consent = useSyncExternalStore(
     (onStoreChange) => {
       window.addEventListener('storage', onStoreChange);
-      window.addEventListener('nobel-cookie-consent', onStoreChange);
+      window.addEventListener(COOKIE_CONSENT_CHANGE_EVENT, onStoreChange);
       return () => {
         window.removeEventListener('storage', onStoreChange);
-        window.removeEventListener('nobel-cookie-consent', onStoreChange);
+        window.removeEventListener(COOKIE_CONSENT_CHANGE_EVENT, onStoreChange);
       };
     },
-    () => window.localStorage.getItem('nobel_cookie_consent') ?? 'pending',
+    () => window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY) ?? 'pending',
     () => 'unknown',
   );
-  function decide(value: 'accepted' | 'declined') {
-    window.localStorage.setItem('nobel_cookie_consent', value);
-    window.dispatchEvent(new CustomEvent('nobel-cookie-consent', { detail: value }));
+  function decide(value: Exclude<CookieConsentDecision, 'pending'>) {
+    window.localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, value);
+    window.dispatchEvent(new CustomEvent(COOKIE_CONSENT_CHANGE_EVENT, { detail: value }));
   }
   if (path === '/admin' || path.startsWith('/admin/')) return null;
   if (consent !== 'pending') return null;
