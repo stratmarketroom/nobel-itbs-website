@@ -69,14 +69,14 @@ if (!rootNotFound.includes("from './(public)/not-found'")) {
 
 for (const snippet of [
   "import '../public.css'",
-  '<GoogleAnalytics initialConsent={initialConsent} />',
-  '<CookieConsent initialConsent={initialConsent} />',
+  '<GoogleAnalytics />',
+  '<CookieConsent />',
   'metadataBase: new URL(canonicalOrigin)',
   'createSocialMetadata',
 ]) {
   if (!publicLayout.includes(snippet)) errors.push(`Public layout is missing: ${snippet}`);
 }
-for (const forbidden of ['admin.css', 'AdminShell', 'robots: {']) {
+for (const forbidden of ['admin.css', 'AdminShell', 'robots: {', "from 'next/headers'", 'cookies()']) {
   if (publicLayout.includes(forbidden)) errors.push(`Public layout must not import an admin concern: ${forbidden}`);
 }
 
@@ -141,6 +141,8 @@ for (const snippet of [
   "pathname.startsWith('/api')",
   "'X-Robots-Tag'",
   "'noindex, nofollow, noarchive, nosnippet, noimageindex'",
+  "'CDN-Cache-Control'",
+  'nextPublicWithHtmlLanguage',
 ]) {
   if (!proxy.includes(snippet)) errors.push(`Private response-header boundary is missing: ${snippet}`);
 }

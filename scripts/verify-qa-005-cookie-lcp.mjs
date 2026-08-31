@@ -11,6 +11,7 @@ const errors = [];
 const consent = readFileSync('components/cookie-consent.tsx', 'utf8');
 const analytics = readFileSync('components/google-analytics.tsx', 'utf8');
 const layout = readFileSync('app/(public)/layout.tsx', 'utf8');
+const proxy = readFileSync('proxy.ts', 'utf8');
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 
 for (const [value, expected] of [
@@ -49,17 +50,22 @@ if (localCookie.includes('Secure')) errors.push('Local HTTP cookie must not requ
 if (!secureCookie.includes('Secure')) errors.push('HTTPS cookie must include Secure.');
 
 for (const snippet of [
-  "import { cookies } from 'next/headers'",
-  'const cookieStore = await cookies()',
-  'cookieStore.get(COOKIE_CONSENT_STORAGE_KEY)?.value',
-  '<GoogleAnalytics initialConsent={initialConsent} />',
-  '<CookieConsent initialConsent={initialConsent} />',
+  '<GoogleAnalytics />',
+  '<CookieConsent />',
 ]) {
-  if (!layout.includes(snippet)) errors.push(`Public layout is missing deterministic consent rendering: ${snippet}`);
+  if (!layout.includes(snippet)) errors.push(`Public layout is missing client consent rendering: ${snippet}`);
+}
+for (const forbidden of [
+  "from 'next/headers'",
+  'cookies()',
+  'initialConsent',
+]) {
+  if (layout.includes(forbidden)) errors.push(`Public layout must remain cacheable and must not contain: ${forbidden}`);
 }
 
 for (const snippet of [
-  '() => initialConsent',
+  "return 'initializing'",
+  'getServerConsentSnapshot',
   'serializeCookieConsentDecision(decision',
   'window.localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, decision)',
   "consent !== 'pending'",
@@ -69,15 +75,30 @@ for (const snippet of [
 }
 
 for (const snippet of [
-  '() => initialConsent',
+  "return 'initializing'",
+  'getServerConsentSnapshot',
   "consent !== 'accepted'",
   'readCookieConsentDecision(document.cookie)',
 ]) {
   if (!analytics.includes(snippet)) errors.push(`Analytics consent boundary is missing: ${snippet}`);
 }
 
-if (consent.includes("() => 'unknown'") || analytics.includes("() => 'unknown'")) {
-  errors.push('Consent server snapshots must not defer the first render to hydration.');
+if (consent.includes('initialConsent') || analytics.includes('initialConsent')) {
+  errors.push('Consent components must not depend on request-scoped server consent.');
+}
+
+for (const snippet of [
+  "const publicPageCacheControl = 'max-age=300, stale-while-revalidate=3600'",
+  'function nextPublicWithHtmlLanguage(request: NextRequest)',
+  "request.method === 'GET' || request.method === 'HEAD'",
+  "response.headers.set('Vercel-CDN-Cache-Control', publicPageCacheControl)",
+  "response.headers.set('CDN-Cache-Control', publicPageCacheControl)",
+  'return nextPublicWithHtmlLanguage(request)',
+]) {
+  if (!proxy.includes(snippet)) errors.push(`Public page edge-cache contract is missing: ${snippet}`);
+}
+if (!proxy.includes('function nextWithoutPublicDiscovery(request: NextRequest)')) {
+  errors.push('Private admin/API responses must retain their separate no-discovery path.');
 }
 
 if (pkg.scripts?.['verify:qa-005:cookie-lcp'] !== 'node --experimental-strip-types scripts/verify-qa-005-cookie-lcp.mjs') {

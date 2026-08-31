@@ -5,6 +5,7 @@ import { getProgrammeSlugRedirect } from '@/lib/programmes/slug-redirects';
 import { canonicalHost } from '@/lib/seo/urls';
 
 const publicFilePattern = /\.(.*)$/;
+const publicPageCacheControl = 'max-age=300, stale-while-revalidate=3600';
 const localeAliases = { en: '', uk: '/ua', cs: '/cz' } as const;
 const legacyRedirects: Record<string, string> = {
   '/human': '/programmes/psychology-human',
@@ -102,6 +103,15 @@ function nextWithHtmlLanguage(request: NextRequest) {
   });
 }
 
+function nextPublicWithHtmlLanguage(request: NextRequest) {
+  const response = nextWithHtmlLanguage(request);
+  if (request.method === 'GET' || request.method === 'HEAD') {
+    response.headers.set('Vercel-CDN-Cache-Control', publicPageCacheControl);
+    response.headers.set('CDN-Cache-Control', publicPageCacheControl);
+  }
+  return response;
+}
+
 function nextWithoutPublicDiscovery(request: NextRequest) {
   const response = nextWithHtmlLanguage(request);
   response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet, noimageindex');
@@ -152,7 +162,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  return nextWithHtmlLanguage(request);
+  return nextPublicWithHtmlLanguage(request);
 }
 
 export const config = {
