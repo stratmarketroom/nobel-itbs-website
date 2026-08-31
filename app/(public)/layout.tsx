@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import '../public.css';
 import { CookieConsent } from '@/components/cookie-consent';
 import { GoogleAnalytics } from '@/components/google-analytics';
+import { HtmlLanguageSynchronizer } from '@/components/html-language-synchronizer';
 import { createSocialMetadata, getInstitutionalSocialAlt, socialImagePaths } from '@/lib/seo/social';
 import { canonicalOrigin, localizedAbsoluteUrl } from '@/lib/seo/urls';
 
@@ -25,6 +26,7 @@ export const metadata: Metadata = {
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <HtmlLanguageSynchronizer />
       {children}
       <GoogleAnalytics />
       <CookieConsent />
