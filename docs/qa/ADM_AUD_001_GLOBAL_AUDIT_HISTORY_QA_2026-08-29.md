@@ -120,5 +120,7 @@ The Release 1 Dashboard, Email Templates editor, and global Audit/History admin
 modules are complete. Remaining separate work stays unchanged: the first
 Owner-approved real complete-package credential activation/VEDOS delivery,
 backup activation and restore drill when real learner/credential data exists,
-analytics/consent, canonical-domain verification, and final Safari,
-physical-device, and assistive-technology acceptance.
+and final Safari, physical-device, and assistive-technology acceptance.
+Consent-gated GA4 page views and canonical-domain verification were completed
+on 2026-08-31; custom analytics events and field INP/CrUX remain separate
+non-blocking follow-up work.

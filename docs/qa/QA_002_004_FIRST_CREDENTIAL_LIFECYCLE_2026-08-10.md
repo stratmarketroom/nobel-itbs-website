@@ -80,8 +80,14 @@ Passed:
 ## Deviations and Open Questions
 
 - Real credential email delivery remains a QA-005 launch dependency if Google Workspace is later connected.
-- The generated QR targets the canonical production domain. It is externally scannable after that domain and route are deployed; the same token passed local dev verification.
+- The generated QR targets the canonical Production domain. At this historical
+  checkpoint it was awaiting deployment; `https://nobel-itbs.eu` and the route
+  were subsequently deployed and accepted.
 
 ## Next Dependency
 
-Proceed with `QA-005 Launch Checklist`: production environment and secrets, external integrations selected for launch, canonical-domain verification, backups, analytics/consent, responsive/accessibility/browser acceptance, and final release decision. Google Workspace delivery remains separate from activation correctness and should be acceptance-tested only if it is enabled for launch.
+Historical next step: proceed with the QA-005 launch checklist. As of
+2026-08-31, Production environment/secrets, canonical-domain verification, and
+consent-gated GA4 page views are complete. Real VEDOS credential delivery,
+Owner-deferred backup/restore, and the remaining broad device/accessibility
+acceptance stay separate from activation correctness.

@@ -477,8 +477,9 @@ Implement one ticket at a time:
 7. `PDFGEN-007 Batch activation and VEDOS delivery`;
 8. `PDFGEN-008 Security, RLS, privacy, typography, and end-to-end acceptance`.
 
-Canonical domain, analytics/consent, real credential VEDOS acceptance, and live
-backup/restore remain separate launch-readiness items. Per Owner decision,
-backup activation/restore is deferred until real learners and credentials
-exist; document generation must be implemented before operational credential
-issuance begins.
+Canonical-domain acceptance and consent-gated GA4 page-view analytics were
+completed as separate QA-005 tickets on 2026-08-31. Custom analytics events,
+real credential VEDOS acceptance, and live backup/restore remain separate
+operational items. Per Owner decision, backup activation/restore is deferred
+until real learners and credentials exist; document generation must be
+implemented before operational credential issuance begins.

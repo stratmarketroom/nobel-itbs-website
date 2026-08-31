@@ -93,3 +93,6 @@ credential delivery, configure final CTA destinations and Telegram contact
 alerts, define database/private-PDF backup coverage, attach and verify the
 canonical domain, configure analytics/consent, and complete physical-device,
 accessibility, and cross-browser acceptance before the final release decision.
+Status update 2026-08-31: CTA/Telegram, the canonical domain, and consent-gated
+GA4 page views are complete; the real VEDOS, deferred backup/restore, and final
+broad device/accessibility items remain.

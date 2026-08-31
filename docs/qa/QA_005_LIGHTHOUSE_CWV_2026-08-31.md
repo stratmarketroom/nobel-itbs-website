@@ -19,6 +19,25 @@ No P0 or P1 performance defect was found. Four P2 opportunities remain:
 4. the client-rendered cookie banner becomes the mobile Home LCP element and
    contributes to first-visit visual-completion variability.
 
+### Remediation Status Update — 2026-08-31
+
+The four P2 findings above describe the audited Production baseline and are
+retained for traceability. All four were subsequently remediated in separate
+tickets and merged to Production:
+
+1. public/admin CSS was split in PR #67; see
+   `docs/qa/QA_005_PUBLIC_ADMIN_BOUNDARY_2026-08-31.md`;
+2. partner logos were adapted through `next/image` in PR #68; see
+   `docs/qa/QA_005_PARTNER_LOGO_ADAPTATION_2026-08-31.md`;
+3. Manrope was self-hosted through Next.js in PR #66; see
+   `docs/qa/QA_005_MANROPE_FONT_2026-08-31.md`;
+4. cookie-consent first paint was stabilized in PR #69 and the post-merge
+   Production Lighthouse closure passed; see
+   `docs/qa/QA_005_COOKIE_LCP_2026-08-31.md`.
+
+These are no longer open defects. Production INP remains unreported because
+CrUX has not yet accumulated sufficient field data.
+
 Production PageSpeed Insights reports **No data** for real-user field metrics
 on both mobile and desktop. Therefore Production INP cannot yet be measured or
 declared passing. Lighthouse TBT is reported only as a laboratory responsiveness
@@ -230,10 +249,6 @@ None.
 
 ## Next Dependency
 
-Recommended safe order of separate remediation tickets:
-
-1. split public/admin CSS and repeat Lighthouse;
-2. optimize Partnerships partner logos and repeat its image audit;
-3. decide and implement the Production font strategy;
-4. review cookie-consent first-paint behavior;
-5. recheck CrUX/Search Console after sufficient traffic, or approve RUM.
+The four remediation tickets are complete. Recheck CrUX/Search Console after
+sufficient eligible traffic, or approve a separate consent-aware RUM ticket if
+field INP is needed earlier.

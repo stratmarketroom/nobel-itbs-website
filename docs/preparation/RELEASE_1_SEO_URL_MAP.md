@@ -1,7 +1,7 @@
 # Release 1 SEO URL Map
 
-Status: UA/EN/CZ copy and metadata complete; QA-005 SEO publication implementation accepted locally; production domain acceptance pending
-Updated: 2026-08-24
+Status: UA/EN/CZ copy, metadata, SEO publication, and Production domain acceptance complete
+Updated: 2026-08-31
 Scope: Release 1 public website  
 Languages: EN, UA, CZ
 

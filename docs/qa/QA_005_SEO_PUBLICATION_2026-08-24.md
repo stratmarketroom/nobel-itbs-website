@@ -71,8 +71,10 @@ Passed:
 
 The exact live Supabase publication query could not be rerun locally because
 this worktree has no `.env.local`. Its query is compile/build checked and uses
-the same public anon/RLS pattern as current public resolvers. Post-deploy
-Production sitemap/crawl acceptance remains required before domain cutover.
+the same public anon/RLS pattern as current public resolvers. At this historical
+checkpoint, post-deploy Production sitemap/crawl acceptance remained required
+before domain cutover. The post-cutover crawl and canonical-edge matrix were
+subsequently accepted.
 
 ## Security Notes
 
@@ -94,10 +96,11 @@ Production sitemap/crawl acceptance remains required before domain cutover.
 - `/contacts-en/` redirects to `/about`, not `/about#contact`, because the current
   About implementation has no stable contact anchor.
 - Canonical DNS/domain attachment, CDN behavior, and Production crawl validation
-  are operational dependencies and were not changed in this code ticket.
+  were operational dependencies outside this code ticket; they were completed
+  in the later cutover and post-cutover QA.
 
 ## Next Dependency
 
 Proceed with the next single QA-005 hardening ticket after review. The
-recommended next ticket is browser security headers/CSP; canonical-domain
-attachment should wait for legal, backup, CTA, and integration readiness.
+recommended next ticket at this checkpoint was browser security headers/CSP.
+The canonical domain was later attached and accepted on 2026-08-31.

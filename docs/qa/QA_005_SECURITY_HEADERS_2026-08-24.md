@@ -65,8 +65,8 @@ Passed:
   `'unsafe-inline'` for `script-src` and `style-src`. `unsafe-eval` is scoped to
   the Next.js development runtime and is absent from production.
 - HSTS is not duplicated in application code. It remains an HTTPS edge/platform
-  responsibility and must be rechecked on the canonical Production host after
-  deployment and domain attachment.
+  responsibility. The canonical Production response was rechecked on
+  2026-08-31 and returns `Strict-Transport-Security: max-age=63072000`.
 
 ## Deviations / Open Questions
 

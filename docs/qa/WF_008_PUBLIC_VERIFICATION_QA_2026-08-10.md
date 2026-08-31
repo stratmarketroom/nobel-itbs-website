@@ -65,7 +65,11 @@ The focused pgTAP file `supabase/tests/database/wf_008_public_verification.test.
 ## Deviations and Open Questions
 
 - No real `valid` or `revoked` record exists in dev. Creating one would permanently consume a document number, so no fake credential was created for this ticket.
-- Verification analytics events are recommended by the sitemap specification but no analytics provider is installed. They remain a consent-aware launch-hardening item and must contain no PII, document number, or token.
+- Historical note: no analytics provider was installed when this WF-008 QA ran.
+  As of 2026-08-31, consent-gated GA4 page-view analytics is deployed and QR
+  routes are projected to token-free `/verify/result` paths. A dedicated
+  verification-success event is still intentionally absent; if later approved,
+  it must contain no PII, document number, or token.
 - Production should configure an independent `CREDENTIAL_VERIFICATION_RATE_LIMIT_SECRET` of at least 32 characters. Local development has an ignored dev-only value.
 
 ## Next Dependency

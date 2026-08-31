@@ -50,4 +50,8 @@ The acceptance used a synthetic two-row CSV: one valid learner and one row with 
 
 ## Next Dependency
 
-Return to the ordered QA-005 launch-readiness work: VEDOS credential-delivery alignment and acceptance, Telegram contact alerts, final CTA destinations, backup coverage, canonical domain, analytics/consent, and final device/accessibility/cross-browser acceptance.
+Historical next step: return to the ordered QA-005 launch-readiness work.
+Telegram, final CTA destinations, the canonical domain, and consent-gated GA4
+page views were subsequently completed. Real VEDOS credential delivery,
+Owner-deferred backup/restore, and final broad device/accessibility acceptance
+remain separate work.
