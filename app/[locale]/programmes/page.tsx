@@ -5,6 +5,7 @@ import { isContentLocale } from '@/lib/content/localization';
 import { isPrefixedLocale } from '@/lib/i18n';
 import { getProgrammeCatalogue } from '@/lib/programmes/catalogue';
 import { programmeCatalogueCopy } from '@/lib/programmes/catalogue-copy';
+import { createSocialMetadata, getCatalogueSocialAlt, socialImagePaths } from '@/lib/seo/social';
 import { languageAlternates, localizedAbsoluteUrl } from '@/lib/seo/urls';
 
 type LocaleProgrammesPageProps = {
@@ -18,11 +19,20 @@ export async function generateMetadata({ params }: LocaleProgrammesPageProps): P
   if (!isPrefixedLocale(locale) || !isContentLocale(locale)) return {};
 
   const copy = programmeCatalogueCopy[locale];
+  const canonical = localizedAbsoluteUrl(locale, '/programmes');
   return {
     title: copy.seo.title,
     description: copy.seo.description,
+    ...createSocialMetadata({
+      title: copy.seo.ogTitle,
+      description: copy.seo.ogDescription,
+      canonical,
+      locale,
+      imagePath: socialImagePaths.catalogue,
+      imageAlt: getCatalogueSocialAlt(locale),
+    }),
     alternates: {
-      canonical: localizedAbsoluteUrl(locale, '/programmes'),
+      canonical,
       languages: languageAlternates('/programmes'),
     },
   };
