@@ -72,22 +72,22 @@ for (const forbidden of ['documentNumber', 'holderName', 'rawToken', 'credential
 }
 
 for (const filePath of [
-  'app/layout.tsx',
+  'app/(public)/layout.tsx',
   'lib/content/page-metadata.ts',
   'lib/content/legal-pages.ts',
-  'app/programmes/page.tsx',
-  'app/[locale]/programmes/page.tsx',
+  'app/(public)/programmes/page.tsx',
+  'app/(public)/[locale]/programmes/page.tsx',
   'lib/programmes/landing-metadata.ts',
-  'app/verify/page.tsx',
-  'app/[locale]/verify/page.tsx',
-  'app/verify/[token]/page.tsx',
-  'app/[locale]/verify/[token]/page.tsx',
+  'app/(public)/verify/page.tsx',
+  'app/(public)/[locale]/verify/page.tsx',
+  'app/(public)/verify/[token]/page.tsx',
+  'app/(public)/[locale]/verify/[token]/page.tsx',
 ]) {
   const source = read(filePath);
   if (!source.includes('createSocialMetadata')) errors.push(`${filePath} must use the shared social metadata helper.`);
 }
 
-for (const tokenPage of ['app/verify/[token]/page.tsx', 'app/[locale]/verify/[token]/page.tsx']) {
+for (const tokenPage of ['app/(public)/verify/[token]/page.tsx', 'app/(public)/[locale]/verify/[token]/page.tsx']) {
   const source = read(tokenPage);
   if (!source.includes('robots: { index: false, follow: false }')) errors.push(`${tokenPage} must remain noindex, nofollow.`);
   if (!source.includes("localizedAbsoluteUrl('en', '/verify')") && !source.includes("localizedAbsoluteUrl(locale, '/verify')")) {

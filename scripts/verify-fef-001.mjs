@@ -2,9 +2,11 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const requiredPaths = [
   'app/layout.tsx',
-  'app/page.tsx',
-  'app/[locale]/page.tsx',
-  'app/globals.css',
+  'app/(public)/layout.tsx',
+  'app/(public)/page.tsx',
+  'app/(public)/[locale]/page.tsx',
+  'app/base.css',
+  'app/public.css',
   'components/public-shell.tsx',
   'lib/i18n.ts',
   'proxy.ts',
@@ -51,8 +53,8 @@ if (existsSync('components/public-shell.tsx')) {
   }
 }
 
-if (existsSync('app/globals.css')) {
-  const css = readFileSync('app/globals.css', 'utf8');
+if (existsSync('app/public.css')) {
+  const css = readFileSync('app/public.css', 'utf8');
   if (!css.includes('oklch(')) {
     errors.push('Design tokens should use OKLCH colors.');
   }

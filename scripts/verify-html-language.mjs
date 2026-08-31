@@ -26,7 +26,7 @@ for (const preservedRule of ['programmeSlugPath', 'getProgrammeSlugRedirect', "N
 if (!layout.includes('resolveHtmlLanguage(requestHeaders.get(htmlLanguageHeader))')) {
   errors.push('Root layout must read and validate the HTML language header.');
 }
-if (!layout.includes('<html lang={htmlLanguage}>')) {
+if (!layout.includes('<html lang={htmlLanguage} className={manrope.variable}>')) {
   errors.push('Root layout must render the resolved HTML language.');
 }
 

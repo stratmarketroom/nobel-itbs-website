@@ -6,7 +6,7 @@ const paths = {
   input: 'lib/credentials/batch-generation-input.ts',
   server: 'lib/credentials/batch-generation.ts',
   files: 'lib/credentials/files.ts',
-  styles: 'app/globals.css',
+  styles: 'app/admin.css',
   bulkRoute: 'app/api/v1/admin/credential-generation-batches/[id]/review/route.ts',
   thumbnailRoute: 'app/api/v1/admin/credentials/[id]/files/[fileId]/pages/[pageNumber]/route.ts',
   report: 'docs/qa/PDFGEN_006_REVIEW_UX_001_2026-08-28.md',

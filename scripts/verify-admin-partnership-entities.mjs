@@ -7,7 +7,7 @@ const routeFiles = [
 const files = {
   data: 'lib/partnerships/admin.ts', payloads: 'lib/partnerships/admin-payloads.ts',
   component: 'components/admin-partnership-entities.tsx', shell: 'components/admin-shell.tsx',
-  partnerPage: 'app/admin/partners/page.tsx', expertPage: 'app/admin/experts/page.tsx', styles: 'app/globals.css',
+  partnerPage: 'app/admin/partners/page.tsx', expertPage: 'app/admin/experts/page.tsx', styles: 'app/admin.css',
 };
 const required = [...routeFiles, ...Object.values(files)];
 const errors = required.filter((file) => !fs.existsSync(file)).map((file) => `Missing required file: ${file}`);

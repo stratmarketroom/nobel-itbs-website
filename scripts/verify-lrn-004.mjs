@@ -16,7 +16,7 @@ const files = {
   page: 'app/admin/learners/page.tsx',
   shell: 'components/admin-shell.tsx',
   server: 'lib/supabase/server.ts',
-  styles: 'app/globals.css',
+  styles: 'app/admin.css',
 };
 const required = [...routes, ...Object.values(files)];
 const errors = required.filter((file) => !existsSync(file)).map((file) => `Missing required file: ${file}`);

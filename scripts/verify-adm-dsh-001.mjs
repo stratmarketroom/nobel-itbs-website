@@ -8,7 +8,7 @@ const files = {
   types: 'lib/dashboard/types.ts',
   shell: 'components/admin-shell.tsx',
   login: 'components/admin-mfa-login.tsx',
-  styles: 'app/globals.css',
+  styles: 'app/admin.css',
   apiSpec: 'docs/technical/API_SPECIFICATION_v2.md',
 };
 

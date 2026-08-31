@@ -3,7 +3,7 @@ import fs from 'node:fs';
 const componentPath = 'components/admin-programme-operations.tsx';
 const programmePath = 'components/admin-programmes.tsx';
 const dataPath = 'lib/programmes/admin.ts';
-const stylesPath = 'app/globals.css';
+const stylesPath = 'app/admin.css';
 const errors = [];
 
 for (const file of [componentPath, programmePath, dataPath, stylesPath]) {

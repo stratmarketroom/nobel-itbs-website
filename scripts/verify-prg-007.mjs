@@ -8,8 +8,8 @@ const requiredPaths = [
   'lib/programmes/landing.ts',
   'lib/programmes/landing-seed.ts',
   'components/programme-landing.tsx',
-  'app/programmes/[slug]/page.tsx',
-  'app/[locale]/programmes/[slug]/page.tsx',
+  'app/(public)/programmes/[slug]/page.tsx',
+  'app/(public)/[locale]/programmes/[slug]/page.tsx',
   'app/api/v1/public/programmes/[slug]/route.ts',
 ];
 const errors = [];

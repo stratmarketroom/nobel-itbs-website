@@ -5,8 +5,8 @@ const paths = {
   seed: 'lib/partnerships/seed.ts',
   component: 'components/partnerships-page.tsx',
   experts: 'components/expert-cards.tsx',
-  englishRoute: 'app/partnerships/page.tsx',
-  localizedRoute: 'app/[locale]/partnerships/page.tsx',
+  englishRoute: 'app/(public)/partnerships/page.tsx',
+  localizedRoute: 'app/(public)/[locale]/partnerships/page.tsx',
   metadata: 'lib/content/page-metadata.ts',
   seoUrls: 'lib/seo/urls.ts',
 };
@@ -68,10 +68,10 @@ if (existsSync(paths.seoUrls)) {
 }
 
 for (const forbiddenPath of [
-  'app/partners/[slug]/page.tsx',
-  'app/experts/[slug]/page.tsx',
-  'app/[locale]/partners/[slug]/page.tsx',
-  'app/[locale]/experts/[slug]/page.tsx',
+  'app/(public)/partners/[slug]/page.tsx',
+  'app/(public)/experts/[slug]/page.tsx',
+  'app/(public)/[locale]/partners/[slug]/page.tsx',
+  'app/(public)/[locale]/experts/[slug]/page.tsx',
 ]) {
   if (existsSync(forbiddenPath)) errors.push(`Public profile page is out of scope: ${forbiddenPath}`);
 }

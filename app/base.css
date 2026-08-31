@@ -1,0 +1,52 @@
+/* Shared document foundation only. Route-specific styles belong in public.css or admin.css. */
+:root {
+  --page: oklch(97% 0.011 264);
+  --surface: oklch(99% 0.006 264);
+  --surface-soft: oklch(94% 0.019 270);
+  --ink: oklch(18% 0.027 264);
+  --muted: oklch(45% 0.026 260);
+  --line: oklch(87% 0.018 268);
+  --navy: oklch(16% 0.051 263);
+  --midnight: oklch(10% 0.032 265);
+  --nobel-blue: oklch(62% 0.112 258);
+  --deep-blue: oklch(32% 0.079 254);
+  --concept-violet: oklch(55% 0.22 285);
+  --concept-blue: oklch(58% 0.17 260);
+  --premium-line: oklch(67% 0.088 78);
+  --valid: oklch(66% 0.14 153);
+  --focus: oklch(64% 0.18 265);
+  --radius: 8px;
+  --shadow: 0 24px 80px oklch(16% 0.05 260 / 20%);
+}
+
+* {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+html {
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+button {
+  font: inherit;
+}

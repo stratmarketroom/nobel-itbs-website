@@ -5,7 +5,7 @@ const paths = {
   sitemap: 'app/sitemap.ts',
   publication: 'lib/seo/publication.ts',
   urls: 'lib/seo/urls.ts',
-  layout: 'app/layout.tsx',
+  layout: 'app/(public)/layout.tsx',
   proxy: 'proxy.ts',
   nextConfig: 'next.config.mjs',
   managedMetadata: 'lib/content/page-metadata.ts',
@@ -29,7 +29,7 @@ for (const snippet of [
 ]) if (!urls.includes(snippet)) errors.push(`SEO URL helper missing: ${snippet}`);
 
 const robots = read(paths.robots);
-for (const snippet of ["userAgent: '*'", "disallow: ['/admin/', '/api/']", "absolutePublicUrl('/sitemap.xml')"]) {
+for (const snippet of ["userAgent: '*'", "disallow: ['/admin', '/admin/', '/api', '/api/']", "absolutePublicUrl('/sitemap.xml')"]) {
   if (!robots.includes(snippet)) errors.push(`Robots route missing: ${snippet}`);
 }
 
@@ -60,7 +60,7 @@ for (const forbidden of ['privacy-policy', 'terms-of-use', 'refund-policy', 'ver
 }
 
 const layout = read(paths.layout);
-if (!layout.includes('metadataBase: new URL(canonicalOrigin)')) errors.push('Root metadata must define the canonical metadataBase.');
+if (!layout.includes('metadataBase: new URL(canonicalOrigin)')) errors.push('Public metadata must define the canonical metadataBase.');
 
 const managedMetadata = read(paths.managedMetadata);
 for (const snippet of ['localizedAbsoluteUrl', 'languageAlternates', 'publishedLocales']) {
