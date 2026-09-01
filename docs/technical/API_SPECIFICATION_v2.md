@@ -12,6 +12,9 @@ Status: Release 1 implementation baseline
 - Service role is server-only.
 - Public routes never expose raw database errors or internal IDs.
 - Admin sensitive actions require valid session, active user, role check, and MFA where required.
+- Every `/api/v1/admin` response, including errors and redirects, uses
+  `Cache-Control: private, no-store, max-age=0, must-revalidate`; CDN-specific
+  cache controls are also `no-store`. Public API caching remains a separate policy.
 
 ## 2. Public Content API
 

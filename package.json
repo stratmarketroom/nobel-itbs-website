@@ -116,6 +116,7 @@
     "verify:adm-eml-001": "node scripts/verify-adm-eml-001.mjs",
     "verify:adm-dsh-001": "node scripts/verify-adm-dsh-001.mjs",
     "verify:adm-aud-001": "node scripts/verify-adm-aud-001.mjs",
+    "verify:adm-sec-cache": "node scripts/verify-adm-sec-cache.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",

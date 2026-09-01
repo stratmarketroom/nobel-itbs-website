@@ -1,6 +1,6 @@
 # Implementation Status
 
-Last updated: 2026-08-31
+Last updated: 2026-09-01
 
 This is the current implementation record. The v2 product and technical specifications remain the source of truth. The ticket-level view and next sequence are maintained in `docs/planning/PROJECT_MASTER_CHECKLIST.md`.
 
@@ -24,6 +24,7 @@ This is the current implementation record. The v2 product and technical specific
 - The canonical domain `https://nobel-itbs.eu` is attached and live. The post-cutover legacy crawl passed, and the 2026-08-31 edge matrix confirmed apex HTTP plus both `www` protocol variants redirect directly to canonical HTTPS.
 - Consent-gated GA4 page-view analytics merged through PR #65 as `5646ac0`, reached Production, excludes admin and token-bearing verification paths, remains absent before consent, and was detected by Google Analytics with measurement ID `G-RT0GQGPC6V`.
 - Self-hosted Manrope merged through PR #66 as `fd91a3d`, reached Production, and passes the focused font and later public/admin-boundary regression checks.
+- ADM-SEC-CACHE is implemented on branch `codex/adm-sec-cache`: every `/api/v1/admin` response, including errors and redirects, receives private browser and CDN no-store controls through the central proxy boundary. Focused verification covers all 71 admin route files; local production HTTP checks passed for `401` JSON responses and a `301` redirect without changing public API caching. Preview/Production deployment acceptance remains pending review and merge.
 - No direct push to `main` is used.
 
 ## Supabase Dev Project
