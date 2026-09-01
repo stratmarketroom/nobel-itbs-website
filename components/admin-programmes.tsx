@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import { AdminProgrammeOperations } from '@/components/admin-programme-operations';
+import { useAdminUnsavedChanges } from '@/components/admin-dirty-guard';
 
 type Locale = 'en' | 'ua' | 'cz';
 type PublicationStatus = 'draft' | 'published' | 'archived';
@@ -276,18 +277,24 @@ export function AdminProgrammes() {
   useEffect(() => { const task = window.setTimeout(() => void load(), 0); return () => window.clearTimeout(task); }, [load]);
 
   const selected = programmes.find((item) => item.id === selectedId) ?? null;
+  const coreDirty = Boolean(creating || (core && selected && JSON.stringify(core) !== JSON.stringify(coreEditor(selected))));
+  const translationDirty = Boolean(translation && selected && JSON.stringify(translation) !== JSON.stringify(translationEditor(selected, locale)));
+  const { confirmDiscardChanges } = useAdminUnsavedChanges(coreDirty || translationDirty, 'Programme draft');
   const visibleProgrammes = programmes.filter((item) => `${titleFor(item)} ${item.slug}`.toLowerCase().includes(query.trim().toLowerCase()));
 
   function selectProgramme(programme: Programme) {
+    if (!confirmDiscardChanges()) return;
     selectedIdRef.current = programme.id; setSelectedId(programme.id); setCore(coreEditor(programme));
     setTranslation(translationEditor(programme, locale)); setCreating(false); setMessage('');
   }
 
   function changeLocale(next: Locale) {
+    if (next !== locale && translationDirty && !confirmDiscardChanges()) return;
     setLocale(next); if (selected) setTranslation(translationEditor(selected, next));
   }
 
   function beginCreate() {
+    if (!confirmDiscardChanges()) return;
     const order = programmes.reduce((highest, item) => Math.max(highest, item.catalogue_sort_order), 0) + 10;
     selectedIdRef.current = null; setSelectedId(null); setCreating(true); setTab('programme'); setMessage('');
     setCore({ slug: '', areaId: areas[0]?.id ?? '', typeId: types[0]?.id ?? '', publicationStatus: 'draft', format: 'distance', applicationProvider: 'leeloo', applicationUrl: '', enrolmentBadgeOverride: '', featured: false, catalogueSortOrder: String(order), instructionLanguageCodes: ['uk'] });
@@ -365,7 +372,7 @@ export function AdminProgrammes() {
         {core ? <section className="programme-admin-editor" aria-label={creating ? 'Create programme' : `Edit ${selected ? titleFor(selected) : 'programme'}`}>
           <div className="programme-editor-heading"><div><p>{creating ? 'New record' : core.slug}</p><h2>{creating ? 'Create programme' : titleFor(selected as Programme)}</h2></div>{!creating ? <span className={`programme-status ${core.publicationStatus}`}>{core.publicationStatus}</span> : null}</div>
           <nav className="programme-editor-tabs" aria-label="Programme editor sections">
-            {(['programme', 'copy', 'sections', 'seo', 'runs', 'pricing'] as const).map((item) => <button type="button" key={item} aria-current={tab === item ? 'page' : undefined} disabled={creating && item !== 'programme'} onClick={() => setTab(item)}>{item === 'programme' ? 'Programme' : item === 'copy' ? 'Page copy' : item === 'sections' ? 'Sales sections' : item === 'seo' ? 'SEO' : item === 'runs' ? 'Runs' : 'Pricing'}</button>)}
+            {(['programme', 'copy', 'sections', 'seo', 'runs', 'pricing'] as const).map((item) => <button type="button" key={item} data-admin-guard-navigation={tab === 'runs' || tab === 'pricing' ? true : undefined} aria-current={tab === item ? 'page' : undefined} disabled={creating && item !== 'programme'} onClick={() => setTab(item)}>{item === 'programme' ? 'Programme' : item === 'copy' ? 'Page copy' : item === 'sections' ? 'Sales sections' : item === 'seo' ? 'SEO' : item === 'runs' ? 'Runs' : 'Pricing'}</button>)}
           </nav>
           {(['copy', 'sections', 'seo'] as EditorTab[]).includes(tab) && !creating ? <div className="programme-locale-bar"><span>Website language</span>{locales.map((item) => <button type="button" key={item} aria-pressed={locale === item} onClick={() => changeLocale(item)}>{item.toUpperCase()}<small>{selected?.programme_translations.find((translationItem) => translationItem.language_code === item)?.translation_status ?? 'missing'}</small></button>)}</div> : null}
           {tab === 'programme' ? <form className="programme-editor-form" onSubmit={(event) => { event.preventDefault(); void submit('core'); }}>

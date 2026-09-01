@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { AdminEmailTemplate } from '@/lib/email-templates/types';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { useAdminUnsavedChanges } from '@/components/admin-dirty-guard';
 
 type Draft = { subject: string; body: string };
 type LoadState = 'loading' | 'ready' | 'error';
@@ -95,6 +96,11 @@ export function AdminEmailTemplates() {
   const dirty = Boolean(selected && draft && (
     draft.subject.trim() !== selected.subject || draft.body.trim() !== selected.body
   ));
+  const hasDirtyDrafts = templates.some((template) => (
+    drafts[template.id]?.subject.trim() !== template.subject
+    || drafts[template.id]?.body.trim() !== template.body
+  ));
+  useAdminUnsavedChanges(hasDirtyDrafts, 'Email template draft');
 
   function setDraft(field: keyof Draft, value: string) {
     if (!selected) return;

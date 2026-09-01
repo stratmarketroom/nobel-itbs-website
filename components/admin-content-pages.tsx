@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import type { AdminContentPage, PageRecordStatus } from '@/lib/content/admin';
 import { contentLocales, type ContentLocale, type TranslationStatus } from '@/lib/content/localization';
+import { useAdminUnsavedChanges } from '@/components/admin-dirty-guard';
 
 type JsonPrimitive = string | number | boolean | null;
 type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
@@ -182,12 +183,16 @@ export function AdminContentPages() {
   useEffect(() => { const task = window.setTimeout(() => void load(), 0); return () => window.clearTimeout(task); }, [load]);
 
   const selected = pages.find((page) => page.id === selectedId) ?? null;
+  const isDirty = Boolean(editor && selected && JSON.stringify(editor) !== JSON.stringify(editorFor(selected, locale)));
+  const { confirmDiscardChanges } = useAdminUnsavedChanges(isDirty, 'Content page draft');
 
   function selectPage(page: AdminContentPage) {
+    if (!confirmDiscardChanges()) return;
     selectedRef.current = page.id; setSelectedId(page.id); setEditor(editorFor(page, locale)); setMessage('');
   }
 
   function changeLocale(nextLocale: ContentLocale) {
+    if (nextLocale !== locale && !confirmDiscardChanges()) return;
     setMessage('');
     setLocale(nextLocale);
     if (selected) setEditor(editorFor(selected, nextLocale));

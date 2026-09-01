@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import type { PricingOption, PricingTranslation, Programme, ProgrammeRun } from '@/components/admin-programmes';
+import { useAdminUnsavedChanges } from '@/components/admin-dirty-guard';
 
 type Locale = 'en' | 'ua' | 'cz';
 type RunEditor = { status: ProgrammeRun['status']; startsAt: string; endsAt: string; applicationUrl: string };
@@ -56,8 +57,11 @@ function RunManager({ programme, accessToken, onRefresh }: { programme: Programm
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const isDirty = JSON.stringify(editor) !== JSON.stringify(runEditor(selected));
+  const { confirmDiscardChanges } = useAdminUnsavedChanges(isDirty, 'Programme run draft');
 
   function choose(id: string | 'new') {
+    if (!confirmDiscardChanges()) return;
     const run = sortedRuns.find((item) => item.id === id);
     setSelectedId(id); setEditor(runEditor(run)); setMessage(''); setConfirmDelete(false);
   }
@@ -78,7 +82,7 @@ function RunManager({ programme, accessToken, onRefresh }: { programme: Programm
       });
       const payload = await response.json().catch(() => null) as { run?: ProgrammeRun } | null;
       if (!response.ok || !payload?.run) throw new Error(apiMessage(payload, 'Programme run could not be saved.'));
-      setSelectedId(payload.run.id); await onRefresh(); setMessage(creating ? 'Run created.' : 'Run updated.');
+      setSelectedId(payload.run.id); setEditor(runEditor(payload.run)); await onRefresh(); setMessage(creating ? 'Run created.' : 'Run updated.');
     } catch (error) { setMessage(error instanceof Error ? error.message : 'Programme run could not be saved.'); }
     finally { setSaving(false); }
   }
@@ -114,13 +118,18 @@ function PricingManager({ programme, accessToken, onRefresh }: { programme: Prog
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const recordDirty = JSON.stringify(editor) !== JSON.stringify(pricingEditor(selected, nextOrder));
+  const translationDirty = selectedId !== 'new' && JSON.stringify(translation) !== JSON.stringify(pricingTranslationEditor(selected, locale));
+  const { confirmDiscardChanges } = useAdminUnsavedChanges(recordDirty || translationDirty, 'Programme pricing draft');
 
   function choose(id: string | 'new') {
+    if (!confirmDiscardChanges()) return;
     const option = options.find((item) => item.id === id);
     setSelectedId(id); setEditor(pricingEditor(option, nextOrder)); setTranslation(pricingTranslationEditor(option, locale)); setMessage(''); setConfirmDelete(false);
   }
 
   function changeLocale(nextLocale: Locale) {
+    if (nextLocale !== locale && translationDirty && !confirmDiscardChanges()) return;
     setLocale(nextLocale); setTranslation(pricingTranslationEditor(selected, nextLocale)); setMessage('');
   }
 
@@ -146,7 +155,7 @@ function PricingManager({ programme, accessToken, onRefresh }: { programme: Prog
       const response = await fetch(creating ? '/api/v1/admin/programme-pricing-options' : `/api/v1/admin/programme-pricing-options/${selectedId}`, { method: creating ? 'POST' : 'PATCH', headers: { Authorization: `Bearer ${await accessToken()}`, 'Content-Type': 'application/json' }, body: JSON.stringify(creating ? { programmeId: programme.id, ...record } : { record }) });
       const payload = await response.json().catch(() => null) as { pricingOption?: PricingOption } | null;
       if (!response.ok || !payload?.pricingOption) throw new Error(apiMessage(payload, 'Pricing option could not be saved.'));
-      setSelectedId(payload.pricingOption.id); await onRefresh(); setMessage(creating ? 'Pricing option created. Add its translations before activation.' : 'Pricing option updated.');
+      setSelectedId(payload.pricingOption.id); setEditor(pricingEditor(payload.pricingOption, nextOrder)); await onRefresh(); setMessage(creating ? 'Pricing option created. Add its translations before activation.' : 'Pricing option updated.');
     } catch (error) { setMessage(error instanceof Error ? error.message : 'Pricing option could not be saved.'); }
     finally { setSaving(false); }
   }

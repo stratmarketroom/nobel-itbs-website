@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { AdminRole } from '@/lib/admin/types';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { AdminDirtyGuardProvider } from '@/components/admin-dirty-guard';
 
 type AdminContext = {
   user: { id: string; email: string | null };
@@ -192,6 +193,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const accessibleItems = navItems.filter((item) => hasAnyRole(admin.roles, item.roles));
 
   return (
+    <AdminDirtyGuardProvider>
     <div className="admin-app-shell">
       <aside className="admin-app-sidebar">
         <Link className="admin-app-brand" href="/admin">
@@ -207,13 +209,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <span>{admin.profile.full_name || admin.user.email || 'Admin user'}</span>
           <small>{admin.roles.map((role) => roleLabels[role]).join(' · ')}</small>
           <small>{admin.mfa.satisfied ? 'MFA verified' : 'MFA required'}</small>
-          <button type="button" onClick={() => void signOut()}>Sign out</button>
+          <button type="button" data-admin-guard-navigation onClick={() => void signOut()}>Sign out</button>
         </div>
       </aside>
       <div className="admin-app-main">
         <header className="admin-app-mobile-bar">
           <strong>Nobel ITBS Admin</strong>
-          <button type="button" onClick={() => void signOut()}>Sign out</button>
+          <button type="button" data-admin-guard-navigation onClick={() => void signOut()}>Sign out</button>
         </header>
         <nav className="admin-app-mobile-nav" aria-label="Admin modules">
           {accessibleItems.map((item) => {
@@ -224,5 +226,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <div className="admin-shell-content">{children}</div>
       </div>
     </div>
+    </AdminDirtyGuardProvider>
   );
 }

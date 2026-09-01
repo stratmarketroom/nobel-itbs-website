@@ -18,6 +18,7 @@ import type {
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import { AdminCredentialBatches } from '@/components/admin-credential-batches';
 import { AdminPagination } from '@/components/admin-pagination';
+import { useAdminFormChanges } from '@/components/admin-dirty-guard';
 
 type WorkspaceTab = 'credentials' | 'batches' | 'sets' | 'numbers';
 type DetailTab = 'summary' | 'files' | 'history';
@@ -69,6 +70,7 @@ export function AdminCredentials() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
+  const formGuard = useAdminFormChanges('Credential form draft');
 
   const token = useCallback(async () => {
     const { data, error } = await supabase.auth.getSession();
@@ -198,6 +200,8 @@ export function AdminCredentials() {
   }, [creating, loadDetail, selectedId]);
 
   function openTab(next: WorkspaceTab) {
+    if (next !== tab && !formGuard.confirmDiscardChanges()) return;
+    formGuard.markClean();
     setTab(next);
     setNotice(null);
   }
@@ -218,6 +222,7 @@ export function AdminCredentials() {
       };
       const payload = await request<{ credential: PendingCredentialAdminItem }>('/api/v1/admin/credentials', { method: 'POST', body: JSON.stringify(body) });
       setCreating(false);
+      formGuard.markClean();
       setCredentialOffset(0);
       setSelectedId(payload.credential.id);
       setDetailTab('summary');
@@ -234,6 +239,7 @@ export function AdminCredentials() {
   async function reloadDetail(success?: string) {
     if (!selectedId) return;
     await Promise.all([loadDetail(selectedId), loadCredentials(selectedId)]);
+    formGuard.markClean();
     if (success) setNotice({ kind: 'success', message: success });
   }
 
@@ -251,18 +257,18 @@ export function AdminCredentials() {
         <label><span>Search</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Number, learner, programme" /></label>
         <label><span>Status</span><select value={status} onChange={(event) => { setCredentialOffset(0); setStatus(event.target.value as typeof status); }}><option value="all">All statuses</option>{Object.entries(statusLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
         <button type="submit">Search</button>
-        <button type="button" onClick={() => { setCreating(true); setSelectedId(null); setNotice(null); }}>Create pending credential</button>
+        <button type="button" onClick={() => { if (!formGuard.confirmDiscardChanges()) return; formGuard.markClean(); setCreating(true); setSelectedId(null); setNotice(null); }}>Create pending credential</button>
         <span>{loading ? 'Loading…' : `${credentialTotal} credential${credentialTotal === 1 ? '' : 's'}`}</span>
       </form>
       <section className="credential-workspace">
         <nav className="credential-list" aria-label="Credentials">
           {!loading && credentials.length === 0 ? <Empty title="No credentials found" body="Change the filters or create the first pending credential." /> : null}
-          {credentials.map((item) => <button type="button" key={item.id} aria-pressed={selectedId === item.id} onClick={() => { setSelectedId(item.id); setCreating(false); setDetailTab('summary'); setNotice(null); }}><span><strong>{item.documentNumber}</strong><small>{item.learnerName}</small><small>{item.programmeTitle}</small></span><em className={item.status}>{statusLabels[item.status]}</em></button>)}
+          {credentials.map((item) => <button type="button" key={item.id} aria-pressed={selectedId === item.id} onClick={() => { if (!formGuard.confirmDiscardChanges()) return; formGuard.markClean(); setSelectedId(item.id); setCreating(false); setDetailTab('summary'); setNotice(null); }}><span><strong>{item.documentNumber}</strong><small>{item.learnerName}</small><small>{item.programmeTitle}</small></span><em className={item.status}>{statusLabels[item.status]}</em></button>)}
           <AdminPagination label="Credential pages" limit={pageSize} offset={credentialOffset} total={credentialTotal} loading={loading} onOffsetChange={setCredentialOffset} />
         </nav>
-        <section className="credential-editor">
-          {creating && references ? <CreateForm references={references} saving={saving} onSubmit={createCredential} onCancel={() => setCreating(false)} /> : null}
-          {!creating && detail ? <CredentialDetail credential={detail} tab={detailTab} saving={saving} setTab={setDetailTab} request={request} setSaving={setSaving} setNotice={setNotice} reload={reloadDetail} /> : null}
+        <section className="credential-editor" onChangeCapture={() => formGuard.markDirty()}>
+          {creating && references ? <CreateForm references={references} saving={saving} onSubmit={createCredential} onCancel={() => { if (formGuard.confirmDiscardChanges()) { formGuard.markClean(); setCreating(false); } }} /> : null}
+          {!creating && detail ? <CredentialDetail credential={detail} tab={detailTab} saving={saving} setTab={(next) => { if (next === detailTab || formGuard.confirmDiscardChanges()) { formGuard.markClean(); setDetailTab(next); } }} request={request} setSaving={setSaving} setNotice={setNotice} reload={reloadDetail} /> : null}
           {!creating && !detail ? <Empty title="Select a credential" body="Choose a document to review its private administrative record." editor /> : null}
         </section>
       </section>
