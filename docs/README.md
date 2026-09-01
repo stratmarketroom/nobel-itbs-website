@@ -35,6 +35,7 @@ Current implementation notes:
 - `docs/development/SUPABASE_LOCAL_SETUP.md`
 - `docs/development/MIGRATION_STANDARDS.md`
 - `docs/qa/AUTH-007_QA_REVIEW_2026-07-27.md`
+- `docs/qa/AUTH_007_QA_FIX_2026-09-01.md`
 - `docs/qa/STAGE_2_4_E2E_RLS_QA_2026-08-06.md`
 - `docs/qa/PCE_004_CONTACT_OPERATIONS_QA_2026-08-06.md`
 - `docs/qa/LRN_001_LEARNER_CORE_QA_2026-08-07.md`
