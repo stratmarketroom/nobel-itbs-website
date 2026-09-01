@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { useAdminUnsavedChanges } from '@/components/admin-dirty-guard';
 
 type EntityKind = 'partner' | 'expert';
 type Locale = 'en' | 'ua' | 'cz';
@@ -154,14 +155,19 @@ export function AdminPartnershipEntities({ kind }: { kind: EntityKind }) {
   useEffect(() => { const task = window.setTimeout(() => void load(), 0); return () => window.clearTimeout(task); }, [load]);
 
   const selected = records.find((item) => item.id === selectedId) ?? null;
+  const recordDirty = Boolean(creating || (recordEditor && selected && JSON.stringify(recordEditor) !== JSON.stringify(makeRecordEditor(selected))));
+  const translationDirty = Boolean(translationEditor && selected && JSON.stringify(translationEditor) !== JSON.stringify(makeTranslationEditor(selected, kind, locale)));
+  const { confirmDiscardChanges } = useAdminUnsavedChanges(recordDirty || translationDirty, `${kind === 'partner' ? 'Partner' : 'Expert'} draft`);
   const visible = records.filter((item) => `${entityTitle(item, kind)} ${item.slug}`.toLowerCase().includes(query.trim().toLowerCase()));
 
   function selectRecord(record: EntityRecord) {
+    if (!confirmDiscardChanges()) return;
     selectedRef.current = record.id; setSelectedId(record.id); setRecordEditor(makeRecordEditor(record));
     setTranslationEditor(makeTranslationEditor(record, kind, locale)); setCreating(false); setMessage('');
   }
 
   function beginCreate() {
+    if (!confirmDiscardChanges()) return;
     const order = records.reduce((maximum, item) => Math.max(maximum, item.sort_order), 0) + 10;
     selectedRef.current = null; setSelectedId(null); setCreating(true); setTab('record'); setMessage('');
     setRecordEditor({ slug: '', status: 'draft', sortOrder: String(order), partnerType: 'partner_organisation', officialUrl: '', assetPath: '' });
@@ -169,6 +175,7 @@ export function AdminPartnershipEntities({ kind }: { kind: EntityKind }) {
   }
 
   function changeLocale(next: Locale) {
+    if (next !== locale && translationDirty && !confirmDiscardChanges()) return;
     setLocale(next);
     if (selected) setTranslationEditor(makeTranslationEditor(selected, kind, next));
   }

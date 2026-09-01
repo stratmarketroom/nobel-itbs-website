@@ -14,6 +14,7 @@ import type {
   BatchReviewResult,
   CredentialGenerationItemStatus,
 } from '@/lib/credentials/batch-generation-types';
+import { useAdminUnsavedChanges } from '@/components/admin-dirty-guard';
 
 type Request = <T>(path: string, init?: RequestInit) => Promise<T>;
 type RequestBlob = (path: string) => Promise<Blob>;
@@ -44,6 +45,9 @@ export function AdminCredentialBatches({ request, requestBlob }: { request: Requ
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
+  const hasPendingSelection = (creating && (selectedLearners.size > 0 || Boolean(draft) || Boolean(preview)))
+    || selectedReviewItems.size > 0 || selectedActivationItems.size > 0;
+  const { confirmDiscardChanges } = useAdminUnsavedChanges(hasPendingSelection, 'Credential batch selection');
 
   const loadWorkspace = useCallback(async () => {
     setLoading(true);
@@ -65,6 +69,7 @@ export function AdminCredentialBatches({ request, requestBlob }: { request: Requ
   }, [activeLearners, learnerSearch]);
 
   async function openBatch(id: string) {
+    if (!confirmDiscardChanges()) return;
     setLoading(true); setCreating(false); setPreview(null); setSelectedReviewItems(new Set()); setOpenedReviewFiles(new Set()); setSelectedActivationItems(new Set()); setNotice(null);
     try { setBatch((await request<{ batch: BatchDetail }>(`/api/v1/admin/credential-generation-batches/${id}`)).batch); }
     catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Generation batch could not be loaded.' }); }
@@ -72,6 +77,7 @@ export function AdminCredentialBatches({ request, requestBlob }: { request: Requ
   }
 
   function startCreate() {
+    if (!confirmDiscardChanges()) return;
     setCreating(true); setBatch(null); setPreview(null); setDraft(null); setSelectedLearners(new Set()); setSelectedReviewItems(new Set()); setOpenedReviewFiles(new Set()); setNotice(null);
   }
 

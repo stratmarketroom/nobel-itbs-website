@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { useAdminUnsavedChanges } from '@/components/admin-dirty-guard';
 
 type TaxonomyKind = 'area' | 'type';
 type Locale = 'en' | 'ua' | 'cz';
@@ -159,11 +160,14 @@ export function AdminProgrammeTaxonomy({ kind }: { kind: TaxonomyKind }) {
   useEffect(() => { const task = window.setTimeout(() => void load(), 0); return () => window.clearTimeout(task); }, [load]);
 
   const selected = records.find((item) => item.id === selectedId) ?? null;
+  const recordDirty = Boolean(creating || (recordEditor && selected && JSON.stringify(recordEditor) !== JSON.stringify(makeRecordEditor(selected))));
+  const translationDirty = Boolean(translationEditor && selected && JSON.stringify(translationEditor) !== JSON.stringify(makeTranslationEditor(selected, kind, locale)));
+  const { confirmDiscardChanges } = useAdminUnsavedChanges(recordDirty || translationDirty, `Programme ${config.singular} draft`);
   const visible = records.filter((item) => `${recordTitle(item, kind)} ${item.slug}`.toLowerCase().includes(query.trim().toLowerCase()));
 
-  function selectRecord(record: TaxonomyRecord) { selectedRef.current = record.id; setSelectedId(record.id); setRecordEditor(makeRecordEditor(record)); setTranslationEditor(makeTranslationEditor(record, kind, locale)); setCreating(false); setMessage(''); }
-  function beginCreate() { const order = records.reduce((max, item) => Math.max(max, item.sort_order), 0) + 10; selectedRef.current = null; setSelectedId(null); setCreating(true); setTab('record'); setMessage(''); setRecordEditor({ slug: '', status: 'draft', sortOrder: String(order) }); setTranslationEditor(null); }
-  function changeLocale(next: Locale) { setLocale(next); if (selected) setTranslationEditor(makeTranslationEditor(selected, kind, next)); }
+  function selectRecord(record: TaxonomyRecord) { if (!confirmDiscardChanges()) return; selectedRef.current = record.id; setSelectedId(record.id); setRecordEditor(makeRecordEditor(record)); setTranslationEditor(makeTranslationEditor(record, kind, locale)); setCreating(false); setMessage(''); }
+  function beginCreate() { if (!confirmDiscardChanges()) return; const order = records.reduce((max, item) => Math.max(max, item.sort_order), 0) + 10; selectedRef.current = null; setSelectedId(null); setCreating(true); setTab('record'); setMessage(''); setRecordEditor({ slug: '', status: 'draft', sortOrder: String(order) }); setTranslationEditor(null); }
+  function changeLocale(next: Locale) { if (next !== locale && translationDirty && !confirmDiscardChanges()) return; setLocale(next); if (selected) setTranslationEditor(makeTranslationEditor(selected, kind, next)); }
 
   async function saveRecord() {
     if (!recordEditor) return; if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(recordEditor.slug)) throw new Error('Slug must use lowercase letters, numbers, and hyphens.');

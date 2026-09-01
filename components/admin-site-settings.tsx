@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { useAdminUnsavedChanges } from '@/components/admin-dirty-guard';
 import type { SiteSetting } from '@/lib/content/site-settings';
 
 export function AdminSiteSettings() {
@@ -10,6 +11,7 @@ export function AdminSiteSettings() {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
+  useAdminUnsavedChanges(Boolean(setting && value !== (setting.value_text ?? '')), 'Site settings draft');
   const token = useCallback(async () => { const { data } = await supabase.auth.getSession(); if (!data.session?.access_token) throw new Error('Sign in with MFA to manage site settings.'); return data.session.access_token; }, [supabase]);
   const load = useCallback(async () => {
     try {

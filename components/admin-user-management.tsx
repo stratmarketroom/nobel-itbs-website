@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { useAdminUnsavedChanges } from '@/components/admin-dirty-guard';
 import { adminRoles, type AdminRole, type AdminUserSummary } from '@/lib/admin/types';
 
 type AdminMe = {
@@ -137,6 +138,7 @@ export function AdminUserManagement() {
   });
 
   function beginCreate() {
+    if (!confirmDiscardChanges()) return;
     setCreating(true);
     selectedIdRef.current = null;
     setSelectedId(null);
@@ -146,6 +148,7 @@ export function AdminUserManagement() {
   }
 
   function chooseUser(user: AdminUserSummary) {
+    if (!confirmDiscardChanges()) return;
     setCreating(false);
     selectedIdRef.current = user.id;
     setSelectedId(user.id);
@@ -229,6 +232,11 @@ export function AdminUserManagement() {
     || editor.mfaRequired !== selected.mfaRequired
     || !sameRoles(editor.roles, selected.roles)
   ));
+  const createHasChanges = creating && Boolean(
+    createForm.email || createForm.fullName || createForm.temporaryPassword
+    || createForm.roles.length !== 1 || createForm.roles[0] !== 'content_manager'
+  );
+  const { confirmDiscardChanges } = useAdminUnsavedChanges(hasChanges || createHasChanges, 'User editor draft');
 
   return (
     <main className="user-admin-shell">
@@ -281,7 +289,7 @@ export function AdminUserManagement() {
                 <label className="user-admin-full"><span>Initial password</span><input type="password" autoComplete="new-password" minLength={12} required value={createForm.temporaryPassword} onChange={(event) => setCreateForm({ ...createForm, temporaryPassword: event.target.value })} /><small>At least 12 characters. Share it through a secure channel.</small></label>
               </div>
               <fieldset className="user-admin-roles"><legend>Roles</legend>{adminRoles.filter((role) => role !== 'owner').map((role) => <label key={role} className={role === 'super_admin' && !actorIsOwner ? 'is-disabled' : ''}><input type="checkbox" checked={createForm.roles.includes(role)} disabled={role === 'super_admin' && !actorIsOwner} onChange={() => toggleCreateRole(role)} /><span><strong>{roleLabels[role]}</strong><small>{roleDescriptions[role]}</small></span></label>)}</fieldset>
-              <div className="user-admin-actions"><button type="button" onClick={() => selectUser(users, users[0]?.id ?? null)}>Cancel</button><button className="is-primary" type="submit" disabled={saving}>{saving ? 'Creating user' : 'Create user'}</button></div>
+              <div className="user-admin-actions"><button type="button" onClick={() => { if (confirmDiscardChanges()) selectUser(users, users[0]?.id ?? null); }}>Cancel</button><button className="is-primary" type="submit" disabled={saving}>{saving ? 'Creating user' : 'Create user'}</button></div>
             </form>
           ) : selected && editor ? (
             <form onSubmit={(event) => { event.preventDefault(); void submit('save'); }}>

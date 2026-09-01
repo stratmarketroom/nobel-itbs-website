@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import { AdminPagination } from '@/components/admin-pagination';
+import { useAdminFormChanges, useAdminUnsavedChanges } from '@/components/admin-dirty-guard';
 import type { LearnerAdminItem, LearnerConflictReference, LearnerEmail, LearnerImportPreview, LearnerImportResult, LearnerPhone } from '@/lib/learners/types';
 
 type ArchiveFilter = 'active' | 'archived' | 'all';
@@ -55,6 +56,9 @@ export function AdminLearners() {
   const [importConfirmed, setImportConfirmed] = useState(false);
   const [importing, setImporting] = useState(false);
   const selected = learners.find(({ id }) => id === selectedId) ?? null;
+  const formGuard = useAdminFormChanges('Learner form draft');
+  const importDirty = Boolean(importFile || importPreview || importConfirmed);
+  const importGuard = useAdminUnsavedChanges(importDirty, 'Learner import draft');
 
   const token = useCallback(async () => {
     const { data, error } = await supabase.auth.getSession();
@@ -109,6 +113,7 @@ export function AdminLearners() {
     try {
       const payload = await request<{ learner: LearnerAdminItem }>(path, { method, ...(body ? { body: JSON.stringify(body) } : {}) });
       replaceLearner(payload.learner);
+      formGuard.markClean();
       setNotice({ kind: 'success', message: success });
       return true;
     } catch (error) {
@@ -252,27 +257,27 @@ export function AdminLearners() {
         <label><span>Search learners</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Name, email, or phone" /></label>
         <label><span>Status</span><select value={archiveFilter} onChange={(event) => { setOffset(0); setArchiveFilter(event.target.value as ArchiveFilter); }}><option value="active">Active learners</option><option value="archived">Archived learners</option><option value="all">All learners</option></select></label>
         <button type="submit">Search</button>
-        <button className="secondary" type="button" onClick={() => { setCreating(true); setSelectedId(null); setTab('profile'); setNotice(null); }}>Add learner</button>
+        <button className="secondary" type="button" onClick={() => { if (formGuard.isDirty && !formGuard.confirmDiscardChanges()) return; formGuard.markClean(); setCreating(true); setSelectedId(null); setTab('profile'); setNotice(null); }}>Add learner</button>
         <button className="secondary" type="button" aria-expanded={importOpen} onClick={() => { setImportOpen((current) => !current); setImportPreview(null); setImportConfirmed(false); setNotice(null); }}>Import list</button>
         <span aria-live="polite">{loading ? 'Loading learners' : `${total} learner${total === 1 ? '' : 's'}`}</span>
       </form>
 
       {notice ? <div className={`learner-admin-notice ${notice.kind}`} role={notice.kind === 'error' ? 'alert' : 'status'}><span>{notice.message}</span>{notice.conflict ? <button disabled={saving} type="button" onClick={() => void openConflict(notice.conflict!)}>Open {notice.conflict.displayName}</button> : null}</div> : null}
 
-      {importOpen ? <LearnerImportPanel file={importFile} preview={importPreview} confirmed={importConfirmed} busy={importing} onFile={(file) => { setImportFile(file); setImportPreview(null); setImportConfirmed(false); }} onPreview={previewImport} onTemplate={() => void downloadTemplate()} onErrors={downloadErrors} onConfirmed={setImportConfirmed} onCommit={() => void commitImport()} onClose={() => { setImportOpen(false); setImportPreview(null); setImportFile(null); setImportConfirmed(false); }} /> : null}
+      {importOpen ? <LearnerImportPanel file={importFile} preview={importPreview} confirmed={importConfirmed} busy={importing} onFile={(file) => { setImportFile(file); setImportPreview(null); setImportConfirmed(false); }} onPreview={previewImport} onTemplate={() => void downloadTemplate()} onErrors={downloadErrors} onConfirmed={setImportConfirmed} onCommit={() => void commitImport()} onClose={() => { if (!importGuard.confirmDiscardChanges()) return; setImportOpen(false); setImportPreview(null); setImportFile(null); setImportConfirmed(false); }} /> : null}
 
       <section className="learner-admin-workspace">
         <nav className="learner-admin-list" aria-label="Learner list">
           {loading ? Array.from({ length: 5 }, (_, index) => <span className="learner-list-skeleton" key={index} />) : null}
           {!loading && learners.length === 0 ? <div className="learner-empty"><strong>No learners found</strong><span>Change the search or add the first learner.</span></div> : null}
-          {!loading ? learners.map((learner) => <button type="button" key={learner.id} aria-pressed={learner.id === selectedId} onClick={() => { setSelectedId(learner.id); setCreating(false); setNotice(null); }}><span><strong>{displayName(learner)}</strong><small>{learner.ukrainianFullName}</small><small>{contactSummary(learner)}</small></span><em className={learner.archivedAt ? 'archived' : 'active'}>{learner.archivedAt ? 'Archived' : 'Active'}</em></button>) : null}
+          {!loading ? learners.map((learner) => <button type="button" key={learner.id} aria-pressed={learner.id === selectedId} onClick={() => { if (formGuard.isDirty && !formGuard.confirmDiscardChanges()) return; formGuard.markClean(); setSelectedId(learner.id); setCreating(false); setNotice(null); }}><span><strong>{displayName(learner)}</strong><small>{learner.ukrainianFullName}</small><small>{contactSummary(learner)}</small></span><em className={learner.archivedAt ? 'archived' : 'active'}>{learner.archivedAt ? 'Archived' : 'Active'}</em></button>) : null}
           <AdminPagination label="Learner pages" limit={pageSize} offset={offset} total={total} loading={loading} onOffsetChange={setOffset} />
         </nav>
 
-        <section className="learner-admin-editor">
+        <section className="learner-admin-editor" onChangeCapture={() => formGuard.markDirty()}>
           {creating ? <ProfileForm saving={saving} onSubmit={(event) => void submitProfile(event)} /> : selected ? <>
             <header className="learner-editor-heading"><div><small>Private learner record</small><h2>{displayName(selected)}</h2></div><span className={selected.archivedAt ? 'archived' : 'active'}>{selected.archivedAt ? 'Archived' : 'Active'}</span></header>
-            <nav className="learner-editor-tabs" aria-label="Learner record sections">{(['profile', 'contacts', 'credentials'] as EditorTab[]).map((item) => <button type="button" key={item} aria-current={tab === item ? 'page' : undefined} onClick={() => setTab(item)}>{item === 'contacts' ? `Contacts (${selected.emails.length + selected.phones.length})` : item[0].toUpperCase() + item.slice(1)}</button>)}</nav>
+            <nav className="learner-editor-tabs" aria-label="Learner record sections">{(['profile', 'contacts', 'credentials'] as EditorTab[]).map((item) => <button type="button" key={item} aria-current={tab === item ? 'page' : undefined} onClick={() => { if (item === tab || !formGuard.isDirty || formGuard.confirmDiscardChanges()) { formGuard.markClean(); setTab(item); } }}>{item === 'contacts' ? `Contacts (${selected.emails.length + selected.phones.length})` : item[0].toUpperCase() + item.slice(1)}</button>)}</nav>
             {tab === 'profile' ? <ProfileForm learner={selected} saving={saving} onSubmit={(event) => void submitProfile(event, selected)} onArchive={() => void toggleArchive(selected)} /> : null}
             {tab === 'contacts' ? <ContactEditor learner={selected} saving={saving} onEmail={submitEmail} onPhone={submitPhone} onRemove={removeContact} /> : null}
             {tab === 'credentials' ? <section className="learner-credentials"><header><div><small>Credential registry</small><h3>{selected.credentials.length} document{selected.credentials.length === 1 ? '' : 's'}</h3></div><Link href={`/admin/credentials?learner=${selected.id}`}>Open credential workspace</Link></header>{selected.credentials.length === 0 ? <div className="learner-credential-placeholder"><span>Credential records</span><h3>No credentials yet</h3><p>Create the first pending credential from the protected credential workspace.</p></div> : <div>{selected.credentials.map((credential) => <Link key={credential.id} href={`/admin/credentials?credential=${credential.id}`}><span><strong>{credential.documentNumber}</strong><small>{credential.programmeTitle} · {credential.credentialType}</small><small>Issued {credential.issueDate}</small></span><em className={credential.status}>{credential.status}</em></Link>)}</div>}</section> : null}
