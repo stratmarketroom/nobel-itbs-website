@@ -17,10 +17,13 @@ import type {
 } from '@/lib/credentials/workspace-types';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import { AdminCredentialBatches } from '@/components/admin-credential-batches';
+import { AdminPagination } from '@/components/admin-pagination';
 
 type WorkspaceTab = 'credentials' | 'batches' | 'sets' | 'numbers';
 type DetailTab = 'summary' | 'files' | 'history';
 type Notice = { kind: 'success' | 'error'; message: string; verificationUrl?: string } | null;
+
+const pageSize = 50;
 
 const statusLabels: Record<CredentialStatus, string> = {
   pending: 'Pending', valid: 'Valid', revoked: 'Revoked', voided: 'Voided',
@@ -54,7 +57,14 @@ export function AdminCredentials() {
   const [sets, setSets] = useState<CredentialSetAdminItem[]>([]);
   const [numbers, setNumbers] = useState<DocumentNumberAdminItem[]>([]);
   const [search, setSearch] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
   const [status, setStatus] = useState<'all' | CredentialStatus>('all');
+  const [credentialTotal, setCredentialTotal] = useState(0);
+  const [credentialOffset, setCredentialOffset] = useState(0);
+  const [setTotal, setSetTotal] = useState(0);
+  const [setOffset, setSetOffset] = useState(0);
+  const [numberTotal, setNumberTotal] = useState(0);
+  const [numberOffset, setNumberOffset] = useState(0);
   const [creating, setCreating] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -95,24 +105,67 @@ export function AdminCredentials() {
     return response.blob();
   }, [token]);
 
-  const loadCredentials = useCallback(async (preferredId?: string) => {
+  const loadCredentials = useCallback(async (preferredId?: string, offsetOverride = credentialOffset) => {
     setLoading(true);
     try {
-      const payload = await request<{ credentials: CredentialAdminListItem[]; references: CredentialReferenceData }>('/api/v1/admin/credentials');
+      const params = new URLSearchParams({ limit: String(pageSize), offset: String(offsetOverride) });
+      if (status !== 'all') params.set('status', status);
+      if (appliedSearch) params.set('query', appliedSearch);
+      const locationParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+      const learnerQuery = locationParams?.get('learner');
+      if (learnerQuery) params.set('learnerId', learnerQuery);
+      const payload = await request<{ credentials: CredentialAdminListItem[]; total: number; references: CredentialReferenceData }>(`/api/v1/admin/credentials?${params}`);
+      if (payload.total > 0 && offsetOverride >= payload.total) {
+        setCredentialOffset(Math.floor((payload.total - 1) / pageSize) * pageSize);
+        return;
+      }
       setCredentials(payload.credentials);
+      setCredentialTotal(payload.total);
       setReferences(payload.references);
-      const queryId = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('credential') : null;
-      const learnerQuery = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('learner') : null;
+      const queryId = locationParams?.get('credential');
       if (learnerQuery) {
         const learner = payload.references.learners.find(({ id }) => id === learnerQuery);
         if (learner) setSearch(learner.name);
       }
       const nextId = preferredId ?? queryId;
-      if (nextId && payload.credentials.some(({ id }) => id === nextId)) setSelectedId(nextId);
+      if (nextId) setSelectedId(nextId);
+      else setSelectedId((current) => current && payload.credentials.some(({ id }) => id === current) ? current : null);
     } catch (error) {
       setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Credentials could not be loaded.' });
     } finally { setLoading(false); }
-  }, [request]);
+  }, [appliedSearch, credentialOffset, request, status]);
+
+  const loadSets = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ limit: String(pageSize), offset: String(setOffset) });
+      const payload = await request<{ credentialSets: CredentialSetAdminItem[]; total: number }>(`/api/v1/admin/credential-sets?${params}`);
+      if (payload.total > 0 && setOffset >= payload.total) {
+        setSetOffset(Math.floor((payload.total - 1) / pageSize) * pageSize);
+        return;
+      }
+      setSets(payload.credentialSets);
+      setSetTotal(payload.total);
+    } catch (error) {
+      setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Credential sets could not be loaded.' });
+    } finally { setLoading(false); }
+  }, [request, setOffset]);
+
+  const loadNumbers = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ limit: String(pageSize), offset: String(numberOffset) });
+      const payload = await request<{ documentNumbers: DocumentNumberAdminItem[]; total: number }>(`/api/v1/admin/document-numbers?${params}`);
+      if (payload.total > 0 && numberOffset >= payload.total) {
+        setNumberOffset(Math.floor((payload.total - 1) / pageSize) * pageSize);
+        return;
+      }
+      setNumbers(payload.documentNumbers);
+      setNumberTotal(payload.total);
+    } catch (error) {
+      setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Document number log could not be loaded.' });
+    } finally { setLoading(false); }
+  }, [numberOffset, request]);
 
   const loadDetail = useCallback(async (id: string) => {
     setLoading(true);
@@ -127,6 +180,16 @@ export function AdminCredentials() {
 
   useEffect(() => { const task = window.setTimeout(() => void loadCredentials(), 0); return () => window.clearTimeout(task); }, [loadCredentials]);
   useEffect(() => {
+    if (tab !== 'sets') return;
+    const task = window.setTimeout(() => void loadSets(), 0);
+    return () => window.clearTimeout(task);
+  }, [loadSets, tab]);
+  useEffect(() => {
+    if (tab !== 'numbers') return;
+    const task = window.setTimeout(() => void loadNumbers(), 0);
+    return () => window.clearTimeout(task);
+  }, [loadNumbers, tab]);
+  useEffect(() => {
     const task = window.setTimeout(() => {
       if (selectedId && !creating) void loadDetail(selectedId);
       else setDetail(null);
@@ -134,27 +197,10 @@ export function AdminCredentials() {
     return () => window.clearTimeout(task);
   }, [creating, loadDetail, selectedId]);
 
-  async function openTab(next: WorkspaceTab) {
+  function openTab(next: WorkspaceTab) {
     setTab(next);
     setNotice(null);
-    if (next === 'sets' && sets.length === 0) {
-      setLoading(true);
-      try { setSets((await request<{ credentialSets: CredentialSetAdminItem[] }>('/api/v1/admin/credential-sets')).credentialSets); }
-      catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Credential sets could not be loaded.' }); }
-      finally { setLoading(false); }
-    }
-    if (next === 'numbers' && numbers.length === 0) {
-      setLoading(true);
-      try { setNumbers((await request<{ documentNumbers: DocumentNumberAdminItem[] }>('/api/v1/admin/document-numbers')).documentNumbers); }
-      catch (error) { setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Document number log could not be loaded.' }); }
-      finally { setLoading(false); }
-    }
   }
-
-  const filtered = credentials.filter((item) => {
-    const needle = search.trim().toLocaleLowerCase();
-    return (status === 'all' || item.status === status) && (!needle || [item.documentNumber, item.learnerName, item.programmeTitle, item.credentialType].some((value) => value.toLocaleLowerCase().includes(needle)));
-  });
 
   async function createCredential(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -172,9 +218,10 @@ export function AdminCredentials() {
       };
       const payload = await request<{ credential: PendingCredentialAdminItem }>('/api/v1/admin/credentials', { method: 'POST', body: JSON.stringify(body) });
       setCreating(false);
+      setCredentialOffset(0);
       setSelectedId(payload.credential.id);
       setDetailTab('summary');
-      await loadCredentials(payload.credential.id);
+      await loadCredentials(payload.credential.id, 0);
       setNotice({
         kind: 'success',
         message: `Pending credential ${payload.credential.documentNumber} created. Save the verification URL securely; it will not be shown again.`,
@@ -193,23 +240,25 @@ export function AdminCredentials() {
   return <main className="credential-admin-shell">
     <header className="admin-module-header"><div><p className="admin-kicker">Credential registry</p><h1>Credentials</h1><p>Create pending documents, manage private PDFs, review permanent numbers, sets, history, and internal notes.</p></div></header>
     <nav className="credential-workspace-tabs" aria-label="Credential registry sections">
-      <button type="button" aria-current={tab === 'credentials' ? 'page' : undefined} onClick={() => void openTab('credentials')}>Credentials <span>{credentials.length}</span></button>
-      <button type="button" aria-current={tab === 'batches' ? 'page' : undefined} onClick={() => void openTab('batches')}>Batch generation</button>
-      <button type="button" aria-current={tab === 'sets' ? 'page' : undefined} onClick={() => void openTab('sets')}>Credential sets <span>{sets.length}</span></button>
-      <button type="button" aria-current={tab === 'numbers' ? 'page' : undefined} onClick={() => void openTab('numbers')}>Number log <span>{numbers.length}</span></button>
+      <button type="button" aria-current={tab === 'credentials' ? 'page' : undefined} onClick={() => openTab('credentials')}>Credentials <span>{credentialTotal}</span></button>
+      <button type="button" aria-current={tab === 'batches' ? 'page' : undefined} onClick={() => openTab('batches')}>Batch generation</button>
+      <button type="button" aria-current={tab === 'sets' ? 'page' : undefined} onClick={() => openTab('sets')}>Credential sets <span>{setTotal}</span></button>
+      <button type="button" aria-current={tab === 'numbers' ? 'page' : undefined} onClick={() => openTab('numbers')}>Number log <span>{numberTotal}</span></button>
     </nav>
     {notice ? <div className={`credential-notice ${notice.kind}`} role={notice.kind === 'error' ? 'alert' : 'status'}><span>{notice.message}</span>{notice.verificationUrl ? <div><code>{notice.verificationUrl}</code><button type="button" onClick={() => void navigator.clipboard.writeText(notice.verificationUrl!)}>Copy verification URL</button></div> : null}</div> : null}
     {tab === 'credentials' ? <>
-      <div className="credential-toolbar">
+      <form className="credential-toolbar" onSubmit={(event) => { event.preventDefault(); setCredentialOffset(0); setAppliedSearch(search.trim()); }}>
         <label><span>Search</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Number, learner, programme" /></label>
-        <label><span>Status</span><select value={status} onChange={(event) => setStatus(event.target.value as typeof status)}><option value="all">All statuses</option>{Object.entries(statusLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
+        <label><span>Status</span><select value={status} onChange={(event) => { setCredentialOffset(0); setStatus(event.target.value as typeof status); }}><option value="all">All statuses</option>{Object.entries(statusLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
+        <button type="submit">Search</button>
         <button type="button" onClick={() => { setCreating(true); setSelectedId(null); setNotice(null); }}>Create pending credential</button>
-        <span>{loading ? 'Loading…' : `${filtered.length} shown`}</span>
-      </div>
+        <span>{loading ? 'Loading…' : `${credentialTotal} credential${credentialTotal === 1 ? '' : 's'}`}</span>
+      </form>
       <section className="credential-workspace">
         <nav className="credential-list" aria-label="Credentials">
-          {!loading && filtered.length === 0 ? <Empty title="No credentials found" body="Change the filters or create the first pending credential." /> : null}
-          {filtered.map((item) => <button type="button" key={item.id} aria-pressed={selectedId === item.id} onClick={() => { setSelectedId(item.id); setCreating(false); setDetailTab('summary'); setNotice(null); }}><span><strong>{item.documentNumber}</strong><small>{item.learnerName}</small><small>{item.programmeTitle}</small></span><em className={item.status}>{statusLabels[item.status]}</em></button>)}
+          {!loading && credentials.length === 0 ? <Empty title="No credentials found" body="Change the filters or create the first pending credential." /> : null}
+          {credentials.map((item) => <button type="button" key={item.id} aria-pressed={selectedId === item.id} onClick={() => { setSelectedId(item.id); setCreating(false); setDetailTab('summary'); setNotice(null); }}><span><strong>{item.documentNumber}</strong><small>{item.learnerName}</small><small>{item.programmeTitle}</small></span><em className={item.status}>{statusLabels[item.status]}</em></button>)}
+          <AdminPagination label="Credential pages" limit={pageSize} offset={credentialOffset} total={credentialTotal} loading={loading} onOffsetChange={setCredentialOffset} />
         </nav>
         <section className="credential-editor">
           {creating && references ? <CreateForm references={references} saving={saving} onSubmit={createCredential} onCancel={() => setCreating(false)} /> : null}
@@ -219,8 +268,8 @@ export function AdminCredentials() {
       </section>
     </> : null}
     {tab === 'batches' ? <AdminCredentialBatches request={request} requestBlob={requestBlob} /> : null}
-    {tab === 'sets' ? <RegistryTable headers={['Learner', 'Programme', 'Run / completion', 'Documents', 'Created']} rows={sets.map((item) => [item.learnerName, item.programmeTitle, [item.programmeRunLabel, item.completionDate].filter(Boolean).join(' · ') || '—', String(item.credentialCount), date(item.createdAt)])} empty="No credential sets yet." /> : null}
-    {tab === 'numbers' ? <RegistryTable headers={['Document number', 'Type', 'Status', 'Origin', 'Credential', 'Created']} rows={numbers.map((item) => [item.documentNumber, item.credentialType, item.status, item.isManual ? 'Manual' : 'Automatic', item.credentialId ? 'Linked' : 'Unlinked', date(item.createdAt)])} empty="No document numbers reserved yet." /> : null}
+    {tab === 'sets' ? <RegistryTable headers={['Learner', 'Programme', 'Run / completion', 'Documents', 'Created']} rows={sets.map((item) => [item.learnerName, item.programmeTitle, [item.programmeRunLabel, item.completionDate].filter(Boolean).join(' · ') || '—', String(item.credentialCount), date(item.createdAt)])} empty="No credential sets yet." pagination={<AdminPagination label="Credential set pages" limit={pageSize} offset={setOffset} total={setTotal} loading={loading} onOffsetChange={setSetOffset} />} /> : null}
+    {tab === 'numbers' ? <RegistryTable headers={['Document number', 'Type', 'Status', 'Origin', 'Credential', 'Created']} rows={numbers.map((item) => [item.documentNumber, item.credentialType, item.status, item.isManual ? 'Manual' : 'Automatic', item.credentialId ? 'Linked' : 'Unlinked', date(item.createdAt)])} empty="No document numbers reserved yet." pagination={<AdminPagination label="Document number pages" limit={pageSize} offset={numberOffset} total={numberTotal} loading={loading} onOffsetChange={setNumberOffset} />} /> : null}
   </main>;
 }
 
@@ -576,8 +625,8 @@ function PublicDataForm({ credential, saving, onSave }: {
   </details>;
 }
 
-function RegistryTable({ headers, rows, empty }: { headers: string[]; rows: string[][]; empty: string }) {
-  return <div className="credential-registry-table"><table><thead><tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={`${row[0]}-${index}`}>{row.map((cell, cellIndex) => <td key={`${cellIndex}-${cell}`}>{cell}</td>)}</tr>)}</tbody></table>{rows.length === 0 ? <Empty title={empty} body="The registry will populate automatically as credentials are created." /> : null}</div>;
+function RegistryTable({ headers, rows, empty, pagination }: { headers: string[]; rows: string[][]; empty: string; pagination: React.ReactNode }) {
+  return <div className="credential-registry-table"><div className="credential-registry-scroll"><table><thead><tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={`${row[0]}-${index}`}>{row.map((cell, cellIndex) => <td key={`${cellIndex}-${cell}`}>{cell}</td>)}</tr>)}</tbody></table></div>{rows.length === 0 ? <Empty title={empty} body="The registry will populate automatically as credentials are created." /> : null}{pagination}</div>;
 }
 
 function Empty({ title, body, editor = false }: { title: string; body: string; editor?: boolean }) {

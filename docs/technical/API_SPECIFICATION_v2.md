@@ -153,7 +153,8 @@ pre-launch integration ticket.
 Admin operations:
 
 - `GET /api/v1/admin/contact-submissions` lists submissions and supports
-  optional `status` and `type` filters;
+  optional `status` and `type` filters plus validated `limit` and `offset`
+  pagination; the response includes the exact filtered `total`;
 - `GET /api/v1/admin/contact-submissions/{id}` returns the private detail for an
   authorized manager;
 - `PATCH /api/v1/admin/contact-submissions/{id}` changes only the Release 1
@@ -382,6 +383,11 @@ Credential Manager/Super Admin/Owner:
 - set messaging flags;
 - view learner credential list.
 
+`GET /api/v1/admin/learners` accepts `archived=active|archived|all`, optional
+`query`, and validated `limit`/`offset`. The response includes the exact
+filtered `total`. Name, email, and phone search is evaluated server-side across
+the complete caller-visible RLS result before the requested page is selected.
+
 Duplicate email/phone returns conflict with existing learner reference.
 
 ### Learner List Import
@@ -402,16 +408,22 @@ Content Manager has no access.
 
 Implemented protected routes for Credential Manager/Super Admin/Owner with MFA:
 
-- `GET /api/v1/admin/credentials` — credential list plus safe creation references;
+- `GET /api/v1/admin/credentials` — paginated credential list plus safe creation
+  references; supports optional `status`, `query`, and exact `learnerId`
+  filtering;
 - `GET /api/v1/admin/credentials/{id}` — private administrative detail, current PDFs, append-only History, and controlled Notes;
-- `GET /api/v1/admin/credential-sets` — read-only status-free grouping list;
-- `GET /api/v1/admin/document-numbers` — read-only permanent number log;
+- `GET /api/v1/admin/credential-sets` — paginated read-only status-free grouping list;
+- `GET /api/v1/admin/document-numbers` — paginated read-only permanent number log;
 - `POST /api/v1/admin/credentials/{id}/notes`;
 - `PATCH|DELETE /api/v1/admin/credentials/{id}/notes/{noteId}`.
 
 These responses never include verification-token hashes/ciphertext/raw values,
 private Storage paths, or PDF bytes. Note ownership and soft-delete rules remain
 enforced by the CRD-006 controlled functions and forced RLS.
+
+All four list routes use validated `limit`/`offset` parameters (`limit` defaults
+to 50 and cannot exceed 100) and return an exact `total`. Credential search is
+server-side across the complete caller-visible filtered data set before paging.
 
 ### Create Pending Credential
 

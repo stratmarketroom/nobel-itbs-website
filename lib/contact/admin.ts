@@ -46,6 +46,7 @@ export type ContactSubmissionFilters = {
   status?: ContactSubmissionStatus;
   type?: ContactSubmissionType;
   limit?: number;
+  offset?: number;
 };
 
 function selectProgrammeTitle(programme: ProgrammeReferenceRow, locale: string): string {
@@ -108,11 +109,13 @@ export async function listContactSubmissions(
   assertCanAccessContactSubmissions(context);
   const client = getSupabaseRequestClient(context.accessToken);
   const limit = Math.min(Math.max(filters.limit ?? 50, 1), 100);
+  const offset = Math.max(filters.offset ?? 0, 0);
   let query = client
     .from('contact_submissions')
     .select(submissionSelect, { count: 'exact' })
     .order('created_at', { ascending: false })
-    .limit(limit);
+    .order('id', { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (filters.status) query = query.eq('status', filters.status);
   if (filters.type) query = query.eq('type', filters.type);
