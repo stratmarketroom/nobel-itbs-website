@@ -517,4 +517,6 @@ Owner action needed:
 - LRN-LINT-001 migration 64 and the later migrations 65–66 are accepted in hosted Development and Production with clean lint and 66/66 parity;
 - QA-002 and QA-004 are complete at the current dev level: the retained credential passed valid verification, irreversible revocation, and status-only revoked verification by number and QR;
 - WF-004 resend is implemented, migrated and deployed in dev/Production through merged PR #22; authenticated valid-record smoke and one Owner-approved delivery are deferred until a valid credential exists;
+- ADM-USER-ATOMIC migration 69 is accepted in hosted Development and Production at exact 69/69 parity; its focused pgTAP passed 22/22 in each environment with rollback cleanup and clean hosted lint;
+- ADM-SEC-CACHE is accepted on canonical Production: deployed unauthenticated `401`, canonical `301`, authenticated Owner/AAL2 read-only `200`, and public-cache boundary checks passed without mutation;
 - VEDOS SMTP credentials remain required only in encrypted deployment settings for real credential-email delivery and QA-005 acceptance.

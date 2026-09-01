@@ -2,7 +2,7 @@
 
 Date: 2026-09-01
 Branch: `codex/adm-user-atomic`
-Status: implementation and local code verification passed; database runtime and review pending
+Status: accepted in Development and Production at 69/69 parity
 
 ## Summary
 
@@ -66,9 +66,23 @@ fixed search path, row locking, exact role replacement, mandatory MFA,
 idempotency, audit behavior, rollback after a role deletion has begun, Owner
 and Super Admin governance, AAL1 denial, and Content Manager denial.
 
-The pgTAP file is committed but was not executed locally. The repository-local
-Supabase CLI confirmed that neither Docker nor Podman is available on the
-current PATH, so no database-runtime pass is claimed.
+Hosted database acceptance passed in both approved environments:
+
+- Development project identity `flswzhgjbpagohbwehcz` matched the expected
+  West EU project, its ledger ended at `20260901100000`, and the no-pending
+  dry run confirmed exact 69/69 parity;
+- Production project identity `szratzjodgiacvnhqmhx` matched the expected
+  Frankfurt project, its ledger ended at `20260901100000`, and the no-pending
+  dry run confirmed exact 69/69 parity;
+- the focused pgTAP suite passed 22/22 in Development and 22/22 in Production;
+- both pgTAP runs executed inside complete transactions and rolled back;
+- post-test cleanup in each environment confirmed zero fixed fixture users,
+  zero fixture-target audit rows, and no retained pgTAP extension;
+- hosted schema lint returned `No schema errors found` in both environments.
+
+The migration was already present in both hosted ledgers when this database-QA
+ticket began, so no duplicate push was attempted and no hosted migration or
+business row was written during this acceptance pass.
 
 ## Security Notes
 
@@ -84,8 +98,15 @@ current PATH, so no database-runtime pass is claimed.
 
 ## Deviations / Open Questions
 
-No business-rule deviation. Database runtime execution remains the explicit
-pre-promotion gate because the local container runtime is unavailable.
+No business-rule deviation or open database gate remains. The earlier status
+stating that database runtime and promotion were pending conflicted with the
+actual hosted ledgers; exact read-only preflight resolved the conflict before
+any push was attempted.
+
+Docker Desktop was installed but its daemon was unavailable in this session.
+As with the accepted migrations 67–68, the focused test therefore ran through
+a transient PostgreSQL client over the approved TLS poolers. The client was
+installed only under `/private/tmp`; no repository dependency changed.
 
 ## Remediation
 
@@ -96,5 +117,5 @@ delete the applied migration.
 
 ## Next Dependency
 
-Run the focused pgTAP transaction against the approved database test runner,
-then review and merge this ticket before starting another admin correction.
+Commit and review this database-QA evidence, then continue with the separate
+ADM-SEC-CACHE deployed unauthenticated and authenticated response-header smoke.
