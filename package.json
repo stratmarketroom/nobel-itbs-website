@@ -120,6 +120,7 @@
     "verify:adm-pagination": "node scripts/verify-adm-pagination.mjs",
     "verify:adm-user-atomic": "node scripts/verify-adm-user-atomic.mjs",
     "verify:adm-dirty-guard": "node scripts/verify-adm-dirty-guard.mjs",
+    "verify:pdfgen-template-a11y": "node scripts/verify-pdfgen-template-a11y.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",
