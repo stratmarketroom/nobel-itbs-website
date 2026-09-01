@@ -157,7 +157,7 @@ This matrix follows the Release 1 admin sitemap and prevents public implementati
 | Site Settings | Protected API/UI implemented | Authenticated AAL2 save/audit smoke passed; final For Organisations URL remains |
 | Users and Roles | Protected API/UI implemented | Authenticated create/roles/deactivate/reactivate/audit/cleanup smoke passed |
 | Audit/History | Append-only storage plus Owner/Super Admin AAL2 read policy, protected paginated list/detail API, privacy projection, responsive filters/list/detail UI, and role-aware navigation implemented | ADM-AUD-001 Development/Preview deployment/Production acceptance passed at 68/68 parity |
-| Unified admin shell/navigation | Shared protected layout, role-aware desktop/mobile navigation, account context, and signed-out/MFA/access-denied states implemented | Authenticated access matrix passed for all four roles and a multi-role account |
+| Unified admin shell/navigation | Shared protected layout, role-aware desktop/mobile navigation, account context, and signed-out/MFA/access-denied states implemented | Deterministic Playwright matrix now passes 30/30 across all four roles, every allowed route, every forbidden Content/Credential Manager route, AAL1/AAL2 states, signed-out state, desktop and mobile; earlier live authenticated role evidence remains recorded separately |
 
 ## Stage 5 — Learner Foundation
 
