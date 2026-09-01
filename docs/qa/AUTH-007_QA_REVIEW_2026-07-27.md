@@ -6,6 +6,16 @@ Branch:
 
 - `codex/auth-007-mfa-login-ui`
 
+## Current Alignment Note
+
+This file preserves the browser result observed on 2026-07-27, when successful
+authentication navigated to `/admin/users`. Since the role-aware Dashboard was
+introduced, the current post-login contract is `/admin`, which is accessible to
+every Release 1 admin role and then exposes only the modules allowed by that
+role. `AUTH-007-QA-FIX` aligned the static verifier with that current contract on
+2026-09-01; authentication, MFA, role checks, and protected-data loading were
+not changed.
+
 Scope:
 
 - Admin login route.
@@ -32,7 +42,9 @@ Observed result:
 
 - `/admin/login` reached MFA setup.
 - QR code rendered successfully after the data-SVG rendering fix.
-- The flow completed and navigated to `/admin/users`.
+- At the time of this review, the flow completed and navigated to
+  `/admin/users`. The current role-safe landing is `/admin`; see the alignment
+  note above.
 
 ## Remote Auth Edge Checks
 

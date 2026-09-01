@@ -26,7 +26,7 @@ if (existsSync('components/admin-mfa-login.tsx')) {
     'enroll',
     'challengeAndVerify',
     '/api/v1/admin/me',
-    "router.push('/admin/users')",
+    "router.push('/admin')",
   ];
 
   for (const snippet of requiredSnippets) {
@@ -37,6 +37,10 @@ if (existsSync('components/admin-mfa-login.tsx')) {
 
   if (/SUPABASE_SERVICE_ROLE_KEY|SUPABASE_ACCESS_TOKEN|SUPABASE_DB_PASSWORD/.test(login)) {
     errors.push('Admin MFA login must not reference server-only Supabase secrets.');
+  }
+
+  if (login.includes("router.push('/admin/users')")) {
+    errors.push('Admin MFA login must use the role-safe Dashboard landing, not the Owner/Super Admin-only users module.');
   }
 }
 
