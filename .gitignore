@@ -7,6 +7,8 @@ node_modules/
 out/
 dist/
 coverage/
+playwright-report/
+test-results/
 backups/
 # Generated credential/document artifacts can contain private verification data.
 output/
