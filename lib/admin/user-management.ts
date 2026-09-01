@@ -33,6 +33,13 @@ export type CreateAdminUserInput = {
   roles: AppRole[];
 };
 
+export type UpdateAdminUserAtomicInput = {
+  fullName: string | null;
+  isActive: boolean;
+  mfaRequired: boolean;
+  roles: AppRole[];
+};
+
 export function toAdminUserSummary(row: UserProfileRow, emailByUserId: Map<string, string | null>): AdminUserSummary {
   return {
     id: row.id,
@@ -149,6 +156,37 @@ export async function updateAdminUser(
   if (error) {
     throw new ApiError('bad_request', 400, error.message);
   }
+}
+
+export async function updateAdminUserAtomic(
+  context: AdminContext,
+  userId: string,
+  input: UpdateAdminUserAtomicInput,
+): Promise<AdminUserSummary> {
+  if (input.roles.length === 0) {
+    throw new ApiError('bad_request', 400, 'At least one role is required.');
+  }
+
+  const requestClient = getSupabaseRequestClient(context.accessToken);
+  const { error } = await requestClient.rpc('update_admin_user_atomic', {
+    p_full_name: input.fullName,
+    p_is_active: input.isActive,
+    p_mfa_required: input.mfaRequired,
+    p_roles: input.roles,
+    p_user_id: userId,
+  });
+
+  if (error) {
+    const forbidden = error.code === '42501';
+    throw new ApiError(forbidden ? 'forbidden' : 'bad_request', forbidden ? 403 : 400, error.message);
+  }
+
+  const user = (await listAdminUsers()).find((candidate) => candidate.id === userId);
+  if (!user) {
+    throw new ApiError('server_error', 500, 'Updated admin user could not be loaded.');
+  }
+
+  return user;
 }
 
 export async function assignRoles(context: AdminContext, userId: string, roles: AppRole[]): Promise<void> {

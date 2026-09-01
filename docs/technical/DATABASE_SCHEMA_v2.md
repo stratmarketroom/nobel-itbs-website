@@ -89,6 +89,9 @@ Rules:
 - Owner role/flag is unique and Owner-only managed.
 - Only Owner can create/change Super Admins.
 - Users may have multiple roles.
+- Admin profile and complete-role-set edits use one controlled atomic function;
+  failed validation or authorization rolls back profile, roles, and their audit
+  events together.
 
 ## 5. Content Pages
 

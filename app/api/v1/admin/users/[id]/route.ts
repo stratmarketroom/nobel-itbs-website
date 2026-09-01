@@ -1,6 +1,13 @@
-import { listAdminUsers, updateAdminUser } from '@/lib/admin/user-management';
+import { listAdminUsers, updateAdminUserAtomic } from '@/lib/admin/user-management';
 import { jsonError, jsonOk } from '@/lib/api/responses';
-import { ApiError, assertCanManageRoles, assertCanManageUsers, getAdminContext } from '@/lib/supabase/server';
+import {
+  ApiError,
+  assertCanManageRoles,
+  assertCanManageUsers,
+  getAdminContext,
+  isValidAppRole,
+  normalizeRoles,
+} from '@/lib/supabase/server';
 
 type UserRouteProps = {
   params: Promise<{
@@ -12,54 +19,64 @@ type UpdateUserBody = {
   fullName?: unknown;
   isActive?: unknown;
   mfaRequired?: unknown;
+  roles?: unknown;
 };
 
-function parseUpdateUserBody(body: UpdateUserBody) {
-  const input: { fullName?: string | null; isActive?: boolean; mfaRequired?: boolean } = {};
-
-  if ('fullName' in body) {
-    input.fullName = typeof body.fullName === 'string' && body.fullName.trim() ? body.fullName.trim() : null;
+function parseUpdateUserBody(value: unknown) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new ApiError('bad_request', 400, 'User update must be a JSON object.');
   }
 
-  if ('isActive' in body) {
-    if (typeof body.isActive !== 'boolean') {
-      throw new ApiError('bad_request', 400, 'isActive must be boolean.');
-    }
+  const body = value as UpdateUserBody;
 
-    input.isActive = body.isActive;
+  if (!('fullName' in body) || (typeof body.fullName !== 'string' && body.fullName !== null)) {
+    throw new ApiError('bad_request', 400, 'fullName must be a string or null.');
   }
 
-  if ('mfaRequired' in body) {
-    if (typeof body.mfaRequired !== 'boolean') {
-      throw new ApiError('bad_request', 400, 'mfaRequired must be boolean.');
-    }
-
-    input.mfaRequired = body.mfaRequired;
+  if (typeof body.isActive !== 'boolean') {
+    throw new ApiError('bad_request', 400, 'isActive must be boolean.');
   }
 
-  return input;
+  if (typeof body.mfaRequired !== 'boolean') {
+    throw new ApiError('bad_request', 400, 'mfaRequired must be boolean.');
+  }
+
+  if (!Array.isArray(body.roles) || body.roles.length === 0 || !body.roles.every(isValidAppRole)) {
+    throw new ApiError('bad_request', 400, 'At least one valid admin role is required.');
+  }
+
+  return {
+    fullName: typeof body.fullName === 'string' && body.fullName.trim() ? body.fullName.trim() : null,
+    isActive: body.isActive,
+    mfaRequired: body.mfaRequired,
+    roles: normalizeRoles(body.roles),
+  };
 }
 
 export async function PATCH(request: Request, { params }: UserRouteProps) {
   try {
     const context = await getAdminContext(request);
+    assertCanManageUsers(context);
     const { id } = await params;
-    const body = parseUpdateUserBody((await request.json()) as UpdateUserBody);
+    const body = parseUpdateUserBody(await request.json());
     const target = (await listAdminUsers()).find((user) => user.id === id);
 
     if (!target) {
       throw new ApiError('not_found', 404, 'Admin user was not found.');
     }
 
-    if (target.isOwner || target.roles.includes('owner') || target.roles.includes('super_admin')) {
-      assertCanManageRoles(context, target.roles);
-    } else {
-      assertCanManageUsers(context);
+    const governedRoles = normalizeRoles([...target.roles, ...body.roles]);
+    if (target.isOwner || governedRoles.includes('owner') || governedRoles.includes('super_admin')) {
+      assertCanManageRoles(context, governedRoles);
     }
 
-    await updateAdminUser(context, id, body);
+    if (target.isOwner !== body.roles.includes('owner')) {
+      throw new ApiError('bad_request', 400, 'Owner role cannot be changed through this user update.');
+    }
 
-    return jsonOk({ ok: true });
+    const user = await updateAdminUserAtomic(context, id, body);
+
+    return jsonOk({ user });
   } catch (error) {
     return jsonError(error);
   }

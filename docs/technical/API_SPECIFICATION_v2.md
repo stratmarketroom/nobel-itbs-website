@@ -290,6 +290,11 @@ Owner/Super Admin according to role rules:
 - activate/deactivate;
 - assign/remove roles.
 
+`PATCH /api/v1/admin/users/{id}` accepts the complete editable profile and
+desired role set. The database applies the profile and exact role set in one
+transaction, so a rejected Owner, role, MFA, or profile rule leaves both
+unchanged.
+
 Owner-only:
 
 - create/change Super Admin;

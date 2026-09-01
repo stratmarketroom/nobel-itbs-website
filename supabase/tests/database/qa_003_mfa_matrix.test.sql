@@ -94,11 +94,11 @@ select results_eq(
     where n.nspname = 'public'
       and p.proname in (
         'create_admin_profile', 'update_admin_profile',
-        'assign_admin_roles', 'remove_admin_roles'
+        'assign_admin_roles', 'remove_admin_roles', 'update_admin_user_atomic'
       )
       and p.prosrc like '%assert_sensitive_action_allowed%'
   $$,
-  $$ values (4::bigint) $$,
+  $$ values (5::bigint) $$,
   'every database user/role management function should use the sensitive-action guard'
 );
 
@@ -333,7 +333,7 @@ select results_eq(
     where n.nspname = 'public'
       and p.proname in (
         'create_admin_profile', 'update_admin_profile',
-        'assign_admin_roles', 'remove_admin_roles',
+        'assign_admin_roles', 'remove_admin_roles', 'update_admin_user_atomic',
         'find_or_create_credential_set', 'reserve_document_number',
         'reserve_manual_document_number', 'void_reserved_document_number',
         'move_credential_to_set', 'add_credential_note', 'update_credential_note',
@@ -358,7 +358,7 @@ select results_eq(
     where n.nspname = 'public'
       and p.proname in (
         'create_admin_profile', 'update_admin_profile',
-        'assign_admin_roles', 'remove_admin_roles',
+        'assign_admin_roles', 'remove_admin_roles', 'update_admin_user_atomic',
         'find_or_create_credential_set', 'reserve_document_number',
         'reserve_manual_document_number', 'void_reserved_document_number',
         'move_credential_to_set', 'add_credential_note', 'update_credential_note',
@@ -371,7 +371,7 @@ select results_eq(
       )
       and has_function_privilege('authenticated', p.oid, 'execute')
   $$,
-  $$ values (23::bigint) $$,
+  $$ values (24::bigint) $$,
   'authenticated admin functions should remain callable only behind their role/MFA checks'
 );
 

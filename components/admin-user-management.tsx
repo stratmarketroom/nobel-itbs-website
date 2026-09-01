@@ -192,31 +192,18 @@ export function AdminUserManagement() {
     if (!selected || !editor) return;
     if (!canEditSelected) throw new Error('Only Owner can change Owner or Super Admin accounts.');
     if (editor.roles.length === 0) throw new Error('At least one role is required.');
-    const token = await accessToken();
-    const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
-    const added = editor.roles.filter((role) => !selected.roles.includes(role));
-    const removed = selected.roles.filter((role) => !editor.roles.includes(role));
-    if (added.length) {
-      const response = await fetch(`/api/v1/admin/users/${selected.id}/roles`, { method: 'PUT', headers, body: JSON.stringify({ roles: added }) });
-      const payload = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(apiError(payload, 'Roles could not be assigned.'));
-    }
-    if (removed.length) {
-      const response = await fetch(`/api/v1/admin/users/${selected.id}/roles`, { method: 'DELETE', headers, body: JSON.stringify({ roles: removed }) });
-      const payload = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(apiError(payload, 'Roles could not be removed.'));
-    }
-    const profileChanged = editor.fullName.trim() !== (selected.fullName ?? '')
-      || editor.isActive !== selected.isActive
-      || editor.mfaRequired !== selected.mfaRequired;
-    if (profileChanged) {
-      const response = await fetch(`/api/v1/admin/users/${selected.id}`, {
-        method: 'PATCH', headers,
-        body: JSON.stringify({ fullName: editor.fullName.trim() || null, isActive: editor.isActive, mfaRequired: editor.mfaRequired }),
-      });
-      const payload = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(apiError(payload, 'User profile could not be updated.'));
-    }
+    const response = await fetch(`/api/v1/admin/users/${selected.id}`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${await accessToken()}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName: editor.fullName.trim() || null,
+        isActive: editor.isActive,
+        mfaRequired: editor.mfaRequired,
+        roles: editor.roles,
+      }),
+    });
+    const payload = await response.json().catch(() => null) as { user?: AdminUserSummary } | null;
+    if (!response.ok || !payload?.user) throw new Error(apiError(payload, 'User changes could not be saved.'));
     await load(selected.id);
     setMessageKind('success');
     setMessage('Changes saved and recorded in the audit log.');
