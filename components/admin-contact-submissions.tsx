@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { AdminPagination } from '@/components/admin-pagination';
 import {
   contactSubmissionStatuses,
   contactSubmissionTypes,
@@ -15,6 +16,8 @@ type ContactListResponse = {
   submissions: ContactSubmissionAdminItem[];
   total: number;
 };
+
+const pageSize = 50;
 
 const statusLabels: Record<ContactSubmissionStatus, string> = {
   new: 'New',
@@ -52,6 +55,7 @@ export function AdminContactSubmissions() {
   const [statusFilter, setStatusFilter] = useState<ContactSubmissionStatus | ''>('');
   const [typeFilter, setTypeFilter] = useState<ContactSubmissionType | ''>('');
   const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -70,7 +74,7 @@ export function AdminContactSubmissions() {
 
     try {
       const token = await accessToken();
-      const params = new URLSearchParams({ limit: '100' });
+      const params = new URLSearchParams({ limit: String(pageSize), offset: String(offset) });
       if (statusFilter) params.set('status', statusFilter);
       if (typeFilter) params.set('type', typeFilter);
       const response = await fetch(`/api/v1/admin/contact-submissions?${params}`, {
@@ -79,6 +83,11 @@ export function AdminContactSubmissions() {
       });
       const payload = await response.json().catch(() => null) as ContactListResponse | null;
       if (!response.ok || !payload) throw new Error(apiError(payload, 'Contact submissions could not be loaded.'));
+
+      if (payload.total > 0 && offset >= payload.total) {
+        setOffset(Math.floor((payload.total - 1) / pageSize) * pageSize);
+        return;
+      }
 
       setSubmissions(payload.submissions);
       setTotal(payload.total);
@@ -90,7 +99,7 @@ export function AdminContactSubmissions() {
     } finally {
       setLoading(false);
     }
-  }, [accessToken, statusFilter, typeFilter]);
+  }, [accessToken, offset, statusFilter, typeFilter]);
 
   useEffect(() => {
     const task = window.setTimeout(() => void loadSubmissions(), 0);
@@ -115,9 +124,7 @@ export function AdminContactSubmissions() {
       const payload = await response.json().catch(() => null) as { submission?: ContactSubmissionAdminItem } | null;
       if (!response.ok || !payload?.submission) throw new Error(apiError(payload, 'Status could not be updated.'));
 
-      setSubmissions((current) => current.map((submission) => (
-        submission.id === payload.submission?.id ? payload.submission : submission
-      )));
+      await loadSubmissions();
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : 'Status could not be updated.');
     } finally {
@@ -140,7 +147,7 @@ export function AdminContactSubmissions() {
           <label htmlFor="contact-status-filter">Status</label>
           <select
             id="contact-status-filter"
-            onChange={(event) => setStatusFilter(event.target.value as ContactSubmissionStatus | '')}
+            onChange={(event) => { setOffset(0); setStatusFilter(event.target.value as ContactSubmissionStatus | ''); }}
             value={statusFilter}
           >
             <option value="">All statuses</option>
@@ -153,7 +160,7 @@ export function AdminContactSubmissions() {
           <label htmlFor="contact-type-filter">Type</label>
           <select
             id="contact-type-filter"
-            onChange={(event) => setTypeFilter(event.target.value as ContactSubmissionType | '')}
+            onChange={(event) => { setOffset(0); setTypeFilter(event.target.value as ContactSubmissionType | ''); }}
             value={typeFilter}
           >
             <option value="">All types</option>
@@ -212,6 +219,7 @@ export function AdminContactSubmissions() {
               <span className={`contact-status contact-status-${submission.status}`}>{statusLabels[submission.status]}</span>
             </button>
           )) : null}
+          <AdminPagination label="Contact submission pages" limit={pageSize} offset={offset} total={total} loading={loading} onOffsetChange={setOffset} />
         </section>
 
         <aside className="contact-admin-detail" aria-label="Selected submission details">

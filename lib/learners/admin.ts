@@ -7,6 +7,7 @@ import {
   type AdminContext,
 } from '@/lib/supabase/server';
 import type { LearnerAdminItem, LearnerConflictReference } from '@/lib/learners/types';
+import { collectPaginatedRows } from '@/lib/credentials/pagination';
 
 type LearnerRow = {
   id: string;
@@ -40,7 +41,12 @@ type LearnerRow = {
   }> | null;
 };
 
-export type LearnerListFilters = { query?: string; archived?: 'active' | 'archived' | 'all' };
+export type LearnerListFilters = {
+  query?: string;
+  archived?: 'active' | 'archived' | 'all';
+  limit?: number;
+  offset?: number;
+};
 export type LearnerContactKind = 'email' | 'phone';
 
 const learnerSelect = `id, latin_first_name, latin_last_name, ukrainian_full_name, internal_note, archived_at, created_at, updated_at,
@@ -123,21 +129,47 @@ async function contactError(db: SupabaseClient, kind: LearnerContactKind, value:
 
 export async function listLearners(context: AdminContext, filters: LearnerListFilters): Promise<{ learners: LearnerAdminItem[]; total: number }> {
   const db = client(context);
-  let query = db.from('learners').select(learnerSelect).order('updated_at', { ascending: false }).limit(250);
-  if (filters.archived === 'archived') query = query.not('archived_at', 'is', null);
-  else if (filters.archived !== 'all') query = query.is('archived_at', null);
-  const { data, error } = await query;
-  if (error) throw databaseError(error, 'Learners could not be loaded.');
-  const items = ((data ?? []) as unknown as LearnerRow[]).map(toItem);
+  const limit = Math.min(Math.max(filters.limit ?? 50, 1), 100);
+  const offset = Math.max(filters.offset ?? 0, 0);
   const needle = filters.query?.trim().toLocaleLowerCase() ?? '';
-  const learners = needle ? items.filter((item) => [
-    item.latinFirstName,
-    item.latinLastName,
-    item.ukrainianFullName,
-    ...item.emails.map(({ email }) => email),
-    ...item.phones.map(({ phone }) => phone),
-  ].some((value) => value.toLocaleLowerCase().includes(needle))) : items;
-  return { learners, total: learners.length };
+
+  if (!needle) {
+    let query = db.from('learners').select(learnerSelect, { count: 'exact' });
+    if (filters.archived === 'archived') query = query.not('archived_at', 'is', null);
+    else if (filters.archived !== 'all') query = query.is('archived_at', null);
+    const { data, error, count } = await query
+      .order('updated_at', { ascending: false })
+      .order('id', { ascending: false })
+      .range(offset, offset + limit - 1);
+    if (error) throw databaseError(error, 'Learners could not be loaded.');
+    const rows = (data ?? []) as unknown as LearnerRow[];
+    return { learners: rows.map(toItem), total: count ?? rows.length };
+  }
+
+  type SearchRow = Pick<LearnerRow, 'id' | 'latin_first_name' | 'latin_last_name' | 'ukrainian_full_name' | 'learner_emails' | 'learner_phones'>;
+  const matches = await collectPaginatedRows<SearchRow>(async (from, to) => {
+    let query = db.from('learners').select(`id, latin_first_name, latin_last_name, ukrainian_full_name,
+      learner_emails (email), learner_phones (phone)`);
+    if (filters.archived === 'archived') query = query.not('archived_at', 'is', null);
+    else if (filters.archived !== 'all') query = query.is('archived_at', null);
+    const result = await query.order('updated_at', { ascending: false }).order('id', { ascending: false }).range(from, to);
+    if (result.error) throw databaseError(result.error, 'Learners could not be searched.');
+    return (result.data ?? []) as unknown as SearchRow[];
+  });
+  const matchingIds = matches.filter((row) => [
+    row.latin_first_name,
+    row.latin_last_name,
+    row.ukrainian_full_name,
+    ...(row.learner_emails ?? []).map(({ email }) => email),
+    ...(row.learner_phones ?? []).map(({ phone }) => phone),
+  ].some((value) => value.toLocaleLowerCase().includes(needle))).map(({ id }) => id);
+  const pageIds = matchingIds.slice(offset, offset + limit);
+  if (pageIds.length === 0) return { learners: [], total: matchingIds.length };
+
+  const { data, error } = await db.from('learners').select(learnerSelect).in('id', pageIds);
+  if (error) throw databaseError(error, 'Learners could not be loaded.');
+  const items = new Map(((data ?? []) as unknown as LearnerRow[]).map((row) => [row.id, toItem(row)]));
+  return { learners: pageIds.flatMap((id) => items.get(id) ? [items.get(id)!] : []), total: matchingIds.length };
 }
 
 export async function getLearner(context: AdminContext, id: string): Promise<LearnerAdminItem> {

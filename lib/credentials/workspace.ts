@@ -5,6 +5,7 @@ import { getCredentialActivationDraft } from '@/lib/credentials/activation';
 import type { CredentialEmailSendItem } from '@/lib/credentials/activation-types';
 import { getCredentialResendDraft } from '@/lib/credentials/resend';
 import { getCredentialGenerationState } from '@/lib/credentials/generation';
+import { collectPaginatedRows } from '@/lib/credentials/pagination';
 import {
   ApiError,
   assertCanManageCredentials,
@@ -36,6 +37,16 @@ type CredentialRow = {
   voided_at: string | null; void_reason: string | null; created_at: string; updated_at: string;
 };
 
+export type CredentialListFilters = {
+  query?: string;
+  status?: CredentialAdminListItem['status'];
+  learnerId?: string;
+  limit?: number;
+  offset?: number;
+};
+
+export type CredentialRegistryPagination = { limit?: number; offset?: number };
+
 const credentialSelect = `id, credential_set_id, learner_id, programme_id, programme_run_id, credential_type_id,
   language_code, status, issue_date, document_number, public_holder_name, public_programme_title,
   public_credential_type, activated_at, revoked_at, revocation_reason, voided_at, void_reason, created_at, updated_at`;
@@ -55,23 +66,44 @@ function databaseError(error: { code?: string } | null, fallback: string): ApiEr
 
 async function lookups(db: SupabaseClient): Promise<Lookup> {
   const [learners, programmes, translations, runs, types, typeTranslations] = await Promise.all([
-    db.from('learners').select('id, latin_first_name, latin_last_name'),
-    db.from('programmes').select('id, slug'),
-    db.from('programme_translations').select('programme_id, title').eq('language_code', 'en'),
-    db.from('programme_runs').select('id, status, starts_at, ends_at'),
-    db.from('credential_types').select('id, code'),
-    db.from('credential_type_translations').select('credential_type_id, display_name').eq('language_code', 'en'),
+    collectPaginatedRows(async (from, to) => {
+      const result = await db.from('learners').select('id, latin_first_name, latin_last_name').order('id').range(from, to);
+      if (result.error) throw databaseError(result.error, 'Credential learner references could not be loaded.');
+      return result.data ?? [];
+    }),
+    collectPaginatedRows(async (from, to) => {
+      const result = await db.from('programmes').select('id, slug').order('id').range(from, to);
+      if (result.error) throw databaseError(result.error, 'Credential programme references could not be loaded.');
+      return result.data ?? [];
+    }),
+    collectPaginatedRows(async (from, to) => {
+      const result = await db.from('programme_translations').select('programme_id, title').eq('language_code', 'en').order('programme_id').range(from, to);
+      if (result.error) throw databaseError(result.error, 'Credential programme translations could not be loaded.');
+      return result.data ?? [];
+    }),
+    collectPaginatedRows(async (from, to) => {
+      const result = await db.from('programme_runs').select('id, status, starts_at, ends_at').order('id').range(from, to);
+      if (result.error) throw databaseError(result.error, 'Credential run references could not be loaded.');
+      return result.data ?? [];
+    }),
+    collectPaginatedRows(async (from, to) => {
+      const result = await db.from('credential_types').select('id, code').order('id').range(from, to);
+      if (result.error) throw databaseError(result.error, 'Credential type references could not be loaded.');
+      return result.data ?? [];
+    }),
+    collectPaginatedRows(async (from, to) => {
+      const result = await db.from('credential_type_translations').select('credential_type_id, display_name').eq('language_code', 'en').order('credential_type_id').range(from, to);
+      if (result.error) throw databaseError(result.error, 'Credential type translations could not be loaded.');
+      return result.data ?? [];
+    }),
   ]);
-  for (const result of [learners, programmes, translations, runs, types, typeTranslations]) {
-    if (result.error) throw databaseError(result.error, 'Credential reference data could not be loaded.');
-  }
-  const programmeTitles = new Map((translations.data ?? []).map((row) => [row.programme_id, row.title]));
-  const typeLabels = new Map((typeTranslations.data ?? []).map((row) => [row.credential_type_id, row.display_name]));
+  const programmeTitles = new Map(translations.map((row) => [row.programme_id, row.title]));
+  const typeLabels = new Map(typeTranslations.map((row) => [row.credential_type_id, row.display_name]));
   return {
-    learners: new Map((learners.data ?? []).map((row) => [row.id, `${row.latin_first_name} ${row.latin_last_name}`])),
-    programmes: new Map((programmes.data ?? []).map((row) => [row.id, programmeTitles.get(row.id) ?? row.slug])),
-    runs: new Map((runs.data ?? []).map((row) => [row.id, runLabel(row.status, row.starts_at, row.ends_at)])),
-    types: new Map((types.data ?? []).map((row) => [row.id, typeLabels.get(row.id) ?? row.code])),
+    learners: new Map(learners.map((row) => [row.id, `${row.latin_first_name} ${row.latin_last_name}`])),
+    programmes: new Map(programmes.map((row) => [row.id, programmeTitles.get(row.id) ?? row.slug])),
+    runs: new Map(runs.map((row) => [row.id, runLabel(row.status, row.starts_at, row.ends_at)])),
+    types: new Map(types.map((row) => [row.id, typeLabels.get(row.id) ?? row.code])),
   };
 }
 
@@ -108,14 +140,51 @@ function toCredential(row: CredentialRow, lookup: Lookup): CredentialAdminListIt
   };
 }
 
-export async function listCredentials(context: AdminContext): Promise<CredentialAdminListItem[]> {
+export async function listCredentials(
+  context: AdminContext,
+  filters: CredentialListFilters = {},
+): Promise<{ credentials: CredentialAdminListItem[]; total: number }> {
   const db = client(context);
-  const [lookup, result] = await Promise.all([
-    lookups(db),
-    db.from('credentials').select(credentialSelect).order('updated_at', { ascending: false }).limit(500),
-  ]);
-  if (result.error) throw databaseError(result.error, 'Credentials could not be loaded.');
-  return ((result.data ?? []) as CredentialRow[]).map((row) => toCredential(row, lookup));
+  const lookup = await lookups(db);
+  const limit = Math.min(Math.max(filters.limit ?? 50, 1), 100);
+  const offset = Math.max(filters.offset ?? 0, 0);
+  const needle = filters.query?.trim().toLocaleLowerCase() ?? '';
+
+  const filteredQuery = () => {
+    let query = db.from('credentials').select(credentialSelect, { count: 'exact' });
+    if (filters.status) query = query.eq('status', filters.status);
+    if (filters.learnerId) query = query.eq('learner_id', filters.learnerId);
+    return query;
+  };
+
+  if (!needle) {
+    const result = await filteredQuery()
+      .order('updated_at', { ascending: false })
+      .order('id', { ascending: false })
+      .range(offset, offset + limit - 1);
+    if (result.error) throw databaseError(result.error, 'Credentials could not be loaded.');
+    const rows = (result.data ?? []) as CredentialRow[];
+    return { credentials: rows.map((row) => toCredential(row, lookup)), total: result.count ?? rows.length };
+  }
+
+  const rows = await collectPaginatedRows<CredentialRow>(async (from, to) => {
+    const result = await filteredQuery()
+      .order('updated_at', { ascending: false })
+      .order('id', { ascending: false })
+      .range(from, to);
+    if (result.error) throw databaseError(result.error, 'Credentials could not be searched.');
+    return (result.data ?? []) as CredentialRow[];
+  });
+  const matches = rows.map((row) => toCredential(row, lookup)).filter((item) => [
+    item.documentNumber,
+    item.learnerName,
+    item.programmeTitle,
+    item.credentialType,
+    item.publicHolderName,
+    item.publicProgrammeTitle,
+    item.publicCredentialType,
+  ].some((value) => value.toLocaleLowerCase().includes(needle)));
+  return { credentials: matches.slice(offset, offset + limit), total: matches.length };
 }
 
 export async function getCredentialDetail(context: AdminContext, credentialId: string, requestOrigin: string): Promise<CredentialAdminDetail> {
@@ -201,37 +270,62 @@ export async function getCredentialReferences(context: AdminContext): Promise<Cr
   };
 }
 
-export async function listCredentialSets(context: AdminContext): Promise<CredentialSetAdminItem[]> {
+export async function listCredentialSets(
+  context: AdminContext,
+  pagination: CredentialRegistryPagination = {},
+): Promise<{ credentialSets: CredentialSetAdminItem[]; total: number }> {
   const db = client(context);
-  const [lookup, sets, credentials] = await Promise.all([
+  const limit = Math.min(Math.max(pagination.limit ?? 50, 1), 100);
+  const offset = Math.max(pagination.offset ?? 0, 0);
+  const [lookup, sets] = await Promise.all([
     lookups(db),
-    db.from('credential_sets').select('id, learner_id, programme_id, programme_run_id, completion_date, created_at').order('created_at', { ascending: false }).limit(500),
-    db.from('credentials').select('credential_set_id'),
+    db.from('credential_sets')
+      .select('id, learner_id, programme_id, programme_run_id, completion_date, created_at', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: false })
+      .range(offset, offset + limit - 1),
   ]);
-  if (sets.error || credentials.error) throw databaseError(sets.error ?? credentials.error, 'Credential sets could not be loaded.');
+  if (sets.error) throw databaseError(sets.error, 'Credential sets could not be loaded.');
+  const setIds = (sets.data ?? []).map(({ id }) => id);
+  const credentialRows = setIds.length === 0 ? [] : await collectPaginatedRows<{ credential_set_id: string }>(async (from, to) => {
+    const result = await db.from('credentials').select('credential_set_id').in('credential_set_id', setIds).range(from, to);
+    if (result.error) throw databaseError(result.error, 'Credential set counts could not be loaded.');
+    return result.data ?? [];
+  });
   const counts = new Map<string, number>();
-  for (const row of credentials.data ?? []) counts.set(row.credential_set_id, (counts.get(row.credential_set_id) ?? 0) + 1);
-  return (sets.data ?? []).map((row) => ({
+  for (const row of credentialRows) counts.set(row.credential_set_id, (counts.get(row.credential_set_id) ?? 0) + 1);
+  const credentialSets = (sets.data ?? []).map((row) => ({
     id: row.id, learnerName: lookup.learners.get(row.learner_id) ?? 'Unknown learner',
     programmeTitle: lookup.programmes.get(row.programme_id) ?? 'Unknown programme',
     programmeRunLabel: row.programme_run_id ? lookup.runs.get(row.programme_run_id) ?? null : null,
     completionDate: row.completion_date, credentialCount: counts.get(row.id) ?? 0, createdAt: row.created_at,
   }));
+  return { credentialSets, total: sets.count ?? credentialSets.length };
 }
 
-export async function listDocumentNumbers(context: AdminContext): Promise<DocumentNumberAdminItem[]> {
+export async function listDocumentNumbers(
+  context: AdminContext,
+  pagination: CredentialRegistryPagination = {},
+): Promise<{ documentNumbers: DocumentNumberAdminItem[]; total: number }> {
   const db = client(context);
+  const limit = Math.min(Math.max(pagination.limit ?? 50, 1), 100);
+  const offset = Math.max(pagination.offset ?? 0, 0);
   const [lookup, result] = await Promise.all([
     lookups(db),
-    db.from('document_number_log').select('id, document_number, sequence_value, credential_id, credential_type_id, status, is_manual, void_reason, created_at, updated_at').order('sequence_value', { ascending: false }).limit(1000),
+    db.from('document_number_log')
+      .select('id, document_number, sequence_value, credential_id, credential_type_id, status, is_manual, void_reason, created_at, updated_at', { count: 'exact' })
+      .order('sequence_value', { ascending: false })
+      .order('id', { ascending: false })
+      .range(offset, offset + limit - 1),
   ]);
   if (result.error) throw databaseError(result.error, 'Document number log could not be loaded.');
-  return (result.data ?? []).map((row) => ({
+  const documentNumbers = (result.data ?? []).map((row) => ({
     id: row.id, documentNumber: row.document_number, sequenceValue: Number(row.sequence_value),
     credentialId: row.credential_id, credentialType: lookup.types.get(row.credential_type_id) ?? 'Unknown type',
     status: row.status, isManual: row.is_manual, voidReason: row.void_reason,
     createdAt: row.created_at, updatedAt: row.updated_at,
   }));
+  return { documentNumbers, total: result.count ?? documentNumbers.length };
 }
 
 function noteFromRow(context: AdminContext, row: Record<string, unknown>): CredentialNoteItem {

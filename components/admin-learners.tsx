@@ -3,11 +3,14 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { AdminPagination } from '@/components/admin-pagination';
 import type { LearnerAdminItem, LearnerConflictReference, LearnerEmail, LearnerImportPreview, LearnerImportResult, LearnerPhone } from '@/lib/learners/types';
 
 type ArchiveFilter = 'active' | 'archived' | 'all';
 type EditorTab = 'profile' | 'contacts' | 'credentials';
 type Notice = { kind: 'success' | 'error'; message: string; conflict?: LearnerConflictReference } | null;
+
+const pageSize = 50;
 
 class RequestError extends Error {
   conflict?: LearnerConflictReference;
@@ -41,6 +44,8 @@ export function AdminLearners() {
   const [search, setSearch] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
   const [archiveFilter, setArchiveFilter] = useState<ArchiveFilter>('active');
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
@@ -73,15 +78,20 @@ export function AdminLearners() {
     setLoading(true);
     setNotice(null);
     try {
-      const params = new URLSearchParams({ archived: archiveFilter });
+      const params = new URLSearchParams({ archived: archiveFilter, limit: String(pageSize), offset: String(offset) });
       if (appliedSearch) params.set('query', appliedSearch);
       const payload = await request<{ learners: LearnerAdminItem[]; total: number }>(`/api/v1/admin/learners?${params}`);
+      if (payload.total > 0 && offset >= payload.total) {
+        setOffset(Math.floor((payload.total - 1) / pageSize) * pageSize);
+        return;
+      }
       setLearners(payload.learners);
+      setTotal(payload.total);
       setSelectedId((current) => current && payload.learners.some(({ id }) => id === current) ? current : null);
     } catch (error) {
       setNotice({ kind: 'error', message: error instanceof Error ? error.message : 'Learners could not be loaded.' });
     } finally { setLoading(false); }
-  }, [appliedSearch, archiveFilter, request]);
+  }, [appliedSearch, archiveFilter, offset, request]);
 
   useEffect(() => { const task = window.setTimeout(() => void load(), 0); return () => window.clearTimeout(task); }, [load]);
 
@@ -238,13 +248,13 @@ export function AdminLearners() {
         <div><p className="admin-kicker">Credential registry</p><h1>Learners</h1><p>Maintain private learner identity and contact records before issuing credentials.</p></div>
       </header>
 
-      <form className="learner-admin-toolbar" onSubmit={(event) => { event.preventDefault(); setAppliedSearch(search.trim()); }}>
+      <form className="learner-admin-toolbar" onSubmit={(event) => { event.preventDefault(); setOffset(0); setAppliedSearch(search.trim()); }}>
         <label><span>Search learners</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Name, email, or phone" /></label>
-        <label><span>Status</span><select value={archiveFilter} onChange={(event) => setArchiveFilter(event.target.value as ArchiveFilter)}><option value="active">Active learners</option><option value="archived">Archived learners</option><option value="all">All learners</option></select></label>
+        <label><span>Status</span><select value={archiveFilter} onChange={(event) => { setOffset(0); setArchiveFilter(event.target.value as ArchiveFilter); }}><option value="active">Active learners</option><option value="archived">Archived learners</option><option value="all">All learners</option></select></label>
         <button type="submit">Search</button>
         <button className="secondary" type="button" onClick={() => { setCreating(true); setSelectedId(null); setTab('profile'); setNotice(null); }}>Add learner</button>
         <button className="secondary" type="button" aria-expanded={importOpen} onClick={() => { setImportOpen((current) => !current); setImportPreview(null); setImportConfirmed(false); setNotice(null); }}>Import list</button>
-        <span aria-live="polite">{loading ? 'Loading learners' : `${learners.length} learner${learners.length === 1 ? '' : 's'}`}</span>
+        <span aria-live="polite">{loading ? 'Loading learners' : `${total} learner${total === 1 ? '' : 's'}`}</span>
       </form>
 
       {notice ? <div className={`learner-admin-notice ${notice.kind}`} role={notice.kind === 'error' ? 'alert' : 'status'}><span>{notice.message}</span>{notice.conflict ? <button disabled={saving} type="button" onClick={() => void openConflict(notice.conflict!)}>Open {notice.conflict.displayName}</button> : null}</div> : null}
@@ -256,6 +266,7 @@ export function AdminLearners() {
           {loading ? Array.from({ length: 5 }, (_, index) => <span className="learner-list-skeleton" key={index} />) : null}
           {!loading && learners.length === 0 ? <div className="learner-empty"><strong>No learners found</strong><span>Change the search or add the first learner.</span></div> : null}
           {!loading ? learners.map((learner) => <button type="button" key={learner.id} aria-pressed={learner.id === selectedId} onClick={() => { setSelectedId(learner.id); setCreating(false); setNotice(null); }}><span><strong>{displayName(learner)}</strong><small>{learner.ukrainianFullName}</small><small>{contactSummary(learner)}</small></span><em className={learner.archivedAt ? 'archived' : 'active'}>{learner.archivedAt ? 'Archived' : 'Active'}</em></button>) : null}
+          <AdminPagination label="Learner pages" limit={pageSize} offset={offset} total={total} loading={loading} onOffsetChange={setOffset} />
         </nav>
 
         <section className="learner-admin-editor">

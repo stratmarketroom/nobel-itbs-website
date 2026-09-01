@@ -2765,7 +2765,7 @@
 .credential-notice > div { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.55rem; }
 .credential-notice code { overflow-wrap: anywhere; color: inherit; font-size: 0.66rem; }
 .credential-notice button { min-height: 2rem; border: 1px solid currentColor; border-radius: 6px; padding: 0.35rem 0.58rem; background: transparent; color: inherit; font: inherit; font-size: 0.65rem; font-weight: 730; cursor: pointer; }
-.credential-toolbar { display: grid; grid-template-columns: minmax(15rem, 1fr) minmax(10rem, 12rem) auto auto; gap: 0.7rem; align-items: end; padding: 0.85rem 0; }
+.credential-toolbar { display: grid; grid-template-columns: minmax(15rem, 1fr) minmax(10rem, 12rem) auto auto auto; gap: 0.7rem; align-items: end; padding: 0.85rem 0; }
 .credential-toolbar label,
 .credential-create-form label,
 .credential-file-upload label,
@@ -2961,7 +2961,8 @@
 .credential-delivery-history li { font-size: 0.67rem; line-height: 1.45; }
 .credential-delivery-history pre { overflow-x: auto; max-height: 15rem; padding: 0.65rem; background: oklch(95% 0.008 250); font: inherit; font-size: 0.65rem; white-space: pre-wrap; }
 .credential-delivery-history .delivery-error { color: oklch(42% 0.09 25); }
-.credential-registry-table { overflow-x: auto; margin-top: 1rem; border: 1px solid oklch(87% 0.014 250); border-radius: 8px; background: oklch(99% 0.004 250); }
+.credential-registry-table { margin-top: 1rem; overflow: hidden; border: 1px solid oklch(87% 0.014 250); border-radius: 8px; background: oklch(99% 0.004 250); }
+.credential-registry-scroll { overflow-x: auto; }
 .credential-registry-table table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
 .credential-registry-table th { background: oklch(95% 0.01 250); color: oklch(43% 0.025 250); font-size: 0.62rem; letter-spacing: 0.05em; text-align: left; text-transform: uppercase; }
 .credential-registry-table :is(th, td) { border-bottom: 1px solid oklch(88% 0.012 250); padding: 0.7rem 0.75rem; white-space: nowrap; }
@@ -2972,6 +2973,41 @@
 .credential-empty a { font-size: 0.68rem; }
 .credential-admin-shell :is(button, input, select, textarea):focus-visible { outline: 3px solid oklch(67% 0.13 250 / 35%); outline-offset: 2px; }
 .credential-admin-shell button:disabled { opacity: 0.55; cursor: wait; }
+
+.admin-pagination {
+  display: flex;
+  width: 100%;
+  min-height: 3.2rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid oklch(86% 0.015 252);
+  padding: 0.62rem 0.75rem;
+  background: oklch(97.5% 0.008 252);
+}
+.admin-pagination > span { color: oklch(49% 0.025 252); font-size: 0.64rem; font-weight: 660; }
+.admin-pagination > div { display: flex; gap: 0.4rem; }
+.admin-pagination button {
+  min-height: 2.15rem;
+  border: 1px solid oklch(75% 0.04 250);
+  border-radius: 7px;
+  padding: 0.4rem 0.68rem;
+  background: oklch(99% 0.004 255);
+  color: oklch(34% 0.09 250);
+  font: inherit;
+  font-size: 0.67rem;
+  font-weight: 730;
+  cursor: pointer;
+}
+.admin-pagination button:hover:not(:disabled) { border-color: oklch(54% 0.1 250); background: oklch(96% 0.018 250); }
+.admin-pagination button:disabled { cursor: not-allowed; opacity: 0.55; }
+.contact-admin-list > .admin-pagination { min-width: 44rem; }
+
+@media (max-width: 46rem) {
+  .admin-pagination { align-items: stretch; flex-direction: column; }
+  .admin-pagination > div { display: grid; grid-template-columns: 1fr 1fr; }
+  .admin-pagination button { width: 100%; }
+}
 
 /* PDFGEN-006 protected batch generation and review */
 .credential-batch-module { margin-top: 1rem; }
