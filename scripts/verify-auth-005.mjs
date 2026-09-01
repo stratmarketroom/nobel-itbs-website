@@ -30,8 +30,7 @@ if (existsSync('components/admin-user-management.tsx')) {
     "fetch('/api/v1/admin/users'",
     "method: 'POST'",
     "method: 'PATCH'",
-    "method: 'PUT'",
-    "method: 'DELETE'",
+    'roles: editor.roles',
     'Only Owner can change Owner or Super Admin accounts.',
     'At least one role is required.',
     'MFA verified',
@@ -91,6 +90,7 @@ if (existsSync('lib/admin/user-management.ts')) {
     "rpc('update_admin_profile'",
     "rpc('assign_admin_roles'",
     "rpc('remove_admin_roles'",
+    "rpc('update_admin_user_atomic'",
     'email_confirm: true',
   ];
 

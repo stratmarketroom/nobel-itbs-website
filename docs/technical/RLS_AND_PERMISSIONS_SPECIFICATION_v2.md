@@ -272,6 +272,11 @@ Super Admin:
 - cannot create/change Owner;
 - cannot bypass Owner-only restrictions.
 
+Combined profile/role saves must use the controlled atomic workflow. It checks
+the actor from `auth.uid()`, active role and MFA/AAL2 before mutation, locks the
+target profile, and replaces the requested role set in the same transaction as
+the profile update and audit triggers.
+
 Content Manager and Credential Manager:
 
 - no user management.
