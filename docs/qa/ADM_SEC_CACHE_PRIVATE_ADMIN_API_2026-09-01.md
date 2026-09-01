@@ -2,7 +2,7 @@
 
 Date: 2026-09-01  
 Branch: `codex/adm-sec-cache`  
-Status: local implementation accepted; Preview/Production acceptance pending review and merge
+Status: accepted in Production
 
 ## Scope
 
@@ -61,13 +61,40 @@ The public request could not load Supabase from the isolated local runtime and
 returned `500`; this did not affect the header-boundary assertion and no data
 was written.
 
+## Deployed Production Verification
+
+The merged implementation from PR #78 (`8daf086`) passed the deployed
+canonical-origin matrix at `https://nobel-itbs.eu`:
+
+- unauthenticated `GET /api/v1/admin/me` returned `401` with
+  `Cache-Control: private, no-store, max-age=0, must-revalidate`,
+  `CDN-Cache-Control: no-store`, the complete admin `X-Robots-Tag`, and
+  `X-Vercel-Cache: MISS`;
+- unauthenticated `GET /api/v1/admin/credentials` returned the same protected
+  `401` boundary;
+- `GET /api/v1/admin/me/` returned a canonical `301` with the same private and
+  CDN no-store controls plus the complete admin `X-Robots-Tag`;
+- authenticated read-only Owner/AAL2 `GET /api/v1/admin/me` returned `200 OK`
+  with the same private browser cache policy, `CDN-Cache-Control: no-store`,
+  the complete admin `X-Robots-Tag`, and `X-Vercel-Cache: BYPASS`;
+- public `GET /api/v1/public/programmes?locale=en` returned `200` with
+  `Cache-Control: public`, confirming that the admin-private policy does not
+  broaden to the public API.
+
+Vercel consumes its platform-specific `Vercel-CDN-Cache-Control` directive at
+the edge and does not expose that directive to the client. The externally
+visible generic CDN header remained `no-store`, and the authenticated response
+was explicitly bypassed rather than cached.
+
 ## Security Notes
 
 - No service-role behavior changed.
-- No token, credential, learner, contact, PDF, email, or audit payload was used.
+- No token, credential, learner, contact, PDF, email, or audit payload was
+  copied into repository evidence.
 - No authenticated mutation or external delivery was performed.
-- Preview and Production must be checked after deployment because the current
-  production version still reflects the pre-ticket cache policy.
+- The authenticated check read only the current admin context and verified
+  response status/headers; the test session was signed out immediately after
+  the smoke.
 
 ## Database Objects
 
@@ -75,13 +102,13 @@ None.
 
 ## Deviations / Open Questions
 
-None for the implementation scope. Authenticated `200` response-header smoke is
-reserved for the deployed Preview/Production acceptance step; the centralized
-proxy policy is independent of route status and passed local `401` and `301`
-runtime checks.
+No implementation deviation or open cache gate remains. Direct Vercel Preview
+inspection was unnecessary after the merged canonical Production deployment
+passed unsuccessful, redirect, authenticated-success, and public-boundary
+checks.
 
 ## Next Dependency
 
-Review and merge this ticket, then verify one unauthenticated admin endpoint and
-one authenticated read-only admin endpoint on the deployed Preview before the
-separate `AUTH-007-QA-FIX` ticket begins.
+ADM-SEC-CACHE needs no further deployment action. Continue only with separately
+approved operational work; this ticket does not change the deferred real VEDOS
+delivery, backup/restore, or final cross-browser/assistive-technology gates.
