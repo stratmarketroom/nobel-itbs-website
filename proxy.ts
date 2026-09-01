@@ -6,6 +6,8 @@ import { canonicalHost } from '@/lib/seo/urls';
 
 const publicFilePattern = /\.(.*)$/;
 const publicPageCacheControl = 'max-age=300, stale-while-revalidate=3600';
+const adminApiCacheControl = 'private, no-store, max-age=0, must-revalidate';
+const privateCdnCacheControl = 'no-store';
 const localeAliases = { en: '', uk: '/ua', cs: '/cz' } as const;
 const legacyRedirects: Record<string, string> = {
   '/human': '/programmes/psychology-human',
@@ -128,6 +130,18 @@ function nextWithoutPublicDiscovery(request: NextRequest) {
   return response;
 }
 
+function isAdminApiPath(pathname: string): boolean {
+  return pathname === '/api/v1/admin' || pathname.startsWith('/api/v1/admin/');
+}
+
+function protectAdminApiResponse(response: NextResponse): NextResponse {
+  response.headers.set('Cache-Control', adminApiCacheControl);
+  response.headers.set('CDN-Cache-Control', privateCdnCacheControl);
+  response.headers.set('Vercel-CDN-Cache-Control', privateCdnCacheControl);
+  response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet, noimageindex');
+  return response;
+}
+
 function rewriteToGlobalNotFound(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(htmlLanguageHeader, htmlLanguageForPathname(request.nextUrl.pathname));
@@ -142,14 +156,18 @@ export async function proxy(request: NextRequest) {
   const normalized = normalizedPathname(pathname);
   const aliased = localeAliasPath(normalized);
   const canonicalCandidate = aliased ?? normalized;
+  const adminApiRequest = isAdminApiPath(canonicalCandidate);
   if (removedLegacyPaths.has(canonicalCandidate)) return goneResponse();
 
   const legacyDestination = legacyRedirects[canonicalCandidate];
   const hostRedirect = canonicalHostRedirect(request, legacyDestination ?? canonicalCandidate);
-  if (hostRedirect) return hostRedirect;
+  if (hostRedirect) return adminApiRequest ? protectAdminApiResponse(hostRedirect) : hostRedirect;
 
   if (legacyDestination) return redirectPath(request, legacyDestination);
-  if (aliased !== null || normalized !== pathname) return redirectPath(request, canonicalCandidate);
+  if (aliased !== null || normalized !== pathname) {
+    const response = redirectPath(request, canonicalCandidate);
+    return adminApiRequest ? protectAdminApiResponse(response) : response;
+  }
 
   if (
     pathname.startsWith('/_next') ||
@@ -157,6 +175,10 @@ export async function proxy(request: NextRequest) {
     publicFilePattern.test(pathname)
   ) {
     return NextResponse.next();
+  }
+
+  if (isAdminApiPath(pathname)) {
+    return protectAdminApiResponse(nextWithoutPublicDiscovery(request));
   }
 
   if (pathname === '/admin' || pathname.startsWith('/admin/') || pathname.startsWith('/api')) {
