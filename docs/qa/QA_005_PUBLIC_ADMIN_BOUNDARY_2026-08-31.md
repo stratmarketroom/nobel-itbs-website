@@ -102,5 +102,5 @@ bundle.
 
 ## Next dependency
 
-Review and merge PR #67. Continue with the next previously agreed error-fix
-ticket only after approval.
+PR #67 merged as `47667ce`. This ticket has no remaining review or merge
+dependency; subsequent error-fix tickets remain separately scoped.

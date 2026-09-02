@@ -4,7 +4,7 @@ Date: 2026-09-01
 
 Branch: `codex/adm-e2e-role-matrix`
 
-Status: local implementation and verification passed; review and merge pending
+Status: merged through PR #84 as `e9f1779`; 30/30 local browser scenarios passed
 
 ## Summary
 
@@ -91,6 +91,6 @@ four-role live evidence remains documented in the earlier auth/RLS QA records.
 
 ## Next Dependency
 
-Review and merge this test-only ticket. Any future change to admin role routing
-or MFA policy must update both the source-of-truth specification and this matrix
-in the same separately approved ticket.
+Completed. Any future change to admin role routing or MFA policy must update
+both the source-of-truth specification and this matrix in the same separately
+approved ticket.

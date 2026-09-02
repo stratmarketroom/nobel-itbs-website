@@ -2,7 +2,7 @@
 
 Date: 2026-09-01
 Branch: `codex/adm-dirty-guard`
-Status: implementation and local verification complete; Preview review pending
+Status: merged through PR #82 as `695cf14`; local verification complete
 
 ## Summary
 
@@ -50,5 +50,5 @@ uses the same concise discard decision. No product-rule deviation exists.
 
 ## Next Dependency
 
-Review the Preview behavior on desktop and mobile, then merge this ticket before
-starting `PDFGEN-TEMPLATE-A11Y`.
+Completed. `PDFGEN-TEMPLATE-A11Y` followed as a separate ticket and merged
+through PR #83.
