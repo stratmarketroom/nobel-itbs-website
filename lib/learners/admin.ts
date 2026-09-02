@@ -7,6 +7,7 @@ import {
   type AdminContext,
 } from '@/lib/supabase/server';
 import type { LearnerAdminItem, LearnerConflictReference } from '@/lib/learners/types';
+import { learnerMatchesQuery, normalizeLearnerSearch } from '@/lib/learners/search';
 import { collectPaginatedRows } from '@/lib/credentials/pagination';
 
 type LearnerRow = {
@@ -131,7 +132,7 @@ export async function listLearners(context: AdminContext, filters: LearnerListFi
   const db = client(context);
   const limit = Math.min(Math.max(filters.limit ?? 50, 1), 100);
   const offset = Math.max(filters.offset ?? 0, 0);
-  const needle = filters.query?.trim().toLocaleLowerCase() ?? '';
+  const needle = normalizeLearnerSearch(filters.query ?? '');
 
   if (!needle) {
     let query = db.from('learners').select(learnerSelect, { count: 'exact' });
@@ -156,13 +157,7 @@ export async function listLearners(context: AdminContext, filters: LearnerListFi
     if (result.error) throw databaseError(result.error, 'Learners could not be searched.');
     return (result.data ?? []) as unknown as SearchRow[];
   });
-  const matchingIds = matches.filter((row) => [
-    row.latin_first_name,
-    row.latin_last_name,
-    row.ukrainian_full_name,
-    ...(row.learner_emails ?? []).map(({ email }) => email),
-    ...(row.learner_phones ?? []).map(({ phone }) => phone),
-  ].some((value) => value.toLocaleLowerCase().includes(needle))).map(({ id }) => id);
+  const matchingIds = matches.filter((row) => learnerMatchesQuery(row, needle)).map(({ id }) => id);
   const pageIds = matchingIds.slice(offset, offset + limit);
   if (pageIds.length === 0) return { learners: [], total: matchingIds.length };
 

@@ -392,6 +392,9 @@ Credential Manager/Super Admin/Owner:
 `query`, and validated `limit`/`offset`. The response includes the exact
 filtered `total`. Name, email, and phone search is evaluated server-side across
 the complete caller-visible RLS result before the requested page is selected.
+Name search supports individual Latin first/last names, the displayed Latin
+full name in one query, and the stored Ukrainian full name. Matching ignores
+letter case and repeated whitespace.
 
 Duplicate email/phone returns conflict with existing learner reference.
 

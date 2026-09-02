@@ -118,6 +118,8 @@
     "verify:adm-aud-001": "node scripts/verify-adm-aud-001.mjs",
     "verify:adm-sec-cache": "node scripts/verify-adm-sec-cache.mjs",
     "verify:adm-pagination": "node scripts/verify-adm-pagination.mjs",
+    "verify:adm-learner-full-name-search": "node scripts/verify-adm-learner-full-name-search.mjs",
+    "test:adm-learner-full-name-search": "node --experimental-strip-types scripts/test-adm-learner-full-name-search.mjs",
     "verify:adm-user-atomic": "node scripts/verify-adm-user-atomic.mjs",
     "verify:adm-dirty-guard": "node scripts/verify-adm-dirty-guard.mjs",
     "verify:adm-e2e-role-matrix": "node scripts/verify-adm-e2e-role-matrix.mjs",

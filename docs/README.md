@@ -52,6 +52,7 @@ Current implementation notes:
 - `docs/qa/ADM_AUD_001_GLOBAL_AUDIT_HISTORY_QA_2026-08-29.md`
 - `docs/qa/ADM_SEC_CACHE_PRIVATE_ADMIN_API_2026-09-01.md`
 - `docs/qa/ADM_PAGINATION_2026-09-01.md`
+- `docs/qa/ADM_LEARNER_FULL_NAME_SEARCH_2026-09-02.md`
 - `docs/qa/ADM_DIRTY_GUARD_2026-09-01.md`
 - `docs/qa/ADM_E2E_ROLE_MATRIX_2026-09-01.md`
 - `docs/qa/DOC_STATUS_SYNC_2026-09-02.md`

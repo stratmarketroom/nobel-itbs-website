@@ -123,9 +123,9 @@ None.
 ## Deviations / Open Questions
 
 Learner search accepts individual name fields, email, and phone. A unique
-surname from beyond the first page was used for the full-result proof; the
-visible two-part Latin display name is not treated as one combined search field
-and is recorded as a non-blocking UX limitation rather than a pagination fault.
+surname from beyond the first page was used for the full-result proof. The
+separate `ADM-LEARNER-FULL-NAME-SEARCH` ticket subsequently resolved the
+non-blocking combined Latin display-name limitation without changing pagination.
 
 ## Next Dependency
 

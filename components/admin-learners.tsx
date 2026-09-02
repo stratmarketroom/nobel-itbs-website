@@ -254,7 +254,7 @@ export function AdminLearners() {
       </header>
 
       <form className="learner-admin-toolbar" onSubmit={(event) => { event.preventDefault(); setOffset(0); setAppliedSearch(search.trim()); }}>
-        <label><span>Search learners</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Name, email, or phone" /></label>
+        <label><span>Search learners</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Full name, email, or phone" /></label>
         <label><span>Status</span><select value={archiveFilter} onChange={(event) => { setOffset(0); setArchiveFilter(event.target.value as ArchiveFilter); }}><option value="active">Active learners</option><option value="archived">Archived learners</option><option value="all">All learners</option></select></label>
         <button type="submit">Search</button>
         <button className="secondary" type="button" onClick={() => { if (formGuard.isDirty && !formGuard.confirmDiscardChanges()) return; formGuard.markClean(); setCreating(true); setSelectedId(null); setTab('profile'); setNotice(null); }}>Add learner</button>
