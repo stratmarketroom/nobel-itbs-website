@@ -4,7 +4,7 @@ Date: 2026-09-02
 
 Branch: `codex/adm-learner-full-name-search`
 
-Status: implementation and local verification complete; review and merge pending
+Status: merged through PR #89 as `33f631e`; local and hosted checks passed
 
 ## Summary
 
@@ -59,5 +59,5 @@ name` order.
 
 ## Next Dependency
 
-Review the Vercel Preview and merge this isolated ticket before starting another
-admin improvement.
+Completed. Any further admin improvement requires its own separately approved
+ticket.
