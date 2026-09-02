@@ -176,6 +176,10 @@ dokumentu bez přehnaných akademických slibů.
 
 ## 11. Who We Work With
 
+`eyebrow`: Pro koho pracujeme
+
+`h2`: Pro koho pracujeme
+
 `learner_title`: Dospělí účastníci
 
 `learner_body`: Lidé rozvíjející kompetence, přecházející do nové profesní role

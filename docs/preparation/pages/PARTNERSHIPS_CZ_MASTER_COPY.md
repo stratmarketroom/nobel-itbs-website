@@ -28,7 +28,7 @@ infrastrukturu pro vytváření srozumitelných profesních výsledků.
 
 ## 3. Hero
 
-`eyebrow`: Partnerships
+`eyebrow`: Partnerství
 
 `h1`: Partnerství, která posilují profesní vzdělávání
 
@@ -43,6 +43,8 @@ Role a odpovědnost se určují samostatně pro každý projekt.
 
 ## 4. Partnership Principles
 
+`h2`: Zásady partnerství
+
 - jasné role a odpovědnost stran;
 - transparentní autorství a náležité představení expertů;
 - ověřený obsah a přesná veřejná tvrzení;
@@ -52,22 +54,32 @@ Role a odpovědnost se určují samostatně pro každý projekt.
 
 ## 5. Partnership Models
 
+`h2`: Modely partnerství
+
 ### Programme Partnership
+
+`title`: Partnerství při tvorbě programů
 
 Pro organizace, online školy a vlastníky metodik, kteří chtějí společně
 strukturovat, představit nebo realizovat profesní program.
 
 ### Expert Partnership
 
+`title`: Expertní partnerství
+
 Pro praktiky, lektory a autory zapojené do tvorby obsahu, výuky, hodnocení nebo
 odborné expertizy.
 
 ### Infrastructure Partnership
 
+`title`: Infrastrukturní partnerství
+
 Pro vzdělávací projekty potřebující model dokumentů a dodatků, registraci a
 online ověřování výsledků.
 
 ### Distribution And Promotion Partnership
+
+`title`: Partnerství pro distribuci a propagaci
 
 Pro organizace s dohodnutou rolí při prezentaci nebo distribuci konkrétních
 programů. Komunikace musí přesně uvádět vlastníka, poskytovatele a účastníky.
@@ -185,6 +197,8 @@ programu AI Production jsou schváleny pro Release 1.
 General Psychology jsou schváleny pro Release 1.
 
 ## 9. Partnership Boundaries
+
+`h2`: Hranice partnerství
 
 - samostatné stránky partnerů a expertů nejsou součástí Release 1;
 - logo není důkazem akreditace ani univerzální podpory;

@@ -209,6 +209,8 @@ presented as direct Nobel ITBS accreditations or achievements.
 
 `eyebrow`: Для кого ми працюємо
 
+`h2`: Для кого ми працюємо
+
 `learner_title`: Для дорослих слухачів
 
 `learner_body`: Для тих, хто хоче розвинути компетентності, перейти до нової

@@ -14,36 +14,60 @@ Updated: 2026-07-31
 `og_description`: Proměňte autorský program ve strukturovaný vzdělávací produkt s promyšleným modelem dokumentů, registrace a ověřování.
 
 ## Hero
-`eyebrow`: B2B Infrastructure
+`eyebrow`: B2B infrastruktura
 `h1`: Vzdělávací infrastruktura pro online školy a experty
 `lead`: Vy vytváříte obsah a vzdělávací zkušenost. My pomáháme vybudovat strukturu programu a důvěryhodný systém dokumentů.
 `supporting_copy`: Nobel ITBS působí jako poskytovatel a infrastrukturní partner autorských a partnerských programů. Pomáháme formalizovat program, určit model dokumentů a dodatků a zajistit registraci a online ověřování.
 `primary_cta`: Projednat projekt
 
 ## The Business Need
+`h2`: Obchodní potřeba
+
 Silný obsah nestačí bez jasných cílů, rozsahu, výsledků, podmínek dokončení a srozumitelného modelu dokumentů. Účastník, zaměstnavatel i partner musí vědět, co bylo absolvováno, v jakém rozsahu a jak dokument ověřit. Nobel ITBS propojuje tyto prvky bez zásahu do metodiky nebo autorské expertizy partnera.
 
 ## Who We Work With
+`h2`: S kým spolupracujeme
+
 ### Online Schools
+`title`: Online školy
+
 Pro školy, které již vzdělávají a chtějí strukturovat programy, sjednotit dokumenty a přidat registraci a ověřování.
 ### Experts And Programme Authors
+`title`: Experti a autoři programů
+
 Pro experty s metodikou, autorským kurzem nebo profesním programem, kteří potřebují jasný vzdělávací a dokumentový model.
 ### Educational Projects
+`title`: Vzdělávací projekty
+
 Pro centra, komunity a iniciativy spouštějící partnerské programy a potřebující infrastrukturu výsledků vzdělávání.
 
 ## Infrastructure Services
+`h2`: Infrastrukturní služby
+
 ### Programme Structuring
+`title`: Strukturování programu
+
 Popis cíle, publika, modulů, rozsahu, výsledků, hodnocení a podmínek dokončení.
 ### Document Model
+`title`: Model dokumentů
+
 Název dokumentu, potvrzované údaje, struktura dodatku a vazba na výsledky.
 ### Document Preparation And Supplements
+`title`: Příprava dokumentů a dodatků
+
 Struktura certifikátů, diplomů a dalších dohodnutých dokumentů a dodatků.
 ### Registration And Verification
+`title`: Registrace a ověřování
+
 Registrace a ověření platného dokumentu číslem nebo QR kódem bez veřejného PDF.
 ### Partnership Workflow
+`title`: Průběh partnerství
+
 Vymezení rolí autora, vlastníka programu, poskytovatele a případného akademického partnera.
 
 ## What The Client Receives
+`h2`: Co klient získá
+
 - strukturovaný popis programu;
 - model výsledků a hodnocení;
 - dohodnutý systém dokumentů a dodatků;
@@ -54,6 +78,8 @@ Vymezení rolí autora, vlastníka programu, poskytovatele a případného akade
 Rozsah závisí na připravenosti programu, typu dokumentu a modelu spolupráce.
 
 ## How Cooperation Works
+`h2`: Jak spolupráce probíhá
+
 `step_1_title`: Poznáme váš projekt
 `step_1_body`: Posoudíme program, publikum, formát, současný model a očekávaný výsledek.
 `step_2_title`: Navrhneme infrastrukturu
@@ -64,9 +90,13 @@ Rozsah závisí na připravenosti programu, typu dokumentu a modelu spolupráce.
 `step_4_body`: Pracujeme podle dohodnutého programu, infrastruktury a formátu spolupráce.
 
 ## Trust And Boundaries
+`h2`: Důvěra a hranice
+
 Nobel ITBS působí prostřednictvím české společnosti Nobel ITBS s.r.o. a má exkluzivní akademické partnerství s Univerzitou Alfreda Nobela. Účast univerzity, typ dokumentu a možnost vydání se určují zvlášť pro každý program. Kontakt nezaručuje schválení, univerzitní dokument, ECTS ani určitý status.
 
 ## FAQ
+`h2`: Časté dotazy
+
 ### Musí být program hotový?
 Ne. Lze přijít s hotovým programem, metodikou i strukturou k dopracování.
 ### Musím převést autorská práva?

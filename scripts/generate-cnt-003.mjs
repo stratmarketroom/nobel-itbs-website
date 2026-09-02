@@ -32,14 +32,14 @@ function parseDocument(path) {
   const seo = source.match(/## (?:\d+\. )?SEO\n([\s\S]*?)(?=\n## )/)?.[1] ?? '';
   const seoFields = fieldsFrom(seo);
   const blocks = [];
-  for (const match of source.matchAll(/^## (?:(\d+)\. )?([^\n]+)\n([\s\S]*?)(?=^## |\Z)/gm)) {
+  for (const match of source.matchAll(/^## (?:(\d+)\. )?([^\n]+)\n([\s\S]*?)(?=^## |(?![\s\S]))/gm)) {
     const heading = match[2].trim();
     if (/^(Editorial Role|SEO|Removed|Approved Editorial Decisions|Remaining|Publication Dependencies|Claims Not Yet Approved)/i.test(heading)) continue;
     const sectionBody = match[3].trim();
     const firstSubheading = sectionBody.search(/^### /m);
     const leadPart = firstSubheading >= 0 ? sectionBody.slice(0, firstSubheading) : sectionBody;
     const cards = [];
-    for (const card of sectionBody.matchAll(/^### ([^\n]+)\n([\s\S]*?)(?=^### |\Z)/gm)) {
+    for (const card of sectionBody.matchAll(/^### ([^\n]+)\n([\s\S]*?)(?=^### |(?![\s\S]))/gm)) {
       cards.push({ title: card[1].trim(), fields: fieldsFrom(card[2]), body: publicText(card[2]) });
     }
     blocks.push({
@@ -80,5 +80,6 @@ for (const page of pages) {
 
 const sql = `-- CNT-003: Public Layout and Navigation\n-- Generated from approved EN/UA/CZ master copy.\n\nupdate public.content_pages\nset status = 'published'\nwhere page_key in ('home', 'about', 'partnerships', 'for_organisations');\n\ninsert into public.content_page_translations (\n  page_id, language_code, translation_status, seo_title, seo_description, h1, sections\n) values\n${rows.join(',\n')}\non conflict (page_id, language_code) do update set\n  translation_status = excluded.translation_status,\n  seo_title = excluded.seo_title,\n  seo_description = excluded.seo_description,\n  h1 = excluded.h1,\n  sections = excluded.sections;\n`;
 
-writeFileSync('supabase/migrations/20260805120000_cnt_003_public_layout_navigation.sql', sql);
+const outputPath = process.argv[2] || 'supabase/migrations/20260805120000_cnt_003_public_layout_navigation.sql';
+writeFileSync(outputPath, sql);
 console.log(`Generated CNT-003 migration with ${rows.length} localized page records.`);

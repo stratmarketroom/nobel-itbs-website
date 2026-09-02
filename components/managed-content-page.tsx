@@ -38,6 +38,12 @@ const managedPageSections: Record<string, PublicNavSection> = {
   partnerships: '/partnerships',
 };
 
+const partnerSectionCopy: Record<ContentLocale, { eyebrow: string; title: string }> = {
+  en: { eyebrow: 'Partners', title: 'Partner organisations' },
+  ua: { eyebrow: 'Партнери', title: 'Організації-партнери' },
+  cz: { eyebrow: 'Partneři', title: 'Partnerské organizace' },
+};
+
 export function ManagedContentPage({ page, locale, partners = [], experts = [], primaryHrefOverride }: {
   page: StructuredContentPage;
   locale: ContentLocale;
@@ -103,7 +109,8 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
 
       {page.pageKey === 'partnerships' && partners.length ? (
         <section className="managed-section">
-          <p className="eyebrow">Partners</p><h2>Partner organisations</h2>
+          <p className="eyebrow">{partnerSectionCopy[locale].eyebrow}</p>
+          <h2>{partnerSectionCopy[locale].title}</h2>
           <div className="managed-card-grid">
             {partners.map((partner) => (
               <a className="managed-partner-card" href={partner.officialUrl} key={partner.slug} rel="noreferrer" target="_blank">
