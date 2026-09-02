@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
+import { guardedMigration, headingReplacements, semanticReplacements } from './lib/managed-content-migrations.mjs';
 
 const pages = [
   { key: 'home', type: 'home', files: { en: 'HOME_EN_MASTER_COPY.md', ua: 'HOME_UA_MASTER_COPY.md', cz: 'HOME_CZ_MASTER_COPY.md' }, range: [3, 11] },
@@ -18,13 +19,41 @@ function fieldsFrom(text) {
   return fields;
 }
 
-function publicText(text) {
-  return clean(text
+function publicContent(text) {
+  const publicSource = text
     .replace(/`[a-z0-9_]+`: [\s\S]*?(?=\n\n|\n`[a-z0-9_]+`:|\n### |$)/g, '')
-    .split('\n')
-    .filter((line) => !/^(Editorial rule|Publication dependency|Programme cards|Partner card fields|Expert card fields):/i.test(line.trim()))
-    .filter((line) => !/^(Primary CTA|Secondary CTA|Utility action):/i.test(line.trim()))
-    .join('\n'));
+    .replace(/^(?:Editorial rule|Publication dependency|Programme cards|Partner card fields|Expert card fields|Primary CTA|Secondary CTA|Utility action):[\s\S]*(?![\s\S])/gim, '')
+    .trim();
+  const items = [];
+  const paragraphs = [];
+  let currentItem = '';
+
+  function finishItem() {
+    if (currentItem) items.push(clean(currentItem));
+    currentItem = '';
+  }
+
+  for (const sourceLine of publicSource.split('\n')) {
+    const line = sourceLine.trim();
+    if (!line) {
+      finishItem();
+      continue;
+    }
+    if (line.startsWith('- ')) {
+      finishItem();
+      currentItem = line.slice(2);
+    } else if (currentItem) {
+      currentItem = `${currentItem} ${line}`;
+    } else {
+      paragraphs.push(line);
+    }
+  }
+  finishItem();
+
+  return {
+    body: clean(paragraphs.join('\n')),
+    ...(items.length ? { items } : {}),
+  };
 }
 
 function parseDocument(path) {
@@ -32,21 +61,25 @@ function parseDocument(path) {
   const seo = source.match(/## (?:\d+\. )?SEO\n([\s\S]*?)(?=\n## )/)?.[1] ?? '';
   const seoFields = fieldsFrom(seo);
   const blocks = [];
-  for (const match of source.matchAll(/^## (?:(\d+)\. )?([^\n]+)\n([\s\S]*?)(?=^## |\Z)/gm)) {
+  for (const match of source.matchAll(/^## (?:(\d+)\. )?([^\n]+)\n([\s\S]*?)(?=^## |(?![\s\S]))/gm)) {
     const heading = match[2].trim();
-    if (/^(Editorial Role|SEO|Removed|Approved Editorial Decisions|Remaining|Publication Dependencies|Claims Not Yet Approved)/i.test(heading)) continue;
+    if (/^(Editorial Role|Editorial Guardrails|SEO|Removed|Approved Editorial Decisions|Remaining|Publication Dependencies|Claims Not Yet Approved)/i.test(heading)) continue;
     const sectionBody = match[3].trim();
     const firstSubheading = sectionBody.search(/^### /m);
     const leadPart = firstSubheading >= 0 ? sectionBody.slice(0, firstSubheading) : sectionBody;
     const cards = [];
-    for (const card of sectionBody.matchAll(/^### ([^\n]+)\n([\s\S]*?)(?=^### |\Z)/gm)) {
-      cards.push({ title: card[1].trim(), fields: fieldsFrom(card[2]), body: publicText(card[2]) });
+    for (const card of sectionBody.matchAll(/^### ([^\n]+)\n([\s\S]*?)(?=^### |(?![\s\S]))/gm)) {
+      cards.push({
+        title: card[1].trim(),
+        fields: fieldsFrom(card[2]),
+        ...publicContent(card[2]),
+      });
     }
     blocks.push({
       key: heading.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''),
       title: heading,
       fields: fieldsFrom(leadPart),
-      body: publicText(leadPart),
+      ...publicContent(leadPart),
       cards,
     });
   }
@@ -64,12 +97,14 @@ function literal(value) {
 }
 
 const rows = [];
+const records = [];
 for (const page of pages) {
   for (const [locale, file] of Object.entries(page.files)) {
     const parsed = parseDocument(`docs/preparation/pages/${file}`);
     if (!parsed.seoTitle || !parsed.seoDescription || !parsed.h1 || parsed.sections.blocks.length === 0) {
       throw new Error(`Incomplete generated content for ${page.key}/${locale}`);
     }
+    records.push({ pageKey: page.key, locale, ...parsed });
     rows.push(`(
       (select id from public.content_pages where page_key = ${literal(page.key)}),
       ${literal(locale)}, 'published', ${literal(parsed.seoTitle)}, ${literal(parsed.seoDescription)},
@@ -80,5 +115,11 @@ for (const page of pages) {
 
 const sql = `-- CNT-003: Public Layout and Navigation\n-- Generated from approved EN/UA/CZ master copy.\n\nupdate public.content_pages\nset status = 'published'\nwhere page_key in ('home', 'about', 'partnerships', 'for_organisations');\n\ninsert into public.content_page_translations (\n  page_id, language_code, translation_status, seo_title, seo_description, h1, sections\n) values\n${rows.join(',\n')}\non conflict (page_id, language_code) do update set\n  translation_status = excluded.translation_status,\n  seo_title = excluded.seo_title,\n  seo_description = excluded.seo_description,\n  h1 = excluded.h1,\n  sections = excluded.sections;\n`;
 
-writeFileSync('supabase/migrations/20260805120000_cnt_003_public_layout_navigation.sql', sql);
-console.log(`Generated CNT-003 migration with ${rows.length} localized page records.`);
+const outputPath = process.argv[2] || 'supabase/migrations/20260805120000_cnt_003_public_layout_navigation.sql';
+const managedSectionsFix = process.argv[3] === '--managed-sections-fix';
+const localizedHeadingsFix = process.argv[3] === '--localized-headings-fix';
+const output = managedSectionsFix
+  ? guardedMigration('QA-SEMANTIC-001', 'replacements', semanticReplacements(records))
+  : localizedHeadingsFix ? guardedMigration('QA-I18N-001', 'localization', headingReplacements()) : sql;
+writeFileSync(outputPath, output);
+console.log(`Generated ${managedSectionsFix ? 'QA-SEMANTIC-001' : localizedHeadingsFix ? 'QA-I18N-001' : 'CNT-003'} migration.`);

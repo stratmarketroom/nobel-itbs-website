@@ -32,11 +32,77 @@
 .managed-section { padding: clamp(3.5rem, 7vw, 7rem) clamp(1.25rem, 8vw, 9rem); border-bottom: 1px solid #dedbe8; }
 .managed-section:nth-of-type(even) { background: #fff; }
 .managed-section > h2 { max-width: 18ch; margin: .5rem 0 1.5rem; font-size: clamp(2rem, 4vw, 4.25rem); line-height: 1.05; letter-spacing: -.04em; }
-.managed-section > p { max-width: 70rem; font-size: 1.05rem; line-height: 1.75; white-space: pre-line; }
+.managed-section > p { max-width: 70ch; font-size: 1.05rem; line-height: 1.75; white-space: pre-line; }
 .managed-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr)); gap: 1rem; margin-top: 2rem; }
 .managed-card-grid article, .managed-partner-card { padding: 1.5rem; border: 1px solid #ddd9e8; border-radius: 1rem; background: #fff; color: inherit; text-decoration: none; }
 .managed-card-grid h3 { margin: 0 0 .75rem; font-size: 1.25rem; }
 .managed-card-grid p { line-height: 1.6; }
+.managed-list {
+  max-width: 70ch;
+  margin: 1.5rem 0;
+  padding-left: 1.35rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+.managed-list li + li { margin-top: .65rem; }
+.managed-list li::marker { color: oklch(57% 0.13 256); font-weight: 800; }
+.managed-cta-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 1.75rem; }
+.managed-cta-actions .button { max-width: 100%; text-align: center; overflow-wrap: anywhere; }
+.managed-secondary-cta { display: inline-flex; align-items: center; min-height: 2.75rem; max-width: 100%; color: inherit; font-weight: 750; text-underline-offset: .25em; overflow-wrap: anywhere; }
+.managed-detail-list,
+.managed-process-list {
+  width: min(100%, 70rem);
+  margin: 2rem 0 0;
+  padding: 0;
+  border-bottom: 1px solid oklch(87% 0.014 274);
+}
+.managed-detail-list > div,
+.managed-process-list > li {
+  display: grid;
+  grid-template-columns: minmax(12rem, .7fr) minmax(0, 1.3fr);
+  gap: clamp(1rem, 3vw, 3rem);
+  padding: 1.4rem 0;
+  border-top: 1px solid oklch(87% 0.014 274);
+}
+.managed-detail-list dt,
+.managed-process-list h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+.managed-detail-list dd,
+.managed-process-list p {
+  margin: 0;
+  color: oklch(34% 0.035 270);
+  line-height: 1.7;
+}
+.managed-process-list {
+  list-style: none;
+  counter-reset: managed-step;
+}
+.managed-process-list > li {
+  grid-template-columns: 3rem minmax(12rem, .65fr) minmax(0, 1.35fr);
+  counter-increment: managed-step;
+}
+.managed-process-list > li::before {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid oklch(57% 0.13 256 / 45%);
+  border-radius: 50%;
+  color: oklch(43% 0.13 256);
+  font-size: .78rem;
+  font-weight: 850;
+  content: counter(managed-step, decimal-leading-zero);
+}
+@media (max-width: 700px) {
+  .managed-detail-list > div { grid-template-columns: 1fr; gap: .45rem; }
+  .managed-process-list > li { grid-template-columns: 2.75rem 1fr; gap: .4rem 1rem; }
+  .managed-process-list h3 { align-self: center; }
+  .managed-process-list p { grid-column: 2; }
+}
 .managed-partner-card {
   display: flex;
   flex-direction: column;

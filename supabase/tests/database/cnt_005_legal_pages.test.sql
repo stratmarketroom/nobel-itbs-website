@@ -1,5 +1,5 @@
 begin;
-select plan(10);
+select plan(13);
 select is((select count(*)::integer from public.content_pages where page_key in ('privacy_policy','terms_of_use','refund_policy') and page_type='legal' and status='published'), 3, 'all legal pages are published');
 select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and t.translation_status='published'), 9, 'all legal translations are published');
 select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and t.language_code in ('en','ua','cz')), 9, 'legal pages use EN UA CZ');
@@ -10,5 +10,8 @@ select is((select count(*)::integer from public.content_page_translations t join
 select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and jsonb_array_length(t.sections->'blocks') < 2), 0, 'every legal document contains multiple sections');
 select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and not (t.sections ? 'slug')), 0, 'every legal translation contains its route slug');
 select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and length(t.sections::text) < 1000), 0, 'legal documents contain full-length content');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and t.sections::text like '%**%'), 0, 'legal pages do not expose raw Markdown emphasis');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_type='legal' and t.sections::text ~* '(do not publish|not for publication|не публікувати|nezveřejňovat)'), 0, 'legal pages do not expose unpublished editorial instructions');
+select is((select count(*)::integer from public.content_page_translations t join public.content_pages p on p.id=t.page_id where p.page_key='privacy_policy' and t.language_code='ua' and t.sections::text like '%номер телефону%' and t.sections::text not like '%**номер телефону**%'), 1, 'UA privacy policy retains the approved phone reference as plain text');
 select * from finish();
 rollback;

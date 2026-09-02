@@ -14,13 +14,53 @@ type ContentBlock = {
   key: string;
   title: string;
   body?: string;
+  items?: string[];
   fields?: Record<string, string>;
-  cards?: Array<{ title: string; body?: string; fields?: Record<string, string> }>;
+  cards?: Array<{ title: string; body?: string; items?: string[]; fields?: Record<string, string> }>;
 };
 
 function textValues(fields: Record<string, string> = {}): string[] {
-  const hidden = new Set(['h1', 'eyebrow', 'primary_cta', 'primary_cta_target', 'secondary_cta', 'secondary_cta_target', 'cta', 'cta_target', 'section_cta', 'fallback_cta', 'official_url', 'asset_status', 'publication_status']);
-  return Object.entries(fields).filter(([key, value]) => value && !hidden.has(key) && !key.endsWith('_title')).map(([, value]) => value);
+  const hidden = new Set(['h1', 'h2', 'heading', 'title', 'eyebrow', 'primary_cta', 'primary_cta_target', 'secondary_cta', 'secondary_cta_target', 'cta', 'cta_target', 'section_cta', 'fallback_cta', 'official_url', 'asset_status', 'publication_status']);
+  const pairedKeys = new Set(pairedValues(fields).flatMap(({ titleKey, bodyKey }) => [titleKey, bodyKey]));
+  return Object.entries(fields)
+    .filter(([key, value]) => {
+      if (!value || hidden.has(key) || pairedKeys.has(key) || key.endsWith('_title')) return false;
+      return true;
+    })
+    .map(([, value]) => value);
+}
+
+function pairedValues(fields: Record<string, string> = {}) {
+  return Object.entries(fields).flatMap(([titleKey, title]) => {
+    const numbered = titleKey.match(/^title_(\d+)$/);
+    if ((!titleKey.endsWith('_title') && !numbered) || !title) return [];
+    const pairKey = numbered ? `item_${numbered[1]}` : titleKey.slice(0, -6);
+    const bodyKey = numbered ? `body_${numbered[1]}` : `${pairKey}_body`;
+    const body = fields[bodyKey];
+    return body ? [{ key: pairKey, title, body, titleKey, bodyKey }] : [];
+  }).sort((a, b) => a.key.localeCompare(b.key, 'en', { numeric: true }));
+}
+
+function ManagedList({ items }: { items?: string[] }) {
+  if (!items?.length) return null;
+  return <ul className="managed-list">{items.map((item, index) => <li key={`${index}-${item}`}>{item}</li>)}</ul>;
+}
+
+function PairedContent({ fields }: { fields?: Record<string, string> }) {
+  const pairs = pairedValues(fields);
+  if (!pairs.length) return null;
+  if (pairs.every((pair) => /^step_\d+$/.test(pair.key))) {
+    return (
+      <ol className="managed-process-list">
+        {pairs.map((pair) => <li key={pair.key}><h3>{pair.title}</h3><p>{pair.body}</p></li>)}
+      </ol>
+    );
+  }
+  return (
+    <dl className="managed-detail-list">
+      {pairs.map((pair) => <div key={pair.key}><dt>{pair.title}</dt><dd>{pair.body}</dd></div>)}
+    </dl>
+  );
 }
 
 function headingFor(block: ContentBlock): string {
@@ -28,14 +68,47 @@ function headingFor(block: ContentBlock): string {
 }
 
 function localizedTarget(target: string | undefined, locale: ContentLocale, fallback: string): string {
-  if (!target?.startsWith('/')) return localizePublicPath(locale, fallback);
-  return localizePublicPath(locale, target);
+  // Master-copy URLs may be wrapped in Markdown code ticks or already localized.
+  const path = target?.trim().replace(/^`([^`]+)`$/, '$1');
+  if (!path || !/^\/(?!\/)/.test(path) || /[\\\u0000-\u0020]/.test(path)) return localizePublicPath(locale, fallback);
+  const unprefixed = path.replace(/^\/(?:en|ua|cz)(?=\/|$)/, '') || '/';
+  if (unprefixed.startsWith('//')) return localizePublicPath(locale, fallback);
+  return localizePublicPath(locale, unprefixed);
+}
+
+function FinalActions({ fields, locale, pageKey, primaryTarget }: {
+  fields: Record<string, string>;
+  locale: ContentLocale;
+  pageKey: string;
+  primaryTarget: string;
+}) {
+  const primaryHref = pageKey === 'about'
+    ? localizedTarget(fields.primary_cta_target, locale, '/programmes')
+    : primaryTarget;
+  const secondaryHref = pageKey === 'about'
+    ? localizedTarget(fields.secondary_cta_target, locale, '/for-organisations')
+    : '#contact';
+  const secondaryLabel = pageKey === 'about' ? fields.secondary_cta : fields.fallback_cta;
+  if (!fields.primary_cta && !secondaryLabel) return null;
+  return (
+    <div className="managed-cta-actions">
+      {fields.primary_cta ? <Link className="button primary" href={primaryHref}>{fields.primary_cta}<span aria-hidden="true">→</span></Link> : null}
+      {secondaryLabel && (!fields.primary_cta || secondaryHref !== primaryHref)
+        ? <Link className="managed-secondary-cta" href={secondaryHref}>{secondaryLabel}</Link> : null}
+    </div>
+  );
 }
 
 const managedPageSections: Record<string, PublicNavSection> = {
   about: '/about',
   for_organisations: '/for-organisations',
   partnerships: '/partnerships',
+};
+
+const partnerSectionCopy: Record<ContentLocale, { eyebrow: string; title: string }> = {
+  en: { eyebrow: 'Partners', title: 'Partner organisations' },
+  ua: { eyebrow: 'Партнери', title: 'Організації-партнери' },
+  cz: { eyebrow: 'Partneři', title: 'Partnerské organizace' },
 };
 
 export function ManagedContentPage({ page, locale, partners = [], experts = [], primaryHrefOverride }: {
@@ -86,24 +159,30 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
           {block.fields?.eyebrow ? <p className="eyebrow">{block.fields.eyebrow}</p> : null}
           <h2>{headingFor(block)}</h2>
           {textValues(block.fields).map((value, valueIndex) => <p key={valueIndex}>{value}</p>)}
+          <ManagedList items={block.items} />
           {block.body ? <p>{block.body}</p> : null}
+          <PairedContent fields={block.fields} />
           {block.cards?.length ? (
             <div className="managed-card-grid">
               {block.cards.map((card, cardIndex) => (
                 <article key={`${card.title}-${cardIndex}`}>
                   <h3>{card.fields?.title || card.title}</h3>
                   {textValues(card.fields).map((value, valueIndex) => <p key={valueIndex}>{value}</p>)}
+                  <ManagedList items={card.items} />
                   {card.body ? <p>{card.body}</p> : null}
+                  <PairedContent fields={card.fields} />
                 </article>
               ))}
             </div>
           ) : null}
+          {block.key === 'final_cta' ? <FinalActions fields={block.fields ?? {}} locale={locale} pageKey={page.pageKey} primaryTarget={primaryTarget} /> : null}
         </section>
       ))}
 
       {page.pageKey === 'partnerships' && partners.length ? (
         <section className="managed-section">
-          <p className="eyebrow">Partners</p><h2>Partner organisations</h2>
+          <p className="eyebrow">{partnerSectionCopy[locale].eyebrow}</p>
+          <h2>{partnerSectionCopy[locale].title}</h2>
           <div className="managed-card-grid">
             {partners.map((partner) => (
               <a className="managed-partner-card" href={partner.officialUrl} key={partner.slug} rel="noreferrer" target="_blank">
