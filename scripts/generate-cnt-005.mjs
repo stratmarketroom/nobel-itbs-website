@@ -20,15 +20,23 @@ function blocksFromParagraphs(paragraphs) {
   }
   return blocks.filter((block) => block.heading || block.paragraphs.length);
 }
+function stripInlineMarkdown(value) {
+  return value.replace(/\*\*([^*]+)\*\*/g, '$1');
+}
+function isUnpublishedMarkdownHeading(heading) {
+  return /не публікувати як частину політики/i.test(heading);
+}
 function blocksFromMarkdown(path) {
   const source = readFileSync(path, 'utf8');
   const parts = source.split(/^## /m);
-  const intro = parts.shift().split('\n').slice(1).join('\n').split(/\n\n+/).map((value) => value.replace(/\s+/g, ' ').trim()).filter((value) => value && !/^(Статус:|Канонічна версія:|Індексація:)/.test(value));
+  const intro = parts.shift().split('\n').slice(1).join('\n').split(/\n\n+/).map((value) => stripInlineMarkdown(value.replace(/\s+/g, ' ').trim())).filter((value) => value && !/^(Статус:|Канонічна версія:|Індексація:)/.test(value));
   const blocks = [{ heading: '', paragraphs: intro }];
   for (const part of parts) {
     const [heading, ...body] = part.split('\n');
-    const paragraphs = body.join('\n').replace(/^### /gm, '').split(/\n\n+/).map((value) => value.replace(/\s+/g, ' ').trim()).filter(Boolean);
-    blocks.push({ heading: heading.trim(), paragraphs });
+    const cleanHeading = stripInlineMarkdown(heading.trim());
+    if (isUnpublishedMarkdownHeading(cleanHeading)) continue;
+    const paragraphs = body.join('\n').replace(/^### /gm, '').split(/\n\n+/).map((value) => stripInlineMarkdown(value.replace(/\s+/g, ' ').trim())).filter(Boolean);
+    blocks.push({ heading: cleanHeading, paragraphs });
   }
   return blocks;
 }
@@ -45,5 +53,6 @@ for (const policy of policies) for (const locale of ['en', 'ua', 'cz']) {
 }
 
 const sql = `-- CNT-005: Legal Pages\n-- Full EN/CZ lawyer-provided documents plus the approved UA website translations.\n\ninsert into public.content_pages (id,page_key,page_type,status) values\n${pageRows.join(',\n')}\non conflict (page_key) do update set page_type=excluded.page_type,status=excluded.status;\n\ninsert into public.content_page_translations (page_id,language_code,translation_status,seo_title,seo_description,h1,sections) values\n${translationRows.join(',\n')}\non conflict (page_id,language_code) do update set translation_status=excluded.translation_status,seo_title=excluded.seo_title,seo_description=excluded.seo_description,h1=excluded.h1,sections=excluded.sections;\n`;
-writeFileSync('supabase/migrations/20260805140000_cnt_005_legal_pages.sql', sql);
+const outputPath = process.argv[2] || 'supabase/migrations/20260805140000_cnt_005_legal_pages.sql';
+writeFileSync(outputPath, sql);
 console.log(`Generated CNT-005 migration with ${translationRows.length} full legal translations.`);

@@ -1,8 +1,13 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const files = [
   'supabase/migrations/20260805140000_cnt_005_legal_pages.sql',
+  'supabase/migrations/20260902160000_qa_legal_001_publication_content_fix.sql',
   'supabase/tests/database/cnt_005_legal_pages.test.sql',
+  'scripts/generate-cnt-005.mjs',
   'components/legal-content-page.tsx',
   'components/cookie-consent.tsx',
   'lib/privacy/cookie-consent.ts',
@@ -20,6 +25,43 @@ for (const locale of ['en', 'ua', 'cz']) {
   if (occurrences !== 3) errors.push(`Expected 3 ${locale} legal translations, found ${occurrences}`);
 }
 if (migration.length < 50_000) errors.push('Legal migration is unexpectedly short; full documents may be missing.');
+const correction = existsSync(files[1]) ? readFileSync(files[1], 'utf8') : '';
+for (const required of ['privacy_policy', "language_code = 'ua'", 'jsonb_array_elements', '**номер телефону**', 'не публікувати як частину Політики']) {
+  if (!correction.includes(required)) errors.push(`Legal publication correction missing ${required}`);
+}
+const generator = existsSync(files[3]) ? readFileSync(files[3], 'utf8') : '';
+for (const required of ['stripInlineMarkdown', 'isUnpublishedMarkdownHeading']) {
+  if (!generator.includes(required)) errors.push(`Legal generator missing ${required} safeguard`);
+}
+if (generator) {
+  const temporaryDirectory = mkdtempSync(join(tmpdir(), 'verify-cnt-005-'));
+  const generatedMigrationPath = join(temporaryDirectory, 'generated-cnt-005.sql');
+  try {
+    execFileSync(process.execPath, [files[3], generatedMigrationPath], {
+      encoding: 'utf8',
+      stdio: 'pipe',
+    });
+    const generatedMigration = readFileSync(generatedMigrationPath, 'utf8');
+    if (generatedMigration.includes('Примітка для Release 1 — не публікувати як частину Політики')) {
+      errors.push('Generated legal migration includes an unpublished editorial heading');
+    }
+    if (generatedMigration.includes('**номер телефону**')) {
+      errors.push('Generated legal migration includes raw Markdown emphasis');
+    }
+    if (!generatedMigration.includes('номер телефону')) {
+      errors.push('Generated legal migration lost the published phone-number wording');
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    errors.push(`Legal generator execution failed: ${message}`);
+  } finally {
+    rmSync(temporaryDirectory, { recursive: true, force: true });
+  }
+}
+const databaseTest = existsSync(files[2]) ? readFileSync(files[2], 'utf8') : '';
+for (const required of ['raw Markdown emphasis', 'unpublished editorial instructions']) {
+  if (!databaseTest.includes(required)) errors.push(`Legal database test missing ${required} assertion`);
+}
 const legalMetadata = existsSync('lib/content/legal-pages.ts') ? readFileSync('lib/content/legal-pages.ts', 'utf8') : '';
 if (!legalMetadata.includes('index: false, follow: true')) errors.push('Legal routes must be noindex, follow.');
 const cookie = [
