@@ -4,7 +4,7 @@ Date: 2026-09-02
 
 Branch: `codex/adm-pagination`
 
-Status: implementation merged in PR #80; Development Preview live acceptance complete for Learners, Credentials, Credential Sets, and Document Number Log; Contact Submissions multi-page acceptance remains data-blocked
+Status: implementation merged in PR #80; Development Preview live acceptance complete for all five protected registries; initial evidence merged in PR #86
 
 ## Scope
 
@@ -69,7 +69,7 @@ Document Number Log rows.
 | Credentials | `1–50 of 1,741` → `51–100 of 1,741` → Previous to `1–50`; 50 rows per page | A document number from page 2 returned `1–1 of 1`; changing status from page 2 to Revoked reset to `1–1 of 1`, and All restored `1–50` | `390 × 844`, no document overflow |
 | Credential Sets | `1–50 of 1,741` → `51–100 of 1,741` → Previous to `1–50`; 50 rows per page | No filters in this registry | `390 × 844`, no document overflow; table scrolling remains contained |
 | Document Number Log | `1–50 of 1,741` → `51–100 of 1,741` → Previous to `1–50`; 50 rows per page | No filters in this registry | `390 × 844`, no document overflow; table scrolling remains contained |
-| Contact Submissions | Correct `0–0 of 0` empty state; Previous and Next disabled | Status and type filters applied and reset without an error | `390 × 844`, no document overflow |
+| Contact Submissions | Initial `0–0 of 0` empty state accepted; supplemental 60-row smoke passed `1–50 of 60` → `51–60 of 60` → Previous to `1–50`; 50/10 rows rendered | Changing Status from page 2 reset to `1–10 of 10`; changing Type from page 2 reset to `1–20 of 20`; clearing each filter restored `1–50 of 60` | `390 × 844`, no document overflow; Enter on Next opened `51–60` with 10 rows |
 
 The browser console contained no warnings or errors. Dashboard counts before
 and after the smoke were unchanged: 0 new enquiries, 1,740 pending credentials,
@@ -77,26 +77,50 @@ and after the smoke were unchanged: 0 new enquiries, 1,740 pending credentials,
 credentials. No form was submitted and no registry record was selected for
 mutation.
 
+### Contact Submissions Supplemental Acceptance
+
+After explicit Owner approval, the previously data-blocked Contact Submissions
+case was completed with a controlled Development-only fixture on 2026-09-02:
+
+- 60 records were inserted directly with one unique `qa_ticket` metadata
+  marker, `example.invalid` addresses, sequential timestamps, and a controlled
+  mix of `new`, `processed`, and `archived` statuses plus the three public
+  enquiry types;
+- a temporary Credential Manager completed real TOTP enrollment and reached
+  AAL2 before opening the protected registry;
+- desktop page 1 contained 50 rows and page 2 contained 10 rows; Previous and
+  Next enabled and disabled at the correct boundaries;
+- applying Processed from page 2 reset the range to `1–10 of 10`, and clearing
+  it restored `1–50 of 60`;
+- applying Partnership from page 2 reset the range to `1–20 of 20`, and
+  clearing it restored `1–50 of 60`;
+- the `390 × 844` pass retained `scrollWidth === clientWidth === 390`; keyboard
+  Enter on Next opened `51–60 of 60`; the browser console remained clean.
+
+Cleanup deleted exactly 60 fixture rows, confirmed zero rows for the unique QA
+marker, restored the total Contact Submissions count from 60 to the baseline of
+0, and deleted the temporary Auth user together with its profile, role, and MFA
+factor.
+
 ## Security Notes
 
 - All reads continue through the request Bearer token and caller-scoped RLS.
 - Existing role and MFA assertions are unchanged.
 - No service-role client was added to a browser or list path.
 - Central `private, no-store` admin API controls remain in force.
-- No learner, credential, submission, number, PDF, email, or audit record is
+- No learner, credential, number, PDF, email, or retained audit record was
   created or changed by this ticket.
+- The supplemental Contact Submissions fixture was Development-only, uniquely
+  marked, excluded from the public form/rate-limit/notification path, and fully
+  removed after browser acceptance.
+- The temporary Credential Manager used a generated `example.invalid` identity,
+  enforced MFA/AAL2, and was deleted after sign-out.
 
 ## Database Objects
 
 None.
 
 ## Deviations / Open Questions
-
-The Development environment has zero Contact Submissions. Its empty state,
-disabled controls, filters, reset behavior, responsive layout, and console were
-accepted, but genuine page 1/page 2 navigation cannot be evidenced until the
-environment contains more than 50 approved submissions. Creating synthetic
-public enquiries was intentionally excluded from this read-only acceptance.
 
 Learner search accepts individual name fields, email, and phone. A unique
 surname from beyond the first page was used for the full-result proof; the
@@ -105,7 +129,6 @@ and is recorded as a non-blocking UX limitation rather than a pagination fault.
 
 ## Next Dependency
 
-Run the remaining Contact Submissions multi-page acceptance when more than 50
-approved records exist. The next separate ticket is `DOC-STATUS-SYNC`; it must
-remove stale `pending review and merge` labels without changing this ticket's
-implementation or QA evidence.
+The next separate ticket is `DOC-STATUS-SYNC`; it must remove stale `pending
+review and merge` labels without changing this ticket's implementation or QA
+evidence.
