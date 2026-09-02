@@ -48,7 +48,15 @@ The applied CNT-003 migration was not edited.
 - no schema object, function, trigger, index, grant, or RLS policy changed.
 
 The forward-only migration is generated directly from the approved master-copy
-files and aborts unless exactly nine target rows are updated.
+files and aborts unless exactly nine target rows match their expected pre-change
+sections. Expected JSONB snapshots come from immutable CNT-003 plus the guarded
+heading-localization step. CMS drift or a missing row rolls back the entire
+transaction. The nine desired output payloads are unchanged by the review fix.
+
+The [PR #91 review-fix report](QA_PUBLIC_DESIGN_PR_91_REVIEW_FIXES_2026-09-02.md)
+records the explicit user exception for the two unapplied migrations, Czech
+numbered-field pairing, working final CTAs, renderer and SQL regression tests,
+and isolated Chrome desktop/mobile checks. Deployed acceptance remains pending.
 
 ## Content Restored
 

@@ -1,0 +1,163 @@
+[
+  {
+    "pageKey": "about",
+    "locale": "ua",
+    "blockFields": {
+      "who_we_work_with": {
+        "h2": "Для кого ми працюємо"
+      }
+    },
+    "cardTitles": {}
+  },
+  {
+    "pageKey": "about",
+    "locale": "cz",
+    "blockFields": {
+      "who_we_work_with": {
+        "eyebrow": "Pro koho pracujeme",
+        "h2": "Pro koho pracujeme"
+      }
+    },
+    "cardTitles": {}
+  },
+  {
+    "pageKey": "partnerships",
+    "locale": "ua",
+    "blockFields": {
+      "hero": {
+        "eyebrow": "Партнерства"
+      },
+      "partnership_principles": {
+        "h2": "Принципи партнерства"
+      },
+      "partnership_models": {
+        "h2": "Моделі партнерства"
+      },
+      "partnership_boundaries": {
+        "h2": "Межі партнерства"
+      }
+    },
+    "cardTitles": {
+      "partnership_models": {
+        "Programme Partnership": "Партнерство у створенні програм",
+        "Expert Partnership": "Експертне партнерство",
+        "Infrastructure Partnership": "Інфраструктурне партнерство",
+        "Distribution And Promotion Partnership": "Партнерство у представленні та просуванні"
+      }
+    }
+  },
+  {
+    "pageKey": "partnerships",
+    "locale": "cz",
+    "blockFields": {
+      "hero": {
+        "eyebrow": "Partnerství"
+      },
+      "partnership_principles": {
+        "h2": "Zásady partnerství"
+      },
+      "partnership_models": {
+        "h2": "Modely partnerství"
+      },
+      "partnership_boundaries": {
+        "h2": "Hranice partnerství"
+      }
+    },
+    "cardTitles": {
+      "partnership_models": {
+        "Programme Partnership": "Partnerství při tvorbě programů",
+        "Expert Partnership": "Expertní partnerství",
+        "Infrastructure Partnership": "Infrastrukturní partnerství",
+        "Distribution And Promotion Partnership": "Partnerství pro distribuci a propagaci"
+      }
+    }
+  },
+  {
+    "pageKey": "for_organisations",
+    "locale": "ua",
+    "blockFields": {
+      "hero": {
+        "eyebrow": "B2B-інфраструктура"
+      },
+      "the_business_need": {
+        "h2": "Бізнес-потреба"
+      },
+      "who_we_work_with": {
+        "h2": "З ким ми працюємо"
+      },
+      "infrastructure_services": {
+        "h2": "Інфраструктурні послуги"
+      },
+      "what_the_client_receives": {
+        "h2": "Що отримує клієнт"
+      },
+      "how_cooperation_works": {
+        "h2": "Як відбувається співпраця"
+      },
+      "trust_and_boundaries": {
+        "h2": "Довіра та межі"
+      },
+      "faq": {
+        "h2": "Поширені запитання"
+      }
+    },
+    "cardTitles": {
+      "who_we_work_with": {
+        "Online Schools": "Онлайн-школи",
+        "Experts And Programme Authors": "Експерти та автори програм",
+        "Educational Projects": "Освітні проєкти"
+      },
+      "infrastructure_services": {
+        "Programme Structuring": "Структурування програми",
+        "Document Model": "Модель документів",
+        "Document Preparation And Supplements": "Підготовка документів і додатків",
+        "Registration And Verification": "Реєстрація та верифікація",
+        "Partnership Workflow": "Процес партнерства"
+      }
+    }
+  },
+  {
+    "pageKey": "for_organisations",
+    "locale": "cz",
+    "blockFields": {
+      "hero": {
+        "eyebrow": "B2B infrastruktura"
+      },
+      "the_business_need": {
+        "h2": "Obchodní potřeba"
+      },
+      "who_we_work_with": {
+        "h2": "S kým spolupracujeme"
+      },
+      "infrastructure_services": {
+        "h2": "Infrastrukturní služby"
+      },
+      "what_the_client_receives": {
+        "h2": "Co klient získá"
+      },
+      "how_cooperation_works": {
+        "h2": "Jak spolupráce probíhá"
+      },
+      "trust_and_boundaries": {
+        "h2": "Důvěra a hranice"
+      },
+      "faq": {
+        "h2": "Časté dotazy"
+      }
+    },
+    "cardTitles": {
+      "who_we_work_with": {
+        "Online Schools": "Online školy",
+        "Experts And Programme Authors": "Experti a autoři programů",
+        "Educational Projects": "Vzdělávací projekty"
+      },
+      "infrastructure_services": {
+        "Programme Structuring": "Strukturování programu",
+        "Document Model": "Model dokumentů",
+        "Document Preparation And Supplements": "Příprava dokumentů a dodatků",
+        "Registration And Verification": "Registrace a ověřování",
+        "Partnership Workflow": "Průběh partnerství"
+      }
+    }
+  }
+]

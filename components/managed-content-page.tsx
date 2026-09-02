@@ -21,22 +21,24 @@ type ContentBlock = {
 
 function textValues(fields: Record<string, string> = {}): string[] {
   const hidden = new Set(['h1', 'h2', 'heading', 'title', 'eyebrow', 'primary_cta', 'primary_cta_target', 'secondary_cta', 'secondary_cta_target', 'cta', 'cta_target', 'section_cta', 'fallback_cta', 'official_url', 'asset_status', 'publication_status']);
+  const pairedKeys = new Set(pairedValues(fields).flatMap(({ titleKey, bodyKey }) => [titleKey, bodyKey]));
   return Object.entries(fields)
     .filter(([key, value]) => {
-      if (!value || hidden.has(key) || key.endsWith('_title')) return false;
-      if (key.endsWith('_body') && fields[`${key.slice(0, -5)}_title`]) return false;
+      if (!value || hidden.has(key) || pairedKeys.has(key) || key.endsWith('_title')) return false;
       return true;
     })
     .map(([, value]) => value);
 }
 
 function pairedValues(fields: Record<string, string> = {}) {
-  return Object.entries(fields).flatMap(([key, title]) => {
-    if (!key.endsWith('_title') || !title) return [];
-    const pairKey = key.slice(0, -6);
-    const body = fields[`${pairKey}_body`];
-    return body ? [{ key: pairKey, title, body }] : [];
-  });
+  return Object.entries(fields).flatMap(([titleKey, title]) => {
+    const numbered = titleKey.match(/^title_(\d+)$/);
+    if ((!titleKey.endsWith('_title') && !numbered) || !title) return [];
+    const pairKey = numbered ? `item_${numbered[1]}` : titleKey.slice(0, -6);
+    const bodyKey = numbered ? `body_${numbered[1]}` : `${pairKey}_body`;
+    const body = fields[bodyKey];
+    return body ? [{ key: pairKey, title, body, titleKey, bodyKey }] : [];
+  }).sort((a, b) => a.key.localeCompare(b.key, 'en', { numeric: true }));
 }
 
 function ManagedList({ items }: { items?: string[] }) {
@@ -66,8 +68,35 @@ function headingFor(block: ContentBlock): string {
 }
 
 function localizedTarget(target: string | undefined, locale: ContentLocale, fallback: string): string {
-  if (!target?.startsWith('/')) return localizePublicPath(locale, fallback);
-  return localizePublicPath(locale, target);
+  // Master-copy URLs may be wrapped in Markdown code ticks or already localized.
+  const path = target?.trim().replace(/^`([^`]+)`$/, '$1');
+  if (!path || !/^\/(?!\/)/.test(path) || /[\\\u0000-\u0020]/.test(path)) return localizePublicPath(locale, fallback);
+  const unprefixed = path.replace(/^\/(?:en|ua|cz)(?=\/|$)/, '') || '/';
+  if (unprefixed.startsWith('//')) return localizePublicPath(locale, fallback);
+  return localizePublicPath(locale, unprefixed);
+}
+
+function FinalActions({ fields, locale, pageKey, primaryTarget }: {
+  fields: Record<string, string>;
+  locale: ContentLocale;
+  pageKey: string;
+  primaryTarget: string;
+}) {
+  const primaryHref = pageKey === 'about'
+    ? localizedTarget(fields.primary_cta_target, locale, '/programmes')
+    : primaryTarget;
+  const secondaryHref = pageKey === 'about'
+    ? localizedTarget(fields.secondary_cta_target, locale, '/for-organisations')
+    : '#contact';
+  const secondaryLabel = pageKey === 'about' ? fields.secondary_cta : fields.fallback_cta;
+  if (!fields.primary_cta && !secondaryLabel) return null;
+  return (
+    <div className="managed-cta-actions">
+      {fields.primary_cta ? <Link className="button primary" href={primaryHref}>{fields.primary_cta}<span aria-hidden="true">→</span></Link> : null}
+      {secondaryLabel && (!fields.primary_cta || secondaryHref !== primaryHref)
+        ? <Link className="managed-secondary-cta" href={secondaryHref}>{secondaryLabel}</Link> : null}
+    </div>
+  );
 }
 
 const managedPageSections: Record<string, PublicNavSection> = {
@@ -146,6 +175,7 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
               ))}
             </div>
           ) : null}
+          {block.key === 'final_cta' ? <FinalActions fields={block.fields ?? {}} locale={locale} pageKey={page.pageKey} primaryTarget={primaryTarget} /> : null}
         </section>
       ))}
 

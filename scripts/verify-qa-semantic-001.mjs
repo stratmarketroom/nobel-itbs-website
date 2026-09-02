@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { migrationRows } from './lib/managed-content-migrations.mjs';
 
 const files = {
   generator: 'scripts/generate-cnt-003.mjs',
@@ -19,9 +20,13 @@ const migration = existsSync(files.migration) ? readFileSync(files.migration, 'u
 const databaseTest = existsSync(files.databaseTest) ? readFileSync(files.databaseTest, 'utf8') : '';
 const component = existsSync(files.component) ? readFileSync(files.component, 'utf8') : '';
 const stylesheet = existsSync(files.stylesheet) ? readFileSync(files.stylesheet, 'utf8') : '';
+const desiredContent = existsSync(files.migration) ? JSON.stringify(migrationRows(files.migration).map((row) => row.sections)) : '';
+
+for (const required of ['expected_sections', 'translation.sections = replacements.expected_sections', 'Reconcile CMS edits before retrying', 'affected_rows <> 9']) {
+  if (!migration.includes(required)) errors.push(`Semantic migration missing drift guard: ${required}`);
+}
 
 for (const required of [
-  'affected_rows <> 9',
   '"items":[',
   '"title":"Distribution And Promotion Partnership"',
   '"title":"Educational Projects"',
@@ -30,20 +35,20 @@ for (const required of [
   '"title":"Ключові факти про університет"',
   '"title":"Klíčová fakta o univerzitě"',
 ]) {
-  if (!migration.includes(required)) errors.push(`Semantic migration missing ${required}`);
+  if (!desiredContent.includes(required)) errors.push(`Semantic migration output missing ${required}`);
 }
 
 for (const forbidden of ['Editorial Guardrails', 'Partner card fields', 'Expert card fields', 'Publication dependency']) {
-  if (migration.includes(forbidden)) errors.push(`Semantic migration exposes internal content: ${forbidden}`);
+  if (desiredContent.includes(forbidden)) errors.push(`Semantic migration exposes internal content: ${forbidden}`);
 }
 
-if ((migration.match(/"items":\[/g) ?? []).length !== 9) {
+if ((desiredContent.match(/"items":\[/g) ?? []).length !== 9) {
   errors.push('Semantic migration must contain nine structured list collections.');
 }
-if ((migration.match(/"title":"Distribution And Promotion Partnership"/g) ?? []).length !== 3) {
+if ((desiredContent.match(/"title":"Distribution And Promotion Partnership"/g) ?? []).length !== 3) {
   errors.push('All three Partnerships translations must retain the terminal partnership model.');
 }
-if ((migration.match(/"key":"final_cta"/g) ?? []).length !== 9) {
+if ((desiredContent.match(/"key":"final_cta"/g) ?? []).length !== 9) {
   errors.push('All nine managed-page translations must retain their final CTA block.');
 }
 

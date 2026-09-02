@@ -43,10 +43,14 @@ edited.
 - no tables, columns, functions, triggers, indexes, grants, or RLS policies are
   added or changed.
 
-The migration merges localized display fields into the existing JSON blocks and
-cards. It retains the current block order, content, structural keys, and all
-unrelated fields. The transaction aborts unless exactly six translations are
-updated.
+Following PR #91 review, the migration replaces sections only when they exactly
+match the immutable CNT-003 baseline. The replacement applies the same localized
+display fields while retaining baseline block order, content, structural keys,
+and unrelated fields. Any CMS drift or missing translation aborts the entire
+transaction; exactly six translations must match. See the
+[review-fix report](QA_PUBLIC_DESIGN_PR_91_REVIEW_FIXES_2026-09-02.md) for the
+explicit exception authorizing this correction to the unapplied migration and
+the rollback tests.
 
 ## Tests / Verification
 

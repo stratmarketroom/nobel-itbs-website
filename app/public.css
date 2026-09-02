@@ -46,6 +46,9 @@
 }
 .managed-list li + li { margin-top: .65rem; }
 .managed-list li::marker { color: oklch(57% 0.13 256); font-weight: 800; }
+.managed-cta-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 1.75rem; }
+.managed-cta-actions .button { max-width: 100%; text-align: center; overflow-wrap: anywhere; }
+.managed-secondary-cta { display: inline-flex; align-items: center; min-height: 2.75rem; max-width: 100%; color: inherit; font-weight: 750; text-underline-offset: .25em; overflow-wrap: anywhere; }
 .managed-detail-list,
 .managed-process-list {
   width: min(100%, 70rem);

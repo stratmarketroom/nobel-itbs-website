@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
+import { guardedMigration, headingReplacements, semanticReplacements } from './lib/managed-content-migrations.mjs';
 
 const pages = [
   { key: 'home', type: 'home', files: { en: 'HOME_EN_MASTER_COPY.md', ua: 'HOME_UA_MASTER_COPY.md', cz: 'HOME_CZ_MASTER_COPY.md' }, range: [3, 11] },
@@ -114,49 +115,11 @@ for (const page of pages) {
 
 const sql = `-- CNT-003: Public Layout and Navigation\n-- Generated from approved EN/UA/CZ master copy.\n\nupdate public.content_pages\nset status = 'published'\nwhere page_key in ('home', 'about', 'partnerships', 'for_organisations');\n\ninsert into public.content_page_translations (\n  page_id, language_code, translation_status, seo_title, seo_description, h1, sections\n) values\n${rows.join(',\n')}\non conflict (page_id, language_code) do update set\n  translation_status = excluded.translation_status,\n  seo_title = excluded.seo_title,\n  seo_description = excluded.seo_description,\n  h1 = excluded.h1,\n  sections = excluded.sections;\n`;
 
-const managedSectionRows = records
-  .filter((record) => record.pageKey !== 'home')
-  .map((record) => `(
-        ${literal(record.pageKey)},
-        ${literal(record.locale)},
-        ${literal(JSON.stringify(record.sections))}::jsonb
-      )`);
-const managedSectionsFixSql = `-- QA-SEMANTIC-001: restore complete managed-page sections and semantic lists.
--- Generated from the approved EN/UA/CZ master copy without rewriting CNT-003.
-
-begin;
-
-do $$
-declare
-  affected_rows integer;
-begin
-  with replacements(page_key, language_code, sections) as (
-    values
-${managedSectionRows.join(',\n')}
-  )
-  update public.content_page_translations as translation
-  set sections = replacements.sections
-  from public.content_pages as page,
-    replacements
-  where page.id = translation.page_id
-    and page.page_key = replacements.page_key
-    and translation.language_code = replacements.language_code;
-
-  get diagnostics affected_rows = row_count;
-  if affected_rows <> ${managedSectionRows.length} then
-    raise exception
-      'QA-SEMANTIC-001 expected ${managedSectionRows.length} managed-page translations, updated %',
-      affected_rows;
-  end if;
-end
-$$;
-
-commit;
-`;
-
 const outputPath = process.argv[2] || 'supabase/migrations/20260805120000_cnt_003_public_layout_navigation.sql';
 const managedSectionsFix = process.argv[3] === '--managed-sections-fix';
-writeFileSync(outputPath, managedSectionsFix ? managedSectionsFixSql : sql);
-console.log(managedSectionsFix
-  ? `Generated QA-SEMANTIC-001 migration with ${managedSectionRows.length} managed-page translations.`
-  : `Generated CNT-003 migration with ${rows.length} localized page records.`);
+const localizedHeadingsFix = process.argv[3] === '--localized-headings-fix';
+const output = managedSectionsFix
+  ? guardedMigration('QA-SEMANTIC-001', 'replacements', semanticReplacements(records))
+  : localizedHeadingsFix ? guardedMigration('QA-I18N-001', 'localization', headingReplacements()) : sql;
+writeFileSync(outputPath, output);
+console.log(`Generated ${managedSectionsFix ? 'QA-SEMANTIC-001' : localizedHeadingsFix ? 'QA-I18N-001' : 'CNT-003'} migration.`);

@@ -5,6 +5,7 @@ import { join } from 'node:path';
 
 const files = {
   generator: 'scripts/generate-cnt-003.mjs',
+  localizationMap: 'scripts/lib/managed-headings-localization.json',
   migration: 'supabase/migrations/20260902170000_qa_i18n_001_localized_managed_headings.sql',
   databaseTest: 'supabase/tests/database/cnt_003_public_layout_navigation.test.sql',
   component: 'components/managed-content-page.tsx',
@@ -76,13 +77,17 @@ const errors = Object.values(files)
 const migration = existsSync(files.migration) ? readFileSync(files.migration, 'utf8') : '';
 const databaseTest = existsSync(files.databaseTest) ? readFileSync(files.databaseTest, 'utf8') : '';
 const component = existsSync(files.component) ? readFileSync(files.component, 'utf8') : '';
+const localizationMap = existsSync(files.localizationMap) ? readFileSync(files.localizationMap, 'utf8') : '';
 
 for (const label of expectedLabels) {
-  if (!migration.includes(label)) errors.push(`Localization migration missing ${label}`);
+  // Terminal cards missing in the baseline are restored by QA-SEMANTIC-001.
+  if (!migration.includes(label) && !localizationMap.includes(label)) errors.push(`Localization mapping missing ${label}`);
 }
 
 for (const required of [
   'affected_rows <> 6',
+  'translation.sections = localization.expected_sections',
+  'Reconcile CMS edits before retrying',
   "page.page_key = localization.page_key",
   "translation.language_code = localization.language_code",
 ]) {
@@ -124,6 +129,10 @@ if (existsSync(files.generator)) {
     ]) {
       if (!generatedMigration.includes(exactField)) errors.push(`Generated managed content has a malformed field: ${exactField}`);
     }
+    execFileSync(process.execPath, [files.generator, generatedMigrationPath, '--localized-headings-fix'], {
+      encoding: 'utf8', stdio: 'pipe',
+    });
+    if (readFileSync(generatedMigrationPath, 'utf8') !== migration) errors.push('Committed heading migration does not match guarded generator output.');
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     errors.push(`Managed-content generator execution failed: ${message}`);
