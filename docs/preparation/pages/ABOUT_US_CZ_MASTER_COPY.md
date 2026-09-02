@@ -134,6 +134,10 @@ U konkrétních programů Univerzita poskytuje akademický základ a vydává do
 profesního rozvoje podle schválených podmínek. Typ dokumentu a role stran jsou
 vždy uvedeny na stránce programu.
 
+### University Proof Points
+
+`title`: Klíčová fakta o univerzitě
+
 `proof_1_title`: Více než 30 let zkušeností ve vzdělávání
 
 `proof_1_body`: Univerzita Alfreda Nobela rozvíjí vzdělávání na Ukrajině více než

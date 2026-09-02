@@ -1,5 +1,5 @@
 begin;
-select plan(10);
+select plan(14);
 select is((select count(*)::integer from public.content_pages where page_key in ('home','about','partnerships','for_organisations') and status='published'), 4, 'all core public pages are published');
 select is((select count(*)::integer from public.content_page_translations where translation_status='published'), 12, 'all core page translations are published');
 select is((select count(*)::integer from public.content_page_translations where h1 is null or btrim(h1)=''), 0, 'all translations have h1');
@@ -25,10 +25,68 @@ select is((
   from public.content_page_translations t
   join public.content_pages p on p.id = t.page_id
   where
-    (p.page_key = 'partnerships' and t.language_code = 'ua' and t.sections @> '{"blocks":[{"key":"partnership_models","cards":[{"fields":{"title":"Партнерство у створенні програм"}},{"fields":{"title":"Експертне партнерство"}},{"fields":{"title":"Інфраструктурне партнерство"}}]}]}'::jsonb)
+    (p.page_key = 'about' and t.language_code = 'ua' and t.sections @> '{"blocks":[{"key":"exclusive_academic_partnership","cards":[{"fields":{"title":"Ключові факти про університет"}}]}]}'::jsonb)
+    or (p.page_key = 'about' and t.language_code = 'cz' and t.sections @> '{"blocks":[{"key":"exclusive_academic_partnership","cards":[{"fields":{"title":"Klíčová fakta o univerzitě"}}]}]}'::jsonb)
+    or (p.page_key = 'partnerships' and t.language_code = 'ua' and t.sections @> '{"blocks":[{"key":"partnership_models","cards":[{"fields":{"title":"Партнерство у створенні програм"}},{"fields":{"title":"Експертне партнерство"}},{"fields":{"title":"Інфраструктурне партнерство"}}]}]}'::jsonb)
     or (p.page_key = 'partnerships' and t.language_code = 'cz' and t.sections @> '{"blocks":[{"key":"partnership_models","cards":[{"fields":{"title":"Partnerství při tvorbě programů"}},{"fields":{"title":"Expertní partnerství"}},{"fields":{"title":"Infrastrukturní partnerství"}}]}]}'::jsonb)
     or (p.page_key = 'for_organisations' and t.language_code = 'ua' and t.sections @> '{"blocks":[{"key":"who_we_work_with","cards":[{"fields":{"title":"Онлайн-школи"}},{"fields":{"title":"Експерти та автори програм"}}]},{"key":"infrastructure_services","cards":[{"fields":{"title":"Структурування програми"}},{"fields":{"title":"Модель документів"}},{"fields":{"title":"Підготовка документів і додатків"}},{"fields":{"title":"Реєстрація та верифікація"}}]}]}'::jsonb)
     or (p.page_key = 'for_organisations' and t.language_code = 'cz' and t.sections @> '{"blocks":[{"key":"who_we_work_with","cards":[{"fields":{"title":"Online školy"}},{"fields":{"title":"Experti a autoři programů"}}]},{"key":"infrastructure_services","cards":[{"fields":{"title":"Strukturování programu"}},{"fields":{"title":"Model dokumentů"}},{"fields":{"title":"Příprava dokumentů a dodatků"}},{"fields":{"title":"Registrace a ověřování"}}]}]}'::jsonb)
-), 4, 'UA and CZ managed-page cards use localized display titles');
+), 6, 'UA and CZ managed-page cards use localized display titles');
+select is((
+  select count(*)::integer
+  from public.content_page_translations t
+  join public.content_pages p on p.id = t.page_id
+  cross join lateral jsonb_array_elements(t.sections->'blocks') as block(item)
+  where p.page_key in ('about', 'partnerships', 'for_organisations')
+    and block.item ? 'items'
+), 9, 'managed-page Markdown lists are stored as nine structured item collections');
+select is((
+  select count(*)::integer
+  from public.content_page_translations t
+  join public.content_pages p on p.id = t.page_id
+  cross join lateral jsonb_array_elements(t.sections->'blocks') as block(item)
+  where p.page_key in ('about', 'partnerships', 'for_organisations')
+    and block.item->>'body' like '- %'
+), 0, 'managed-page list content is not flattened into paragraph strings');
+select is((
+  select count(*)::integer
+  from public.content_page_translations t
+  join public.content_pages p on p.id = t.page_id
+  where
+    (
+      p.page_key = 'partnerships'
+      and (
+        select jsonb_array_length(block.item->'cards')
+        from jsonb_array_elements(t.sections->'blocks') as block(item)
+        where block.item->>'key' = 'partnership_models'
+      ) = 4
+    )
+    or (
+      p.page_key = 'for_organisations'
+      and (
+        select jsonb_array_length(block.item->'cards')
+        from jsonb_array_elements(t.sections->'blocks') as block(item)
+        where block.item->>'key' = 'who_we_work_with'
+      ) = 3
+      and (
+        select jsonb_array_length(block.item->'cards')
+        from jsonb_array_elements(t.sections->'blocks') as block(item)
+        where block.item->>'key' = 'infrastructure_services'
+      ) = 5
+      and (
+        select jsonb_array_length(block.item->'cards')
+        from jsonb_array_elements(t.sections->'blocks') as block(item)
+        where block.item->>'key' = 'faq'
+      ) = 4
+      and t.sections @> '{"blocks":[{"key":"final_cta"}]}'::jsonb
+    )
+), 6, 'managed pages retain terminal cards and final CTA sections in all locales');
+select is((
+  select count(*)::integer
+  from public.content_page_translations t
+  join public.content_pages p on p.id = t.page_id
+  where p.page_key in ('about', 'partnerships', 'for_organisations')
+    and t.sections::text ~* '(Editorial Guardrails|Partner card fields|Expert card fields|Publication dependency)'
+), 0, 'managed pages exclude internal editorial and schema instructions');
 select * from finish();
 rollback;

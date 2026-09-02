@@ -14,13 +14,51 @@ type ContentBlock = {
   key: string;
   title: string;
   body?: string;
+  items?: string[];
   fields?: Record<string, string>;
-  cards?: Array<{ title: string; body?: string; fields?: Record<string, string> }>;
+  cards?: Array<{ title: string; body?: string; items?: string[]; fields?: Record<string, string> }>;
 };
 
 function textValues(fields: Record<string, string> = {}): string[] {
-  const hidden = new Set(['h1', 'eyebrow', 'primary_cta', 'primary_cta_target', 'secondary_cta', 'secondary_cta_target', 'cta', 'cta_target', 'section_cta', 'fallback_cta', 'official_url', 'asset_status', 'publication_status']);
-  return Object.entries(fields).filter(([key, value]) => value && !hidden.has(key) && !key.endsWith('_title')).map(([, value]) => value);
+  const hidden = new Set(['h1', 'h2', 'heading', 'title', 'eyebrow', 'primary_cta', 'primary_cta_target', 'secondary_cta', 'secondary_cta_target', 'cta', 'cta_target', 'section_cta', 'fallback_cta', 'official_url', 'asset_status', 'publication_status']);
+  return Object.entries(fields)
+    .filter(([key, value]) => {
+      if (!value || hidden.has(key) || key.endsWith('_title')) return false;
+      if (key.endsWith('_body') && fields[`${key.slice(0, -5)}_title`]) return false;
+      return true;
+    })
+    .map(([, value]) => value);
+}
+
+function pairedValues(fields: Record<string, string> = {}) {
+  return Object.entries(fields).flatMap(([key, title]) => {
+    if (!key.endsWith('_title') || !title) return [];
+    const pairKey = key.slice(0, -6);
+    const body = fields[`${pairKey}_body`];
+    return body ? [{ key: pairKey, title, body }] : [];
+  });
+}
+
+function ManagedList({ items }: { items?: string[] }) {
+  if (!items?.length) return null;
+  return <ul className="managed-list">{items.map((item, index) => <li key={`${index}-${item}`}>{item}</li>)}</ul>;
+}
+
+function PairedContent({ fields }: { fields?: Record<string, string> }) {
+  const pairs = pairedValues(fields);
+  if (!pairs.length) return null;
+  if (pairs.every((pair) => /^step_\d+$/.test(pair.key))) {
+    return (
+      <ol className="managed-process-list">
+        {pairs.map((pair) => <li key={pair.key}><h3>{pair.title}</h3><p>{pair.body}</p></li>)}
+      </ol>
+    );
+  }
+  return (
+    <dl className="managed-detail-list">
+      {pairs.map((pair) => <div key={pair.key}><dt>{pair.title}</dt><dd>{pair.body}</dd></div>)}
+    </dl>
+  );
 }
 
 function headingFor(block: ContentBlock): string {
@@ -92,14 +130,18 @@ export function ManagedContentPage({ page, locale, partners = [], experts = [], 
           {block.fields?.eyebrow ? <p className="eyebrow">{block.fields.eyebrow}</p> : null}
           <h2>{headingFor(block)}</h2>
           {textValues(block.fields).map((value, valueIndex) => <p key={valueIndex}>{value}</p>)}
+          <ManagedList items={block.items} />
           {block.body ? <p>{block.body}</p> : null}
+          <PairedContent fields={block.fields} />
           {block.cards?.length ? (
             <div className="managed-card-grid">
               {block.cards.map((card, cardIndex) => (
                 <article key={`${card.title}-${cardIndex}`}>
                   <h3>{card.fields?.title || card.title}</h3>
                   {textValues(card.fields).map((value, valueIndex) => <p key={valueIndex}>{value}</p>)}
+                  <ManagedList items={card.items} />
                   {card.body ? <p>{card.body}</p> : null}
+                  <PairedContent fields={card.fields} />
                 </article>
               ))}
             </div>

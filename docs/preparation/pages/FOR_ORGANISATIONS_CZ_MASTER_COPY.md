@@ -75,6 +75,7 @@ Vymezení rolí autora, vlastníka programu, poskytovatele a případného akade
 - registraci vydaných dokumentů;
 - online ověření číslem nebo QR kódem;
 - jasné rozdělení rolí a odpovědnosti.
+
 Rozsah závisí na připravenosti programu, typu dokumentu a modelu spolupráce.
 
 ## How Cooperation Works

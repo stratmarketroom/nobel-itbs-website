@@ -113,6 +113,7 @@
     "verify:qa-005:vedos-smtp": "node scripts/verify-qa-005-vedos-smtp.mjs",
     "verify:qa-005:a11y-fix": "node scripts/verify-qa-005-a11y-fix.mjs",
     "verify:qa-i18n-001": "node scripts/verify-qa-i18n-001.mjs",
+    "verify:qa-semantic-001": "node scripts/verify-qa-semantic-001.mjs",
     "verify:adm-crd-001": "node scripts/verify-adm-crd-001.mjs",
     "verify:adm-eml-001": "node scripts/verify-adm-eml-001.mjs",
     "verify:adm-dsh-001": "node scripts/verify-adm-dsh-001.mjs",
