@@ -2,7 +2,7 @@
 
 Date: 2026-09-01
 Branch: `codex/pdfgen-template-a11y`
-Status: implementation and local verification complete; Preview review pending
+Status: merged through PR #83 as `dae8531`; local verification complete
 
 ## Summary
 
@@ -70,11 +70,12 @@ changed by this ticket.
 
 ## Deviations / Open Questions
 
-Authenticated visual and assistive-technology acceptance remains a Preview
-review step because the local workspace has no reusable Owner/AAL2 browser
+Authenticated hosted visual and assistive-technology acceptance is not recorded
+as completed because the local workspace had no reusable Owner/AAL2 browser
 session. There is no product-rule deviation.
 
 ## Next Dependency
 
-Review the Vercel Preview at desktop and mobile widths with an Owner/Super Admin
-AAL2 session, then merge this ticket before starting another admin issue.
+The merge dependency is complete. Authenticated hosted visual and
+assistive-technology acceptance may be recorded in a separate approved QA
+ticket if required.

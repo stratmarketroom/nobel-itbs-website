@@ -4,7 +4,7 @@ Date: 2026-09-02
 
 Branch: `codex/adm-pagination`
 
-Status: implementation merged in PR #80; Development Preview live acceptance complete for all five protected registries; initial evidence merged in PR #86
+Status: implementation merged in PR #80; Development Preview live acceptance complete for all five protected registries; evidence merged through PRs #86 and #87
 
 ## Scope
 
@@ -129,6 +129,5 @@ and is recorded as a non-blocking UX limitation rather than a pagination fault.
 
 ## Next Dependency
 
-The next separate ticket is `DOC-STATUS-SYNC`; it must remove stale `pending
-review and merge` labels without changing this ticket's implementation or QA
-evidence.
+Completed. `DOC-STATUS-SYNC` reconciles the remaining stale status labels as a
+separate documentation-only ticket.

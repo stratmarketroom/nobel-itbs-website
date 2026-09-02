@@ -2,7 +2,7 @@
 
 Date: 2026-08-31
 Branch: `codex/qa-005-server-rendered-404`
-Status: implemented and verified locally; Vercel Preview review pending
+Status: merged through PR #76 as `7fa2045`; local verification complete
 
 ## Summary
 
@@ -79,5 +79,5 @@ None.
 
 ## Next Dependency
 
-- Create a PR, review the Vercel Preview on desktop and mobile, then run the
-  same EN/UA/CZ HTTP smoke against the preview before merge.
+- The merge dependency is complete. A hosted EN/UA/CZ HTTP smoke may be
+  recorded separately if additional post-merge evidence is required.

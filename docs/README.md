@@ -54,6 +54,7 @@ Current implementation notes:
 - `docs/qa/ADM_PAGINATION_2026-09-01.md`
 - `docs/qa/ADM_DIRTY_GUARD_2026-09-01.md`
 - `docs/qa/ADM_E2E_ROLE_MATRIX_2026-09-01.md`
+- `docs/qa/DOC_STATUS_SYNC_2026-09-02.md`
 - `docs/qa/CRD_001_CREDENTIAL_TYPES_QA_2026-08-07.md`
 - `docs/qa/CRD_002_CREDENTIAL_SETS_QA_2026-08-07.md`
 - `docs/qa/CRD_003_DOCUMENT_NUMBER_LOG_QA_2026-08-08.md`

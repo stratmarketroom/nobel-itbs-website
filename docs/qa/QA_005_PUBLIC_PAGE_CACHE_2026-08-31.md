@@ -1,6 +1,6 @@
 # QA-005 Public Page Edge Cache — 2026-08-31
 
-Status: implemented and locally verified; Preview/Production verification pending
+Status: merged through PR #73 as `a3c259d`; local verification complete; hosted cache verification remains open
 
 ## Summary
 
@@ -99,5 +99,6 @@ consent/analytics browser smoke surface.
 
 ## Next Dependency
 
-Create the Vercel Preview, confirm `x-vercel-cache: MISS` followed by `HIT` for
-the same public URL, and confirm no cache hit on `/admin` or `/api` before merge.
+The merge dependency is complete. A separate hosted check should confirm
+`x-vercel-cache: MISS` followed by `HIT` for the same public URL and no cache hit
+on `/admin` or `/api`.
