@@ -1,13 +1,26 @@
 begin;
 select plan(14);
 select is((select count(*)::integer from public.content_pages where page_key in ('home','about','partnerships','for_organisations') and status='published'), 4, 'all core public pages are published');
-select is((select count(*)::integer from public.content_page_translations where translation_status='published'), 12, 'all core page translations are published');
+-- Count only CNT-003 core pages; legal and other content have separate suites.
+select is((
+  select count(*)::integer
+  from public.content_page_translations t
+  join public.content_pages p on p.id = t.page_id
+  where p.page_key in ('home','about','partnerships','for_organisations')
+    and t.translation_status = 'published'
+), 12, 'all core page translations are published');
 select is((select count(*)::integer from public.content_page_translations where h1 is null or btrim(h1)=''), 0, 'all translations have h1');
 select is((select count(*)::integer from public.content_page_translations where seo_title is null or seo_description is null), 0, 'all translations have SEO fields');
 select is((select count(*)::integer from public.content_page_translations where jsonb_typeof(sections) <> 'object'), 0, 'all sections are structured objects');
 select is((select count(*)::integer from public.content_page_translations where not (sections ? 'blocks')), 0, 'all pages use controlled blocks key');
 select is((select count(*)::integer from public.content_pages where page_key='news'), 0, 'News is absent');
-select is((select count(*)::integer from public.content_page_translations where language_code in ('en','ua','cz')), 12, 'language model is EN UA CZ');
+select is((
+  select count(*)::integer
+  from public.content_page_translations t
+  join public.content_pages p on p.id = t.page_id
+  where p.page_key in ('home','about','partnerships','for_organisations')
+    and t.language_code in ('en','ua','cz')
+), 12, 'language model is EN UA CZ');
 select is((
   select count(*)::integer
   from public.content_page_translations t
