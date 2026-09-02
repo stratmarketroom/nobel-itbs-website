@@ -1,10 +1,10 @@
 # ADM-PAGINATION Server Pagination
 
-Date: 2026-09-01
+Date: 2026-09-02
 
 Branch: `codex/adm-pagination`
 
-Status: local implementation complete; Preview/Production acceptance pending review and merge
+Status: implementation merged in PR #80; Development Preview live acceptance complete for Learners, Credentials, Credential Sets, and Document Number Log; Contact Submissions multi-page acceptance remains data-blocked
 
 ## Scope
 
@@ -56,6 +56,27 @@ The focused verifier checks all five protected routes, database-boundary
 full-result learner search, caller-scoped RLS clients, and accessible UI
 controls.
 
+## Development Preview Browser Acceptance
+
+Authenticated Owner/AAL2 read-only acceptance was completed on the deployed
+PR #80 Development Preview on 2026-09-02. The approved synthetic registry
+contained 1,741 Learners, 1,741 Credentials, 1,741 Credential Sets, and 1,741
+Document Number Log rows.
+
+| Registry | Desktop result | Search / filter reset | Mobile result |
+| --- | --- | --- | --- |
+| Learners | `1–50 of 1,741` → `51–100 of 1,741` → Previous to `1–50`; 50 rows per page | A unique surname from page 2 returned `1–1 of 1`; changing the archive filter from page 2 reset the range to page 1 | `390 × 844`, no document overflow; Enter on Next opened `51–100` |
+| Credentials | `1–50 of 1,741` → `51–100 of 1,741` → Previous to `1–50`; 50 rows per page | A document number from page 2 returned `1–1 of 1`; changing status from page 2 to Revoked reset to `1–1 of 1`, and All restored `1–50` | `390 × 844`, no document overflow |
+| Credential Sets | `1–50 of 1,741` → `51–100 of 1,741` → Previous to `1–50`; 50 rows per page | No filters in this registry | `390 × 844`, no document overflow; table scrolling remains contained |
+| Document Number Log | `1–50 of 1,741` → `51–100 of 1,741` → Previous to `1–50`; 50 rows per page | No filters in this registry | `390 × 844`, no document overflow; table scrolling remains contained |
+| Contact Submissions | Correct `0–0 of 0` empty state; Previous and Next disabled | Status and type filters applied and reset without an error | `390 × 844`, no document overflow |
+
+The browser console contained no warnings or errors. Dashboard counts before
+and after the smoke were unchanged: 0 new enquiries, 1,740 pending credentials,
+1,741 active learners, 0 valid credentials, 1 revoked credential, and 0 voided
+credentials. No form was submitted and no registry record was selected for
+mutation.
+
 ## Security Notes
 
 - All reads continue through the request Bearer token and caller-scoped RLS.
@@ -71,11 +92,20 @@ None.
 
 ## Deviations / Open Questions
 
-None for the code-level scope. Authenticated multi-page browser acceptance on a
-deployed environment requires enough real or approved synthetic rows and is a
-post-deployment check.
+The Development environment has zero Contact Submissions. Its empty state,
+disabled controls, filters, reset behavior, responsive layout, and console were
+accepted, but genuine page 1/page 2 navigation cannot be evidenced until the
+environment contains more than 50 approved submissions. Creating synthetic
+public enquiries was intentionally excluded from this read-only acceptance.
+
+Learner search accepts individual name fields, email, and phone. A unique
+surname from beyond the first page was used for the full-result proof; the
+visible two-part Latin display name is not treated as one combined search field
+and is recorded as a non-blocking UX limitation rather than a pagination fault.
 
 ## Next Dependency
 
-Review the diff and Preview deployment, then run authenticated Previous/Next,
-filter-reset, and full-search smoke tests before merge.
+Run the remaining Contact Submissions multi-page acceptance when more than 50
+approved records exist. The next separate ticket is `DOC-STATUS-SYNC`; it must
+remove stale `pending review and merge` labels without changing this ticket's
+implementation or QA evidence.
